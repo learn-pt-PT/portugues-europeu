@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursos PT-PT — Directório de Média</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --parchment: #ede6d6;
+    --warm-dark: #1a1410;
+    --ink: #2c2318;
+    --mid: #6b5d4f;
+    --faint: #c8b99a;
+    --accent: #8b1a1a;
+    --accent-hover: #b02020;
+    --gold: #c9931a;
+    --rule: #d4c5a9;
+    --new-badge: #1a5c3a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* Grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  /* ── MASTHEAD ── */
+  header {
+    background-color: var(--warm-dark);
+    color: var(--cream);
+    padding: 3.5rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
+  }
+
+  .masthead-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--cream);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .masthead-sub {
+    margin-top: 1rem;
+    color: var(--faint);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  /* ── LAYOUT ── */
+  .page-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── TABLE OF CONTENTS ── */
+  .toc {
+    background-color: var(--parchment);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    padding: 1.75rem 2rem;
+    margin: 2.5rem 0 3rem;
+  }
+
+  .toc-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 1rem;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.3rem 1.5rem;
+  }
+
+  .toc-grid a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-family: 'Source Serif 4', serif;
+    border-bottom: 1px dashed var(--faint);
+    transition: color 0.15s, border-color 0.15s;
+    padding-bottom: 0.1rem;
+  }
+
+  .toc-grid a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .toc-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--mid);
+    margin-right: 0.4em;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin-bottom: 3rem;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .section:nth-child(1)  { animation-delay: 0.05s; }
+  .section:nth-child(2)  { animation-delay: 0.10s; }
+  .section:nth-child(3)  { animation-delay: 0.15s; }
+  .section:nth-child(4)  { animation-delay: 0.20s; }
+  .section:nth-child(5)  { animation-delay: 0.25s; }
+  .section:nth-child(6)  { animation-delay: 0.30s; }
+  .section:nth-child(7)  { animation-delay: 0.35s; }
+  .section:nth-child(8)  { animation-delay: 0.40s; }
+  .section:nth-child(9)  { animation-delay: 0.45s; }
+  .section:nth-child(10) { animation-delay: 0.50s; }
+  .section:nth-child(11) { animation-delay: 0.55s; }
+  .section:nth-child(12) { animation-delay: 0.60s; }
+  .section:nth-child(13) { animation-delay: 0.65s; }
+  .section:nth-child(14) { animation-delay: 0.70s; }
+  .section:nth-child(15) { animation-delay: 0.75s; }
+  .section:nth-child(16) { animation-delay: 0.80s; }
+  .section:nth-child(17) { animation-delay: 0.85s; }
+  .section:nth-child(18) { animation-delay: 0.90s; }
+  .section:nth-child(19) { animation-delay: 0.95s; }
+  .section:nth-child(20) { animation-delay: 1.00s; }
+  .section:nth-child(21) { animation-delay: 1.05s; }
+  .section:nth-child(22) { animation-delay: 1.10s; }
+  .section:nth-child(23) { animation-delay: 1.15s; }
+  .section:nth-child(24) { animation-delay: 1.20s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    border-bottom: 2px solid var(--warm-dark);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--mid);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--warm-dark);
+  }
+
+  /* ── LINK GRID ── */
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.25rem 1.5rem;
+  }
+
+  .link-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  .link-item a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    word-break: break-word;
+  }
+
+  .link-item a:hover {
+    color: var(--accent-hover);
+    border-bottom-color: var(--accent-hover);
+  }
+
+  /* ── NEW BADGE ── */
+  .badge-new {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: var(--new-badge);
+    color: #fff;
+    padding: 0.15em 0.45em;
+    border-radius: 2px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    position: relative;
+    top: -1px;
+  }
+
+  /* ── SUB-GROUPS (e.g. "Suggested additions") ── */
+  .sub-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin: 1rem 0 0.5rem;
+    padding-left: 0.1rem;
+  }
+
+  /* ── DIVIDER ── */
+  .rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 3rem 0;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: var(--mid);
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ── BACK TO TOP ── */
+  .back-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--warm-dark);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.9rem;
+    text-decoration: none;
+    border: 1px solid var(--gold);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 100;
+  }
+
+  .back-top.visible { opacity: 1; }
+  .back-top:hover { background: var(--accent); }
+
+  @media (max-width: 600px) {
+    .link-grid { grid-template-columns: 1fr; }
+    .toc-grid { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 1.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<header id="top">
+  <p class="masthead-eyebrow">Directório de Recursos</p>
+  <h1>Média em <em>Português</em> de Portugal</h1>
+  <p class="masthead-sub">Televisão · Rádio · Podcasts · Imprensa · Ferramentas de língua · E muito mais</p>
+</header>
+
+<div class="page-wrap">
+
+  <!-- TABLE OF CONTENTS -->
+  <nav class="toc" aria-label="Índice">
+    <p class="toc-title">Índice</p>
+    <div class="toc-grid">
+      <a href="#s01"><span class="toc-num">01</span> Televisão em Directo</a>
+      <a href="#s02"><span class="toc-num">02</span> Séries de Ficção</a>
+      <a href="#s03"><span class="toc-num">03</span> Comédia, Variedades e Talk Shows</a>
+      <a href="#s04"><span class="toc-num">04</span> Documentários e Actualidade</a>
+      <a href="#s05"><span class="toc-num">05</span> Viagens e Geografia</a>
+      <a href="#s06"><span class="toc-num">06</span> Natureza, Vida Selvagem e Ambiente</a>
+      <a href="#s07"><span class="toc-num">07</span> História e Cultura</a>
+      <a href="#s08"><span class="toc-num">08</span> Ferramentas de Língua</a>
+      <a href="#s09"><span class="toc-num">09</span> Notícias</a>
+      <a href="#s10"><span class="toc-num">10</span> Podcasts</a>
+      <a href="#s11"><span class="toc-num">11</span> Música</a>
+      <a href="#s12"><span class="toc-num">12</span> Rádio</a>
+      <a href="#s13"><span class="toc-num">13</span> Livros, Literatura e Audiolivros</a>
+      <a href="#s14"><span class="toc-num">14</span> Gastronomia e Culinária</a>
+      <a href="#s15"><span class="toc-num">15</span> Conteúdo Infantil</a>
+      <a href="#s16"><span class="toc-num">16</span> Desporto</a>
+      <a href="#s17"><span class="toc-num">17</span> Saúde, Psicologia e Bem-estar</a>
+      <a href="#s18"><span class="toc-num">18</span> Artesanato, DIY e Casa</a>
+      <a href="#s19"><span class="toc-num">19</span> Média Moçambicana e Africana</a>
+      <a href="#s20"><span class="toc-num">20</span> Revistas e Publicações</a>
+      <a href="#s21"><span class="toc-num">21</span> Redes Sociais (Instagram)</a>
+      <a href="#s22"><span class="toc-num">22</span> Comédia e Entretenimento (YouTube)</a>
+      <a href="#s23"><span class="toc-num">23</span> Criadores Portugueses (YouTube)</a>
+      <a href="#s24"><span class="toc-num">24</span> Teatro e Artes Performativas</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- 01 LIVE TV -->
+  <!-- ══════════════════════════════════════════ -->
+  <section class="section" id="s01">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Televisão em Directo &amp; Plataformas de Streaming</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/direto" target="_blank" rel="noopener">RTP Play — Directo</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/direto/rtp2" target="_blank" rel="noopener">RTP2 — Directo</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/direto/rtp3" target="_blank" rel="noopener">RTP3 / RTP Notícias — Directo</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/" target="_blank" rel="noopener">RTP Play — Arquivo e On-Demand</a></div>
+      <div class="link-item"><a href="https://arquivos.rtp.pt/" target="_blank" rel="noopener">Arquivos RTP</a></div>
+      <div class="link-item"><a href="https://portocanal.sapo.pt/live" target="_blank" rel="noopener">Porto Canal — Directo</a></div>
+      <div class="link-item"><a href="https://www.sic.pt/direto" target="_blank" rel="noopener">SIC — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://sicnoticias.pt/direto" target="_blank" rel="noopener">SIC Notícias — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://opto.sic.pt/" target="_blank" rel="noopener">Opto SIC — On-Demand</a></div>
+      <div class="link-item"><a href="https://tvi.iol.pt/direto" target="_blank" rel="noopener">TVI — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://tviplayer.iol.pt/" target="_blank" rel="noopener">TVI Player — On-Demand</a></div>
+      <div class="link-item"><a href="https://pt.euronews.com/live" target="_blank" rel="noopener">Euronews PT — Directo</a></div>
+      <div class="link-item"><a href="https://cnnportugal.iol.pt/direto" target="_blank" rel="noopener">CNN Portugal — Directo</a></div>
+      <div class="link-item"><a href="https://cnnportugal.iol.pt/" target="_blank" rel="noopener">CNN Portugal</a></div>
+      <div class="link-item"><a href="https://canal180.pt/" target="_blank" rel="noopener">Canal 180 — Cultura e Artes <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.reddit.com/r/portugal/comments/hadmt5/lista_de_iptv_gratuita_e_legal/" target="_blank" rel="noopener">Lista IPTV Gratuita e Legal (Reddit)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 02 DRAMA -->
+  <section class="section" id="s02">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Séries de Ficção Portuguesa</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1844/os-nossos-dias" target="_blank" rel="noopener">Os Nossos Dias</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1222/bem-vindos-a-beirais" target="_blank" rel="noopener">Bem-Vindos a Beirais</a></div>
+      <div class="link-item"><a href="https://tviplayer.iol.pt/programa/quer-o-destino/5e259d4f0cf207193068e0d1" target="_blank" rel="noopener">Quer o Destino</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9165/por-do-sol" target="_blank" rel="noopener">Pôr do Sol</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p8013/cronica-dos-bons-malandros" target="_blank" rel="noopener">Crónica dos Bons Malandros</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p4963/idiotas-ponto" target="_blank" rel="noopener">Idiotas.ponto</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p703/ultimo-a-sair" target="_blank" rel="noopener">Último a Sair</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p3847/a-criacao" target="_blank" rel="noopener">A Criação</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p4996/e696433/sara" target="_blank" rel="noopener">Sara</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p5909/nosso-consul-em-havana" target="_blank" rel="noopener">Nosso Cônsul em Havana</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p7334/terra-nova" target="_blank" rel="noopener">Terra Nova</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p6487/conta-me-como-foi" target="_blank" rel="noopener">Conta-me Como Foi</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9328/republica" target="_blank" rel="noopener">República</a></div>
+      <div class="link-item"><a href="https://arquivos.rtp.pt/conteudos/uma-familia-acoriana-episodio-1/" target="_blank" rel="noopener">Uma Família Açoriana (Arquivos RTP)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC" target="_blank" rel="noopener">Ficção Portuguesa — Playlist YouTube</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p3677/madre-paula" target="_blank" rel="noopener">Madre Paula</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1011/ferreirinha" target="_blank" rel="noopener">Ferreirinha</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p8741/vento-norte" target="_blank" rel="noopener">Vento Norte</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLAtWdhCqbn2gupKKhfNrbahu4vL6M6zHj" target="_blank" rel="noopener">Série PT — Playlist YouTube</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p15506/e873973/espias" target="_blank" rel="noopener">Espiãs</a></div>
+      <div class="link-item"><a href="https://arquivos.rtp.pt/programas/pai-a-forca/" target="_blank" rel="noopener">Pai à Força (Arquivos RTP)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p4933/circo-paraiso" target="_blank" rel="noopener">Circo Paraíso</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/programa/tv/p44332" target="_blank" rel="noopener">Programa RTP TV</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9764/e639397/causa-propria" target="_blank" rel="noopener">Causa Própria</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p11652/e685339/emilia" target="_blank" rel="noopener">Emília</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p13044/e811310/erro-404" target="_blank" rel="noopener">Erro 404</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p2058/treze" target="_blank" rel="noopener">Treze</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une" target="_blank" rel="noopener">Esta Língua Que Nos Une</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 03 COMEDY -->
+  <section class="section" id="s03">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Comédia, Variedades e Talk Shows</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9868/5-para-a-meia-noite" target="_blank" rel="noopener">5 Para a Meia-Noite</a></div>
+      <div class="link-item"><a href="https://sic.pt/programas/altadefinicao-programas/" target="_blank" rel="noopener">Alta Definição (SIC)</a></div>
+      <div class="link-item"><a href="https://sic.pt/programas/istoegozarcomquemtrabalha/" target="_blank" rel="noopener">Isto é Gozar com Quem Trabalha (SIC)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10536/e633736/ferias-ca-dentro" target="_blank" rel="noopener">Férias Cá Dentro</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9748/e637286/a-nossa-tarde" target="_blank" rel="noopener">A Nossa Tarde</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9747/praca-da-alegria" target="_blank" rel="noopener">Praça da Alegria</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9082/e558601/e-urgente-o-amor" target="_blank" rel="noopener">É Urgente o Amor</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9564/voz-do-cidadao" target="_blank" rel="noopener">Voz do Cidadão</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p3991/cuidado-com-a-lingua" target="_blank" rel="noopener">Cuidado com a Língua</a></div>
+      <div class="link-item"><a href="https://tviplayer.iol.pt/programa/goucha/5fe21c220cf2ec6e471a5d6b" target="_blank" rel="noopener">Goucha (TVI)</a></div>
+      <div class="link-item"><a href="https://tviplayer.iol.pt/programa/dois-as-10/5fe219a40cf2cc9de7ef9590" target="_blank" rel="noopener">Dois às 10 (TVI)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@raminhos/videos" target="_blank" rel="noopener">Raminhos (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@PierreZago/videos" target="_blank" rel="noopener">Pierre Zago (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/BeatrizGosta" target="_blank" rel="noopener">Beatriz Gosta (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/FernandoRochaComedy" target="_blank" rel="noopener">Fernando Rocha (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/LeandroRodrigues007" target="_blank" rel="noopener">Leandro Rodrigues (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/CaraCoroa" target="_blank" rel="noopener">Cara ou Coroa (YouTube)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 04 DOCUMENTARY -->
+  <section class="section" id="s04">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Documentários e Actualidade</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/colecao/documentarios" target="_blank" rel="noopener">RTP Play — Documentários</a></div>
+      <div class="link-item"><a href="https://www.ffms.pt/pt-pt/ffms-play/documentarios" target="_blank" rel="noopener">FFMS Play — Documentários</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p14364/e821002/capitalismo-americano-o-culto-da-riqueza" target="_blank" rel="noopener">Capitalismo Americano: O Culto da Riqueza</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p14844/e845024/insurgentes-as-resistentes-do-gueto-de-varsovia" target="_blank" rel="noopener">Insurgentes — Resistentes do Gueto de Varsóvia</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p14847/e845570/aqueles-que-ficaram-em-toda-a-parte-todo-o-mundo-tem" target="_blank" rel="noopener">Aqueles Que Ficaram</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p13120/e883762/pe" target="_blank" rel="noopener">Pé</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p12306/mar-maior" target="_blank" rel="noopener">Mar Maior</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10231/e613100/dinossauros" target="_blank" rel="noopener">Dinossauros</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1926/e201634/agua-vai-pedra-leva" target="_blank" rel="noopener">Água Vai, Pedra Leva</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10485/e628756/sardinha-portuguesa-uma-riqueza-natural" target="_blank" rel="noopener">Sardinha Portuguesa — Uma Riqueza Natural</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10414/e638493/a-ilha-dos-gigantes" target="_blank" rel="noopener">A Ilha dos Gigantes</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10504/e630184/ecomare-investigacao-e-salvamento-de-especies-marinhas" target="_blank" rel="noopener">Ecomare — Investigação e Salvamento</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10193/e611722/no-reino-do-dragao" target="_blank" rel="noopener">No Reino do Dragão</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1687/e393360/o-povo-que-ainda-canta" target="_blank" rel="noopener">O Povo Que Ainda Canta</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@ffmspt/videos" target="_blank" rel="noopener">Fundação Francisco Manuel dos Santos (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@ForumdaEnergiaeClima/videos" target="_blank" rel="noopener">Fórum Energia e Clima (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCAzXTUnXaYXsscGtzWae1dA" target="_blank" rel="noopener">Canal Documentários PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCrfbub__4RCSuexl2I6PgKA" target="_blank" rel="noopener">Documentários Portugal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCDGEEjqL_ZDqnKaHQVRQqIw" target="_blank" rel="noopener">Canal PT Actualidade (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.publico.pt/" target="_blank" rel="noopener">Público <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.dn.pt/" target="_blank" rel="noopener">Diário de Notícias <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.observador.pt/" target="_blank" rel="noopener">Observador <span class="badge-new">novo</span></a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 05 TRAVEL -->
+  <section class="section" id="s05">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Viagens e Geografia</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/p5665/portugal-mais-perto" target="_blank" rel="noopener">Portugal Mais Perto</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p8373/sem-fronteiras" target="_blank" rel="noopener">Sem Fronteiras</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p3376/e282290/guia-de-portugal" target="_blank" rel="noopener">Guia de Portugal</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p2272/portugal-a-pe" target="_blank" rel="noopener">Portugal a Pé</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10568/horizontes" target="_blank" rel="noopener">Horizontes</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p6955/solaresepalaciosdosacores" target="_blank" rel="noopener">Solares e Palácios dos Açores</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p8253/e586889/aqui-portugal" target="_blank" rel="noopener">Aqui Portugal</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p7378/visita-guiada" target="_blank" rel="noopener">Visita Guiada</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p12907/voltei-de-la" target="_blank" rel="noopener">Voltei de Lá</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10399/e623375/lisboa-cidade-triste-e-alegre" target="_blank" rel="noopener">Lisboa, Cidade Triste e Alegre</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade" target="_blank" rel="noopener">Sete Cidades — Da Lenda à Realidade</a></div>
+      <div class="link-item"><a href="https://www.almadeviajante.com/" target="_blank" rel="noopener">Alma de Viajante</a></div>
+      <div class="link-item"><a href="https://justgosofia.com/" target="_blank" rel="noopener">Just Go Sofia</a></div>
+      <div class="link-item"><a href="https://www.futurebehind.com/" target="_blank" rel="noopener">Future Behind</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@FollowtheSunTravel" target="_blank" rel="noopener">Follow the Sun Travel (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@MeioCheio/videos" target="_blank" rel="noopener">Meio Cheio (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@tomassilva__/videos" target="_blank" rel="noopener">Tomás Silva (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@travelinspirept/videos" target="_blank" rel="noopener">Travel Inspire PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@daquiparaali/videos" target="_blank" rel="noopener">Daqui Para Ali (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@byFilipeCardoso/videos" target="_blank" rel="noopener">By Filipe Cardoso (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@RemotePortugal/videos" target="_blank" rel="noopener">Remote Portugal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@CidadesdePortugal/videos" target="_blank" rel="noopener">Cidades de Portugal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@trilhosemfuria/videos" target="_blank" rel="noopener">Trilhos em Fúria (YouTube)</a></div>
+      <div class="link-item"><a href="https://justgosofia.com/podcast-viajar-e-para-todos/" target="_blank" rel="noopener">Viajar é Para Todos (Podcast)</a></div>
+      <div class="link-item"><a href="https://www.nitfm.pt/programas/cartao-de-embarque/a-hungria-tem-paprika-bares-em-ruinas-e-uma-capital-vibrante/" target="_blank" rel="noopener">Cartão de Embarque — NIT FM</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/watch?v=vwmgzApBrkY&list=PLuA3C1Hw3DNXF5pAIwMdYH6vjWSuuoU68" target="_blank" rel="noopener">Portugal — Playlist Viagens (YouTube)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 06 NATURE -->
+  <section class="section" id="s06">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Natureza, Vida Selvagem e Ambiente</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/p960/e94486/geosfera" target="_blank" rel="noopener">Geosfera</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p553/e235162/vida-animal" target="_blank" rel="noopener">Vida Animal</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1776/e179598/natureza-e-vida-selvagem" target="_blank" rel="noopener">Natureza e Vida Selvagem</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p6437/e440554/mar-a-ultima-fronteira" target="_blank" rel="noopener">Mar — A Última Fronteira</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p14288/e820411/faca-chuva-faca-sol" target="_blank" rel="noopener">Faça Chuva, Faça Sol</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9210/e565935/festa-das-vindimas" target="_blank" rel="noopener">Festa das Vindimas</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/ZoologicoJardim/playlists" target="_blank" rel="noopener">Jardim Zoológico de Lisboa (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@spea_birdlife/videos" target="_blank" rel="noopener">SPEA BirdLife Portugal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@AvesdePortugalOnline/videos" target="_blank" rel="noopener">Aves de Portugal Online (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@antonioc.a.sousalara9073/videos" target="_blank" rel="noopener">António Sousa Lara — Natureza (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.fapas.pt/category/tribuna-da-natureza/" target="_blank" rel="noopener">FAPAS — Tribuna da Natureza</a></div>
+      <div class="link-item"><a href="https://acientistaagricola.pt/" target="_blank" rel="noopener">A Cientista Agrícola</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/ACientistaAgr%C3%ADcola/videos" target="_blank" rel="noopener">A Cientista Agrícola (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@portugalruralnapratica/videos" target="_blank" rel="noopener">Portugal Rural na Prática (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/RevistaJardins/featured" target="_blank" rel="noopener">Revista Jardins (YouTube)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 07 HISTORY -->
+  <section class="section" id="s07">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>História e Cultura</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://arquivos.rtp.pt/" target="_blank" rel="noopener">Arquivos RTP</a></div>
+      <div class="link-item"><a href="https://arquivos.rtp.pt/programas/duarte-ca/" target="_blank" rel="noopener">Duarte Cá (Arquivos RTP)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p2097/a-porta-da-historia" target="_blank" rel="noopener">A Porta da História</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p6188/nada-sera-como-dante" target="_blank" rel="noopener">Nada Será Como Dante</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p7972/herdeiros-de-saramago" target="_blank" rel="noopener">Herdeiros de Saramago</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10399/e623375/lisboa-cidade-triste-e-alegre" target="_blank" rel="noopener">Lisboa, Cidade Triste e Alegre</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade" target="_blank" rel="noopener">Sete Cidades — Da Lenda à Realidade</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@raquelvarela3136/videos" target="_blank" rel="noopener">Raquel Varela — História (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es" target="_blank" rel="noopener">Portugal Tradições (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@admiravelcriptomundonovo/videos" target="_blank" rel="noopener">Admirável Cripto Mundo Novo (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.up.pt/casacomum/" target="_blank" rel="noopener">Casa Comum — Universidade do Porto</a></div>
+      <div class="link-item"><a href="https://projectoadamastor.org/" target="_blank" rel="noopener">Projecto Adamastor</a></div>
+      <div class="link-item"><a href="https://gulbenkian.pt/publicacoes/" target="_blank" rel="noopener">Fundação Gulbenkian — Publicações</a></div>
+      <div class="link-item"><a href="https://comunidadeculturaearte.com/" target="_blank" rel="noopener">Comunidade Cultura e Arte</a></div>
+      <div class="link-item"><a href="https://www.agendalx.pt/" target="_blank" rel="noopener">Agenda LX — Lisboa</a></div>
+      <div class="link-item"><a href="https://agendaculturalporto.org/" target="_blank" rel="noopener">Agenda Cultural do Porto</a></div>
+      <div class="link-item"><a href="https://portoalities.com/pt/portuenses-famosos-pessoas-famosas-porto/" target="_blank" rel="noopener">Portoalities — Portuenses Famosos</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/CasadaArquitecturaVideo" target="_blank" rel="noopener">Casa da Arquitectura (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/CamaraDoPortoPonto" target="_blank" rel="noopener">Câmara do Porto (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/Nionoi/featured" target="_blank" rel="noopener">Nionoi — História PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN" target="_blank" rel="noopener">Playlist História Portugal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/watch?v=9kz9dcByY6s&list=PLF9CB00221932C680" target="_blank" rel="noopener">Série Histórica — Playlist (YouTube)</a></div>
+      <div class="link-item"><a href="https://patrimoniocultural.gov.pt/" target="_blank" rel="noopener">Direcção-Geral do Património Cultural <span class="badge-new">novo</span></a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 08 LANGUAGE TOOLS -->
+  <section class="section" id="s08">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Ferramentas de Língua Portuguesa</h2>
+    </div>
+
+    <p class="sub-label">Dicionários e Tradução</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://dicionario.priberam.org/" target="_blank" rel="noopener">Priberam — Dicionário</a></div>
+      <div class="link-item"><a href="https://www.infopedia.pt/dicionarios/portugues-ingles" target="_blank" rel="noopener">Infopédia — Português–Inglês</a></div>
+      <div class="link-item"><a href="https://www.infopedia.pt/dicionarios/ingles-portugues" target="_blank" rel="noopener">Infopédia — Inglês–Português</a></div>
+      <div class="link-item"><a href="https://www.infopedia.pt/dicionarios?grupo=bilingues" target="_blank" rel="noopener">Infopédia — Dicionários Bilingues</a></div>
+      <div class="link-item"><a href="https://www.infopedia.pt/dicionarios/portugues-estrangeiros" target="_blank" rel="noopener">Infopédia — Português para Estrangeiros</a></div>
+      <div class="link-item"><a href="https://www.linguee.pt/" target="_blank" rel="noopener">Linguee</a></div>
+      <div class="link-item"><a href="https://www.deepl.com/translator" target="_blank" rel="noopener">DeepL Tradutor</a></div>
+      <div class="link-item"><a href="https://www.wordreference.com/pten/" target="_blank" rel="noopener">WordReference PT-EN <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://natura.di.uminho.pt/~jj/pln/calao/dicionario.pdf" target="_blank" rel="noopener">Dicionário de Calão (PDF)</a></div>
+    </div>
+
+    <p class="sub-label">Ortografia e Gramática</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.flip.pt/FLiP-On-line/Corrector-ortografico-e-sintactico" target="_blank" rel="noopener">FLiP — Corrector Ortográfico e Sintáctico</a></div>
+      <div class="link-item"><a href="https://ciberduvidas.iscte-iul.pt/" target="_blank" rel="noopener">Ciberdúvidas da Língua Portuguesa</a></div>
+      <div class="link-item"><a href="https://ciberduvidas.iscte-iul.pt/outros/diversidades/outra-pronuncia/1014" target="_blank" rel="noopener">Ciberdúvidas — Pronúncia PT-PT</a></div>
+      <div class="link-item"><a href="http://www.ciberescola.com/" target="_blank" rel="noopener">Ciberescola</a></div>
+    </div>
+
+    <p class="sub-label">Verbos e Conjugação</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://conjuga-me.net/" target="_blank" rel="noopener">Conjuga-me</a></div>
+      <div class="link-item"><a href="https://conjuguemos.com/" target="_blank" rel="noopener">Conjuguemos</a></div>
+      <div class="link-item"><a href="https://www.verbos-portugueses.info/en/practise.html" target="_blank" rel="noopener">Verbos Portugueses — Prática</a></div>
+      <div class="link-item"><a href="https://verbugata.com/" target="_blank" rel="noopener">Verbugata</a></div>
+    </div>
+
+    <p class="sub-label">Pronúncia e Escuta</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://pt.youglish.com/portuguese" target="_blank" rel="noopener">YouGlish — Português</a></div>
+      <div class="link-item"><a href="https://forvo.com/languages/pt/" target="_blank" rel="noopener">Forvo — Pronúncia PT <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://langpractice.com/portuguese-portugal/numbers/listening#1,0,1000" target="_blank" rel="noopener">LangPractice — Números PT-PT</a></div>
+      <div class="link-item"><a href="https://lyricstraining.com/pt" target="_blank" rel="noopener">LyricsTraining — Português</a></div>
+    </div>
+
+    <p class="sub-label">Jogos e Prática</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://babadum.com/play/?lang=16" target="_blank" rel="noopener">Babadum — Vocabulário PT</a></div>
+      <div class="link-item"><a href="http://cvc.instituto-camoes.pt/jogos-lexicais/jogos-lexicais.html#.Y0Qap3ZBxPb" target="_blank" rel="noopener">Instituto Camões — Jogos Lexicais</a></div>
+      <div class="link-item"><a href="https://www.palavrascruzadas.pt/jogos" target="_blank" rel="noopener">Palavras Cruzadas</a></div>
+      <div class="link-item"><a href="https://crosswordlabs.com/" target="_blank" rel="noopener">Crossword Labs</a></div>
+      <div class="link-item"><a href="https://storyglot.com/podcast/" target="_blank" rel="noopener">Storyglot — Podcast de Histórias</a></div>
+    </div>
+
+    <p class="sub-label">Plataformas de Aprendizagem PT-PT</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.practiceportuguese.com/" target="_blank" rel="noopener">Practice Portuguese <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.portuguesepedia.com/" target="_blank" rel="noopener">Portuguesepedia <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.learneuropeanportuguese.com/" target="_blank" rel="noopener">Learn European Portuguese Online <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@TalkTheStreets" target="_blank" rel="noopener">Talk The Streets — Liz Sharma (YouTube) <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@portuguesewithleo" target="_blank" rel="noopener">Portuguese With Leo (YouTube) <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@PortugueseWithCarla" target="_blank" rel="noopener">Portuguese With Carla (YouTube) <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCA49qkdNMkCDzTcDl8n5ifw" target="_blank" rel="noopener">Learn European Portuguese Online (YouTube) <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://publicholidays.pt/pt/" target="_blank" rel="noopener">Feriados Públicos em Portugal</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 09 NEWS -->
+  <section class="section" id="s09">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Notícias</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/noticias/" target="_blank" rel="noopener">RTP Notícias</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/noticias/videos" target="_blank" rel="noopener">RTP Notícias — Vídeo</a></div>
+      <div class="link-item"><a href="https://pt.euronews.com/ultimas-noticias" target="_blank" rel="noopener">Euronews PT — Últimas Notícias</a></div>
+      <div class="link-item"><a href="https://cnnportugal.iol.pt/" target="_blank" rel="noopener">CNN Portugal</a></div>
+      <div class="link-item"><a href="https://sicnoticias.pt/" target="_blank" rel="noopener">SIC Notícias <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.publico.pt/" target="_blank" rel="noopener">Público <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.dn.pt/" target="_blank" rel="noopener">Diário de Notícias <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.observador.pt/" target="_blank" rel="noopener">Observador <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.tsf.pt/" target="_blank" rel="noopener">TSF — Rádio Notícias <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.noticiasaominuto.com/" target="_blank" rel="noopener">Notícias ao Minuto <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.cmjornal.pt/" target="_blank" rel="noopener">Correio da Manhã <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.lusa.pt/" target="_blank" rel="noopener">Lusa — Agência de Notícias <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://eco.pt/" target="_blank" rel="noopener">ECO — Economia Online <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.jornaldenegocios.pt/" target="_blank" rel="noopener">Jornal de Negócios <span class="badge-new">novo</span></a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 10 PODCASTS -->
+  <section class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Podcasts</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/zigzag/podcasts" target="_blank" rel="noopener">RTP Zigzag — Podcasts</a></div>
+      <div class="link-item"><a href="https://fumaca.pt/category/series/" target="_blank" rel="noopener">Fumaça — Séries</a></div>
+      <div class="link-item"><a href="https://sicnoticias.pt/podcasts/consulta-aberta" target="_blank" rel="noopener">SIC Notícias — Consulta Aberta</a></div>
+      <div class="link-item"><a href="https://www.oficinadopodcast.com/matraquilhos" target="_blank" rel="noopener">Matraquilhos</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9930/biblioteca-publica" target="_blank" rel="noopener">Biblioteca Pública (RTP)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1vGqWcwQcG9NMk4mjYi3Iq" target="_blank" rel="noopener">Podcast PT 1 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/76w3MW88Xeb7ZvzqP9guWH" target="_blank" rel="noopener">Podcast PT 2 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/00YfFozifJHPx8AiZIjJ6o" target="_blank" rel="noopener">Podcast PT 3 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/41j9NJnz7tXdboMRM6VML1" target="_blank" rel="noopener">Podcast PT 4 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4wVqmKY3kcdOfMCnuHiHPL" target="_blank" rel="noopener">Podcast PT 5 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4pWqy8A5vSzVFVZAmE4XOt" target="_blank" rel="noopener">Podcast PT 6 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6kFxzAgIQgac17saPlF9Qu" target="_blank" rel="noopener">Podcast PT 7 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4LrClX2FVfb30WCEPZABuJ" target="_blank" rel="noopener">Podcast PT 8 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1sC5jksyyS3A9ITkmLhltU" target="_blank" rel="noopener">Podcast PT 9 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0r20pbIUxwTOiDcMRbpXgG" target="_blank" rel="noopener">Podcast PT 10 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2aB4UEJgMW1V4XqGcYlHsi" target="_blank" rel="noopener">Podcast PT 11 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2n6Er8wPMXBaV9lUj6nlR3" target="_blank" rel="noopener">Podcast PT 12 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6ApFog2oJQu6vlvMD5Hl9L" target="_blank" rel="noopener">Podcast PT 13 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1KrK8PWEq0EvVGcImS59ZW" target="_blank" rel="noopener">Podcast PT 14 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2vkh5Z0kq5K8xTWdlAwVEP" target="_blank" rel="noopener">Podcast PT 15 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4ginCp2dRp6BN5JiPCUdal" target="_blank" rel="noopener">Podcast PT 16 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6iM4ncrKXVSmJhR8s5qohP" target="_blank" rel="noopener">Podcast PT 17 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/08wM8zW8QGrIq4KZkKWjOz" target="_blank" rel="noopener">Podcast PT 18 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/24HSZsgcSDEn0cfHkCHYeS" target="_blank" rel="noopener">Podcast PT 19 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/20UkCEw9klbRkpT8ybTB1z" target="_blank" rel="noopener">Podcast PT 20 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1Zru16kNRPPhqTqQ1RAanL" target="_blank" rel="noopener">Podcast PT 21 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6NhXT8X7ps2AxjbPeInidM" target="_blank" rel="noopener">Podcast PT 22 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7Kc3tvx2LgLde2Lig8qtRv" target="_blank" rel="noopener">Podcast PT 23 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1wnS9twcPcPZUOSzFIcRB5" target="_blank" rel="noopener">Podcast PT 24 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7bnvbtG4aHEKp90XbN0xm3" target="_blank" rel="noopener">Podcast PT 25 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0VWLqfiw0sPJbdvIMEymAy" target="_blank" rel="noopener">Podcast PT 26 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4kLojy4CPtObvL1oyXGxfZ" target="_blank" rel="noopener">Podcast PT 27 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6lQv1cMGFF2G45bI4WVip9" target="_blank" rel="noopener">Podcast PT 28 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0ljCYm4hiqkQwoWGVezdb3" target="_blank" rel="noopener">Podcast PT 29 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/3UpwuoncUN1sp7WGyY3YnN" target="_blank" rel="noopener">Podcast PT 30 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5JmwBtYoHvLvArhezoib4g" target="_blank" rel="noopener">Podcast PT 31 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6WzHMWV2Z0Yr3JrxEg6YJZ" target="_blank" rel="noopener">Podcast PT 32 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1VqcVamejWIHYAPPIPx6vk" target="_blank" rel="noopener">Podcast PT 33 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4R81QWZZ7MbRjd8s0wjpKH" target="_blank" rel="noopener">Podcast PT 34 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7rhPgH5DB1WpMG7mIgh80o" target="_blank" rel="noopener">Podcast PT 35 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6EH2jUdy7NpeYlOgH3dNNK" target="_blank" rel="noopener">Podcast PT 36 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2fsnFGjiXAY4llwJfTOoqR" target="_blank" rel="noopener">Podcast PT 37 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/46tJIjnpW7dsAjouTrq7fa" target="_blank" rel="noopener">Podcast PT 38 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4MeaAkR5ywWX2tga4AM0OE" target="_blank" rel="noopener">Podcast PT 39 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1D5440JGfsOYyAdM6Lq395" target="_blank" rel="noopener">Podcast PT 40 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2HL6Vkik0NaNuIensg5VkC" target="_blank" rel="noopener">Podcast PT 41 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1RThL5gW8zOUGjKSabP49z" target="_blank" rel="noopener">Podcast PT 42 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4Q0ZanJMkhdvNEshvMoUzN" target="_blank" rel="noopener">Podcast PT 43 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6TkeDOtSEiWizunxMHoDwU" target="_blank" rel="noopener">Podcast PT 44 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1heA1lUeo7BIxpPcy9VHNL" target="_blank" rel="noopener">Podcast PT 45 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2dnMGjKIKpUb6MulbGZt6o" target="_blank" rel="noopener">Podcast PT 46 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1SHcJP8JjjKiZvUOqFyYej" target="_blank" rel="noopener">Podcast PT 47 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4b1fh4j0XpXItyC7Mt5pWL" target="_blank" rel="noopener">Podcast PT 48 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5rCVZwAtnyB2VUia3QTpM3" target="_blank" rel="noopener">Podcast PT 49 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1PfKY3mSSetOViz9RQyNh3" target="_blank" rel="noopener">Podcast PT 50 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4FB1zly0tioey5SDJ0AiJi" target="_blank" rel="noopener">Podcast PT 51 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/40KXUXLo1W8whWe8G4vSiM" target="_blank" rel="noopener">Podcast PT 52 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3" target="_blank" rel="noopener">Portugueses no Mundo — Antena 1 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5ycquOVpkQOubdBIBk9Dlk" target="_blank" rel="noopener">Podcast PT 54 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/224HlHQ8V4O8qQMfikSsZk" target="_blank" rel="noopener">Podcast PT 55 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/4uXTjNrx4HbfO4tR0WCEWo" target="_blank" rel="noopener">Podcast PT 56 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5zDFNpZ9V5DOBBfgh6Fx05" target="_blank" rel="noopener">Podcast PT 57 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6kSH3xdIy7xUFKe6JsbjIt" target="_blank" rel="noopener">Podcast PT 58 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2c9wYAWsbkCR5Gbybe0zXl" target="_blank" rel="noopener">Podcast PT 59 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0A2VSpW63edazjn8fig8Zh" target="_blank" rel="noopener">Podcast PT 60 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2k8F8nMi2nYc3MYaDdXblI" target="_blank" rel="noopener">Podcast PT 61 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5R1lx9Myjrs9PRXaZHfDIH" target="_blank" rel="noopener">Podcast PT 62 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/61JDJCGKSwPZsJReqkrjjU" target="_blank" rel="noopener">Podcast PT 63 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2SQGyn0dWbetoStzJEI05K" target="_blank" rel="noopener">Podcast PT 64 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2VXU9UHdCmnCu0g3k89YST" target="_blank" rel="noopener">Podcast PT 65 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1uLwSwdWXvTiAc9UKrLWg3" target="_blank" rel="noopener">Podcast PT 66 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7gl638oH3Hfwp7hOEzvsSG" target="_blank" rel="noopener">Podcast PT 67 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7cBzisVBRqJzlaxZcxJaXQ" target="_blank" rel="noopener">Podcast PT 68 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7dvAPWsFlqdRSr3Ld18SRs" target="_blank" rel="noopener">Podcast PT 69 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0wguYIGDBlsQ98UkmJKIQf" target="_blank" rel="noopener">Podcast PT 70 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B" target="_blank" rel="noopener">Podcast Futebol PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6uQYL78YFa817qZM9sWLWU" target="_blank" rel="noopener">Podcast Desporto PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5KgwMaLaaPzynBdYzFSjEa" target="_blank" rel="noopener">Podcast PT 73 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0UO92E3MQJdY53Lg5nIc7c" target="_blank" rel="noopener">Podcast PT 74 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/43oxqYv0eoN5xj30bIk8Pz" target="_blank" rel="noopener">Podcast PT 75 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/15BU5mxYeII1b9bzeKnqYZ" target="_blank" rel="noopener">Podcast PT 76 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid" target="_blank" rel="noopener">Portugal Manual — Artesanato (Spotify) <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" target="_blank" rel="noopener">Slow Portuguese With Maria (Spotify) <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" target="_blank" rel="noopener">Portuguese Lab — European Portuguese (Spotify) <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@podcastparaelas/videos" target="_blank" rel="noopener">Podcast Para Elas (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@LAPOPodcast/videos" target="_blank" rel="noopener">LAPO Podcast (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@Bitalkpodcast/videos" target="_blank" rel="noopener">Bitalk Podcast (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@OMartim/videos" target="_blank" rel="noopener">O Martim (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@DecifrarPessoas/videos" target="_blank" rel="noopener">Decifrar Pessoas (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@MausH%C3%A1bitosPodcast" target="_blank" rel="noopener">Maus Hábitos Podcast (YouTube)</a></div>
+      <div class="link-item"><a href="https://podcasts.apple.com/pt/podcast/padel-pop/id1543419219" target="_blank" rel="noopener">Padel Pop (Apple Podcasts)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 11 MUSIC -->
+  <section class="section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2>Música</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/palco/espetaculos/musica/todos" target="_blank" rel="noopener">RTP Palco — Espectáculos de Música</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/playlist/37i9dQZF1DX6ViL9RcFABv" target="_blank" rel="noopener">Playlist — Top Portugal (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/playlist/37i9dQZF1DWYjjOmuB9ehg" target="_blank" rel="noopener">Playlist — Músicas PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/playlist/19aeYRwKFy0DXZOyNs2Sjv" target="_blank" rel="noopener">Playlist — PT Clássicos (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/playlist/37i9dQZF1DX6HJZtcjGrCn" target="_blank" rel="noopener">Playlist — Fado (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/playlist/6WkfrB3iqz0InHFAvhhLMA" target="_blank" rel="noopener">Playlist — PT Indie (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/playlist/3p3rl2pS9M3htP6ufa5yLO" target="_blank" rel="noopener">Playlist — Música Portuguesa (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/playlist/2owJE5oObhq1gGWSPnK0FC" target="_blank" rel="noopener">Playlist — PT Hits (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/album/2FkwUsFhA4n3j5X2gPjkiC" target="_blank" rel="noopener">Álbum PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/artist/6n4l6nrtr4XHltnZgEVL8F" target="_blank" rel="noopener">Artista PT 1 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/artist/2nGm3BYzGAxkIuptvhRD99" target="_blank" rel="noopener">Artista PT 2 (Spotify)</a></div>
+      <div class="link-item"><a href="https://youtube.com/playlist?list=PL5f0z62NKD3bP8RWVA7kKm3gYHkWCX1CW" target="_blank" rel="noopener">Música PT — Playlist (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@VMTVpt/videos" target="_blank" rel="noopener">VMTV Portugal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@Academiamusical/videos" target="_blank" rel="noopener">Academia Musical (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/watch?v=gsN30M1Ona8&feature=youtu.be" target="_blank" rel="noopener">Música Portuguesa — Vídeo (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/watch?v=JyC8mwZqJao" target="_blank" rel="noopener">Fado — Vídeo (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@jorgealexandre_14/videos" target="_blank" rel="noopener">Jorge Alexandre (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@antena3rtp/videos" target="_blank" rel="noopener">Antena 3 (YouTube) <span class="badge-new">novo</span></a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 12 RADIO -->
+  <section class="section" id="s12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2>Rádio</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://radio.garden/visit/portugal/lVedGqUL" target="_blank" rel="noopener">Radio Garden — Portugal</a></div>
+      <div class="link-item"><a href="https://www.radio.pt/country/portugal" target="_blank" rel="noopener">Radio.pt — Todas as Estações PT</a></div>
+      <div class="link-item"><a href="https://radioportuense.com/ouvir-em-direto/" target="_blank" rel="noopener">Rádio Portuense — Directo</a></div>
+      <div class="link-item"><a href="https://www.antena1.rtp.pt/ouvir-em-direto/" target="_blank" rel="noopener">Antena 1 — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.antena3.rtp.pt/ouvir-em-direto/" target="_blank" rel="noopener">Antena 3 — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.tsf.pt/direto/" target="_blank" rel="noopener">TSF — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://rfm.sapo.pt/radio/ouvir-online/" target="_blank" rel="noopener">RFM — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://comercial.sapo.pt/radio/ouvir-online/" target="_blank" rel="noopener">Rádio Comercial — Directo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://pit.nit.pt/" target="_blank" rel="noopener">NIT FM — Pit Stop</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 13 BOOKS -->
+  <section class="section" id="s13">
+    <div class="section-header">
+      <span class="section-num">13</span>
+      <h2>Livros, Literatura e Audiolivros</h2>
+    </div>
+
+    <p class="sub-label">Programas de Televisão</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1747/e197849/literatura-agora" target="_blank" rel="noopener">Literatura Agora (RTP)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p2412/os-livros" target="_blank" rel="noopener">Os Livros (RTP)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9466/e577708/a-vida-privada-dos-livros" target="_blank" rel="noopener">A Vida Privada dos Livros (RTP)</a></div>
+    </div>
+
+    <p class="sub-label">Bibliotecas e Arquivos Digitais</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="http://cvc.instituto-camoes.pt/conhecer/biblioteca-digital-camoes.html" target="_blank" rel="noopener">Biblioteca Digital Camões</a></div>
+      <div class="link-item"><a href="https://bibliotronicaportuguesa.pt/livronicos-na-internet/" target="_blank" rel="noopener">Bibliotrónica Portuguesa</a></div>
+      <div class="link-item"><a href="https://imprensanacional.pt/livros-em-pdf/" target="_blank" rel="noopener">Imprensa Nacional — Livros em PDF</a></div>
+      <div class="link-item"><a href="https://www.gutenberg.org/browse/languages/pt" target="_blank" rel="noopener">Project Gutenberg — Português</a></div>
+      <div class="link-item"><a href="https://bndigital.bnportugal.gov.pt/project/livros/" target="_blank" rel="noopener">Biblioteca Nacional Digital</a></div>
+      <div class="link-item"><a href="https://leitoresdigitais.wordpress.com/" target="_blank" rel="noopener">Leitores Digitais</a></div>
+      <div class="link-item"><a href="https://biblioporto.wordpress.com/indice-de-autores/" target="_blank" rel="noopener">BiblioPorto — Índice de Autores</a></div>
+      <div class="link-item"><a href="https://gulbenkian.pt/publicacoes/" target="_blank" rel="noopener">Fundação Gulbenkian — Publicações</a></div>
+      <div class="link-item"><a href="https://www.up.pt/casacomum/" target="_blank" rel="noopener">Casa Comum — Universidade do Porto</a></div>
+    </div>
+
+    <p class="sub-label">Livrarias</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.wook.pt/" target="_blank" rel="noopener">Wook</a></div>
+      <div class="link-item"><a href="https://www.fnac.pt/" target="_blank" rel="noopener">FNAC Portugal</a></div>
+      <div class="link-item"><a href="https://www.bertrand.pt/" target="_blank" rel="noopener">Bertrand Livreiros</a></div>
+    </div>
+
+    <p class="sub-label">Audiolivros</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://projectoadamastor.org/audiolivros-para-criancas/" target="_blank" rel="noopener">Projecto Adamastor — Audiolivros Infantis</a></div>
+      <div class="link-item"><a href="https://imprensanacional.pt/digitais/audiolivros/" target="_blank" rel="noopener">Imprensa Nacional — Audiolivros</a></div>
+      <div class="link-item"><a href="https://www.bertrand.pt/arvoretematica/audiolivros-em-portugues/25188x25189/P" target="_blank" rel="noopener">Bertrand — Audiolivros em Português</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1mlDgaCIQVEd1VCAzLpGnn" target="_blank" rel="noopener">Audiolivros PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCCe2CuFnaQLeU_GbfP46YBQ/videos" target="_blank" rel="noopener">Audiolivros Canal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLJrrzPTVK9DeTyGHEufvbmRpEPDsErlIp" target="_blank" rel="noopener">Audiolivros — Playlist (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLQ7SbCg65jTLZsvPsyBDg_KQYuMZBIymC" target="_blank" rel="noopener">Contos Portugueses — Playlist (YouTube)</a></div>
+    </div>
+
+    <p class="sub-label">Canais YouTube de Livros e Poesia</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.youtube.com/@oslivrosdananinha/videos" target="_blank" rel="noopener">Os Livros da Naninha (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@livrariaaquihagato/videos" target="_blank" rel="noopener">Livraria Aqui Há Gato (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/AbriroLivro" target="_blank" rel="noopener">Abrir o Livro (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@mundodospoemas/videos" target="_blank" rel="noopener">Mundo dos Poemas (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@opoemaensinaacair/videos" target="_blank" rel="noopener">O Poema Ensina a Cair (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/confissoesdumlivreiro/" target="_blank" rel="noopener">Confissões d'um Livreiro (Instagram)</a></div>
+    </div>
+
+    <p class="sub-label">Banda Desenhada</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://asterix.com/pt-pt/gratis-a-revista-asterix-para-descarregar/" target="_blank" rel="noopener">Astérix — Revista Gratuita PT</a></div>
+      <div class="link-item"><a href="https://comics-na-web.blogspot.com/" target="_blank" rel="noopener">Comics na Web</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 14 FOOD -->
+  <section class="section" id="s14">
+    <div class="section-header">
+      <span class="section-num">14</span>
+      <h2>Gastronomia e Culinária</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/p6444/mesa-portuguesa-com-estrelas-com-certeza" target="_blank" rel="noopener">Mesa Portuguesa com Estrelas, com Certeza</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9023/e571705/gastronomia-local" target="_blank" rel="noopener">Gastronomia Local</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p1370/e377396/uma-mesa-portuguesa-com-certeza" target="_blank" rel="noopener">Uma Mesa Portuguesa com Certeza</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p2496/e246134/cozinha-com-amor" target="_blank" rel="noopener">Cozinha com Amor</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p2398/e231276/manual-de-instrucoes" target="_blank" rel="noopener">Manual de Instruções</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p9491/masterchef-portugal" target="_blank" rel="noopener">MasterChef Portugal</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV" target="_blank" rel="noopener">Receitas Portuguesas — Playlist (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@SaborIntenso/videos" target="_blank" rel="noopener">Sabor Intenso (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@TugaVegetal/videos" target="_blank" rel="noopener">Tuga Vegetal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@receitasveganasdamel1543/videos" target="_blank" rel="noopener">Receitas Veganas da Mel (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@receitasladolcerita/videos" target="_blank" rel="noopener">Receitas La Dolce Rita (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@CozinhadoMiguel/videos" target="_blank" rel="noopener">Cozinha do Miguel (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/Holograin/videos" target="_blank" rel="noopener">Holograin (YouTube)</a></div>
+      <div class="link-item"><a href="https://frederica.com/blogs/blog?page=1" target="_blank" rel="noopener">Frederica — Blog</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/panelinha_de_sabores/" target="_blank" rel="noopener">Panelinha de Sabores (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/atripeirinha/" target="_blank" rel="noopener">A Tripeirinha (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/gostodebatatas_/" target="_blank" rel="noopener">Gosto de Batatas (Instagram)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 15 CHILDREN -->
+  <section class="section" id="s15">
+    <div class="section-header">
+      <span class="section-num">15</span>
+      <h2>Conteúdo Infantil</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/zigzag/" target="_blank" rel="noopener">RTP Zigzag</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/zigzag/p11552/e713871/descomplica" target="_blank" rel="noopener">Descomplica (Zigzag)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/zigzag/podcasts" target="_blank" rel="noopener">Zigzag — Podcasts Infantis</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@PortugueseFairyTales" target="_blank" rel="noopener">Portuguese Fairy Tales (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCoujti21qMtpLxqpAlbGkUQ/playlists" target="_blank" rel="noopener">Canal Infantil PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/MundoAnimadoPT/videos" target="_blank" rel="noopener">Mundo Animado PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLhTPu6S8jgLXqu8LaMqtAsM1k_TBax_x6" target="_blank" rel="noopener">Playlist Infantil 1 (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLrH5HKiu5jUefyDjyg5DpXDQ9rSUTOp4k" target="_blank" rel="noopener">Playlist Infantil 2 (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLblOrsojo5WACVea60NDA4w54dDmGw9cv" target="_blank" rel="noopener">Playlist Infantil 3 (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLE08BA8EFC25BDE3C" target="_blank" rel="noopener">Playlist Infantil 4 (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLrH5HKiu5jUfGt6SdQ6NVZLw-JFcrLQrs" target="_blank" rel="noopener">Playlist Infantil 5 (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLrH5HKiu5jUd7KNHHylSmu_WvFZ1pyURq" target="_blank" rel="noopener">Playlist Infantil 6 (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@xplicaaplica1322/videos" target="_blank" rel="noopener">Xplica Aplica (YouTube)</a></div>
+      <div class="link-item"><a href="https://projectoadamastor.org/audiolivros-para-criancas/" target="_blank" rel="noopener">Projecto Adamastor — Audiolivros Infantis</a></div>
+      <div class="link-item"><a href="https://www.fundacaojorgealvares-bibliotecadigital.com/index.php?s=colecao&coleccao=contos-e-lendas" target="_blank" rel="noopener">Fundação Jorge Álvares — Contos e Lendas</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9" target="_blank" rel="noopener">Histórias Infantis — Playlist (YouTube)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 16 SPORTS -->
+  <section class="section" id="s16">
+    <div class="section-header">
+      <span class="section-num">16</span>
+      <h2>Desporto</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://golo.fm/" target="_blank" rel="noopener">Golo FM</a></div>
+      <div class="link-item"><a href="https://maisfutebol.iol.pt/" target="_blank" rel="noopener">Maisfutebol</a></div>
+      <div class="link-item"><a href="https://www.record.pt/" target="_blank" rel="noopener">Jornal Record <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.ojogo.pt/" target="_blank" rel="noopener">O Jogo <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.abola.pt/" target="_blank" rel="noopener">A Bola <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.infopedia.pt/artigos/$futebol-em-portugal" target="_blank" rel="noopener">Futebol em Portugal — Infopédia</a></div>
+      <div class="link-item"><a href="https://www.equisport.pt/" target="_blank" rel="noopener">Equisport — Equestres</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/OCiclistaImprov%C3%A1vel/videos" target="_blank" rel="noopener">O Ciclista Improvável (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.andardemoto.pt/revista/" target="_blank" rel="noopener">Andar de Moto — Revista</a></div>
+      <div class="link-item"><a href="https://issuu.com/f_motociclismo" target="_blank" rel="noopener">Motociclismo (Issuu)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B" target="_blank" rel="noopener">Podcast Futebol PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6uQYL78YFa817qZM9sWLWU" target="_blank" rel="noopener">Podcast Desporto PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/5KgwMaLaaPzynBdYzFSjEa" target="_blank" rel="noopener">Podcast Desporto 2 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0UO92E3MQJdY53Lg5nIc7c" target="_blank" rel="noopener">Podcast Desporto 3 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/43oxqYv0eoN5xj30bIk8Pz" target="_blank" rel="noopener">Podcast Desporto 4 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/15BU5mxYeII1b9bzeKnqYZ" target="_blank" rel="noopener">Podcast Desporto 5 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/2SQGyn0dWbetoStzJEI05K" target="_blank" rel="noopener">Podcast Desporto 6 (Spotify)</a></div>
+      <div class="link-item"><a href="https://podcasts.apple.com/pt/podcast/padel-pop/id1543419219" target="_blank" rel="noopener">Padel Pop (Apple Podcasts)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/watch?v=Pfzzu83Q_NY" target="_blank" rel="noopener">Desporto PT — Vídeo (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/watch?v=5SOrFxL-we0" target="_blank" rel="noopener">Desporto PT 2 — Vídeo (YouTube)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 17 HEALTH -->
+  <section class="section" id="s17">
+    <div class="section-header">
+      <span class="section-num">17</span>
+      <h2>Saúde, Psicologia e Bem-estar</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.youtube.com/@Psicologiatambemeciencia/videos" target="_blank" rel="noopener">Psicologia Também é Ciência (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/MomentoM%C3%A9dicoYouTube/videos" target="_blank" rel="noopener">Momento Médico (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@opediatrapt/videos" target="_blank" rel="noopener">O Pediatra PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@Dobempt/videos" target="_blank" rel="noopener">Do Bem PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@centrobudistadoporto6568/videos" target="_blank" rel="noopener">Centro Budista do Porto (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@SylviaRebelo/videos" target="_blank" rel="noopener">Sylvia Rebelo (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/saracrispim_psicologa/" target="_blank" rel="noopener">Sara Crispim — Psicóloga (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/nutri.anaritacampos/" target="_blank" rel="noopener">Nutri. Ana Rita Campos (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/pediatria.para.todos/?hl=pt" target="_blank" rel="noopener">Pediatria Para Todos (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/opediatrapt/" target="_blank" rel="noopener">O Pediatra PT (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/joanagentilmartins_psicologia/" target="_blank" rel="noopener">Joana Gentil Martins — Psicologia (Instagram)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/0wguYIGDBlsQ98UkmJKIQf" target="_blank" rel="noopener">Podcast Saúde PT (Spotify)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/despolariza/" target="_blank" rel="noopener">Despolariza (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.zooplus.pt/magazine" target="_blank" rel="noopener">Zooplus Magazine PT</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 18 CRAFTS -->
+  <section class="section" id="s18">
+    <div class="section-header">
+      <span class="section-num">18</span>
+      <h2>Artesanato, DIY e Casa</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.youtube.com/c/TrabalhosManuaisdaDi/videos" target="_blank" rel="noopener">Trabalhos Manuais da Di (YouTube)</a></div>
+      <div class="link-item"><a href="https://institutoportuguesdotricot.pt/" target="_blank" rel="noopener">Instituto Português do Tricot</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@fioscruzados/videos" target="_blank" rel="noopener">Fios Cruzados (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/TecerarteLuz/videos" target="_blank" rel="noopener">Tecer Arte Luz (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCu4sQSZfycDY-6WIe1EqFHQ/featured" target="_blank" rel="noopener">Artesanato PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@EVERMEND/videos" target="_blank" rel="noopener">EVERMEND — DIY (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/leroymerlinportugal/videos" target="_blank" rel="noopener">Leroy Merlin Portugal (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@queridomudeiacasaoficial/videos" target="_blank" rel="noopener">Querido, Mudei a Casa (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCsE_foJbzK1zuJpyfsvVf8g/videos" target="_blank" rel="noopener">Casa e Decoração PT (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/04littlemary/videos" target="_blank" rel="noopener">Little Mary — DIY (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCb0U-zEhl1XXOo9YfJChcGA/videos" target="_blank" rel="noopener">Decoração Caseira (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@tintaparatodos1421/videos" target="_blank" rel="noopener">Tinta Para Todos (YouTube)</a></div>
+      <div class="link-item"><a href="https://gem.pt/1/publicacoes/revistas-gem/" target="_blank" rel="noopener">GEM — Revistas de Artesanato</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/sofiamartinsinteriores/" target="_blank" rel="noopener">Sofia Martins Interiores (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/alicedamontanha/" target="_blank" rel="noopener">Alice da Montanha (Instagram)</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/foresthomestory" target="_blank" rel="noopener">Forest Home Story (Instagram)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 19 MOZAMBIQUE -->
+  <section class="section" id="s19">
+    <div class="section-header">
+      <span class="section-num">19</span>
+      <h2>Média Moçambicana e Africana em Português</h2>
+    </div>
+
+    <p class="sub-label">Televisão e Rádio</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/rtpafrica" target="_blank" rel="noopener">RTP África</a></div>
+      <div class="link-item"><a href="https://rdpafrica.rtp.pt/legacy/?icm=15638" target="_blank" rel="noopener">RDP África — Rádio</a></div>
+      <div class="link-item"><a href="http://online.tvm.co.mz/site/emdirecto/tvm1" target="_blank" rel="noopener">TVM Moçambique — Directo</a></div>
+      <div class="link-item"><a href="https://miramar.co.mz/tv-online#" target="_blank" rel="noopener">Miramar — TV Online Moçambique</a></div>
+      <div class="link-item"><a href="https://www.radiomaria.org.mz/arquivos-podcasts/" target="_blank" rel="noopener">Rádio Maria Moçambique — Podcasts</a></div>
+    </div>
+
+    <p class="sub-label">Programas RTP sobre Moçambique</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/p932/txopela-mocambique" target="_blank" rel="noopener">Txopela — Moçambique (RTP)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p8502/escola-do-agricultor-eu-sou-por-mocambique" target="_blank" rel="noopener">Escola do Agricultor — Moçambique (RTP)</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/p5143/sons-e-ritmos-de-mocambique" target="_blank" rel="noopener">Sons e Ritmos de Moçambique (RTP)</a></div>
+    </div>
+
+    <p class="sub-label">Podcasts</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://open.spotify.com/show/2uBM5gFRfC8ygJ2d1JRuvX" target="_blank" rel="noopener">Podcast Moçambique 1 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/6JMnbKPEzCidmWdLmAKpfY" target="_blank" rel="noopener">Podcast Moçambique 2 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/1HcTtJwZ1bhAj1Vbt1pCA9" target="_blank" rel="noopener">Podcast Moçambique 3 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/show/3VYbJOXuZO6gXlEDzoRC6I" target="_blank" rel="noopener">Podcast Moçambique 4 (Spotify)</a></div>
+      <div class="link-item"><a href="https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5ibHVicnJ5LmNvbS9mZWVkcy9vdXJvbmVncm8ueG1s" target="_blank" rel="noopener">Ouro Negro — Podcast (Google)</a></div>
+    </div>
+
+    <p class="sub-label">YouTube</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.youtube.com/@JoseDiversao/videos" target="_blank" rel="noopener">José Diversão (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@jumaibraimo/videos" target="_blank" rel="noopener">Jumai Braimo (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@patriaminhaMoz/videos" target="_blank" rel="noopener">Pátria Minha — Moz (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@calton-pedro-africanidade/videos" target="_blank" rel="noopener">Calton Pedro — Africanidade (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@evangelhoafricano9905/videos" target="_blank" rel="noopener">Evangelho Africano (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/maninguemagic/playlists" target="_blank" rel="noopener">Maningue Magic (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@ALCY/videos" target="_blank" rel="noopener">ALCY (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@TVSucessomz2021/videos" target="_blank" rel="noopener">TV Sucesso MZ (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@EbenezerTVMocambique/videos" target="_blank" rel="noopener">Ebenezer TV Moçambique (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@maputofastforward5933/videos" target="_blank" rel="noopener">Maputo Fast Forward (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@MARCELINOFRANCISCO/videos" target="_blank" rel="noopener">Marcelino Francisco (YouTube)</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCCmbVQRLE6IHLbp_EYXro7w/featured" target="_blank" rel="noopener">Canal Moçambique (YouTube)</a></div>
+    </div>
+
+    <p class="sub-label">Música</p>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://open.spotify.com/artist/6n4l6nrtr4XHltnZgEVL8F" target="_blank" rel="noopener">Artista Africano PT 1 (Spotify)</a></div>
+      <div class="link-item"><a href="https://open.spotify.com/artist/2nGm3BYzGAxkIuptvhRD99" target="_blank" rel="noopener">Artista Africano PT 2 (Spotify)</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 20 MAGAZINES -->
+  <section class="section" id="s20">
+    <div class="section-header">
+      <span class="section-num">20</span>
+      <h2>Revistas e Publicações</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://expresso.pt/" target="_blank" rel="noopener">Expresso <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.visao.pt/" target="_blank" rel="noopener">Visão <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.sabado.pt/" target="_blank" rel="noopener">Sábado <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.timeout.pt/" target="_blank" rel="noopener">Time Out Portugal <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://issuu.com/revistabusinessportugal" target="_blank" rel="noopener">Revista Business Portugal (Issuu)</a></div>
+      <div class="link-item"><a href="https://issuu.com/estrelaseouricos" target="_blank" rel="noopener">Estrelas e Ouriços (Issuu)</a></div>
+      <div class="link-item"><a href="https://issuu.com/bestguideportugal" target="_blank" rel="noopener">Best Guide Portugal (Issuu)</a></div>
+      <div class="link-item"><a href="https://issuu.com/camara_municipal_lisboa/stacks/56b4996327c8438f8730a2a5370f7050" target="_blank" rel="noopener">Câmara Municipal de Lisboa — Publicações (Issuu)</a></div>
+      <div class="link-item"><a href="https://www.goride.pt/temas/goride-magazine/" target="_blank" rel="noopener">GoRide Magazine</a></div>
+      <div class="link-item"><a href="https://issuu.com/addmore10" target="_blank" rel="noopener">Addmore (Issuu)</a></div>
+      <div class="link-item"><a href="https://www.andardemoto.pt/revista/" target="_blank" rel="noopener">Andar de Moto — Revista</a></div>
+      <div class="link-item"><a href="https://issuu.com/f_motociclismo" target="_blank" rel="noopener">Motociclismo (Issuu)</a></div>
+      <div class="link-item"><a href="https://gem.pt/1/publicacoes/revistas-gem/" target="_blank" rel="noopener">GEM — Artesanato</a></div>
+      <div class="link-item"><a href="https://palavrar.oprazerdaescrita.com/revistas/" target="_blank" rel="noopener">Palavrar — Revistas de Escrita</a></div>
+      <div class="link-item"><a href="https://simplyflow.pt/" target="_blank" rel="noopener">Simply Flow PT</a></div>
+      <div class="link-item"><a href="https://echoboomer.pt/" target="_blank" rel="noopener">Echo Boomer</a></div>
+      <div class="link-item"><a href="https://www.ritamarianunes.pt/blog" target="_blank" rel="noopener">Rita Maria Nunes — Blog</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 21 SOCIAL MEDIA -->
+  <section class="section" id="s21">
+    <div class="section-header">
+      <span class="section-num">21</span>
+      <h2>Redes Sociais — Instagram</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.instagram.com/cafedebairro/" target="_blank" rel="noopener">Café de Bairro</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/portuguesice/?hl=pt" target="_blank" rel="noopener">Portuguesice</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/aindasoudotempo/" target="_blank" rel="noopener">Ainda Sou do Tempo</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/lugarincomum.pt/?hl=pt" target="_blank" rel="noopener">Lugar Incomum</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/saosopalavras___/" target="_blank" rel="noopener">São Só Palavras</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/sandraafilipa/" target="_blank" rel="noopener">Sandra Filipa</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/feel.in.portugal/" target="_blank" rel="noopener">Feel in Portugal</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/saracrispim_psicologa/" target="_blank" rel="noopener">Sara Crispim — Psicóloga</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/nutri.anaritacampos/" target="_blank" rel="noopener">Nutri. Ana Rita Campos</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/panelinha_de_sabores/" target="_blank" rel="noopener">Panelinha de Sabores</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/sofiamartinsinteriores/" target="_blank" rel="noopener">Sofia Martins Interiores</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/despolariza/" target="_blank" rel="noopener">Despolariza</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/catarinafpb/" target="_blank" rel="noopener">Catarina FPB</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/pediatria.para.todos/?hl=pt" target="_blank" rel="noopener">Pediatria Para Todos</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/opediatrapt/" target="_blank" rel="noopener">O Pediatra PT</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/pedroontheroad/" target="_blank" rel="noopener">Pedro on the Road</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/admiravelcriptomundonovo/" target="_blank" rel="noopener">Admirável Cripto Mundo Novo</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/confissoesdumlivreiro/" target="_blank" rel="noopener">Confissões d'um Livreiro</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/atripeirinha/" target="_blank" rel="noopener">A Tripeirinha</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/marcofranconeves/" target="_blank" rel="noopener">Marco Franco Neves</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/fioscruzados/" target="_blank" rel="noopener">Fios Cruzados</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/alicedamontanha/" target="_blank" rel="noopener">Alice da Montanha</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/carlota_flor/" target="_blank" rel="noopener">Carlota Flor</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/franciscafeiteira/" target="_blank" rel="noopener">Francisca Feiteira</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/projetoanossaterra/" target="_blank" rel="noopener">Projecto A Nossa Terra</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/acientistaagricola?igsh=MWl6cjFndHZzcnp3eA==" target="_blank" rel="noopener">A Cientista Agrícola</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/foresthomestory" target="_blank" rel="noopener">Forest Home Story</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/portugal.historico/" target="_blank" rel="noopener">Portugal Histórico</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/gostodebatatas_/" target="_blank" rel="noopener">Gosto de Batatas</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/ines_ap/" target="_blank" rel="noopener">Inês AP</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/goncalo_saraiva27/" target="_blank" rel="noopener">Gonçalo Saraiva</a></div>
+      <div class="link-item"><a href="https://www.instagram.com/joanagentilmartins_psicologia/" target="_blank" rel="noopener">Joana Gentil Martins — Psicologia</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 22 COMEDY CREATORS -->
+  <section class="section" id="s22">
+    <div class="section-header">
+      <span class="section-num">22</span>
+      <h2>Comédia e Entretenimento — Criadores YouTube</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.youtube.com/@raminhos/videos" target="_blank" rel="noopener">Raminhos</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@PierreZago/videos" target="_blank" rel="noopener">Pierre Zago</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/BeatrizGosta" target="_blank" rel="noopener">Beatriz Gosta</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/FernandoRochaComedy" target="_blank" rel="noopener">Fernando Rocha</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/LeandroRodrigues007" target="_blank" rel="noopener">Leandro Rodrigues</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/CaraCoroa" target="_blank" rel="noopener">Cara ou Coroa</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/josemmsantos" target="_blank" rel="noopener">José M. M. Santos</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCFAuGWPOmsByZaS33mnwwiA" target="_blank" rel="noopener">Canal Comédia PT</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@mat3us/videos" target="_blank" rel="noopener">Mat3us</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@SplitScreen-PT/videos" target="_blank" rel="noopener">Split Screen PT</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@RED_DEVIL_PORTUGAL/videos" target="_blank" rel="noopener">Red Devil Portugal</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 23 MISC CREATORS -->
+  <section class="section" id="s23">
+    <div class="section-header">
+      <span class="section-num">23</span>
+      <h2>Criadores Portugueses — YouTube (Diversos)</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.youtube.com/@LuisPintoTekTest/videos" target="_blank" rel="noopener">Luís Pinto TekTest — Tecnologia</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@ATuaFilosofia/videos" target="_blank" rel="noopener">A Tua Filosofia</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@M4thPunk/videos" target="_blank" rel="noopener">M4thPunk — Matemática</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@women4cyberportugal/videos" target="_blank" rel="noopener">Women4Cyber Portugal</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/CentroNacionaldeCiberseguran%C3%A7a" target="_blank" rel="noopener">Centro Nacional de Cibersegurança</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@OliviaOrtiz/videos" target="_blank" rel="noopener">Olívia Ortiz</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/SofiaBBeauty" target="_blank" rel="noopener">Sofia B Beauty</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/mymakeupsecret" target="_blank" rel="noopener">My Makeup Secret</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/mafaldasampaio" target="_blank" rel="noopener">Mafalda Sampaio</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@inesribeirooficial/videos" target="_blank" rel="noopener">Inês Ribeiro Oficial</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@HelenaCoelhooo/videos" target="_blank" rel="noopener">Helena Coelho</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@josefbernardo./videos" target="_blank" rel="noopener">Josef Bernardo</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@joana_perez/videos" target="_blank" rel="noopener">Joana Perez</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/saravbbmiley" target="_blank" rel="noopener">Sara VBB Miley</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@ThePhoenixFlight/videos" target="_blank" rel="noopener">The Phoenix Flight</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@dorasantosmarques/videos" target="_blank" rel="noopener">Dora Santos Marques</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@marconeves/videos" target="_blank" rel="noopener">Marco Neves — Língua Portuguesa</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/Comosp%C3%A9snaterra" target="_blank" rel="noopener">Como os Pés na Terra</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/R%C3%A1dioPortuenseOnline" target="_blank" rel="noopener">Rádio Portuense Online</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/JornalismoPortoNet" target="_blank" rel="noopener">Jornalismo Porto Net</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@LucasVideoLessons/videos" target="_blank" rel="noopener">Lucas Video Lessons</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@MarioCunhaPhotography/videos" target="_blank" rel="noopener">Mário Cunha — Fotografia</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@ruicaria/videos" target="_blank" rel="noopener">Rui Caria</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@jorgeverdasca/videos" target="_blank" rel="noopener">Jorge Verdasca</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/PedroThomaz/videos" target="_blank" rel="noopener">Pedro Thomaz</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/VascoEstrelado/videos" target="_blank" rel="noopener">Vasco Estrelado</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/In%C3%AAsRebelo/videos" target="_blank" rel="noopener">Inês Rebelo</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/c/Joanabbl/videos" target="_blank" rel="noopener">Joana BBL</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@noorpalma/videos" target="_blank" rel="noopener">Noor Palma</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/@The-tachyontalkzone/videos" target="_blank" rel="noopener">Tachyon Talk Zone</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCl02RY_B7_lmIx19SvRCsUg" target="_blank" rel="noopener">Canal PT Miscelânea 1</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCPZ7gW3yeN71PWF9shIN3FQ" target="_blank" rel="noopener">Canal PT Miscelânea 2</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/isaurapereira1" target="_blank" rel="noopener">Isaura Pereira</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UC3e1d7RkIOz3y7kdI1K1pIw" target="_blank" rel="noopener">Canal PT Miscelânea 3</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCj_2Ai2XD6-D2BRBfDSx1dw" target="_blank" rel="noopener">Canal PT Miscelânea 4</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCv_uTedqvgMP_RPM-e_RzCQ" target="_blank" rel="noopener">Canal PT Miscelânea 5</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/BataguasD" target="_blank" rel="noopener">Bataguás D</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCYtBTeAwO2G0jbC9u0ltL_w" target="_blank" rel="noopener">Canal PT Miscelânea 6</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCNf5_YqdUf3nM2jo3QvfNeQ" target="_blank" rel="noopener">Canal PT Miscelânea 7</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCkVFtkjbhZLlKxRoUGVrNVA" target="_blank" rel="noopener">Canal PT Miscelânea 8</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UC8O8jPZyN46FFkxE5HpHuBA" target="_blank" rel="noopener">Canal PT Miscelânea 9</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/helfimed" target="_blank" rel="noopener">Helfi Med</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCYQaFCZGvKz2QlkKvzhJLXw" target="_blank" rel="noopener">Canal PT Miscelânea 10</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCzMtZVXgY7dcu3yS7QGd6Ow" target="_blank" rel="noopener">Canal PT Miscelânea 11</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCVX0b8CprMcMGTa7zw1sx5Q" target="_blank" rel="noopener">Canal PT Miscelânea 12</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/user/cineblogpt" target="_blank" rel="noopener">Cine Blog PT</a></div>
+      <div class="link-item"><a href="https://www.youtube.com/channel/UCj-bifEf7xQ03RbUVfTcyKQ/featured" target="_blank" rel="noopener">Canal Cinema PT</a></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 24 THEATRE -->
+  <section class="section" id="s24">
+    <div class="section-header">
+      <span class="section-num">24</span>
+      <h2>Teatro e Artes Performativas</h2>
+    </div>
+    <div class="link-grid">
+      <div class="link-item"><a href="https://www.rtp.pt/play/palco/espetaculos/teatro/todos" target="_blank" rel="noopener">RTP Palco — Teatro</a></div>
+      <div class="link-item"><a href="https://www.rtp.pt/play/palco/espetaculos/musica/todos" target="_blank" rel="noopener">RTP Palco — Música ao Vivo</a></div>
+      <div class="link-item"><a href="https://www.teatro-camoes.pt/" target="_blank" rel="noopener">Teatro Camões — Lisboa <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.tnsj.pt/" target="_blank" rel="noopener">Teatro Nacional São João — Porto <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.dgartes.gov.pt/" target="_blank" rel="noopener">Direcção-Geral das Artes <span class="badge-new">novo</span></a></div>
+      <div class="link-item"><a href="https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN" target="_blank" rel="noopener">Teatro PT — Playlist (YouTube)</a></div>
+    </div>
+  </section>
+
+</div><!-- end page-wrap -->
+
+<footer>
+  Directório PT-PT · Compilado 2025 · Todos os links abrem em nova aba
+</footer>
+
+<a href="#top" class="back-top" id="backTop">↑ Topo</a>
+
+<script>
+  const btn = document.getElementById('backTop');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+
+</body>
+</html>
