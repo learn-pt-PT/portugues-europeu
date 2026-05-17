@@ -1002,6 +1002,64 @@ function buildConjugationPrompt(verb) {
 function ls(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
+const chip = (active) => ({
+  display: "inline-block", fontSize: 12, padding: "4px 14px", borderRadius: 999,
+  border: active ? "2px solid #2563eb" : "2px solid transparent",
+  background: active ? "#2563eb" : "var(--color-background-secondary)",
+  color: active ? "#fff" : "var(--color-text-tertiary)",
+  cursor: "pointer", margin: "2px", fontFamily: "var(--font-sans)", outline: "none",
+  fontWeight: active ? 600 : 400, textTransform: "uppercase", transition: "all 0.15s",
+});
+const segCtrl = { display: "inline-flex", borderRadius: 999, overflow: "hidden", border: "1.5px solid #2563eb", background: "transparent" };
+const segBtn = (active, pos) => ({
+  fontSize: 12, fontWeight: active ? 700 : 400,
+  padding: "4px 14px",
+  background: active ? "#2563eb" : "transparent",
+  color: active ? "#fff" : "#2563eb",
+  border: "none",
+  borderLeft: pos === "mid" || pos === "last" ? "1px solid #2563eb" : "none",
+  cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none",
+  textTransform: "uppercase", transition: "all 0.15s",
+});
+const toolBtn = (active) => ({
+  fontSize: 13, fontWeight: 600, padding: "5px 14px", borderRadius: 999,
+  border: "none",
+  background: active ? "#2563eb" : "var(--color-background-secondary)",
+  color: active ? "#fff" : "var(--color-text-secondary)",
+  cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none", whiteSpace: "nowrap",
+  textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s",
+});
+const panelStyle = { padding: "12px 16px", borderBottom: "0.5px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", flexShrink: 0, overflowY: "auto", maxHeight: 300 };
+const listPanelStyle = { padding: "12px 16px", background: "var(--color-background-secondary)", flex: 1, overflowY: "auto" };
+const secWrap = { marginBottom: 14 };
+
+const LIGHT_VARS = {
+  "--color-background-primary": "#ffffff",
+  "--color-background-secondary": "#f3f4f6",
+  "--color-background-info": "#eff6ff",
+  "--color-background-warning": "#fef3c7",
+  "--color-text-primary": "#111827",
+  "--color-text-secondary": "#6b7280",
+  "--color-text-tertiary": "#9ca3af",
+  "--color-text-info": "#1e40af",
+  "--color-text-warning": "#92400e",
+  "--color-text-danger": "#b91c1c",
+  "--color-border-tertiary": "#e5e7eb",
+};
+const DARK_VARS = {
+  "--color-background-primary": "#1f2937",
+  "--color-background-secondary": "#111827",
+  "--color-background-info": "#1e3a5f",
+  "--color-background-warning": "#451a03",
+  "--color-text-primary": "#f9fafb",
+  "--color-text-secondary": "#9ca3af",
+  "--color-text-tertiary": "#6b7280",
+  "--color-text-info": "#93c5fd",
+  "--color-text-warning": "#fcd34d",
+  "--color-text-danger": "#f87171",
+  "--color-border-tertiary": "#374151",
+};
+
 function App() {
 
   const [theme, setTheme] = useState(() => ls("pe_theme", "light"));
@@ -1049,11 +1107,6 @@ function App() {
   const [vocabError, setVocabError] = useState("");
   const [vocabReview, setVocabReview] = useState(() => ls("pe_vocab_review", []));
   const [vocabShowReview, setVocabShowReview] = useState(false);
-  // knownBpWords accumulates BP-specific forms discovered at runtime via fetchVocabCard
-  // (card.is_bp_specific + card.word_bp). No pre-seed is needed: every word in SH_VOCAB
-  // is evaluated by the API on first fetch, and card.is_bp_specific is the authoritative
-  // runtime signal. The pre-seed was dead state — never read anywhere in this file.
-  const [knownBpWords, setKnownBpWords] = useState(() => new Set());
   const [verbDropdownOpen, setVerbDropdownOpen] = useState(false);
   const [verbDropdownSearch, setVerbDropdownSearch] = useState("");
   const verbDropdownRef = useRef(null);
@@ -1074,11 +1127,14 @@ function App() {
   const vocabCache = useRef({});
   const recognitionRef = useRef(null);
   const selectedVoiceRef = useRef(null);
+  const intentionalStopRef = useRef(false);
+  const enviarStopRef = useRef(false);
+  const finalTranscriptRef = useRef("");
 
   // Speech state
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
-  const [ttsEnabled, setTtsEnabled] = useState(false);
+  const [ttsEnabled, setTtsEnabled] = useState(() => ls("pe_tts_enabled", false));
   const [ttsRate, setTtsRate] = useState(() => ls("pe_tts_rate", 1.0));
   const [voices, setVoices] = useState([]);
   const [selectedVoice, setSelectedVoice] = useState(null);
@@ -1110,10 +1166,6 @@ function App() {
 
   // Keep ref in sync so speak() always sees the current voice without stale closure issues
   useEffect(() => { selectedVoiceRef.current = selectedVoice; }, [selectedVoice]);
-
-const intentionalStopRef = useRef(false);
-const enviarStopRef = useRef(false);
-const finalTranscriptRef = useRef("");
 
 const createRecognition = (SR, lang) => {
   const r = new SR();
@@ -1410,9 +1462,6 @@ const stopListening = () => {
         const card = JSON.parse(raw.replace(/```json|```/g, "").trim());
         vocabCache.current[cacheKey] = card;
         setVocabCard(card);
-        if (card.is_bp_specific && card.word_bp) {
-          setKnownBpWords(prev => new Set([...prev, card.word_bp]));
-        }
       } catch { setVocabError("Could not parse response. Try again."); }
     } catch (err) { setVocabError(`Connection error: ${err.message}`); }
     setVocabLoading(false);
@@ -1458,73 +1507,9 @@ const stopListening = () => {
   const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
 
-  const LIGHT_VARS = {
-    "--color-background-primary": "#ffffff",
-    "--color-background-secondary": "#f3f4f6",
-    "--color-background-info": "#eff6ff",
-    "--color-background-warning": "#fef3c7",
-    "--color-text-primary": "#111827",
-    "--color-text-secondary": "#6b7280",
-    "--color-text-tertiary": "#9ca3af",
-    "--color-text-info": "#1e40af",
-    "--color-text-warning": "#92400e",
-    "--color-text-danger": "#b91c1c",
-    "--color-border-tertiary": "#e5e7eb",
-  };
-  const DARK_VARS = {
-    "--color-background-primary": "#1f2937",
-    "--color-background-secondary": "#111827",
-    "--color-background-info": "#1e3a5f",
-    "--color-background-warning": "#451a03",
-    "--color-text-primary": "#f9fafb",
-    "--color-text-secondary": "#9ca3af",
-    "--color-text-tertiary": "#6b7280",
-    "--color-text-info": "#93c5fd",
-    "--color-text-warning": "#fcd34d",
-    "--color-text-danger": "#f87171",
-    "--color-border-tertiary": "#374151",
-  };
   const themeVars = theme === "light" ? LIGHT_VARS : theme === "dark" ? DARK_VARS : {};
 
-  // Option 1: pills everywhere (borderRadius 999px)
-  // Option 2: ghost inactive (no border, muted text), solid active
-  // Option 5: segmented control for mutually exclusive groups
-  const chip = (active) => ({
-    display: "inline-block", fontSize: 12, padding: "4px 14px", borderRadius: 999,
-    border: active ? "2px solid #2563eb" : "2px solid transparent",
-    background: active ? "#2563eb" : "var(--color-background-secondary)",
-    color: active ? "#fff" : "var(--color-text-tertiary)",
-    cursor: "pointer", margin: "2px", fontFamily: "var(--font-sans)", outline: "none",
-    fontWeight: active ? 600 : 400, textTransform: "uppercase", transition: "all 0.15s",
-  });
-
-  // Segmented control — renders as a joined pill group
-  const segCtrl = { display: "inline-flex", borderRadius: 999, overflow: "hidden", border: "1.5px solid #2563eb", background: "transparent" };
-  const segBtn = (active, pos) => ({
-    fontSize: 12, fontWeight: active ? 700 : 400,
-    padding: "4px 14px",
-    background: active ? "#2563eb" : "transparent",
-    color: active ? "#fff" : "#2563eb",
-    border: "none",
-    borderLeft: pos === "mid" || pos === "last" ? "1px solid #2563eb" : "none",
-    cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none",
-    textTransform: "uppercase", transition: "all 0.15s",
-  });
-
-  // Option 2: ghost inactive, filled active, pill shape
-  // Option 4: icons on key action buttons added inline at call site
-  const toolBtn = (active) => ({
-    fontSize: 13, fontWeight: 600, padding: "5px 14px", borderRadius: 999,
-    border: "none",
-    background: active ? "#2563eb" : "var(--color-background-secondary)",
-    color: active ? "#fff" : "var(--color-text-secondary)",
-    cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none", whiteSpace: "nowrap",
-    textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s",
-  });
-  const panelStyle = { padding: "12px 16px", borderBottom: "0.5px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", flexShrink: 0, overflowY: "auto", maxHeight: 300 };
-  const listPanelStyle = { padding: "12px 16px", background: "var(--color-background-secondary)", flex: 1, overflowY: "auto" };
   const secTitle = { fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" };
-  const secWrap = { marginBottom: 14 };
   const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
   const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
   const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
@@ -1732,8 +1717,8 @@ const stopListening = () => {
           const isSettings = p.id === "settings";
           const isActive = activePanel === p.id;
           const style = isSettings
-            ? { ...toolBtn(isActive), background: isActive ? "#16a34a" : "#dcfce7", color: isActive ? "#fff" : "#16a34a" }
-            : { ...toolBtn(isActive), background: isActive ? "#2563eb" : "transparent", color: isActive ? "#fff" : "var(--color-text-secondary)" };
+            ? { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "#16a34a" : "#dcfce7", color: isActive ? "#fff" : "#16a34a" }
+            : { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "#2563eb" : "transparent", color: isActive ? "#fff" : "var(--color-text-secondary)" };
           const label = isSettings ? `⚙ ${p.label}` : p.id === "lists" ? `☰ ${p.label}` : p.label;
           return <button key={p.id} style={style} onClick={() => setActivePanel(ap => ap === p.id ? null : p.id)}>{label}</button>;
         })}
@@ -1741,7 +1726,7 @@ const stopListening = () => {
 
       {/* Settings panel */}
       {activePanel === "settings" && (
-        <div style={panelStyle}>
+        <div style={{ ...panelStyle, flex: 1, maxHeight: "none" }}>
           <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Anthropic API Key</p>
           <div style={{ marginBottom: 12 }}>
             {apiKey ? (
@@ -1840,6 +1825,21 @@ const stopListening = () => {
               })}
             </div>
           </div>
+          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Speaker Default</p>
+          <div style={{ marginBottom: 12 }}>
+            <div style={segCtrl}>
+              {[["on","🔊 On"],["off","🔇 Off"]].map(([id, label], i, arr) => {
+                const pos = i === 0 ? "first" : "last";
+                const active = id === "on" ? ttsEnabled : !ttsEnabled;
+                return <button key={id} style={segBtn(active, pos)} onClick={() => {
+                  const next = id === "on";
+                  setTtsEnabled(next);
+                  lsSet("pe_tts_enabled", next);
+                  if (!next && speaking) stopSpeaking();
+                }}>{label}</button>;
+              })}
+            </div>
+          </div>
           <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Topics</p>
           <div style={{ marginBottom: 8 }}>
             {topics.map((t, i) => (
@@ -1863,7 +1863,7 @@ const stopListening = () => {
           <div style={{ padding: "4px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 2, flexWrap: "wrap", background: "var(--color-background-secondary)", flexShrink: 0 }}>
             {LIST_TABS.map(t => (
               <button key={t.id}
-                style={{ fontSize: 12, fontWeight: listTab === t.id ? 700 : 400, padding: "3px 10px", borderRadius: 999, border: "none", background: listTab === t.id ? "#2563eb" : "transparent", color: listTab === t.id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
+                style={{ fontSize: 14, fontWeight: 700, padding: "3px 10px", borderRadius: 999, border: "none", background: listTab === t.id ? "#2563eb" : "transparent", color: listTab === t.id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
                 onClick={() => setListTab(t.id)}>{t.label}</button>
             ))}
           </div>
@@ -2231,8 +2231,8 @@ const stopListening = () => {
                   <p style={{ ...secTitle, color: "#0369a1", fontWeight: 700, textDecoration: "underline" }}>{topic.label}</p>
                   {topic.sections.map((sec, si) => (
                     <div key={si} style={{ marginBottom: 10 }}>
-                      <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{sec.title}</p>
-                      <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.6 }}>{sec.body}</p>
+                      <p style={{ fontSize, fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{sec.title}</p>
+                      <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.6 }}>{sec.body}</p>
                     </div>
                   ))}
                 </div>
@@ -2265,7 +2265,7 @@ const stopListening = () => {
               {COGNATES.map((sec, si) => (
                 <div key={si} style={secWrap}>
                   <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-                  {sec.rule ? <p style={{ fontSize: 11, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
+                  {sec.rule ? <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
                   <table style={tbl}><tbody>
                     {sec.items.map((item, ii) => {
                       // If pt contains /a (gender variant), speak both forms
@@ -2286,7 +2286,7 @@ const stopListening = () => {
                     })}
                   </tbody></table>
                   {sec.exceptions.length > 0 && (
-                    <div style={{ marginTop: 4, padding: "4px 8px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize: 11, color: "var(--color-text-warning)" }}>
+                    <div style={{ marginTop: 4, padding: "4px 8px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize, color: "var(--color-text-warning)" }}>
                       {sec.exceptions.map((e, ei) => <div key={ei}>⚠ {e}</div>)}
                     </div>
                   )}
@@ -2324,6 +2324,7 @@ const stopListening = () => {
                 { label: "Terra Nova", url: "https://www.rtp.pt/play/p7334/terra-nova" },
                 { label: "Esta Língua Que Nos Une", url: "https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une" },
                 { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias" },
+                { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames" },
                 { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC" },
               ]},
               { id: "s03", pt: "Comédia, Variedades e Talk Shows", en: "Comedy, Variety & Talk Shows", links: [
@@ -2367,6 +2368,7 @@ const stopListening = () => {
                 { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/" },
                 { label: "A Porta da História", url: "https://www.rtp.pt/play/p2097/a-porta-da-historia" },
                 { label: "Herdeiros de Saramago", url: "https://www.rtp.pt/play/p7972/herdeiros-de-saramago" },
+                { label: "História de Portugal JHS (YouTube)", url: "https://www.youtube.com/@historiadeportugaljhs3389" },
                 { label: "Sete Cidades — Da Lenda à Realidade", url: "https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade" },
                 { label: "Portugal Tradições (YouTube)", url: "https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es" },
                 { label: "Nionoi — História PT (YouTube)", url: "https://www.youtube.com/c/Nionoi/featured" },
@@ -2386,28 +2388,35 @@ const stopListening = () => {
                   { label: "Dicionário de Calão (PDF)", url: "https://natura.di.uminho.pt/~jj/pln/calao/dicionario.pdf" },
                 ]},
                 { label: "Ortografia e Gramática", links: [
-                  { label: "FLiP — Corrector Ortográfico e Sintáctico", url: "https://www.flip.pt/FLiP-On-line/Corrector-ortografico-e-sintactico" },
                   { label: "Ciberdúvidas da Língua Portuguesa", url: "https://ciberduvidas.iscte-iul.pt/" },
                   { label: "Ciberdúvidas — Pronúncia PT-PT", url: "https://ciberduvidas.iscte-iul.pt/outros/diversidades/outra-pronuncia/1014" },
+                  { label: "Correcao.pt — Corretor Ortográfico e Gramatical", url: "https://www.correcao.pt/" },
+                  { label: "FLiP — Corrector Ortográfico e Sintáctico", url: "https://www.flip.pt/FLiP-On-line/Corrector-ortografico-e-sintactico" },
                 ]},
                 { label: "Verbos e Conjugação", links: [
                   { label: "Conjuga-me", url: "https://conjuga-me.net/" },
+                  { label: "Infopédia — Verbos Portugueses", url: "https://www.infopedia.pt/dicionarios/verbos-portugueses" },
+                  { label: "Reverso Conjugator — Português", url: "https://conjugator.reverso.net/conjugation-portuguese.html" },
                   { label: "Verbos Portugueses — Prática", url: "https://www.verbos-portugueses.info/en/practise.html" },
                   { label: "Verbugata", url: "https://verbugata.com/" },
                 ]},
                 { label: "Pronúncia e Escuta", links: [
-                  { label: "YouGlish — Português", url: "https://pt.youglish.com/portuguese" },
                   { label: "Forvo — Pronúncia PT", url: "https://forvo.com/languages/pt/" },
                   { label: "LangPractice — Números PT-PT", url: "https://langpractice.com/portuguese-portugal/numbers/listening#1,0,1000" },
+                  { label: "MicMonster — Texto para Voz", url: "https://micmonster.com/" },
+                  { label: "Narakeet — Texto para Áudio", url: "https://www.narakeet.com/app/text-to-audio/?projectId=c4fa7619-eb7b-49d9-84bc-15572bc0e046" },
+                  { label: "Vocaroo — Gravador de Voz Online", url: "https://vocaroo.com/" },
+                  { label: "YouGlish — Português", url: "https://pt.youglish.com/portuguese" },
                 ]},
                 { label: "Plataformas de Aprendizagem PT-PT", links: [
                   { label: "Practice Portuguese", url: "https://www.practiceportuguese.com/" },
                   { label: "Portuguesepedia", url: "https://www.portuguesepedia.com/" },
                   { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
                   { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
-                  { label: "Talk The Streets — Liz Sharma (YouTube)", url: "https://www.youtube.com/@TalkTheStreets" },
-                  { label: "Portuguese With Leo (YouTube)", url: "https://www.youtube.com/@portuguesewithleo" },
                   { label: "Marco Neves — Língua Portuguesa (YouTube)", url: "https://www.youtube.com/@marconeves/videos" },
+                  { label: "Portuguese With Carla (YouTube)", url: "https://www.youtube.com/@portuguesewithcarla" },
+                  { label: "Portuguese With Leo (YouTube)", url: "https://www.youtube.com/@portuguesewithleo" },
+                  { label: "Talk The Streets — Liz Sharma (YouTube)", url: "https://www.youtube.com/@TalkTheStreets" },
                 ]},
               ]},
               { id: "s09", pt: "Notícias", en: "News", links: [
@@ -2433,9 +2442,12 @@ const stopListening = () => {
                 { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
                 { label: "Portugal Manual — Artesanato (Spotify)", url: "https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid" },
                 { label: "Portugueses no Mundo — Antena 1 (Spotify)", url: "https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3" },
-                { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos" },
+                { label: "Avó Carmo (YouTube)", url: "https://www.youtube.com/@Av%C3%B3Carmo" },
                 { label: "Decifrar Pessoas (YouTube)", url: "https://www.youtube.com/@DecifrarPessoas/videos" },
+                { label: "Joana Perez (YouTube)", url: "https://www.youtube.com/@joana_perez" },
+                { label: "Não Mandas em Mim Podcast (YouTube)", url: "https://www.youtube.com/@NaoMandasemMim" },
                 { label: "O Martim (YouTube)", url: "https://www.youtube.com/@OMartim/videos" },
+                { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos" },
               ]},
               { id: "s11", pt: "Música", en: "Music", links: [
                 { label: "RTP Palco — Espectáculos de Música", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
@@ -2497,6 +2509,7 @@ const stopListening = () => {
                 { label: "Receitas Portuguesas — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV" },
                 { label: "Sabor Intenso (YouTube)", url: "https://www.youtube.com/@SaborIntenso/videos" },
                 { label: "Cozinha do Miguel (YouTube)", url: "https://www.youtube.com/@CozinhadoMiguel/videos" },
+                { label: "Tuga na Cozinha (YouTube)", url: "https://www.youtube.com/@TuganaCozinha" },
                 { label: "Frederica — Blog", url: "https://frederica.com/blogs/blog?page=1" },
               ]},
               { id: "s15", pt: "Conteúdo Infantil", en: "Children's Content", links: [
@@ -2560,11 +2573,12 @@ const stopListening = () => {
                 { label: "Echo Boomer", url: "https://echoboomer.pt/" },
               ]},
               { id: "s22", pt: "Comédia e Entretenimento — YouTube", en: "Comedy & Entertainment — YouTube Creators", links: [
-                { label: "Raminhos", url: "https://www.youtube.com/@raminhos/videos" },
-                { label: "Pierre Zago", url: "https://www.youtube.com/@PierreZago/videos" },
                 { label: "Beatriz Gosta", url: "https://www.youtube.com/c/BeatrizGosta" },
                 { label: "Fernando Rocha", url: "https://www.youtube.com/c/FernandoRochaComedy" },
+                { label: "Guilherme Geirinhas", url: "https://www.youtube.com/@GuilhermeGeirinhas" },
                 { label: "Mat3us", url: "https://www.youtube.com/@mat3us/videos" },
+                { label: "Pierre Zago", url: "https://www.youtube.com/@PierreZago/videos" },
+                { label: "Raminhos", url: "https://www.youtube.com/@raminhos/videos" },
               ]},
               { id: "s23", pt: "Criadores Portugueses — YouTube", en: "Portuguese YouTube Creators (Various)", links: [
                 { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos" },
@@ -2599,7 +2613,7 @@ const stopListening = () => {
                       style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                       <span>
                         <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.pt}</span>
-                        <span style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", marginLeft: 6 }}>— {sec.en}</span>
+                        <span style={{ fontSize: Math.max(11, fontSize - 3), color: "#1e40af", marginLeft: 6 }}>— {sec.en}</span>
                       </span>
                       <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{mediaOpenSection === sec.id ? "▲" : "▼"}</span>
                     </button>
@@ -2886,7 +2900,7 @@ const stopListening = () => {
       )}
 
       {/* Chat messages */}
-      <div style={{ flex: 1, overflowY: "auto", padding: 16, display: (activePanel === "lists" || activePanel === "verblookup" || activePanel === "vocab") ? "none" : "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: 16, display: (activePanel === "lists" || activePanel === "verblookup" || activePanel === "vocab" || activePanel === "settings") ? "none" : "flex", flexDirection: "column", gap: 12 }}>
         {messages.map((m, i) => {
           if (m._grammarCard && m._grammar) {
             const gt = m._grammar;
@@ -2900,8 +2914,8 @@ const stopListening = () => {
                   <p style={{ fontSize: Math.max(14, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 8px", lineHeight: 1.6 }}>{intro.body}</p>
                   {examples.map((sec, si) => (
                     <div key={si} style={{ paddingTop: 6, borderTop: "0.5px solid #bae6fd", marginTop: 4 }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#0369a1", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 2px" }}>{sec.title}</p>
-                      <p style={{ fontSize: Math.max(13, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>{sec.body}</p>
+                      <p style={{ fontSize, fontWeight: 700, color: "#0369a1", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 2px" }}>{sec.title}</p>
+                      <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.5 }}>{sec.body}</p>
                     </div>
                   ))}
                 </div>
