@@ -7,6 +7,10 @@ const CORRECTION_MODES = [
   { id: "onrequest", label: "Only if asked" },
   { id: "never", label: "Never correct" },
 ];
+const REGISTER_MODES = [
+  { id: "standard", label: "Standard" },
+  { id: "colloquial", label: "Colloquial" },
+];
 const DEFAULT_TOPICS = ["Everyday small talk","Shopping & errands","Food & restaurants","Travel & directions","Chip carving","Christian Science","Banking & Finance","Current Events & News"];
 
 const PANELS = [
@@ -220,6 +224,9 @@ const ALL_VERBS_DATA = [
   ...REGULAR_AR_VERBS,
   ...REGULAR_ER_IR_VERBS,
 ];
+
+// Pre-sorted once at module load; used by filteredVerbDropdown to avoid re-sorting on every keystroke.
+const ALL_VERB_INFS_SORTED = ALL_VERBS_DATA.map(x => x.inf).sort();
 
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -827,19 +834,19 @@ const GRAMMAR_TOPICS = [
   },
 ];
 
-const GRAMMAR_FOCUS_TOPICS = GRAMMAR_TOPICS.map(t => ({ id: t.id, label: t.label, instruction: {
-  "word_order": "Focus on word order: demonstrate correct EP sentence structure in your responses. When relevant, gently point out word order differences from English or Brazilian Portuguese. Use varied sentence structures including negation, questions, and adjective placement.",
-  "clitics": "Focus on clitic pronouns: use clitic constructions naturally in your responses, especially EP-style enclisis (verb-clitic). When the learner uses a clitic incorrectly or in BP position, note it gently. Demonstrate mesoclisis in the future/conditional where natural.",
-  "ser_estar": "Focus on ser vs. estar: consciously use both verbs in varied contexts across your responses. Demonstrate the EP progressive (estar a + infinitive) rather than the gerund. When the learner confuses ser/estar, correct it.",
-  "por_para": "Focus on por vs. para: use both prepositions naturally across your responses in varied constructions. When the learner uses one where the other is needed, correct it with a brief explanation.",
-  "articles": "Focus on articles: model correct EP article usage, especially the EP convention of placing definite articles before first names. Demonstrate article contractions naturally. Correct missing or incorrect articles in the learner's input.",
-  "gender_agreement": "Focus on gender and agreement: ensure all your responses model perfect gender/number agreement. When the learner makes agreement errors (wrong article, adjective ending, or participle), correct them clearly.",
-  "subjunctive": "Focus on the subjunctive: weave subjunctive constructions naturally into your responses using triggers like embora, espero que, é importante que, quando (+ futuro do conjuntivo). When the learner should use the subjunctive but doesn't, point it out.",
-  "personal_infinitive": "Focus on the personal infinitive: use personal infinitive constructions naturally in your responses. Demonstrate the contrast with the subjunctive where relevant. If the learner avoids it or uses a subjunctive where a personal infinitive fits better, note it.",
-}[t.id] }));
+const GRAMMAR_FOCUS_TOPICS = [
+  { id: "word_order",        label: "Word Order",          instruction: "Focus on word order: demonstrate correct EP sentence structure in your responses. When relevant, gently point out word order differences from English or Brazilian Portuguese. Use varied sentence structures including negation, questions, and adjective placement." },
+  { id: "clitics",           label: "Clitic Pronouns",     instruction: "Focus on clitic pronouns: use clitic constructions naturally in your responses, especially EP-style enclisis (verb-clitic). When the learner uses a clitic incorrectly or in BP position, note it gently. Demonstrate mesoclisis in the future/conditional where natural." },
+  { id: "ser_estar",         label: "Ser vs. Estar",       instruction: "Focus on ser vs. estar: consciously use both verbs in varied contexts across your responses. Demonstrate the EP progressive (estar a + infinitive) rather than the gerund. When the learner confuses ser/estar, correct it." },
+  { id: "por_para",          label: "Por vs. Para",        instruction: "Focus on por vs. para: use both prepositions naturally across your responses in varied constructions. When the learner uses one where the other is needed, correct it with a brief explanation." },
+  { id: "articles",          label: "Articles",            instruction: "Focus on articles: model correct EP article usage, especially the EP convention of placing definite articles before first names. Demonstrate article contractions naturally. Correct missing or incorrect articles in the learner's input." },
+  { id: "gender_agreement",  label: "Gender & Agreement",  instruction: "Focus on gender and agreement: ensure all your responses model perfect gender/number agreement. When the learner makes agreement errors (wrong article, adjective ending, or participle), correct them clearly." },
+  { id: "subjunctive",       label: "Subjunctive Triggers",instruction: "Focus on the subjunctive: weave subjunctive constructions naturally into your responses using triggers like embora, espero que, é importante que, quando (+ futuro do conjuntivo). When the learner should use the subjunctive but doesn't, point it out." },
+  { id: "personal_infinitive",label: "Personal Infinitive",instruction: "Focus on the personal infinitive: use personal infinitive constructions naturally in your responses. Demonstrate the contrast with the subjunctive where relevant. If the learner avoids it or uses a subjunctive where a personal infinitive fits better, note it." },
+];
 
 
-function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar) {
+function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode) {
   const topicList = topics.filter(t => t.selected).map(t => t.label).join(", ");
   const levelDesc = {
     "A1": "complete beginner. Use very simple sentences, basic vocabulary, present tense only. Always include an English translation in parentheses after each Portuguese sentence.",
@@ -862,7 +869,10 @@ function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusId
   const grammarInstruction = focusGrammar
     ? `\n\nFocus grammar: ${focusGrammar.instruction}`
     : "";
-  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. Keep responses concise — 2 to 4 sentences unless the learner asks for more detail.\n\nDo not use any emoji in your responses under any circumstances.`;
+  const registerInstruction = registerMode === "colloquial"
+    ? "\n\nRegister: speak and write like a relaxed local Portuguese person, not a textbook. Use colloquial vocabulary, contractions, and reductions natural to spoken EP — for example: 'tou' for 'estou', 'tás' for 'estás', 'pra' for 'para', 'dum' for 'de um', 'gajo'/'gaja', 'fixe', 'pois', 'olha', 'tipo', 'que seca', 'bué'. Drop subjects where a native would. Use filler words and discourse markers naturally. When correcting the learner, prefer what a native speaker would actually say over strictly textbook forms."
+    : "\n\nRegister: use clear, correct, standard European Portuguese — the kind a learner would encounter in a well-written textbook or a formal conversation. Avoid heavy slang and contractions. Model grammatically complete sentences.";
+  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. Keep responses concise — 2 to 4 sentences unless the learner asks for more detail.\n\nDo not use any emoji in your responses under any circumstances.`;
 }
 
 // Tense-to-level mapping used by the conjugator display
@@ -1033,6 +1043,101 @@ const panelStyle = { padding: "12px 16px", borderBottom: "0.5px solid var(--colo
 const listPanelStyle = { padding: "12px 16px", background: "var(--color-background-secondary)", flex: 1, overflowY: "auto" };
 const secWrap = { marginBottom: 14 };
 
+const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak, renderWithParens }) {
+  if (m._grammarCard && m._grammar) {
+    const gt = m._grammar;
+    const intro = gt.sections[0];
+    const examples = gt.sections.slice(1, 3);
+    return (
+      <div style={{ maxWidth: "85%", alignSelf: "flex-start" }}>
+        <div style={{ background: "#f0f9ff", border: "1.5px solid #0369a1", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "#0369a1", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>Focus Grammar</p>
+          <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "#0c4a6e", margin: "0 0 8px" }}>{gt.label}</p>
+          <p style={{ fontSize: Math.max(14, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 8px", lineHeight: 1.6 }}>{intro.body}</p>
+          {examples.map((sec, si) => (
+            <div key={si} style={{ paddingTop: 6, borderTop: "0.5px solid #bae6fd", marginTop: 4 }}>
+              <p style={{ fontSize, fontWeight: 700, color: "#0369a1", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 2px" }}>{sec.title}</p>
+              <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.5 }}>{sec.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (m._idiomCard && m._idiom) {
+    const id = m._idiom;
+    return (
+      <div style={{ maxWidth: "85%", alignSelf: "flex-start" }}>
+        <div style={{ background: "#f5f3ff", border: "1.5px solid #7c3aed", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 6px" }}>Focus Idiom</p>
+          <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "#4c1d95", margin: "0 0 6px", fontStyle: "italic" }}>{id.pt}</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 3, paddingTop: 6, borderTop: "0.5px solid #ddd6fe" }}>
+            <p style={{ fontSize: Math.max(14, fontSize - 1), margin: 0 }}>
+              <span style={{ fontWeight: 600, color: "#6d28d9" }}>Literal: </span>
+              <span style={{ color: "var(--color-text-primary)" }}>{id.en}</span>
+            </p>
+            <p style={{ fontSize: Math.max(14, fontSize - 1), margin: 0 }}>
+              <span style={{ fontWeight: 600, color: "#6d28d9" }}>Used when: </span>
+              <span style={{ color: "var(--color-text-primary)" }}>{id.when}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  const isAssistant = m.role === "assistant";
+  const bubbleStyle = { maxWidth: "80%", alignSelf: m.role === "user" ? "flex-end" : "flex-start", background: m.role === "user" ? "var(--color-background-info)" : "var(--color-background-secondary)", padding: "10px 14px", borderRadius: m.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px", fontSize: Math.max(16, fontSize), lineHeight: 1.6, whiteSpace: "pre-wrap", color: isAssistant ? "#1a56db" : "var(--color-text-info)" };
+  if (isAssistant && (m.content.includes("---") || m.content.includes("Correção:") || m.content.includes("Correcao:"))) {
+    let main = m.content;
+    let correction = "";
+    const corrMarkerMatch = m.content.match(/Corre[cç][aã]o:/);
+    if (corrMarkerMatch) {
+      const idx = m.content.indexOf(corrMarkerMatch[0]);
+      const beforeMarker = m.content.slice(0, idx).replace(/\s*---\s*$/, "").trim();
+      main = beforeMarker;
+      correction = m.content.slice(idx).replace(/^Corre[cç][aã]o:\s*/, "").trim();
+    } else {
+      const parts = m.content.split(/\n?---\n?/);
+      main = parts[0].trim();
+      correction = parts.slice(1).join("").trim();
+    }
+    if (!correction) {
+      return (
+        <div style={{ ...bubbleStyle, alignSelf: "flex-start" }}>
+          {renderWithParens(m.content, "#1a56db", 700)}
+        </div>
+      );
+    }
+    return (
+      <div style={{ maxWidth: "80%", alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ ...bubbleStyle, alignSelf: undefined }}>
+          {renderWithParens(main.trim(), "#1a56db", 700)}
+        </div>
+        <div style={{ background: "#fff8f8", border: "0.5px solid #d4a0a0", borderRadius: "18px 18px 18px 4px", padding: "10px 14px", fontSize: Math.max(16, fontSize), lineHeight: 1.6, whiteSpace: "pre-wrap", color: "#800000", fontWeight: 700 }}>
+          {correction}
+        </div>
+        {ttsSupported && (
+          <button onClick={() => speak(main.trim())}
+            style={{ alignSelf: "flex-start", background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "var(--color-text-tertiary)", padding: "0 4px" }}
+            title="Read aloud">🔊</button>
+        )}
+      </div>
+    );
+  }
+  return (
+    <div style={{ maxWidth: "80%", alignSelf: isAssistant ? "flex-start" : "flex-end", display: "flex", flexDirection: "column", gap: 3 }}>
+      <div style={{ ...bubbleStyle, color: isAssistant ? "#1a56db" : "var(--color-text-info)", fontWeight: isAssistant ? 700 : 400 }}>
+        {isAssistant ? renderWithParens(m.content, "#1a56db", 700) : renderWithParens(m.content, "var(--color-text-info)", 400)}
+      </div>
+      {isAssistant && ttsSupported && (
+        <button onClick={() => speak(m.content)}
+          style={{ alignSelf: "flex-start", background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "var(--color-text-tertiary)", padding: "0 4px" }}
+          title="Read aloud">🔊</button>
+      )}
+    </div>
+  );
+});
+
 const LIGHT_VARS = {
   "--color-background-primary": "#ffffff",
   "--color-background-secondary": "#f3f4f6",
@@ -1065,6 +1170,7 @@ function App() {
   const [theme, setTheme] = useState(() => ls("pe_theme", "light"));
   const [level, setLevel] = useState(() => ls("pe_level", "A2"));
   const [correctionMode, setCorrectionMode] = useState(() => ls("pe_correction", "end"));
+  const [registerMode, setRegisterMode] = useState(() => ls("pe_register", "standard"));
   const [apiKey, setApiKey] = useState(() => ls("pe_api_key", ""));
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [azureKey, setAzureKey] = useState(() => ls("pe_azure_key", ""));
@@ -1226,15 +1332,6 @@ const stopListening = () => {
   setListening(false);
 };
 
-  // Shared voice-selection logic: finds the best available voice for a given lang tag.
-  // speak() uses selectedVoice (the user's chosen voice from state) directly;
-  // speakPT() calls findVoice() to pick by lang without touching selectedVoice state.
-  const findVoice = (lang) => {
-    const vs = window.speechSynthesis.getVoices();
-    if (lang === "en-US") return vs.find(x => x.lang === "en-US") || vs.find(x => x.lang.startsWith("en")) || null;
-    return vs.find(x => x.lang === "pt-PT") || vs.find(x => x.lang.startsWith("pt")) || null;
-  };
-
   const speakViaAzure = async (text, lang = "pt-PT") => {
     if (!azureKey || !azureRegion || !text) return false;
     try {
@@ -1355,6 +1452,7 @@ const stopListening = () => {
   const applyTheme = (t) => { setTheme(t); lsSet("pe_theme", t); };
   const applyLevel = (l) => { setLevel(l); lsSet("pe_level", l); };
   const applyCorrection = (c) => { setCorrectionMode(c); lsSet("pe_correction", c); };
+  const applyRegister = (r) => { setRegisterMode(r); lsSet("pe_register", r); };
   const applyBaseFontSize = (size) => { setBaseFontSize(size); setFontOffset(0); lsSet("pe_fontsize", size); };
   const adjustFontOffset = (delta) => setFontOffset(prev => Math.max(11 - baseFontSize, Math.min(24 - baseFontSize, prev + delta)));
 
@@ -1418,7 +1516,7 @@ const stopListening = () => {
         },
         body: JSON.stringify({
           model: "claude-sonnet-4-6", max_tokens: 1000,
-          system: buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar),
+          system: buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode),
           messages: [...cleanHistory, userMsg].map(m => ({ role: m.role, content: m.content })),
         }),
       });
@@ -1518,11 +1616,11 @@ const stopListening = () => {
     : verbRefTab === "ar" ? REGULAR_AR_VERBS : REGULAR_ER_IR_VERBS;
 
   const filteredVerbDropdown = useMemo(() => {
-    const sorted = ALL_VERBS_DATA.map(x => x.inf).sort();
-    return sorted.filter(v => {
+    const q = verbDropdownSearch.toLowerCase();
+    if (!q) return ALL_VERB_INFS_SORTED;
+    return ALL_VERB_INFS_SORTED.filter(v => {
       const en = ALL_VERBS_DATA.find(x => x.inf === v)?.en || "";
-      const q = verbDropdownSearch.toLowerCase();
-      return !q || v.includes(q) || en.toLowerCase().includes(q);
+      return v.includes(q) || en.toLowerCase().includes(q);
     });
   }, [verbDropdownSearch]);
 
@@ -1825,6 +1923,20 @@ const stopListening = () => {
               })}
             </div>
           </div>
+          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Conversation Register</p>
+          <div style={{ marginBottom: 4 }}>
+            <div style={segCtrl}>
+              {REGISTER_MODES.map((m, i) => {
+                const pos = i === 0 ? "first" : "last";
+                return <button key={m.id} style={segBtn(registerMode === m.id, pos)} onClick={() => applyRegister(m.id)}>{m.label}</button>;
+              })}
+            </div>
+            <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "5px 0 12px", fontStyle: "italic" }}>
+              {registerMode === "colloquial"
+                ? "Colloquial: the bot uses street vocabulary, contractions, slang, and filler words a local would use in casual conversation."
+                : "Standard: the bot uses correct, textbook-quality European Portuguese — clear vocabulary, complete sentences."}
+            </p>
+          </div>
           <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Speaker Default</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
@@ -1891,23 +2003,6 @@ const stopListening = () => {
                           </span>
                         );
                       };
-                      const speakPT = async (word, lang) => {
-                        if (!word) return;
-                        const useLang = lang || "pt-PT";
-                        const isAzureVoice = selectedVoiceRef.current === null || selectedVoiceRef.current?.name?.startsWith("__azure");
-                        if (azureKey && azureRegion && useLang === "pt-PT" && isAzureVoice) {
-                          const ok = await speakViaAzure(word, "pt-PT");
-                          if (ok) return;
-                        }
-                        if (!window.speechSynthesis) return;
-                        window.speechSynthesis.cancel();
-                        const u = new SpeechSynthesisUtterance(word);
-                        u.lang = useLang;
-                        u.rate = ttsRate;
-                        const v = findBrowserVoice(useLang);
-                        if (v) u.voice = v;
-                        window.speechSynthesis.speak(u);
-                      };
                       // Section header rows (no example)
                       if (!item.example && !item.example_en) {
                         return (
@@ -1923,9 +2018,9 @@ const stopListening = () => {
                           <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
                             <td style={{ width: 32, paddingRight: 4, verticalAlign: "middle" }}>
                               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                <button onClick={() => speakPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
+                                <button onClick={() => speakListPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
                                   style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#eff6ff", color: "#2563eb", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
-                                <button onClick={() => speakPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
+                                <button onClick={() => speakListPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
                                   style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#f0fdf4", color: "#166534", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
                               </div>
                             </td>
@@ -1940,7 +2035,7 @@ const stopListening = () => {
                         <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
                           <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
                             {item.example && (
-                              <button onClick={() => speakPT(item.example, "pt-PT")} title={`Hear: ${item.example}`}
+                              <button onClick={() => speakListPT(item.example, "pt-PT")} title={`Hear: ${item.example}`}
                                 style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
                             )}
                           </td>
@@ -1959,22 +2054,6 @@ const stopListening = () => {
           )}
           {listTab === "pairs" && (() => {
             const pair = MINIMAL_PAIRS[pairsOrder[pairIndex]];
-            const speakWord = async (word) => {
-              if (!word) return;
-              const isAzureVoice = selectedVoiceRef.current === null || selectedVoiceRef.current?.name?.startsWith("__azure");
-              if (azureKey && azureRegion && isAzureVoice) {
-                const ok = await speakViaAzure(word, "pt-PT");
-                if (ok) return;
-              }
-              if (!window.speechSynthesis) return;
-              window.speechSynthesis.cancel();
-              const u = new SpeechSynthesisUtterance(word);
-              u.lang = "pt-PT";
-              u.rate = ttsRate;
-              const v = findBrowserVoice("pt-PT");
-              if (v) u.voice = v;
-              window.speechSynthesis.speak(u);
-            };
             const shuffle = () => {
               const arr = MINIMAL_PAIRS.map((_, i) => i);
               for (let i = arr.length - 1; i > 0; i--) {
@@ -1991,7 +2070,7 @@ const stopListening = () => {
               setQuizResult(null);
             };
             const playQuizWord = () => {
-              if (quizTarget) speakWord(pair[quizTarget].word);
+              if (quizTarget) speakListPT(pair[quizTarget].word);
             };
             const guess = (choice) => {
               const correct = choice === quizTarget;
@@ -2045,7 +2124,7 @@ const stopListening = () => {
                         <div key={side} style={{ textAlign: "center", background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: 12, padding: "18px 28px", minWidth: 140 }}>
                           <div style={{ fontSize: fontSize * 2, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 6 }}>{pair[side].word}</div>
                           <div style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 12, fontStyle: "italic" }}>{pair[side].meaning}</div>
-                          <button onClick={() => speakWord(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Ouvir</button>
+                          <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Ouvir</button>
                         </div>
                       ))}
                     </div>
@@ -2609,7 +2688,11 @@ const stopListening = () => {
                   const sortedSubgroups = sec.subgroups ? sec.subgroups.map(sg => ({ ...sg, links: [...sg.links].sort((a, b) => a.label.localeCompare(b.label)) })) : null;
                   return (
                   <div key={sec.id} ref={el => mediaSectionRefs.current[sec.id] = el} style={{ marginBottom: 10, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
-                    <button onClick={() => setMediaOpenSection(mediaOpenSection === sec.id ? null : sec.id)}
+                    <button onClick={() => {
+                        const newId = mediaOpenSection === sec.id ? null : sec.id;
+                        setMediaOpenSection(newId);
+                        if (newId) setTimeout(() => mediaSectionRefs.current[newId]?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
+                      }}
                       style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                       <span>
                         <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.pt}</span>
@@ -2901,105 +2984,9 @@ const stopListening = () => {
 
       {/* Chat messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: 16, display: (activePanel === "lists" || activePanel === "verblookup" || activePanel === "vocab" || activePanel === "settings") ? "none" : "flex", flexDirection: "column", gap: 12 }}>
-        {messages.map((m, i) => {
-          if (m._grammarCard && m._grammar) {
-            const gt = m._grammar;
-            const intro = gt.sections[0];
-            const examples = gt.sections.slice(1, 3);
-            return (
-              <div key={i} style={{ maxWidth: "85%", alignSelf: "flex-start" }}>
-                <div style={{ background: "#f0f9ff", border: "1.5px solid #0369a1", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#0369a1", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>Focus Grammar</p>
-                  <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "#0c4a6e", margin: "0 0 8px" }}>{gt.label}</p>
-                  <p style={{ fontSize: Math.max(14, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 8px", lineHeight: 1.6 }}>{intro.body}</p>
-                  {examples.map((sec, si) => (
-                    <div key={si} style={{ paddingTop: 6, borderTop: "0.5px solid #bae6fd", marginTop: 4 }}>
-                      <p style={{ fontSize, fontWeight: 700, color: "#0369a1", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 2px" }}>{sec.title}</p>
-                      <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.5 }}>{sec.body}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          }
-          if (m._idiomCard && m._idiom) {
-            const id = m._idiom;
-            return (
-              <div key={i} style={{ maxWidth: "85%", alignSelf: "flex-start" }}>
-                <div style={{ background: "#f5f3ff", border: "1.5px solid #7c3aed", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 6px" }}>Focus Idiom</p>
-                  <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "#4c1d95", margin: "0 0 6px", fontStyle: "italic" }}>{id.pt}</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 3, paddingTop: 6, borderTop: "0.5px solid #ddd6fe" }}>
-                    <p style={{ fontSize: Math.max(14, fontSize - 1), margin: 0 }}>
-                      <span style={{ fontWeight: 600, color: "#6d28d9" }}>Literal: </span>
-                      <span style={{ color: "var(--color-text-primary)" }}>{id.en}</span>
-                    </p>
-                    <p style={{ fontSize: Math.max(14, fontSize - 1), margin: 0 }}>
-                      <span style={{ fontWeight: 600, color: "#6d28d9" }}>Used when: </span>
-                      <span style={{ color: "var(--color-text-primary)" }}>{id.when}</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-          const isAssistant = m.role === "assistant";
-          const bubbleStyle = { maxWidth: "80%", alignSelf: m.role === "user" ? "flex-end" : "flex-start", background: m.role === "user" ? "var(--color-background-info)" : "var(--color-background-secondary)", padding: "10px 14px", borderRadius: m.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px", fontSize: Math.max(16, fontSize), lineHeight: 1.6, whiteSpace: "pre-wrap", color: isAssistant ? "#1a56db" : "var(--color-text-info)" };
-          if (isAssistant && (m.content.includes("---") || m.content.includes("Correção:") || m.content.includes("Correcao:"))) {
-            let main = m.content;
-            let correction = "";
-            // Strategy: find the correction block regardless of exact whitespace/ordering variations.
-            // Look for Correção: (or Correcao:) first — that's the reliable anchor.
-            const corrMarkerMatch = m.content.match(/Corre[cç][aã]o:/);
-            if (corrMarkerMatch) {
-              const idx = m.content.indexOf(corrMarkerMatch[0]);
-              // Walk back past any --- and whitespace preceding the marker
-              const beforeMarker = m.content.slice(0, idx).replace(/\s*---\s*$/, "").trim();
-              main = beforeMarker;
-              // correction text is everything from the marker onward, strip the label itself
-              correction = m.content.slice(idx).replace(/^Corre[cç][aã]o:\s*/, "").trim();
-            } else {
-              // No Correção: label — split on --- and treat second part as correction
-              const parts = m.content.split(/\n?---\n?/);
-              main = parts[0].trim();
-              correction = parts.slice(1).join("").trim();
-            }
-            if (!correction) {
-              return (
-                <div key={i} style={{ ...bubbleStyle, alignSelf: "flex-start" }}>
-                  {renderWithParens(m.content, "#1a56db", 700)}
-                </div>
-              );
-            }
-            return (
-              <div key={i} style={{ maxWidth: "80%", alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 6 }}>
-                <div style={{ ...bubbleStyle, alignSelf: undefined }}>
-                  {renderWithParens(main.trim(), "#1a56db", 700)}
-                </div>
-                <div style={{ background: "#fff8f8", border: "0.5px solid #d4a0a0", borderRadius: "18px 18px 18px 4px", padding: "10px 14px", fontSize: Math.max(16, fontSize), lineHeight: 1.6, whiteSpace: "pre-wrap", color: "#800000", fontWeight: 700 }}>
-                  {correction}
-                </div>
-                {ttsSupported && (
-                  <button onClick={() => speak(main.trim())}
-                    style={{ alignSelf: "flex-start", background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "var(--color-text-tertiary)", padding: "0 4px" }}
-                    title="Read aloud">🔊</button>
-                )}
-              </div>
-            );
-          }
-          return (
-            <div key={i} style={{ maxWidth: "80%", alignSelf: isAssistant ? "flex-start" : "flex-end", display: "flex", flexDirection: "column", gap: 3 }}>
-              <div style={{ ...bubbleStyle, color: isAssistant ? "#1a56db" : "var(--color-text-info)", fontWeight: isAssistant ? 700 : 400 }}>
-                {isAssistant ? renderWithParens(m.content, "#1a56db", 700) : renderWithParens(m.content, "var(--color-text-info)", 400)}
-              </div>
-              {isAssistant && ttsSupported && (
-                <button onClick={() => speak(m.content)}
-                  style={{ alignSelf: "flex-start", background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "var(--color-text-tertiary)", padding: "0 4px" }}
-                  title="Read aloud">🔊</button>
-              )}
-            </div>
-          );
-        })}
+        {messages.map((m, i) => (
+          <MessageBubble key={i} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} renderWithParens={renderWithParens} />
+        ))}
         {loading && <div style={{ alignSelf: "flex-start", background: "var(--color-background-secondary)", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", fontSize: 13, color: "var(--color-text-tertiary)" }}>A escrever…</div>}
         <div ref={bottomRef} />
       </div>
