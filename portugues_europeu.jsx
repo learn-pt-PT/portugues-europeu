@@ -219,14 +219,23 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"viver", en:"to live" },
 ];
 
+// Slim projection used by ALL_VERBS_DATA and verbRefList; avoids re-mapping on every render.
+const IRREGULAR_VERBS_SLIM = IRREGULAR_VERBS.map(v => ({ inf: v.inf, en: v.en }));
+
 const ALL_VERBS_DATA = [
-  ...IRREGULAR_VERBS.map(x => ({ inf: x.inf, en: x.en })),
+  ...IRREGULAR_VERBS_SLIM,
   ...REGULAR_AR_VERBS,
   ...REGULAR_ER_IR_VERBS,
 ];
 
 // Pre-sorted once at module load; used by filteredVerbDropdown to avoid re-sorting on every keystroke.
 const ALL_VERB_INFS_SORTED = ALL_VERBS_DATA.map(x => x.inf).sort();
+
+// O(1) English-translation lookup keyed by infinitive; replaces ALL_VERBS_DATA.find() at all call sites.
+const ALL_VERBS_MAP = new Map(ALL_VERBS_DATA.map(x => [x.inf, x.en]));
+
+// O(1) irregularity check; replaces IRREGULAR_VERBS.some() at all call sites.
+const IRREGULAR_VERBS_SET = new Set(IRREGULAR_VERBS.map(v => v.inf));
 
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -685,6 +694,312 @@ const COGNATES = [
   ], exceptions: [] },
 ];
 
+// Static media resource data; defined at module scope to avoid re-creation on every render.
+const MEDIA_SECTIONS = [
+  { id: "s01", pt: "Televisão em Directo & Plataformas de Streaming", en: "Live TV & Streaming Platforms", links: [
+    { label: "RTP Play — Directo", url: "https://www.rtp.pt/play/direto" },
+    { label: "RTP2 — Directo", url: "https://www.rtp.pt/play/direto/rtp2" },
+    { label: "RTP3 / RTP Notícias — Directo", url: "https://www.rtp.pt/play/direto/rtp3" },
+    { label: "RTP Play — Arquivo e On-Demand", url: "https://www.rtp.pt/play/" },
+    { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/" },
+    { label: "Porto Canal — Directo", url: "https://portocanal.sapo.pt/live" },
+    { label: "SIC — Directo", url: "https://www.sic.pt/direto" },
+    { label: "SIC Notícias — Directo", url: "https://sicnoticias.pt/direto" },
+    { label: "Opto SIC — On-Demand", url: "https://opto.sic.pt/" },
+    { label: "TVI — Directo", url: "https://tvi.iol.pt/direto" },
+    { label: "TVI Player — On-Demand", url: "https://tviplayer.iol.pt/" },
+    { label: "Euronews PT — Directo", url: "https://pt.euronews.com/live" },
+    { label: "CNN Portugal — Directo", url: "https://cnnportugal.iol.pt/direto" },
+    { label: "Canal 180 — Cultura e Artes", url: "https://canal180.pt/" },
+    { label: "Lista IPTV Gratuita e Legal (Reddit)", url: "https://www.reddit.com/r/portugal/comments/hadmt5/lista_de_iptv_gratuita_e_legal/" },
+  ]},
+  { id: "s02", pt: "Séries de Ficção Portuguesa", en: "Portuguese Drama & Fiction Series", links: [
+    { label: "Os Nossos Dias", url: "https://www.rtp.pt/play/p1844/os-nossos-dias" },
+    { label: "Bem-Vindos a Beirais", url: "https://www.rtp.pt/play/p1222/bem-vindos-a-beirais" },
+    { label: "Pôr do Sol", url: "https://www.rtp.pt/play/p9165/por-do-sol" },
+    { label: "Crónica dos Bons Malandros", url: "https://www.rtp.pt/play/p8013/cronica-dos-bons-malandros" },
+    { label: "Conta-me Como Foi", url: "https://www.rtp.pt/play/p6487/conta-me-como-foi" },
+    { label: "República", url: "https://www.rtp.pt/play/p9328/republica" },
+    { label: "Sara", url: "https://www.rtp.pt/play/p4996/e696433/sara" },
+    { label: "Terra Nova", url: "https://www.rtp.pt/play/p7334/terra-nova" },
+    { label: "Esta Língua Que Nos Une", url: "https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une" },
+    { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias" },
+    { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames" },
+    { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC" },
+  ]},
+  { id: "s03", pt: "Comédia, Variedades e Talk Shows", en: "Comedy, Variety & Talk Shows", links: [
+    { label: "5 Para a Meia-Noite", url: "https://www.rtp.pt/play/p9868/5-para-a-meia-noite" },
+    { label: "Alta Definição (SIC)", url: "https://sic.pt/programas/altadefinicao-programas/" },
+    { label: "Isto é Gozar com Quem Trabalha (SIC)", url: "https://sic.pt/programas/istoegozarcomquemtrabalha/" },
+    { label: "Férias Cá Dentro", url: "https://www.rtp.pt/play/p10536/e633736/ferias-ca-dentro" },
+    { label: "Cuidado com a Língua", url: "https://www.rtp.pt/play/p3991/cuidado-com-a-lingua" },
+    { label: "Raminhos (YouTube)", url: "https://www.youtube.com/@raminhos/videos" },
+    { label: "Pierre Zago (YouTube)", url: "https://www.youtube.com/@PierreZago/videos" },
+    { label: "Beatriz Gosta (YouTube)", url: "https://www.youtube.com/c/BeatrizGosta" },
+  ]},
+  { id: "s04", pt: "Documentários e Actualidade", en: "Documentaries & Current Affairs", links: [
+    { label: "RTP Play — Documentários", url: "https://www.rtp.pt/play/colecao/documentarios" },
+    { label: "FFMS Play — Documentários", url: "https://www.ffms.pt/pt-pt/ffms-play/documentarios" },
+    { label: "Canal Documentários PT (YouTube)", url: "https://www.youtube.com/channel/UCAzXTUnXaYXsscGtzWae1dA" },
+    { label: "Fundação Francisco Manuel dos Santos (YouTube)", url: "https://www.youtube.com/@ffmspt/videos" },
+  ]},
+  { id: "s05", pt: "Viagens e Geografia", en: "Travel & Geography", links: [
+    { label: "Portugal Mais Perto", url: "https://www.rtp.pt/play/p5665/portugal-mais-perto" },
+    { label: "Guia de Portugal", url: "https://www.rtp.pt/play/p3376/e282290/guia-de-portugal" },
+    { label: "Portugal a Pé", url: "https://www.rtp.pt/play/p2272/portugal-a-pe" },
+    { label: "Visita Guiada", url: "https://www.rtp.pt/play/p7378/visita-guiada" },
+    { label: "Lisboa, Cidade Triste e Alegre", url: "https://www.rtp.pt/play/p10399/e623375/lisboa-cidade-triste-e-alegre" },
+    { label: "Alma de Viajante", url: "https://www.almadeviajante.com/" },
+    { label: "Cidades de Portugal (YouTube)", url: "https://www.youtube.com/@CidadesdePortugal/videos" },
+    { label: "Meio Cheio (YouTube)", url: "https://www.youtube.com/@MeioCheio/videos" },
+    { label: "Remote Portugal (YouTube)", url: "https://www.youtube.com/@RemotePortugal/videos" },
+  ]},
+  { id: "s06", pt: "Natureza, Vida Selvagem e Ambiente", en: "Nature, Wildlife & Environment", links: [
+    { label: "Geosfera", url: "https://www.rtp.pt/play/p960/e94486/geosfera" },
+    { label: "Vida Animal", url: "https://www.rtp.pt/play/p553/e235162/vida-animal" },
+    { label: "Natureza e Vida Selvagem", url: "https://www.rtp.pt/play/p1776/e179598/natureza-e-vida-selvagem" },
+    { label: "Faça Chuva, Faça Sol", url: "https://www.rtp.pt/play/p14288/e820411/faca-chuva-faca-sol" },
+    { label: "Jardim Zoológico de Lisboa (YouTube)", url: "https://www.youtube.com/user/ZoologicoJardim/playlists" },
+    { label: "SPEA BirdLife Portugal (YouTube)", url: "https://www.youtube.com/@spea_birdlife/videos" },
+    { label: "A Cientista Agrícola", url: "https://acientistaagricola.pt/" },
+    { label: "Portugal Rural na Prática (YouTube)", url: "https://www.youtube.com/@portugalruralnapratica/videos" },
+  ]},
+  { id: "s07", pt: "História e Cultura", en: "History & Culture", links: [
+    { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/" },
+    { label: "A Porta da História", url: "https://www.rtp.pt/play/p2097/a-porta-da-historia" },
+    { label: "Herdeiros de Saramago", url: "https://www.rtp.pt/play/p7972/herdeiros-de-saramago" },
+    { label: "História de Portugal JHS (YouTube)", url: "https://www.youtube.com/@historiadeportugaljhs3389" },
+    { label: "Sete Cidades — Da Lenda à Realidade", url: "https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade" },
+    { label: "Portugal Tradições (YouTube)", url: "https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es" },
+    { label: "Nionoi — História PT (YouTube)", url: "https://www.youtube.com/c/Nionoi/featured" },
+    { label: "Casa Comum — Universidade do Porto", url: "https://www.up.pt/casacomum/" },
+    { label: "Direcção-Geral do Património Cultural", url: "https://patrimoniocultural.gov.pt/" },
+    { label: "Agenda Cultural do Porto", url: "https://agendaculturalporto.org/" },
+    { label: "Agenda LX — Lisboa", url: "https://www.agendalx.pt/" },
+  ]},
+  { id: "s08", pt: "Ferramentas de Língua Portuguesa", en: "Portuguese Language Tools", subgroups: [
+    { label: "Dicionários e Tradução", links: [
+      { label: "Priberam — Dicionário", url: "https://dicionario.priberam.org/" },
+      { label: "Infopédia — Português–Inglês", url: "https://www.infopedia.pt/dicionarios/portugues-ingles" },
+      { label: "Infopédia — Inglês–Português", url: "https://www.infopedia.pt/dicionarios/ingles-portugues" },
+      { label: "Linguee", url: "https://www.linguee.pt/" },
+      { label: "DeepL Tradutor", url: "https://www.deepl.com/translator" },
+      { label: "WordReference PT-EN", url: "https://www.wordreference.com/pten/" },
+      { label: "Dicionário de Calão (PDF)", url: "https://natura.di.uminho.pt/~jj/pln/calao/dicionario.pdf" },
+    ]},
+    { label: "Ortografia e Gramática", links: [
+      { label: "Ciberdúvidas da Língua Portuguesa", url: "https://ciberduvidas.iscte-iul.pt/" },
+      { label: "Ciberdúvidas — Pronúncia PT-PT", url: "https://ciberduvidas.iscte-iul.pt/outros/diversidades/outra-pronuncia/1014" },
+      { label: "Correcao.pt — Corretor Ortográfico e Gramatical", url: "https://www.correcao.pt/" },
+      { label: "FLiP — Corrector Ortográfico e Sintáctico", url: "https://www.flip.pt/FLiP-On-line/Corrector-ortografico-e-sintactico" },
+    ]},
+    { label: "Verbos e Conjugação", links: [
+      { label: "Conjuga-me", url: "https://conjuga-me.net/" },
+      { label: "Infopédia — Verbos Portugueses", url: "https://www.infopedia.pt/dicionarios/verbos-portugueses" },
+      { label: "Reverso Conjugator — Português", url: "https://conjugator.reverso.net/conjugation-portuguese.html" },
+      { label: "Verbos Portugueses — Prática", url: "https://www.verbos-portugueses.info/en/practise.html" },
+      { label: "Verbugata", url: "https://verbugata.com/" },
+    ]},
+    { label: "Pronúncia e Escuta", links: [
+      { label: "Forvo — Pronúncia PT", url: "https://forvo.com/languages/pt/" },
+      { label: "LangPractice — Números PT-PT", url: "https://langpractice.com/portuguese-portugal/numbers/listening#1,0,1000" },
+      { label: "MicMonster — Texto para Voz", url: "https://micmonster.com/" },
+      { label: "Narakeet — Texto para Áudio", url: "https://www.narakeet.com/app/text-to-audio/?projectId=c4fa7619-eb7b-49d9-84bc-15572bc0e046" },
+      { label: "Vocaroo — Gravador de Voz Online", url: "https://vocaroo.com/" },
+      { label: "YouGlish — Português", url: "https://pt.youglish.com/portuguese" },
+    ]},
+    { label: "Plataformas de Aprendizagem PT-PT", links: [
+      { label: "Practice Portuguese", url: "https://www.practiceportuguese.com/" },
+      { label: "Portuguesepedia", url: "https://www.portuguesepedia.com/" },
+      { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
+      { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
+      { label: "Marco Neves — Língua Portuguesa (YouTube)", url: "https://www.youtube.com/@marconeves/videos" },
+      { label: "Portuguese With Carla (YouTube)", url: "https://www.youtube.com/@portuguesewithcarla" },
+      { label: "Portuguese With Leo (YouTube)", url: "https://www.youtube.com/@portuguesewithleo" },
+      { label: "Talk The Streets — Liz Sharma (YouTube)", url: "https://www.youtube.com/@TalkTheStreets" },
+    ]},
+  ]},
+  { id: "s09", pt: "Notícias", en: "News", links: [
+    { label: "RTP Notícias", url: "https://www.rtp.pt/noticias/" },
+    { label: "RTP Notícias — Vídeo", url: "https://www.rtp.pt/noticias/videos" },
+    { label: "Euronews PT — Últimas Notícias", url: "https://pt.euronews.com/ultimas-noticias" },
+    { label: "CNN Portugal", url: "https://cnnportugal.iol.pt/" },
+    { label: "SIC Notícias", url: "https://sicnoticias.pt/" },
+    { label: "Público", url: "https://www.publico.pt/" },
+    { label: "Diário de Notícias", url: "https://www.dn.pt/" },
+    { label: "Observador", url: "https://www.observador.pt/" },
+    { label: "TSF — Rádio Notícias", url: "https://www.tsf.pt/" },
+    { label: "Correio da Manhã", url: "https://www.cmjornal.pt/" },
+    { label: "Lusa — Agência de Notícias", url: "https://www.lusa.pt/" },
+    { label: "ECO — Economia Online", url: "https://eco.pt/" },
+    { label: "Jornal de Negócios", url: "https://www.jornaldenegocios.pt/" },
+  ]},
+  { id: "s10", pt: "Podcasts", en: "Podcasts", links: [
+    { label: "RTP Zigzag — Podcasts", url: "https://www.rtp.pt/play/zigzag/podcasts" },
+    { label: "Fumaça — Séries", url: "https://fumaca.pt/category/series/" },
+    { label: "Biblioteca Pública (RTP)", url: "https://www.rtp.pt/play/p9930/biblioteca-publica" },
+    { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
+    { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
+    { label: "Portugal Manual — Artesanato (Spotify)", url: "https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid" },
+    { label: "Portugueses no Mundo — Antena 1 (Spotify)", url: "https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3" },
+    { label: "Avó Carmo (YouTube)", url: "https://www.youtube.com/@Av%C3%B3Carmo" },
+    { label: "Decifrar Pessoas (YouTube)", url: "https://www.youtube.com/@DecifrarPessoas/videos" },
+    { label: "Joana Perez (YouTube)", url: "https://www.youtube.com/@joana_perez" },
+    { label: "Não Mandas em Mim Podcast (YouTube)", url: "https://www.youtube.com/@NaoMandasemMim" },
+    { label: "O Martim (YouTube)", url: "https://www.youtube.com/@OMartim/videos" },
+    { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos" },
+  ]},
+  { id: "s11", pt: "Música", en: "Music", links: [
+    { label: "RTP Palco — Espectáculos de Música", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
+    { label: "Playlist — Top Portugal (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6ViL9RcFABv" },
+    { label: "Playlist — Fado (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6HJZtcjGrCn" },
+    { label: "Playlist — PT Clássicos (Spotify)", url: "https://open.spotify.com/playlist/19aeYRwKFy0DXZOyNs2Sjv" },
+    { label: "Playlist — Músicas PT (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DWYjjOmuB9ehg" },
+    { label: "Antena 3 (YouTube)", url: "https://www.youtube.com/@antena3rtp/videos" },
+    { label: "VMTV Portugal (YouTube)", url: "https://www.youtube.com/@VMTVpt/videos" },
+    { label: "Jorge Alexandre (YouTube)", url: "https://www.youtube.com/@jorgealexandre_14/videos" },
+  ]},
+  { id: "s12", pt: "Rádio", en: "Radio", links: [
+    { label: "Radio Garden — Portugal", url: "https://radio.garden/visit/portugal/lVedGqUL" },
+    { label: "Radio.pt — Todas as Estações PT", url: "https://www.radio.pt/country/portugal" },
+    { label: "Antena 1 — Directo", url: "https://www.antena1.rtp.pt/ouvir-em-direto/" },
+    { label: "Antena 3 — Directo", url: "https://www.antena3.rtp.pt/ouvir-em-direto/" },
+    { label: "TSF — Directo", url: "https://www.tsf.pt/direto/" },
+    { label: "RFM — Directo", url: "https://rfm.sapo.pt/radio/ouvir-online/" },
+    { label: "Rádio Comercial — Directo", url: "https://comercial.sapo.pt/radio/ouvir-online/" },
+    { label: "Rádio Portuense — Directo", url: "https://radioportuense.com/ouvir-em-direto/" },
+  ]},
+  { id: "s13", pt: "Livros, Literatura e Audiolivros", en: "Books, Literature & Audiobooks", subgroups: [
+    { label: "Televisão", links: [
+      { label: "Literatura Agora (RTP)", url: "https://www.rtp.pt/play/p1747/e197849/literatura-agora" },
+      { label: "Os Livros (RTP)", url: "https://www.rtp.pt/play/p2412/os-livros" },
+      { label: "A Vida Privada dos Livros (RTP)", url: "https://www.rtp.pt/play/p9466/e577708/a-vida-privada-dos-livros" },
+    ]},
+    { label: "Bibliotecas e Arquivos Digitais", links: [
+      { label: "Biblioteca Digital Camões", url: "http://cvc.instituto-camoes.pt/conhecer/biblioteca-digital-camoes.html" },
+      { label: "Biblioteca Nacional Digital", url: "https://bndigital.bnportugal.gov.pt/project/livros/" },
+      { label: "Imprensa Nacional — Livros em PDF", url: "https://imprensanacional.pt/livros-em-pdf/" },
+      { label: "Project Gutenberg — Português", url: "https://www.gutenberg.org/browse/languages/pt" },
+      { label: "Fundação Gulbenkian — Publicações", url: "https://gulbenkian.pt/publicacoes/" },
+    ]},
+    { label: "Livrarias", links: [
+      { label: "Wook", url: "https://www.wook.pt/" },
+      { label: "FNAC Portugal", url: "https://www.fnac.pt/" },
+      { label: "Bertrand Livreiros", url: "https://www.bertrand.pt/" },
+    ]},
+    { label: "Audiolivros", links: [
+      { label: "Imprensa Nacional — Audiolivros", url: "https://imprensanacional.pt/digitais/audiolivros/" },
+      { label: "Bertrand — Audiolivros em Português", url: "https://www.bertrand.pt/arvoretematica/audiolivros-em-portugues/25188x25189/P" },
+      { label: "Audiolivros — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLJrrzPTVK9DeTyGHEufvbmRpEPDsErlIp" },
+      { label: "Contos Portugueses — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLQ7SbCg65jTLZsvPsyBDg_KQYuMZBIymC" },
+    ]},
+    { label: "Canais YouTube", links: [
+      { label: "Abrir o Livro (YouTube)", url: "https://www.youtube.com/c/AbriroLivro" },
+      { label: "Mundo dos Poemas (YouTube)", url: "https://www.youtube.com/@mundodospoemas/videos" },
+      { label: "Livraria Aqui Há Gato (YouTube)", url: "https://www.youtube.com/@livrariaaquihagato/videos" },
+    ]},
+    { label: "Banda Desenhada", links: [
+      { label: "Astérix — Revista Gratuita PT", url: "https://asterix.com/pt-pt/gratis-a-revista-asterix-para-descarregar/" },
+    ]},
+  ]},
+  { id: "s14", pt: "Gastronomia e Culinária", en: "Food & Cooking", links: [
+    { label: "Mesa Portuguesa com Estrelas, com Certeza", url: "https://www.rtp.pt/play/p6444/mesa-portuguesa-com-estrelas-com-certeza" },
+    { label: "MasterChef Portugal", url: "https://www.rtp.pt/play/p9491/masterchef-portugal" },
+    { label: "Cozinha com Amor", url: "https://www.rtp.pt/play/p2496/e246134/cozinha-com-amor" },
+    { label: "Receitas Portuguesas — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV" },
+    { label: "Sabor Intenso (YouTube)", url: "https://www.youtube.com/@SaborIntenso/videos" },
+    { label: "Cozinha do Miguel (YouTube)", url: "https://www.youtube.com/@CozinhadoMiguel/videos" },
+    { label: "Tuga na Cozinha (YouTube)", url: "https://www.youtube.com/@TuganaCozinha" },
+    { label: "Frederica — Blog", url: "https://frederica.com/blogs/blog?page=1" },
+  ]},
+  { id: "s15", pt: "Conteúdo Infantil", en: "Children's Content", links: [
+    { label: "RTP Zigzag — Directo", url: "https://www.rtp.pt/play/direto/zigzag" },
+    { label: "Zigzag — Podcasts Infantis", url: "https://www.rtp.pt/play/zigzag/podcasts" },
+    { label: "Portuguese Fairy Tales (YouTube)", url: "https://www.youtube.com/@PortugueseFairyTales" },
+    { label: "Mundo Animado PT (YouTube)", url: "https://www.youtube.com/c/MundoAnimadoPT/videos" },
+    { label: "Projecto Adamastor — Audiolivros Infantis", url: "https://projectoadamastor.org/audiolivros-para-criancas/" },
+    { label: "Histórias Infantis — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9" },
+    { label: "Fundação Jorge Álvares — Contos e Lendas", url: "https://www.fundacaojorgealvares-bibliotecadigital.com/index.php?s=colecao&coleccao=contos-e-lendas" },
+  ]},
+  { id: "s16", pt: "Desporto", en: "Sport", links: [
+    { label: "Maisfutebol", url: "https://maisfutebol.iol.pt/" },
+    { label: "Jornal Record", url: "https://www.record.pt/" },
+    { label: "O Jogo", url: "https://www.ojogo.pt/" },
+    { label: "A Bola", url: "https://www.abola.pt/" },
+    { label: "Golo FM", url: "https://golo.fm/" },
+    { label: "O Ciclista Improvável (YouTube)", url: "https://www.youtube.com/c/OCiclistaImprov%C3%A1vel/videos" },
+    { label: "Podcast Futebol PT (Spotify)", url: "https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B" },
+  ]},
+  { id: "s17", pt: "Saúde, Psicologia e Bem-estar", en: "Health, Psychology & Wellbeing", links: [
+    { label: "Psicologia Também é Ciência (YouTube)", url: "https://www.youtube.com/@Psicologiatambemeciencia/videos" },
+    { label: "Momento Médico (YouTube)", url: "https://www.youtube.com/c/MomentoM%C3%A9dicoYouTube/videos" },
+    { label: "O Pediatra PT (YouTube)", url: "https://www.youtube.com/@opediatrapt/videos" },
+    { label: "Do Bem PT (YouTube)", url: "https://www.youtube.com/@Dobempt/videos" },
+    { label: "Podcast Saúde PT (Spotify)", url: "https://open.spotify.com/show/0wguYIGDBlsQ98UkmJKIQf" },
+  ]},
+  { id: "s18", pt: "Artesanato, DIY e Casa", en: "Crafts, DIY & Home", links: [
+    { label: "Trabalhos Manuais da Di (YouTube)", url: "https://www.youtube.com/c/TrabalhosManuaisdaDi/videos" },
+    { label: "Instituto Português do Tricot", url: "https://institutoportuguesdotricot.pt/" },
+    { label: "Fios Cruzados (YouTube)", url: "https://www.youtube.com/@fioscruzados/videos" },
+    { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos" },
+    { label: "Leroy Merlin Portugal (YouTube)", url: "https://www.youtube.com/c/leroymerlinportugal/videos" },
+    { label: "Querido, Mudei a Casa (YouTube)", url: "https://www.youtube.com/@queridomudeiacasaoficial/videos" },
+    { label: "GEM — Revistas de Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
+    { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos" },
+  ]},
+  { id: "s19", pt: "Média Moçambicana e Africana em Português", en: "Mozambican & African Portuguese Media", subgroups: [
+    { label: "Televisão e Rádio", links: [
+      { label: "RTP África", url: "https://www.rtp.pt/rtpafrica" },
+      { label: "RDP África — Rádio", url: "https://rdpafrica.rtp.pt/legacy/?icm=15638" },
+      { label: "TVM Moçambique — Directo", url: "http://online.tvm.co.mz/site/emdirecto/tvm1" },
+    ]},
+    { label: "Podcasts", links: [
+      { label: "Ouro Negro — Podcast", url: "https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5ibHVicnJ5LmNvbS9mZWVkcy9vdXJvbmVncm8ueG1s" },
+    ]},
+    { label: "YouTube", links: [
+      { label: "José Diversão (YouTube)", url: "https://www.youtube.com/@JoseDiversao/videos" },
+      { label: "Maningue Magic (YouTube)", url: "https://www.youtube.com/maninguemagic/playlists" },
+      { label: "Pátria Minha — Moz (YouTube)", url: "https://www.youtube.com/@patriaminhaMoz/videos" },
+    ]},
+  ]},
+  { id: "s20", pt: "Revistas e Publicações", en: "Magazines & Publications", links: [
+    { label: "Expresso", url: "https://expresso.pt/" },
+    { label: "Visão", url: "https://www.visao.pt/" },
+    { label: "Sábado", url: "https://www.sabado.pt/" },
+    { label: "Time Out Portugal", url: "https://www.timeout.pt/" },
+    { label: "Revista Business Portugal (Issuu)", url: "https://issuu.com/revistabusinessportugal" },
+    { label: "Best Guide Portugal (Issuu)", url: "https://issuu.com/bestguideportugal" },
+    { label: "GEM — Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
+    { label: "Echo Boomer", url: "https://echoboomer.pt/" },
+  ]},
+  { id: "s22", pt: "Comédia e Entretenimento — YouTube", en: "Comedy & Entertainment — YouTube Creators", links: [
+    { label: "Beatriz Gosta", url: "https://www.youtube.com/c/BeatrizGosta" },
+    { label: "Fernando Rocha", url: "https://www.youtube.com/c/FernandoRochaComedy" },
+    { label: "Guilherme Geirinhas", url: "https://www.youtube.com/@GuilhermeGeirinhas" },
+    { label: "Mat3us", url: "https://www.youtube.com/@mat3us/videos" },
+    { label: "Pierre Zago", url: "https://www.youtube.com/@PierreZago/videos" },
+    { label: "Raminhos", url: "https://www.youtube.com/@raminhos/videos" },
+  ]},
+  { id: "s23", pt: "Criadores Portugueses — YouTube", en: "Portuguese YouTube Creators (Various)", links: [
+    { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos" },
+    { label: "A Tua Filosofia", url: "https://www.youtube.com/@ATuaFilosofia/videos" },
+    { label: "Luís Pinto TekTest — Tecnologia", url: "https://www.youtube.com/@LuisPintoTekTest/videos" },
+    { label: "Olívia Ortiz", url: "https://www.youtube.com/@OliviaOrtiz/videos" },
+    { label: "Rádio Portuense Online", url: "https://www.youtube.com/c/R%C3%A1dioPortuenseOnline" },
+    { label: "Como os Pés na Terra", url: "https://www.youtube.com/c/Comosp%C3%A9snaterra" },
+    { label: "Jornalismo Porto Net", url: "https://www.youtube.com/c/JornalismoPortoNet" },
+  ]},
+  { id: "s24", pt: "Teatro e Artes Performativas", en: "Theatre & Performing Arts", links: [
+    { label: "RTP Palco — Teatro", url: "https://www.rtp.pt/play/palco/espetaculos/teatro/todos" },
+    { label: "RTP Palco — Música ao Vivo", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
+    { label: "Teatro Camões — Lisboa", url: "https://www.teatro-camoes.pt/" },
+    { label: "Teatro Nacional São João — Porto", url: "https://www.tnsj.pt/" },
+    { label: "Direcção-Geral das Artes", url: "https://www.dgartes.gov.pt/" },
+    { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN" },
+  ]},
+];
+const MEDIA_SECTIONS_SORTED = [...MEDIA_SECTIONS].sort((a, b) => a.pt.localeCompare(b.pt, "pt"));
+
 // ── SCIENCE & HEALTH VOCABULARY ─────────────────────────────
 const SH_VOCAB = {
   NOUN: ["o abandono","o abismo","a abordagem","o aborrecimento","o abscesso","o absurdo","os abusos","o abutre","a ação","o acaso","a aceitação","os acidentes","o aço","as ações","os acordes","o acréscimo","a acumulação","a acusação","o acusador","Adão","a adaptação","a adesão","a adição","a adolescência","a adoração","os adoradores","o adultério","o adversário","o advogado","a afeição","o afeto","os afetos","a afinidade","a aflição","as aflições","o agente","os agentes","o agnosticismo","a agonia","a água","as águas","a ajuda","a alegria","as alegrias","a aliança","o alimento","o alívio","a alma","as almas","o altar","a alteração","o Altíssimo","o aluno","os alunos","a ambição","o ambiente","o amor","o amor cristão","o amor divino","a análise","a analogia","o anjo","os anjos","a ansiedade","a aparência","as aparências","o apóstolo","os apóstolos","o Apóstolo Paulo","o ar","o arrependimento","a arte","a árvore","a árvore do conhecimento","a árvore da vida","a ascensão","a aspiração","o ateísmo","a atenção","a atitude","o ato","a atração","o atributo","os atributos","a autoridade","a balança","o barbarismo","a base","a batalha","o batismo","a beleza","o bem","o bem-estar","a benção","a bênção","as bênçãos","o benefício","a Bíblia","a blasfêmia","a bondade","a bondade divina","a busca","a cabeça","o caminho","os caminhos","o campo","o câncer","o cântico","o caos","a capacidade","o caráter","a caridade","a carnalidade","a carne","a casa","o casamento","a castidade","o castigo","a causa","a causalidade","o cérebro","a certeza","o ceticismo","o céu","os céus","a ciência","a Ciência Cristã","a Ciência divina","o cientista","o Cientista Cristão","a clareza","a consciência","a consciência humana","o conselho","a consequência","o conforto","a confusão","o conhecimento","a coragem","o coração","os corações","o corpo","a corporalidade","os corpos","a cortesia","a crença","as crenças","a crença humana","o crente","o crescimento","a criação","a criança","as crianças","a criatura","Cristo Jesus","Cristo","o Cristo","a crucifixão","a cruz","a cura","a cura divina","a dádiva","a decisão","a declaração","o declínio","o defeito","a defesa","a definição","a deidade","a demência","a demonstração","a denominação","o desânimo","a desarmonia","o descanso","a descoberta","a descrença","o desejo","os desejos","o desenvolvimento","o desespero","a destruição","a determinação","Deus","o Deus","o diabo","o diagnóstico","a diferença","a dificuldade","a dignidade","o discernimento","a disciplina","o discípulo","os discípulos","a discórdia","a distinção","a divindade","a divisão","a doença","as doenças","a doença mental","os doentes","o dogma","os dogmas","o dom","o domínio","a dor","as dores","a doutrina","as doutrinas","a dúvida","a educação","o efeito","o ego","o egoísmo","a eletricidade","a elevação","a eloquência","a emoção","a energia","a energia divina","a enfermidade","o engano","o ensinamento","os ensinamentos","o entendimento","o equilíbrio","a era","o erro","os erros","a Escritura","as escrituras","a escuridão","a esfera","a esperança","o Espírito","o Espírito Santo","a espiritualidade","a espiritualização","a essência","a estabilidade","o estado","a eternidade","a ética","o eu","o evangelho","a evidência","a evolução","a existência","a expiação","a expressão","a fé","a febre","a felicidade","o fenômeno","os fenômenos","a fidelidade","a filosofia","o fim","a força","as forças","a forma","a formação","a fraternidade","a fraude","o fruto","os frutos","o fundamento","os fundamentos","o futuro","a generosidade","a glória","a glória de Deus","o gosto","o governo","a graça","a graça celestial","a grandeza","a gratidão","o guia","a harmonia","a herança","a hipocrisia","a hipótese","as hipóteses","a história","o homem","o homem mortal","o homem verdadeiro","os homens","a humildade","a ignorância","a igreja","as igrejas","a igualdade","a iluminação","a ilusão","as ilusões","a imagem","as imagens","a imaginação","a imoralidade","a imortalidade","a imperfeição","a impossibilidade","a incapacidade","a individualidade","a inércia","a infância","o inferno","o infinito","a infinitude","a influência","a ingratidão","o inimigo","os inimigos","a inimizade","a iniquidade","a injustiça","a inocência","a insanidade","a inspiração","a instituição","as instituições","a instrução","a integridade","a inteligência","a intenção","a intuição","a ira","a irmã","o irmão","o jardim","Jeová","o Jeová","a Jerusalém","Jesus","o Jesus","João","a jornada","o júbilo","o judaísmo","a justiça","a justiça divina","a justificação","a juventude","a lealdade","a lei","a lei da matéria","as leis","a liberdade","a libertação","a lição","as lições","a lógica","Logos","a loucura","o louvor","a lua","o lugar","a luta","a luz","a mãe","a magia","o magnetismo","o mal","a maldade","a maldição","a maneira","a manifestação","a mansidão","a mão","as mãos","o mar","a maravilha","os mártires","o martírio","a matéria","a materialidade","o materialismo","a maternidade","a mediação","o mediador","o medicamento","a medicina","o médico","os médicos","o medo","a memória","a mensagem","a mente","a Mente divina","a mente humana","a mente mortal","a mentira","a metafísica","o metafísico","o milagre","os milagres","a misericórdia","a missão","o mistério","a moral","a moralidade","a morte","a motivação","o movimento","a mudança","o mundo","a nação","o nada","a natureza","a natureza divina","a necessidade","o nome","os nomes","a obediência","o objetivo","a obra","as obras","a oração","a ordem","a origem","a originalidade","o osso","os ossos","a paciência","a paciente","o paciente","os pacientes","o pai","o Pai-Mãe","os pais","a paixão","a palavra","as palavras","a parábola","o paraíso","a paz","o pecado","o pecador","os pecadores","os pecados","a pedra","o pensamento","os pensamentos","a percepção","a perda","a perfeição","a permanência","a perseguição","a perseverança","a perturbação","a pesquisa","a pessoa","as pessoas","o poder","o poder de cura","o poder divino","os poderes","a política","a pomba","o ponto de vista","o princípio","o Princípio divino","os princípios","a profecia","o profeta","os profetas","a profundidade","o progresso","a promessa","o propósito","a prosperidade","a prova","a pureza","a purificação","a questão","a razão","a reação","a realidade","a realização","a redenção","a regeneração","a rejeição","a religião cristã","a religião","a religiosidade","o remédio","a renovação","a renúncia","a repetição","o repouso","a representação","a ressurreição","a restauração","o resultado","os resultados","a retidão","a revelação","a revolução","a riqueza","as riquezas","a sabedoria","a salvação","o salvador","a sanidade","a santidade","o santo","Satanás","a satisfação","a saúde","o século","os séculos","o segredo","a semelhança","a semente","as sementes","o ser","o ser humano","a serenidade","o sermão","a serpente","o servo","a significação","o significado","o silêncio","o símbolo","os símbolos","a simplicidade","a sinceridade","o sintoma","os sintomas","o sistema","a situação","a sociedade","o sofrimento","os sofrimentos","a solidão","a solução","o sonho","os sonhos","a substância","o sucesso","a sugestão","a superioridade","a superstição","a supremacia","o tabernáculo","o temor","a tempestade","o templo","o tempo","os tempos","a tentação","a teologia","a teoria","as teorias","a terapia","o termo","os termos","a terra","o terror","a tese","o tesouro","o testemunho","os testemunhos","o texto","os textos","a tradição","a tradução","a transformação","a transgressão","a transição","o tratamento","as trevas","a tríade","a tribulação","o tribunal","a tristeza","o triunfo","o trono","a tuberculose","o tumor","os tumores","o túmulo","a unção","a união","a unidade","o universo","a utilidade","a vaidade","o valor","os valores","a verdade","a verdade divina","a verdade eterna","as verdades","a vergonha","a versão","o versículo","os versículos","a vida","a vida espiritual","a vida eterna","a vigilância","o vigor","o vínculo","a violência","a virtude","as virtudes","a visão","a vitória","a vitalidade","a vontade","a vontade divina","a voz","o zelo"],
@@ -834,16 +1149,17 @@ const GRAMMAR_TOPICS = [
   },
 ];
 
+// Labels are derived from GRAMMAR_TOPICS to keep them as a single source of truth.
 const GRAMMAR_FOCUS_TOPICS = [
-  { id: "word_order",        label: "Word Order",          instruction: "Focus on word order: demonstrate correct EP sentence structure in your responses. When relevant, gently point out word order differences from English or Brazilian Portuguese. Use varied sentence structures including negation, questions, and adjective placement." },
-  { id: "clitics",           label: "Clitic Pronouns",     instruction: "Focus on clitic pronouns: use clitic constructions naturally in your responses, especially EP-style enclisis (verb-clitic). When the learner uses a clitic incorrectly or in BP position, note it gently. Demonstrate mesoclisis in the future/conditional where natural." },
-  { id: "ser_estar",         label: "Ser vs. Estar",       instruction: "Focus on ser vs. estar: consciously use both verbs in varied contexts across your responses. Demonstrate the EP progressive (estar a + infinitive) rather than the gerund. When the learner confuses ser/estar, correct it." },
-  { id: "por_para",          label: "Por vs. Para",        instruction: "Focus on por vs. para: use both prepositions naturally across your responses in varied constructions. When the learner uses one where the other is needed, correct it with a brief explanation." },
-  { id: "articles",          label: "Articles",            instruction: "Focus on articles: model correct EP article usage, especially the EP convention of placing definite articles before first names. Demonstrate article contractions naturally. Correct missing or incorrect articles in the learner's input." },
-  { id: "gender_agreement",  label: "Gender & Agreement",  instruction: "Focus on gender and agreement: ensure all your responses model perfect gender/number agreement. When the learner makes agreement errors (wrong article, adjective ending, or participle), correct them clearly." },
-  { id: "subjunctive",       label: "Subjunctive Triggers",instruction: "Focus on the subjunctive: weave subjunctive constructions naturally into your responses using triggers like embora, espero que, é importante que, quando (+ futuro do conjuntivo). When the learner should use the subjunctive but doesn't, point it out." },
-  { id: "personal_infinitive",label: "Personal Infinitive",instruction: "Focus on the personal infinitive: use personal infinitive constructions naturally in your responses. Demonstrate the contrast with the subjunctive where relevant. If the learner avoids it or uses a subjunctive where a personal infinitive fits better, note it." },
-];
+  { id: "word_order",         instruction: "Focus on word order: demonstrate correct EP sentence structure in your responses. When relevant, gently point out word order differences from English or Brazilian Portuguese. Use varied sentence structures including negation, questions, and adjective placement." },
+  { id: "clitics",            instruction: "Focus on clitic pronouns: use clitic constructions naturally in your responses, especially EP-style enclisis (verb-clitic). When the learner uses a clitic incorrectly or in BP position, note it gently. Demonstrate mesoclisis in the future/conditional where natural." },
+  { id: "ser_estar",          instruction: "Focus on ser vs. estar: consciously use both verbs in varied contexts across your responses. Demonstrate the EP progressive (estar a + infinitive) rather than the gerund. When the learner confuses ser/estar, correct it." },
+  { id: "por_para",           instruction: "Focus on por vs. para: use both prepositions naturally across your responses in varied constructions. When the learner uses one where the other is needed, correct it with a brief explanation." },
+  { id: "articles",           instruction: "Focus on articles: model correct EP article usage, especially the EP convention of placing definite articles before first names. Demonstrate article contractions naturally. Correct missing or incorrect articles in the learner's input." },
+  { id: "gender_agreement",   instruction: "Focus on gender and agreement: ensure all your responses model perfect gender/number agreement. When the learner makes agreement errors (wrong article, adjective ending, or participle), correct them clearly." },
+  { id: "subjunctive",        instruction: "Focus on the subjunctive: weave subjunctive constructions naturally into your responses using triggers like embora, espero que, é importante que, quando (+ futuro do conjuntivo). When the learner should use the subjunctive but doesn't, point it out." },
+  { id: "personal_infinitive", instruction: "Focus on the personal infinitive: use personal infinitive constructions naturally in your responses. Demonstrate the contrast with the subjunctive where relevant. If the learner avoids it or uses a subjunctive where a personal infinitive fits better, note it." },
+].map(ft => ({ ...ft, label: GRAMMAR_TOPICS.find(gt => gt.id === ft.id).label }));
 
 
 function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode) {
@@ -1042,6 +1358,22 @@ const toolBtn = (active) => ({
 const panelStyle = { padding: "12px 16px", borderBottom: "0.5px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", flexShrink: 0, overflowY: "auto", maxHeight: 300 };
 const listPanelStyle = { padding: "12px 16px", background: "var(--color-background-secondary)", flex: 1, overflowY: "auto" };
 const secWrap = { marginBottom: 14 };
+
+// Pure function — no state or prop dependencies; stable reference across renders.
+// Defined at module scope so React.memo on MessageBubble is not defeated by a new reference each render.
+function renderWithParens(text, baseColor, baseWeight) {
+  const parts = text.split(/(\([^)]+\))/g);
+  return parts.map((part, pi) => {
+    if (/^\([^)]+\)$/.test(part)) {
+      const inner = part.slice(1, -1).toLowerCase();
+      const isCorrection = /\bnot\b|\bnão\b|\binstead of\b|\bem vez de\b|\buse\b|\bshould be\b|\bdevia\b|\bdeveria\b|\bcorrect\b/.test(inner);
+      return isCorrection
+        ? <span key={pi} style={{ color: "#800000", fontWeight: 700, fontSize: 16, fontStyle: "italic" }}>{part}</span>
+        : <span key={pi} style={{ color: "#166534", fontWeight: 700, fontSize: 16, fontStyle: "italic" }}>{part}</span>;
+    }
+    return <span key={pi} style={{ color: baseColor, fontWeight: baseWeight }}>{part}</span>;
+  });
+}
 
 const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak, renderWithParens }) {
   if (m._grammarCard && m._grammar) {
@@ -1273,64 +1605,64 @@ function App() {
   // Keep ref in sync so speak() always sees the current voice without stale closure issues
   useEffect(() => { selectedVoiceRef.current = selectedVoice; }, [selectedVoice]);
 
-const createRecognition = (SR, lang) => {
-  const r = new SR();
-  r.lang = lang;
-  r.continuous = true;
-  r.interimResults = true;
-  r.maxAlternatives = 1;
-  r.onresult = (e) => {
-    let interim = "";
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) {
-        finalTranscriptRef.current += (finalTranscriptRef.current ? " " : "") + e.results[i][0].transcript;
-      } else {
-        interim += e.results[i][0].transcript;
+  const createRecognition = (SR, lang) => {
+    const r = new SR();
+    r.lang = lang;
+    r.continuous = true;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    r.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          finalTranscriptRef.current += (finalTranscriptRef.current ? " " : "") + e.results[i][0].transcript;
+        } else {
+          interim += e.results[i][0].transcript;
+        }
       }
-    }
-    setInput((finalTranscriptRef.current + (interim ? " " + interim : "")).trim());
+      setInput((finalTranscriptRef.current + (interim ? " " + interim : "")).trim());
+    };
+    r.onerror = (ev) => {
+      if (!intentionalStopRef.current && ev.error === "no-speech") return;
+      setListening(false);
+    };
+    r.onend = () => {
+      if (!intentionalStopRef.current) {
+        try {
+          const next = createRecognition(SR, lang);
+          recognitionRef.current = next;
+          next.start();
+          return;
+        } catch (_) { /* fall through */ }
+      }
+      setListening(false);
+      if (enviarStopRef.current) { enviarStopRef.current = false; return; }
+      const final = finalTranscriptRef.current.trim();
+      if (final) {
+        setInput(final);
+        sendMessage(final);
+      }
+    };
+    return r;
   };
-  r.onerror = (ev) => {
-    if (!intentionalStopRef.current && ev.error === "no-speech") return;
+
+  const startListening = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    intentionalStopRef.current = false;
+    finalTranscriptRef.current = "";
+    const r = createRecognition(SR, speechLang);
+    recognitionRef.current = r;
+    r.start();
+    setListening(true);
+  };
+
+  const stopListening = () => {
+    intentionalStopRef.current = true;
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
     setListening(false);
   };
-  r.onend = () => {
-    if (!intentionalStopRef.current) {
-      try {
-        const next = createRecognition(SR, lang);
-        recognitionRef.current = next;
-        next.start();
-        return;
-      } catch (_) { /* fall through */ }
-    }
-    setListening(false);
-    if (enviarStopRef.current) { enviarStopRef.current = false; return; }
-    const final = finalTranscriptRef.current.trim();
-    if (final) {
-      setInput(final);
-      sendMessage(final);
-    }
-  };
-  return r;
-};
-
-const startListening = () => {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return;
-  intentionalStopRef.current = false;
-  finalTranscriptRef.current = "";
-  const r = createRecognition(SR, speechLang);
-  recognitionRef.current = r;
-  r.start();
-  setListening(true);
-};
-
-const stopListening = () => {
-  intentionalStopRef.current = true;
-  recognitionRef.current?.stop();
-  recognitionRef.current = null;
-  setListening(false);
-};
 
   const speakViaAzure = async (text, lang = "pt-PT") => {
     if (!azureKey || !azureRegion || !text) return false;
@@ -1470,7 +1802,7 @@ const stopListening = () => {
   const removeTopic = (i) => setTopics(prev => { const next = prev.filter((_, idx) => idx !== i); lsSet("pe_topics", next); return next; });
 
   const sendMessage = async (overrideText) => {
-	if (listening) {
+    if (listening) {
       intentionalStopRef.current = true;
       enviarStopRef.current = true;
       recognitionRef.current?.stop();
@@ -1612,33 +1944,20 @@ const stopListening = () => {
   const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
   const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
 
-  const verbRefList = verbRefTab === "irregular" ? IRREGULAR_VERBS.map(v => ({inf:v.inf,en:v.en}))
+  const verbRefList = verbRefTab === "irregular" ? IRREGULAR_VERBS_SLIM
     : verbRefTab === "ar" ? REGULAR_AR_VERBS : REGULAR_ER_IR_VERBS;
 
   const filteredVerbDropdown = useMemo(() => {
     const q = verbDropdownSearch.toLowerCase();
     if (!q) return ALL_VERB_INFS_SORTED;
     return ALL_VERB_INFS_SORTED.filter(v => {
-      const en = ALL_VERBS_DATA.find(x => x.inf === v)?.en || "";
+      const en = ALL_VERBS_MAP.get(v) || "";
       return v.includes(q) || en.toLowerCase().includes(q);
     });
   }, [verbDropdownSearch]);
 
   const irreg = IRREGULAR_VERBS.find(v => v.inf === selectedVerb);
 
-  function renderWithParens(text, baseColor, baseWeight) {
-    const parts = text.split(/(\([^)]+\))/g);
-    return parts.map((part, pi) => {
-      if (/^\([^)]+\)$/.test(part)) {
-        const inner = part.slice(1, -1).toLowerCase();
-        const isCorrection = /\bnot\b|\bnão\b|\binstead of\b|\bem vez de\b|\buse\b|\bshould be\b|\bdevia\b|\bdeveria\b|\bcorrect\b/.test(inner);
-        return isCorrection
-          ? <span key={pi} style={{ color: "#800000", fontWeight: 700, fontSize: 16, fontStyle: "italic" }}>{part}</span>
-          : <span key={pi} style={{ color: "#166534", fontWeight: 700, fontSize: 16, fontStyle: "italic" }}>{part}</span>;
-      }
-      return <span key={pi} style={{ color: baseColor, fontWeight: baseWeight }}>{part}</span>;
-    });
-  }
 
   return (
     <div style={{ ...themeVars, colorScheme: theme === "system" ? "light dark" : theme, fontFamily: "var(--font-sans)", display: "flex", flexDirection: "column", height: "100vh", maxHeight: 760, minHeight: 500, background: "var(--color-background-primary)" }}>
@@ -1687,11 +2006,11 @@ const stopListening = () => {
         <div ref={verbDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Verb</span>
           <button onClick={() => { setVerbDropdownOpen(o => !o); setVerbDropdownSearch(""); }}
-            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS.some(iv => iv.inf === verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
             {(() => {
-              const rawEn = ALL_VERBS_DATA.find(x => x.inf === verbOfSession)?.en || "";
+              const rawEn = ALL_VERBS_MAP.get(verbOfSession) || "";
               const en = rawEn.replace(/\(([^()]+\([^()]+\)[^()]*)\)/g, (m, outer) => `(${outer.replace(/\(([^()]+)\)/g, '[$1]')})`);
-              const isIrreg = IRREGULAR_VERBS.some(iv => iv.inf === verbOfSession);
+              const isIrreg = IRREGULAR_VERBS_SET.has(verbOfSession);
               return <>{verbOfSession.toUpperCase()}{en ? <span style={{ fontWeight: 400 }}> — ({en})</span> : null}{isIrreg ? <span style={{ fontWeight: 400 }}> irr</span> : null}</>;
             })()}
             <span style={{ fontSize: 12, marginLeft: 2 }}>▾</span>
@@ -1703,8 +2022,8 @@ const stopListening = () => {
                 style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid #e5e7eb", outline: "none", background: "#f9fafb", color: "#111827", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
               <div style={{ overflowY: "auto", flex: 1, background: "#ffffff" }}>
                 {filteredVerbDropdown.map(v => {
-                  const isIrreg = IRREGULAR_VERBS.some(iv => iv.inf === v);
-                  const rawEn = ALL_VERBS_DATA.find(x => x.inf === v)?.en || "";
+                  const isIrreg = IRREGULAR_VERBS_SET.has(v);
+                  const rawEn = ALL_VERBS_MAP.get(v) || "";
                   const en = rawEn.replace(/\(([^()]+\([^()]+\)[^()]*)\)/g, (m, outer) => `(${outer.replace(/\(([^()]+)\)/g, '[$1]')})`);
                   const color = isIrreg ? "#800000" : "#2563eb";
                   const isSelected = v === verbOfSession;
@@ -2374,312 +2693,10 @@ const stopListening = () => {
             </div>
           )}
           {listTab === "media" && (() => {
-            const MEDIA_SECTIONS = [
-              { id: "s01", pt: "Televisão em Directo & Plataformas de Streaming", en: "Live TV & Streaming Platforms", links: [
-                { label: "RTP Play — Directo", url: "https://www.rtp.pt/play/direto" },
-                { label: "RTP2 — Directo", url: "https://www.rtp.pt/play/direto/rtp2" },
-                { label: "RTP3 / RTP Notícias — Directo", url: "https://www.rtp.pt/play/direto/rtp3" },
-                { label: "RTP Play — Arquivo e On-Demand", url: "https://www.rtp.pt/play/" },
-                { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/" },
-                { label: "Porto Canal — Directo", url: "https://portocanal.sapo.pt/live" },
-                { label: "SIC — Directo", url: "https://www.sic.pt/direto" },
-                { label: "SIC Notícias — Directo", url: "https://sicnoticias.pt/direto" },
-                { label: "Opto SIC — On-Demand", url: "https://opto.sic.pt/" },
-                { label: "TVI — Directo", url: "https://tvi.iol.pt/direto" },
-                { label: "TVI Player — On-Demand", url: "https://tviplayer.iol.pt/" },
-                { label: "Euronews PT — Directo", url: "https://pt.euronews.com/live" },
-                { label: "CNN Portugal — Directo", url: "https://cnnportugal.iol.pt/direto" },
-                { label: "Canal 180 — Cultura e Artes", url: "https://canal180.pt/" },
-                { label: "Lista IPTV Gratuita e Legal (Reddit)", url: "https://www.reddit.com/r/portugal/comments/hadmt5/lista_de_iptv_gratuita_e_legal/" },
-              ]},
-              { id: "s02", pt: "Séries de Ficção Portuguesa", en: "Portuguese Drama & Fiction Series", links: [
-                { label: "Os Nossos Dias", url: "https://www.rtp.pt/play/p1844/os-nossos-dias" },
-                { label: "Bem-Vindos a Beirais", url: "https://www.rtp.pt/play/p1222/bem-vindos-a-beirais" },
-                { label: "Pôr do Sol", url: "https://www.rtp.pt/play/p9165/por-do-sol" },
-                { label: "Crónica dos Bons Malandros", url: "https://www.rtp.pt/play/p8013/cronica-dos-bons-malandros" },
-                { label: "Conta-me Como Foi", url: "https://www.rtp.pt/play/p6487/conta-me-como-foi" },
-                { label: "República", url: "https://www.rtp.pt/play/p9328/republica" },
-                { label: "Sara", url: "https://www.rtp.pt/play/p4996/e696433/sara" },
-                { label: "Terra Nova", url: "https://www.rtp.pt/play/p7334/terra-nova" },
-                { label: "Esta Língua Que Nos Une", url: "https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une" },
-                { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias" },
-                { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames" },
-                { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC" },
-              ]},
-              { id: "s03", pt: "Comédia, Variedades e Talk Shows", en: "Comedy, Variety & Talk Shows", links: [
-                { label: "5 Para a Meia-Noite", url: "https://www.rtp.pt/play/p9868/5-para-a-meia-noite" },
-                { label: "Alta Definição (SIC)", url: "https://sic.pt/programas/altadefinicao-programas/" },
-                { label: "Isto é Gozar com Quem Trabalha (SIC)", url: "https://sic.pt/programas/istoegozarcomquemtrabalha/" },
-                { label: "Férias Cá Dentro", url: "https://www.rtp.pt/play/p10536/e633736/ferias-ca-dentro" },
-                { label: "Cuidado com a Língua", url: "https://www.rtp.pt/play/p3991/cuidado-com-a-lingua" },
-                { label: "Raminhos (YouTube)", url: "https://www.youtube.com/@raminhos/videos" },
-                { label: "Pierre Zago (YouTube)", url: "https://www.youtube.com/@PierreZago/videos" },
-                { label: "Beatriz Gosta (YouTube)", url: "https://www.youtube.com/c/BeatrizGosta" },
-              ]},
-              { id: "s04", pt: "Documentários e Actualidade", en: "Documentaries & Current Affairs", links: [
-                { label: "RTP Play — Documentários", url: "https://www.rtp.pt/play/colecao/documentarios" },
-                { label: "FFMS Play — Documentários", url: "https://www.ffms.pt/pt-pt/ffms-play/documentarios" },
-                { label: "Canal Documentários PT (YouTube)", url: "https://www.youtube.com/channel/UCAzXTUnXaYXsscGtzWae1dA" },
-                { label: "Fundação Francisco Manuel dos Santos (YouTube)", url: "https://www.youtube.com/@ffmspt/videos" },
-              ]},
-              { id: "s05", pt: "Viagens e Geografia", en: "Travel & Geography", links: [
-                { label: "Portugal Mais Perto", url: "https://www.rtp.pt/play/p5665/portugal-mais-perto" },
-                { label: "Guia de Portugal", url: "https://www.rtp.pt/play/p3376/e282290/guia-de-portugal" },
-                { label: "Portugal a Pé", url: "https://www.rtp.pt/play/p2272/portugal-a-pe" },
-                { label: "Visita Guiada", url: "https://www.rtp.pt/play/p7378/visita-guiada" },
-                { label: "Lisboa, Cidade Triste e Alegre", url: "https://www.rtp.pt/play/p10399/e623375/lisboa-cidade-triste-e-alegre" },
-                { label: "Alma de Viajante", url: "https://www.almadeviajante.com/" },
-                { label: "Cidades de Portugal (YouTube)", url: "https://www.youtube.com/@CidadesdePortugal/videos" },
-                { label: "Meio Cheio (YouTube)", url: "https://www.youtube.com/@MeioCheio/videos" },
-                { label: "Remote Portugal (YouTube)", url: "https://www.youtube.com/@RemotePortugal/videos" },
-              ]},
-              { id: "s06", pt: "Natureza, Vida Selvagem e Ambiente", en: "Nature, Wildlife & Environment", links: [
-                { label: "Geosfera", url: "https://www.rtp.pt/play/p960/e94486/geosfera" },
-                { label: "Vida Animal", url: "https://www.rtp.pt/play/p553/e235162/vida-animal" },
-                { label: "Natureza e Vida Selvagem", url: "https://www.rtp.pt/play/p1776/e179598/natureza-e-vida-selvagem" },
-                { label: "Faça Chuva, Faça Sol", url: "https://www.rtp.pt/play/p14288/e820411/faca-chuva-faca-sol" },
-                { label: "Jardim Zoológico de Lisboa (YouTube)", url: "https://www.youtube.com/user/ZoologicoJardim/playlists" },
-                { label: "SPEA BirdLife Portugal (YouTube)", url: "https://www.youtube.com/@spea_birdlife/videos" },
-                { label: "A Cientista Agrícola", url: "https://acientistaagricola.pt/" },
-                { label: "Portugal Rural na Prática (YouTube)", url: "https://www.youtube.com/@portugalruralnapratica/videos" },
-              ]},
-              { id: "s07", pt: "História e Cultura", en: "History & Culture", links: [
-                { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/" },
-                { label: "A Porta da História", url: "https://www.rtp.pt/play/p2097/a-porta-da-historia" },
-                { label: "Herdeiros de Saramago", url: "https://www.rtp.pt/play/p7972/herdeiros-de-saramago" },
-                { label: "História de Portugal JHS (YouTube)", url: "https://www.youtube.com/@historiadeportugaljhs3389" },
-                { label: "Sete Cidades — Da Lenda à Realidade", url: "https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade" },
-                { label: "Portugal Tradições (YouTube)", url: "https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es" },
-                { label: "Nionoi — História PT (YouTube)", url: "https://www.youtube.com/c/Nionoi/featured" },
-                { label: "Casa Comum — Universidade do Porto", url: "https://www.up.pt/casacomum/" },
-                { label: "Direcção-Geral do Património Cultural", url: "https://patrimoniocultural.gov.pt/" },
-                { label: "Agenda Cultural do Porto", url: "https://agendaculturalporto.org/" },
-                { label: "Agenda LX — Lisboa", url: "https://www.agendalx.pt/" },
-              ]},
-              { id: "s08", pt: "Ferramentas de Língua Portuguesa", en: "Portuguese Language Tools", subgroups: [
-                { label: "Dicionários e Tradução", links: [
-                  { label: "Priberam — Dicionário", url: "https://dicionario.priberam.org/" },
-                  { label: "Infopédia — Português–Inglês", url: "https://www.infopedia.pt/dicionarios/portugues-ingles" },
-                  { label: "Infopédia — Inglês–Português", url: "https://www.infopedia.pt/dicionarios/ingles-portugues" },
-                  { label: "Linguee", url: "https://www.linguee.pt/" },
-                  { label: "DeepL Tradutor", url: "https://www.deepl.com/translator" },
-                  { label: "WordReference PT-EN", url: "https://www.wordreference.com/pten/" },
-                  { label: "Dicionário de Calão (PDF)", url: "https://natura.di.uminho.pt/~jj/pln/calao/dicionario.pdf" },
-                ]},
-                { label: "Ortografia e Gramática", links: [
-                  { label: "Ciberdúvidas da Língua Portuguesa", url: "https://ciberduvidas.iscte-iul.pt/" },
-                  { label: "Ciberdúvidas — Pronúncia PT-PT", url: "https://ciberduvidas.iscte-iul.pt/outros/diversidades/outra-pronuncia/1014" },
-                  { label: "Correcao.pt — Corretor Ortográfico e Gramatical", url: "https://www.correcao.pt/" },
-                  { label: "FLiP — Corrector Ortográfico e Sintáctico", url: "https://www.flip.pt/FLiP-On-line/Corrector-ortografico-e-sintactico" },
-                ]},
-                { label: "Verbos e Conjugação", links: [
-                  { label: "Conjuga-me", url: "https://conjuga-me.net/" },
-                  { label: "Infopédia — Verbos Portugueses", url: "https://www.infopedia.pt/dicionarios/verbos-portugueses" },
-                  { label: "Reverso Conjugator — Português", url: "https://conjugator.reverso.net/conjugation-portuguese.html" },
-                  { label: "Verbos Portugueses — Prática", url: "https://www.verbos-portugueses.info/en/practise.html" },
-                  { label: "Verbugata", url: "https://verbugata.com/" },
-                ]},
-                { label: "Pronúncia e Escuta", links: [
-                  { label: "Forvo — Pronúncia PT", url: "https://forvo.com/languages/pt/" },
-                  { label: "LangPractice — Números PT-PT", url: "https://langpractice.com/portuguese-portugal/numbers/listening#1,0,1000" },
-                  { label: "MicMonster — Texto para Voz", url: "https://micmonster.com/" },
-                  { label: "Narakeet — Texto para Áudio", url: "https://www.narakeet.com/app/text-to-audio/?projectId=c4fa7619-eb7b-49d9-84bc-15572bc0e046" },
-                  { label: "Vocaroo — Gravador de Voz Online", url: "https://vocaroo.com/" },
-                  { label: "YouGlish — Português", url: "https://pt.youglish.com/portuguese" },
-                ]},
-                { label: "Plataformas de Aprendizagem PT-PT", links: [
-                  { label: "Practice Portuguese", url: "https://www.practiceportuguese.com/" },
-                  { label: "Portuguesepedia", url: "https://www.portuguesepedia.com/" },
-                  { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
-                  { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
-                  { label: "Marco Neves — Língua Portuguesa (YouTube)", url: "https://www.youtube.com/@marconeves/videos" },
-                  { label: "Portuguese With Carla (YouTube)", url: "https://www.youtube.com/@portuguesewithcarla" },
-                  { label: "Portuguese With Leo (YouTube)", url: "https://www.youtube.com/@portuguesewithleo" },
-                  { label: "Talk The Streets — Liz Sharma (YouTube)", url: "https://www.youtube.com/@TalkTheStreets" },
-                ]},
-              ]},
-              { id: "s09", pt: "Notícias", en: "News", links: [
-                { label: "RTP Notícias", url: "https://www.rtp.pt/noticias/" },
-                { label: "RTP Notícias — Vídeo", url: "https://www.rtp.pt/noticias/videos" },
-                { label: "Euronews PT — Últimas Notícias", url: "https://pt.euronews.com/ultimas-noticias" },
-                { label: "CNN Portugal", url: "https://cnnportugal.iol.pt/" },
-                { label: "SIC Notícias", url: "https://sicnoticias.pt/" },
-                { label: "Público", url: "https://www.publico.pt/" },
-                { label: "Diário de Notícias", url: "https://www.dn.pt/" },
-                { label: "Observador", url: "https://www.observador.pt/" },
-                { label: "TSF — Rádio Notícias", url: "https://www.tsf.pt/" },
-                { label: "Correio da Manhã", url: "https://www.cmjornal.pt/" },
-                { label: "Lusa — Agência de Notícias", url: "https://www.lusa.pt/" },
-                { label: "ECO — Economia Online", url: "https://eco.pt/" },
-                { label: "Jornal de Negócios", url: "https://www.jornaldenegocios.pt/" },
-              ]},
-              { id: "s10", pt: "Podcasts", en: "Podcasts", links: [
-                { label: "RTP Zigzag — Podcasts", url: "https://www.rtp.pt/play/zigzag/podcasts" },
-                { label: "Fumaça — Séries", url: "https://fumaca.pt/category/series/" },
-                { label: "Biblioteca Pública (RTP)", url: "https://www.rtp.pt/play/p9930/biblioteca-publica" },
-                { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
-                { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
-                { label: "Portugal Manual — Artesanato (Spotify)", url: "https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid" },
-                { label: "Portugueses no Mundo — Antena 1 (Spotify)", url: "https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3" },
-                { label: "Avó Carmo (YouTube)", url: "https://www.youtube.com/@Av%C3%B3Carmo" },
-                { label: "Decifrar Pessoas (YouTube)", url: "https://www.youtube.com/@DecifrarPessoas/videos" },
-                { label: "Joana Perez (YouTube)", url: "https://www.youtube.com/@joana_perez" },
-                { label: "Não Mandas em Mim Podcast (YouTube)", url: "https://www.youtube.com/@NaoMandasemMim" },
-                { label: "O Martim (YouTube)", url: "https://www.youtube.com/@OMartim/videos" },
-                { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos" },
-              ]},
-              { id: "s11", pt: "Música", en: "Music", links: [
-                { label: "RTP Palco — Espectáculos de Música", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
-                { label: "Playlist — Top Portugal (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6ViL9RcFABv" },
-                { label: "Playlist — Fado (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6HJZtcjGrCn" },
-                { label: "Playlist — PT Clássicos (Spotify)", url: "https://open.spotify.com/playlist/19aeYRwKFy0DXZOyNs2Sjv" },
-                { label: "Playlist — Músicas PT (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DWYjjOmuB9ehg" },
-                { label: "Antena 3 (YouTube)", url: "https://www.youtube.com/@antena3rtp/videos" },
-                { label: "VMTV Portugal (YouTube)", url: "https://www.youtube.com/@VMTVpt/videos" },
-                { label: "Jorge Alexandre (YouTube)", url: "https://www.youtube.com/@jorgealexandre_14/videos" },
-              ]},
-              { id: "s12", pt: "Rádio", en: "Radio", links: [
-                { label: "Radio Garden — Portugal", url: "https://radio.garden/visit/portugal/lVedGqUL" },
-                { label: "Radio.pt — Todas as Estações PT", url: "https://www.radio.pt/country/portugal" },
-                { label: "Antena 1 — Directo", url: "https://www.antena1.rtp.pt/ouvir-em-direto/" },
-                { label: "Antena 3 — Directo", url: "https://www.antena3.rtp.pt/ouvir-em-direto/" },
-                { label: "TSF — Directo", url: "https://www.tsf.pt/direto/" },
-                { label: "RFM — Directo", url: "https://rfm.sapo.pt/radio/ouvir-online/" },
-                { label: "Rádio Comercial — Directo", url: "https://comercial.sapo.pt/radio/ouvir-online/" },
-                { label: "Rádio Portuense — Directo", url: "https://radioportuense.com/ouvir-em-direto/" },
-              ]},
-              { id: "s13", pt: "Livros, Literatura e Audiolivros", en: "Books, Literature & Audiobooks", subgroups: [
-                { label: "Televisão", links: [
-                  { label: "Literatura Agora (RTP)", url: "https://www.rtp.pt/play/p1747/e197849/literatura-agora" },
-                  { label: "Os Livros (RTP)", url: "https://www.rtp.pt/play/p2412/os-livros" },
-                  { label: "A Vida Privada dos Livros (RTP)", url: "https://www.rtp.pt/play/p9466/e577708/a-vida-privada-dos-livros" },
-                ]},
-                { label: "Bibliotecas e Arquivos Digitais", links: [
-                  { label: "Biblioteca Digital Camões", url: "http://cvc.instituto-camoes.pt/conhecer/biblioteca-digital-camoes.html" },
-                  { label: "Biblioteca Nacional Digital", url: "https://bndigital.bnportugal.gov.pt/project/livros/" },
-                  { label: "Imprensa Nacional — Livros em PDF", url: "https://imprensanacional.pt/livros-em-pdf/" },
-                  { label: "Project Gutenberg — Português", url: "https://www.gutenberg.org/browse/languages/pt" },
-                  { label: "Fundação Gulbenkian — Publicações", url: "https://gulbenkian.pt/publicacoes/" },
-                ]},
-                { label: "Livrarias", links: [
-                  { label: "Wook", url: "https://www.wook.pt/" },
-                  { label: "FNAC Portugal", url: "https://www.fnac.pt/" },
-                  { label: "Bertrand Livreiros", url: "https://www.bertrand.pt/" },
-                ]},
-                { label: "Audiolivros", links: [
-                  { label: "Imprensa Nacional — Audiolivros", url: "https://imprensanacional.pt/digitais/audiolivros/" },
-                  { label: "Bertrand — Audiolivros em Português", url: "https://www.bertrand.pt/arvoretematica/audiolivros-em-portugues/25188x25189/P" },
-                  { label: "Audiolivros — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLJrrzPTVK9DeTyGHEufvbmRpEPDsErlIp" },
-                  { label: "Contos Portugueses — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLQ7SbCg65jTLZsvPsyBDg_KQYuMZBIymC" },
-                ]},
-                { label: "Canais YouTube", links: [
-                  { label: "Abrir o Livro (YouTube)", url: "https://www.youtube.com/c/AbriroLivro" },
-                  { label: "Mundo dos Poemas (YouTube)", url: "https://www.youtube.com/@mundodospoemas/videos" },
-                  { label: "Livraria Aqui Há Gato (YouTube)", url: "https://www.youtube.com/@livrariaaquihagato/videos" },
-                ]},
-                { label: "Banda Desenhada", links: [
-                  { label: "Astérix — Revista Gratuita PT", url: "https://asterix.com/pt-pt/gratis-a-revista-asterix-para-descarregar/" },
-                ]},
-              ]},
-              { id: "s14", pt: "Gastronomia e Culinária", en: "Food & Cooking", links: [
-                { label: "Mesa Portuguesa com Estrelas, com Certeza", url: "https://www.rtp.pt/play/p6444/mesa-portuguesa-com-estrelas-com-certeza" },
-                { label: "MasterChef Portugal", url: "https://www.rtp.pt/play/p9491/masterchef-portugal" },
-                { label: "Cozinha com Amor", url: "https://www.rtp.pt/play/p2496/e246134/cozinha-com-amor" },
-                { label: "Receitas Portuguesas — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV" },
-                { label: "Sabor Intenso (YouTube)", url: "https://www.youtube.com/@SaborIntenso/videos" },
-                { label: "Cozinha do Miguel (YouTube)", url: "https://www.youtube.com/@CozinhadoMiguel/videos" },
-                { label: "Tuga na Cozinha (YouTube)", url: "https://www.youtube.com/@TuganaCozinha" },
-                { label: "Frederica — Blog", url: "https://frederica.com/blogs/blog?page=1" },
-              ]},
-              { id: "s15", pt: "Conteúdo Infantil", en: "Children's Content", links: [
-                { label: "RTP Zigzag — Directo", url: "https://www.rtp.pt/play/direto/zigzag" },
-                { label: "Zigzag — Podcasts Infantis", url: "https://www.rtp.pt/play/zigzag/podcasts" },
-                { label: "Portuguese Fairy Tales (YouTube)", url: "https://www.youtube.com/@PortugueseFairyTales" },
-                { label: "Mundo Animado PT (YouTube)", url: "https://www.youtube.com/c/MundoAnimadoPT/videos" },
-                { label: "Projecto Adamastor — Audiolivros Infantis", url: "https://projectoadamastor.org/audiolivros-para-criancas/" },
-                { label: "Histórias Infantis — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9" },
-                { label: "Fundação Jorge Álvares — Contos e Lendas", url: "https://www.fundacaojorgealvares-bibliotecadigital.com/index.php?s=colecao&coleccao=contos-e-lendas" },
-              ]},
-              { id: "s16", pt: "Desporto", en: "Sport", links: [
-                { label: "Maisfutebol", url: "https://maisfutebol.iol.pt/" },
-                { label: "Jornal Record", url: "https://www.record.pt/" },
-                { label: "O Jogo", url: "https://www.ojogo.pt/" },
-                { label: "A Bola", url: "https://www.abola.pt/" },
-                { label: "Golo FM", url: "https://golo.fm/" },
-                { label: "O Ciclista Improvável (YouTube)", url: "https://www.youtube.com/c/OCiclistaImprov%C3%A1vel/videos" },
-                { label: "Podcast Futebol PT (Spotify)", url: "https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B" },
-              ]},
-              { id: "s17", pt: "Saúde, Psicologia e Bem-estar", en: "Health, Psychology & Wellbeing", links: [
-                { label: "Psicologia Também é Ciência (YouTube)", url: "https://www.youtube.com/@Psicologiatambemeciencia/videos" },
-                { label: "Momento Médico (YouTube)", url: "https://www.youtube.com/c/MomentoM%C3%A9dicoYouTube/videos" },
-                { label: "O Pediatra PT (YouTube)", url: "https://www.youtube.com/@opediatrapt/videos" },
-                { label: "Do Bem PT (YouTube)", url: "https://www.youtube.com/@Dobempt/videos" },
-                { label: "Podcast Saúde PT (Spotify)", url: "https://open.spotify.com/show/0wguYIGDBlsQ98UkmJKIQf" },
-              ]},
-              { id: "s18", pt: "Artesanato, DIY e Casa", en: "Crafts, DIY & Home", links: [
-                { label: "Trabalhos Manuais da Di (YouTube)", url: "https://www.youtube.com/c/TrabalhosManuaisdaDi/videos" },
-                { label: "Instituto Português do Tricot", url: "https://institutoportuguesdotricot.pt/" },
-                { label: "Fios Cruzados (YouTube)", url: "https://www.youtube.com/@fioscruzados/videos" },
-                { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos" },
-                { label: "Leroy Merlin Portugal (YouTube)", url: "https://www.youtube.com/c/leroymerlinportugal/videos" },
-                { label: "Querido, Mudei a Casa (YouTube)", url: "https://www.youtube.com/@queridomudeiacasaoficial/videos" },
-                { label: "GEM — Revistas de Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
-                { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos" },
-              ]},
-              { id: "s19", pt: "Média Moçambicana e Africana em Português", en: "Mozambican & African Portuguese Media", subgroups: [
-                { label: "Televisão e Rádio", links: [
-                  { label: "RTP África", url: "https://www.rtp.pt/rtpafrica" },
-                  { label: "RDP África — Rádio", url: "https://rdpafrica.rtp.pt/legacy/?icm=15638" },
-                  { label: "TVM Moçambique — Directo", url: "http://online.tvm.co.mz/site/emdirecto/tvm1" },
-                ]},
-                { label: "Podcasts", links: [
-                  { label: "Ouro Negro — Podcast", url: "https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5ibHVicnJ5LmNvbS9mZWVkcy9vdXJvbmVncm8ueG1s" },
-                ]},
-                { label: "YouTube", links: [
-                  { label: "José Diversão (YouTube)", url: "https://www.youtube.com/@JoseDiversao/videos" },
-                  { label: "Maningue Magic (YouTube)", url: "https://www.youtube.com/maninguemagic/playlists" },
-                  { label: "Pátria Minha — Moz (YouTube)", url: "https://www.youtube.com/@patriaminhaMoz/videos" },
-                ]},
-              ]},
-              { id: "s20", pt: "Revistas e Publicações", en: "Magazines & Publications", links: [
-                { label: "Expresso", url: "https://expresso.pt/" },
-                { label: "Visão", url: "https://www.visao.pt/" },
-                { label: "Sábado", url: "https://www.sabado.pt/" },
-                { label: "Time Out Portugal", url: "https://www.timeout.pt/" },
-                { label: "Revista Business Portugal (Issuu)", url: "https://issuu.com/revistabusinessportugal" },
-                { label: "Best Guide Portugal (Issuu)", url: "https://issuu.com/bestguideportugal" },
-                { label: "GEM — Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
-                { label: "Echo Boomer", url: "https://echoboomer.pt/" },
-              ]},
-              { id: "s22", pt: "Comédia e Entretenimento — YouTube", en: "Comedy & Entertainment — YouTube Creators", links: [
-                { label: "Beatriz Gosta", url: "https://www.youtube.com/c/BeatrizGosta" },
-                { label: "Fernando Rocha", url: "https://www.youtube.com/c/FernandoRochaComedy" },
-                { label: "Guilherme Geirinhas", url: "https://www.youtube.com/@GuilhermeGeirinhas" },
-                { label: "Mat3us", url: "https://www.youtube.com/@mat3us/videos" },
-                { label: "Pierre Zago", url: "https://www.youtube.com/@PierreZago/videos" },
-                { label: "Raminhos", url: "https://www.youtube.com/@raminhos/videos" },
-              ]},
-              { id: "s23", pt: "Criadores Portugueses — YouTube", en: "Portuguese YouTube Creators (Various)", links: [
-                { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos" },
-                { label: "A Tua Filosofia", url: "https://www.youtube.com/@ATuaFilosofia/videos" },
-                { label: "Luís Pinto TekTest — Tecnologia", url: "https://www.youtube.com/@LuisPintoTekTest/videos" },
-                { label: "Olívia Ortiz", url: "https://www.youtube.com/@OliviaOrtiz/videos" },
-                { label: "Rádio Portuense Online", url: "https://www.youtube.com/c/R%C3%A1dioPortuenseOnline" },
-                { label: "Como os Pés na Terra", url: "https://www.youtube.com/c/Comosp%C3%A9snaterra" },
-                { label: "Jornalismo Porto Net", url: "https://www.youtube.com/c/JornalismoPortoNet" },
-              ]},
-              { id: "s24", pt: "Teatro e Artes Performativas", en: "Theatre & Performing Arts", links: [
-                { label: "RTP Palco — Teatro", url: "https://www.rtp.pt/play/palco/espetaculos/teatro/todos" },
-                { label: "RTP Palco — Música ao Vivo", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
-                { label: "Teatro Camões — Lisboa", url: "https://www.teatro-camoes.pt/" },
-                { label: "Teatro Nacional São João — Porto", url: "https://www.tnsj.pt/" },
-                { label: "Direcção-Geral das Artes", url: "https://www.dgartes.gov.pt/" },
-                { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN" },
-              ]},
-            ];
+            // Data defined at module scope as MEDIA_SECTIONS / MEDIA_SECTIONS_SORTED.
             const linkStyle = { color: "#1a56db", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block" };
             const subLabelStyle = { fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "8px 0 4px" };
-            const sortedSections = [...MEDIA_SECTIONS].sort((a, b) => a.pt.localeCompare(b.pt, "pt"));
+            const sortedSections = MEDIA_SECTIONS_SORTED;
             return (
               <div style={listPanelStyle}>
                 {/* Sections */}
