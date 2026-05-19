@@ -1,4 +1,4 @@
-const { useState, useRef, useEffect, useMemo } = React;
+const { useState, useRef, useEffect, useMemo, useCallback } = React;
 
 const LEVELS = ["A1", "A2", "B1", "B2+"];
 const CORRECTION_MODES = [
@@ -99,6 +99,9 @@ const MINIMAL_PAIRS = [
   { a: { word: "paz", meaning: "peace" }, b: { word: "pás", meaning: "shovels" } },
 ];
 
+// TENSE_LABELS and PRONOUNS are used exclusively in the static verb reference panel (Lists → Verb List)
+// to display the hardcoded IRREGULAR_VERBS tense tables. They are NOT used by the Conjugator panel,
+// which renders tense rows directly from the API response.
 const TENSE_LABELS = ["Presente","Pret. Perfeito","Pret. Imperfeito","Futuro","Particípio"];
 const PRONOUNS = ["eu","tu","ele/ela","nós","vós","eles/elas"];
 
@@ -212,7 +215,7 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"proteger", en:"to protect" }, { inf:"punir", en:"to punish" }, { inf:"reagir", en:"to react" },
   { inf:"reconhecer", en:"to recognize" }, { inf:"reduzir", en:"to reduce" }, { inf:"repetir", en:"to repeat" },
   { inf:"residir", en:"to reside" }, { inf:"resolver", en:"to resolve" }, { inf:"responder", en:"to respond" },
-  { inf:"reunir", en:"to gather" }, { inf:"saber", en:"to know" }, { inf:"sofrer", en:"to suffer" },
+  { inf:"reunir", en:"to gather" }, { inf:"sofrer", en:"to suffer" },
   { inf:"sugerir", en:"to suggest" }, { inf:"surpreender", en:"to surprise" }, { inf:"temer", en:"to fear" },
   { inf:"tender", en:"to tend" }, { inf:"traduzir", en:"to translate" }, { inf:"valer", en:"to be worth" },
   { inf:"vender", en:"to sell" }, { inf:"ver", en:"to see" }, { inf:"vestir", en:"to dress" },
@@ -706,7 +709,7 @@ const MEDIA_SECTIONS = [
     { label: "SIC — Directo", url: "https://www.sic.pt/direto" },
     { label: "SIC Notícias — Directo", url: "https://sicnoticias.pt/direto" },
     { label: "Opto SIC — On-Demand", url: "https://opto.sic.pt/" },
-    { label: "TVI — Directo", url: "https://tvi.iol.pt/direto" },
+    { label: "TVI — Directo", url: "https://tvi.iol.pt/" },
     { label: "TVI Player — On-Demand", url: "https://tviplayer.iol.pt/" },
     { label: "Euronews PT — Directo", url: "https://pt.euronews.com/live" },
     { label: "CNN Portugal — Directo", url: "https://cnnportugal.iol.pt/direto" },
@@ -726,6 +729,7 @@ const MEDIA_SECTIONS = [
     { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias" },
     { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames" },
     { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC" },
+    { label: "O Sábio (YouTube)", url: "https://www.youtube.com/playlist?list=PLTuOFDgd5lcawQ9Keo09mu-aTqRL4PcTJ" },
   ]},
   { id: "s03", pt: "Comédia, Variedades e Talk Shows", en: "Comedy, Variety & Talk Shows", links: [
     { label: "5 Para a Meia-Noite", url: "https://www.rtp.pt/play/p9868/5-para-a-meia-noite" },
@@ -736,6 +740,9 @@ const MEDIA_SECTIONS = [
     { label: "Raminhos (YouTube)", url: "https://www.youtube.com/@raminhos/videos" },
     { label: "Pierre Zago (YouTube)", url: "https://www.youtube.com/@PierreZago/videos" },
     { label: "Beatriz Gosta (YouTube)", url: "https://www.youtube.com/c/BeatrizGosta" },
+    { label: "Fernando Rocha (YouTube)", url: "https://www.youtube.com/c/FernandoRochaComedy" },
+    { label: "Guilherme Geirinhas (YouTube)", url: "https://www.youtube.com/@GuilhermeGeirinhas" },
+    { label: "Mat3us (YouTube)", url: "https://www.youtube.com/@mat3us/videos" },
   ]},
   { id: "s04", pt: "Documentários e Actualidade", en: "Documentaries & Current Affairs", links: [
     { label: "RTP Play — Documentários", url: "https://www.rtp.pt/play/colecao/documentarios" },
@@ -839,7 +846,6 @@ const MEDIA_SECTIONS = [
     { label: "Fumaça — Séries", url: "https://fumaca.pt/category/series/" },
     { label: "Biblioteca Pública (RTP)", url: "https://www.rtp.pt/play/p9930/biblioteca-publica" },
     { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
-    { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
     { label: "Portugal Manual — Artesanato (Spotify)", url: "https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid" },
     { label: "Portugueses no Mundo — Antena 1 (Spotify)", url: "https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3" },
     { label: "Avó Carmo (YouTube)", url: "https://www.youtube.com/@Av%C3%B3Carmo" },
@@ -857,17 +863,12 @@ const MEDIA_SECTIONS = [
     { label: "Playlist — Músicas PT (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DWYjjOmuB9ehg" },
     { label: "Antena 3 (YouTube)", url: "https://www.youtube.com/@antena3rtp/videos" },
     { label: "VMTV Portugal (YouTube)", url: "https://www.youtube.com/@VMTVpt/videos" },
-    { label: "Jorge Alexandre (YouTube)", url: "https://www.youtube.com/@jorgealexandre_14/videos" },
   ]},
   { id: "s12", pt: "Rádio", en: "Radio", links: [
     { label: "Radio Garden — Portugal", url: "https://radio.garden/visit/portugal/lVedGqUL" },
     { label: "Radio.pt — Todas as Estações PT", url: "https://www.radio.pt/country/portugal" },
-    { label: "Antena 1 — Directo", url: "https://www.antena1.rtp.pt/ouvir-em-direto/" },
-    { label: "Antena 3 — Directo", url: "https://www.antena3.rtp.pt/ouvir-em-direto/" },
     { label: "TSF — Directo", url: "https://www.tsf.pt/direto/" },
-    { label: "RFM — Directo", url: "https://rfm.sapo.pt/radio/ouvir-online/" },
-    { label: "Rádio Comercial — Directo", url: "https://comercial.sapo.pt/radio/ouvir-online/" },
-    { label: "Rádio Portuense — Directo", url: "https://radioportuense.com/ouvir-em-direto/" },
+
   ]},
   { id: "s13", pt: "Livros, Literatura e Audiolivros", en: "Books, Literature & Audiobooks", subgroups: [
     { label: "Televisão", links: [
@@ -877,7 +878,6 @@ const MEDIA_SECTIONS = [
     ]},
     { label: "Bibliotecas e Arquivos Digitais", links: [
       { label: "Biblioteca Digital Camões", url: "http://cvc.instituto-camoes.pt/conhecer/biblioteca-digital-camoes.html" },
-      { label: "Biblioteca Nacional Digital", url: "https://bndigital.bnportugal.gov.pt/project/livros/" },
       { label: "Imprensa Nacional — Livros em PDF", url: "https://imprensanacional.pt/livros-em-pdf/" },
       { label: "Project Gutenberg — Português", url: "https://www.gutenberg.org/browse/languages/pt" },
       { label: "Fundação Gulbenkian — Publicações", url: "https://gulbenkian.pt/publicacoes/" },
@@ -899,14 +899,12 @@ const MEDIA_SECTIONS = [
       { label: "Livraria Aqui Há Gato (YouTube)", url: "https://www.youtube.com/@livrariaaquihagato/videos" },
     ]},
     { label: "Banda Desenhada", links: [
-      { label: "Astérix — Revista Gratuita PT", url: "https://asterix.com/pt-pt/gratis-a-revista-asterix-para-descarregar/" },
+      { label: "Astérix — Site Oficial PT", url: "https://asterix.com/" },
     ]},
   ]},
   { id: "s14", pt: "Gastronomia e Culinária", en: "Food & Cooking", links: [
     { label: "Mesa Portuguesa com Estrelas, com Certeza", url: "https://www.rtp.pt/play/p6444/mesa-portuguesa-com-estrelas-com-certeza" },
-    { label: "MasterChef Portugal", url: "https://www.rtp.pt/play/p9491/masterchef-portugal" },
     { label: "Cozinha com Amor", url: "https://www.rtp.pt/play/p2496/e246134/cozinha-com-amor" },
-    { label: "Receitas Portuguesas — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV" },
     { label: "Sabor Intenso (YouTube)", url: "https://www.youtube.com/@SaborIntenso/videos" },
     { label: "Cozinha do Miguel (YouTube)", url: "https://www.youtube.com/@CozinhadoMiguel/videos" },
     { label: "Tuga na Cozinha (YouTube)", url: "https://www.youtube.com/@TuganaCozinha" },
@@ -917,6 +915,7 @@ const MEDIA_SECTIONS = [
     { label: "Zigzag — Podcasts Infantis", url: "https://www.rtp.pt/play/zigzag/podcasts" },
     { label: "Portuguese Fairy Tales (YouTube)", url: "https://www.youtube.com/@PortugueseFairyTales" },
     { label: "Mundo Animado PT (YouTube)", url: "https://www.youtube.com/c/MundoAnimadoPT/videos" },
+    { label: "Desenhos Animados PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV" },
     { label: "Projecto Adamastor — Audiolivros Infantis", url: "https://projectoadamastor.org/audiolivros-para-criancas/" },
     { label: "Histórias Infantis — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9" },
     { label: "Fundação Jorge Álvares — Contos e Lendas", url: "https://www.fundacaojorgealvares-bibliotecadigital.com/index.php?s=colecao&coleccao=contos-e-lendas" },
@@ -930,16 +929,8 @@ const MEDIA_SECTIONS = [
     { label: "O Ciclista Improvável (YouTube)", url: "https://www.youtube.com/c/OCiclistaImprov%C3%A1vel/videos" },
     { label: "Podcast Futebol PT (Spotify)", url: "https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B" },
   ]},
-  { id: "s17", pt: "Saúde, Psicologia e Bem-estar", en: "Health, Psychology & Wellbeing", links: [
-    { label: "Psicologia Também é Ciência (YouTube)", url: "https://www.youtube.com/@Psicologiatambemeciencia/videos" },
-    { label: "Momento Médico (YouTube)", url: "https://www.youtube.com/c/MomentoM%C3%A9dicoYouTube/videos" },
-    { label: "O Pediatra PT (YouTube)", url: "https://www.youtube.com/@opediatrapt/videos" },
-    { label: "Do Bem PT (YouTube)", url: "https://www.youtube.com/@Dobempt/videos" },
-    { label: "Podcast Saúde PT (Spotify)", url: "https://open.spotify.com/show/0wguYIGDBlsQ98UkmJKIQf" },
-  ]},
   { id: "s18", pt: "Artesanato, DIY e Casa", en: "Crafts, DIY & Home", links: [
     { label: "Trabalhos Manuais da Di (YouTube)", url: "https://www.youtube.com/c/TrabalhosManuaisdaDi/videos" },
-    { label: "Instituto Português do Tricot", url: "https://institutoportuguesdotricot.pt/" },
     { label: "Fios Cruzados (YouTube)", url: "https://www.youtube.com/@fioscruzados/videos" },
     { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos" },
     { label: "Leroy Merlin Portugal (YouTube)", url: "https://www.youtube.com/c/leroymerlinportugal/videos" },
@@ -950,8 +941,6 @@ const MEDIA_SECTIONS = [
   { id: "s19", pt: "Média Moçambicana e Africana em Português", en: "Mozambican & African Portuguese Media", subgroups: [
     { label: "Televisão e Rádio", links: [
       { label: "RTP África", url: "https://www.rtp.pt/rtpafrica" },
-      { label: "RDP África — Rádio", url: "https://rdpafrica.rtp.pt/legacy/?icm=15638" },
-      { label: "TVM Moçambique — Directo", url: "http://online.tvm.co.mz/site/emdirecto/tvm1" },
     ]},
     { label: "Podcasts", links: [
       { label: "Ouro Negro — Podcast", url: "https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5ibHVicnJ5LmNvbS9mZWVkcy9vdXJvbmVncm8ueG1s" },
@@ -972,14 +961,6 @@ const MEDIA_SECTIONS = [
     { label: "GEM — Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
     { label: "Echo Boomer", url: "https://echoboomer.pt/" },
   ]},
-  { id: "s22", pt: "Comédia e Entretenimento — YouTube", en: "Comedy & Entertainment — YouTube Creators", links: [
-    { label: "Beatriz Gosta", url: "https://www.youtube.com/c/BeatrizGosta" },
-    { label: "Fernando Rocha", url: "https://www.youtube.com/c/FernandoRochaComedy" },
-    { label: "Guilherme Geirinhas", url: "https://www.youtube.com/@GuilhermeGeirinhas" },
-    { label: "Mat3us", url: "https://www.youtube.com/@mat3us/videos" },
-    { label: "Pierre Zago", url: "https://www.youtube.com/@PierreZago/videos" },
-    { label: "Raminhos", url: "https://www.youtube.com/@raminhos/videos" },
-  ]},
   { id: "s23", pt: "Criadores Portugueses — YouTube", en: "Portuguese YouTube Creators (Various)", links: [
     { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos" },
     { label: "A Tua Filosofia", url: "https://www.youtube.com/@ATuaFilosofia/videos" },
@@ -992,7 +973,6 @@ const MEDIA_SECTIONS = [
   { id: "s24", pt: "Teatro e Artes Performativas", en: "Theatre & Performing Arts", links: [
     { label: "RTP Palco — Teatro", url: "https://www.rtp.pt/play/palco/espetaculos/teatro/todos" },
     { label: "RTP Palco — Música ao Vivo", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
-    { label: "Teatro Camões — Lisboa", url: "https://www.teatro-camoes.pt/" },
     { label: "Teatro Nacional São João — Porto", url: "https://www.tnsj.pt/" },
     { label: "Direcção-Geral das Artes", url: "https://www.dgartes.gov.pt/" },
     { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN" },
@@ -1325,6 +1305,9 @@ function buildConjugationPrompt(verb) {
   return `You are a European Portuguese grammar reference. The user wants conjugation tables for the verb "${verb}".\n\nRespond ONLY with a JSON object and nothing else — no markdown, no backticks, no explanation.\n\nFormat:\n{\n  "infinitive": "falar",\n  "meaning": "to speak",\n  "tenses": [\n    {\n      "name": "Presente do Indicativo",\n      "rows": [\n        ["eu", "falo"],["tu", "falas"],["ele/ela", "fala"],["nós", "falamos"],["vós", "falais"],["eles/elas", "falam"]\n      ],\n      "example_pt": "Ela fala português muito bem.",\n      "example_en": "She speaks Portuguese very well."\n    }\n  ]\n}\n\nInclude exactly these 11 tenses in this order:\n1. Presente do Indicativo\n2. Imperativo\n3. Pretérito Perfeito Simples\n4. Pretérito Imperfeito do Indicativo\n5. Futuro do Indicativo\n6. Condicional\n7. Presente do Conjuntivo\n8. Infinitivo Pessoal\n9. Pretérito Mais-que-Perfeito\n10. Pretérito Imperfeito do Conjuntivo\n11. Futuro do Conjuntivo\n\nFor each tense, include one natural example sentence using a randomly chosen pronoun. The example must use the correct conjugated form of "${verb}" for that tense. Use European Portuguese naturally — contractions, clitic placement, and vocabulary appropriate for Portugal (not Brazil).\n\nFor Imperativo rows use: tu, você/ele/ela, nós, vós, vocês/eles/elas (affirmative).\nFor Infinitivo Pessoal rows use all six persons: eu, tu, ele/ela, nós, vós, eles/elas.\nUse European Portuguese forms throughout. Return only valid JSON.`;
 }
 
+// Anthropic API version string — update here when Anthropic releases a newer stable version.
+const ANTHROPIC_API_VERSION = "2023-06-01";
+
 function ls(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -1375,7 +1358,7 @@ function renderWithParens(text, baseColor, baseWeight) {
   });
 }
 
-const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak, renderWithParens }) {
+const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak }) {
   if (m._grammarCard && m._grammar) {
     const gt = m._grammar;
     const intro = gt.sections[0];
@@ -1470,6 +1453,334 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
   );
 });
 
+// Declarative hover wrapper — replaces imperative onMouseEnter/Leave style mutations in dropdowns.
+const HoverDiv = React.memo(function HoverDiv({ baseBg, hoverBg, style, onClick, children }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      style={{ ...style, background: hovered ? hoverBg : baseBg }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}>
+      {children}
+    </div>
+  );
+});
+
+const MinimalPairs = React.memo(function MinimalPairs({
+  pairIndex, setPairIndex,
+  pairsOrder, setPairsOrder,
+  pairsQuizMode, setPairsQuizMode,
+  quizTarget, setQuizTarget,
+  quizResult, setQuizResult,
+  pairsScore, setPairsScore,
+  fontSize, speakListPT,
+}) {
+  const pair = MINIMAL_PAIRS[pairsOrder[pairIndex]];
+
+  const shuffle = () => {
+    const arr = MINIMAL_PAIRS.map((_, i) => i);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    setPairsOrder(arr);
+    setPairIndex(0);
+    setQuizTarget(null);
+    setQuizResult(null);
+  };
+  const startQuiz = () => {
+    shuffle();
+    setQuizTarget(Math.random() < 0.5 ? "a" : "b");
+    setQuizResult(null);
+  };
+  const playQuizWord = () => {
+    if (quizTarget) speakListPT(pair[quizTarget].word);
+  };
+  const guess = (choice) => {
+    const correct = choice === quizTarget;
+    setQuizResult(correct ? "correct" : "wrong");
+    setPairsScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+  };
+  const next = () => {
+    const nextIdx = (pairIndex + 1) % MINIMAL_PAIRS.length;
+    setPairIndex(nextIdx);
+    setQuizResult(null);
+    if (pairsQuizMode) setQuizTarget(Math.random() < 0.5 ? "a" : "b");
+  };
+  const prev = () => {
+    const prevIdx = (pairIndex - 1 + MINIMAL_PAIRS.length) % MINIMAL_PAIRS.length;
+    setPairIndex(prevIdx);
+    setQuizResult(null);
+    if (pairsQuizMode) setQuizTarget(Math.random() < 0.5 ? "a" : "b");
+  };
+  const resetScore = () => setPairsScore({ correct: 0, total: 0 });
+  const toggleMode = () => {
+    setPairsQuizMode(m => !m);
+    setQuizTarget(null);
+    setQuizResult(null);
+  };
+  const cardBtn = (label, onClick, style = {}) => (
+    <button onClick={onClick} style={{ fontSize: fontSize, padding: "5px 14px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", ...style }}>{label}</button>
+  );
+
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 10 }}>
+      {/* toolbar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "#eff6ff" : "#f0fdf4", color: pairsQuizMode ? "#2563eb" : "#166534", borderColor: pairsQuizMode ? "#bfdbfe" : "#bbf7d0" })}
+        {cardBtn("🔀 Shuffle", shuffle)}
+        <span style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginLeft: "auto" }}>
+          {pairIndex + 1} / {MINIMAL_PAIRS.length}
+          {pairsScore.total > 0 && (
+            <span style={{ marginLeft: 10, color: pairsScore.correct / pairsScore.total >= 0.7 ? "#166534" : "#991b1b" }}>
+              Score: {pairsScore.correct}/{pairsScore.total}
+            </span>
+          )}
+          {pairsScore.total > 0 && <button onClick={resetScore} style={{ marginLeft: 6, fontSize: fontSize, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>reset</button>}
+        </span>
+      </div>
+
+      {/* card */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+        {!pairsQuizMode ? (
+          /* Browse mode — both words visible */
+          <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
+            {["a", "b"].map(side => (
+              <div key={side} style={{ textAlign: "center", background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: 12, padding: "18px 28px", minWidth: 140 }}>
+                <div style={{ fontSize: fontSize * 2, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 6 }}>{pair[side].word}</div>
+                <div style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 12, fontStyle: "italic" }}>{pair[side].meaning}</div>
+                <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Ouvir</button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Quiz mode */
+          <div style={{ textAlign: "center", width: "100%", maxWidth: 360 }}>
+            {!quizTarget ? (
+              <div>
+                <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>Press Play to hear a word, then identify which it is.</p>
+                {cardBtn("▶ Play", startQuiz, { fontSize: fontSize, padding: "10px 32px", background: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" })}
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                <button onClick={playQuizWord} style={{ fontSize: 16, padding: "10px 32px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Play again</button>
+                {quizResult === null ? (
+                  <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
+                    {["a", "b"].map(side => (
+                      <button key={side} onClick={() => guess(side)} style={{ fontSize: 22, fontFamily: "var(--font-mono)", fontWeight: 700, padding: "14px 28px", borderRadius: 10, border: "2px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", cursor: "pointer", minWidth: 110 }}>
+                        {pair[side].word}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ fontSize: 20, fontWeight: 700, color: quizResult === "correct" ? "#166534" : "#991b1b", marginBottom: 6 }}>
+                      {quizResult === "correct" ? "✓ Correto" : "✗ Errado"}
+                    </p>
+                    <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 4 }}>
+                      A palavra era: <strong style={{ fontFamily: "var(--font-mono)", fontSize: fontSize }}>{pair[quizTarget].word}</strong> — {pair[quizTarget].meaning}
+                    </p>
+                    <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>
+                      {pair[quizTarget === "a" ? "b" : "a"].word} = {pair[quizTarget === "a" ? "b" : "a"].meaning}
+                    </p>
+                    {cardBtn("Próximo →", next, { background: "#f0fdf4", color: "#166534", borderColor: "#bbf7d0" })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* nav */}
+      <div style={{ display: "flex", justifyContent: "center", gap: 12, paddingBottom: 4 }}>
+        {cardBtn("← Anterior", prev)}
+        {!pairsQuizMode && cardBtn("Próximo →", next)}
+      </div>
+    </div>
+  );
+});
+
+const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs }) {
+  const { useMemo } = React;
+  const linkStyle = useMemo(() => ({
+    color: "#1a56db", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block",
+  }), [fontSize]);
+  const subLabelStyle = useMemo(() => ({
+    fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "8px 0 4px",
+  }), []);
+
+  return (
+    <div style={listPanelStyle}>
+      {MEDIA_SECTIONS_SORTED.map(sec => {
+        const sortedLinks = sec.links ? [...sec.links].sort((a, b) => a.label.localeCompare(b.label)) : null;
+        const sortedSubgroups = sec.subgroups ? sec.subgroups.map(sg => ({ ...sg, links: [...sg.links].sort((a, b) => a.label.localeCompare(b.label)) })) : null;
+        return (
+          <div key={sec.id} ref={el => mediaSectionRefs.current[sec.id] = el} style={{ marginBottom: 10, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button onClick={() => {
+                const newId = mediaOpenSection === sec.id ? null : sec.id;
+                setMediaOpenSection(newId);
+                if (newId) setTimeout(() => mediaSectionRefs.current[newId]?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 100);
+              }}
+              style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+              <span>
+                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.pt}</span>
+                <span style={{ fontSize: Math.max(11, fontSize - 3), color: "#1e40af", marginLeft: 6 }}>— {sec.en}</span>
+              </span>
+              <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{mediaOpenSection === sec.id ? "▲" : "▼"}</span>
+            </button>
+            {mediaOpenSection === sec.id && (
+              <div style={{ padding: "8px 12px 12px" }}>
+                {sortedSubgroups ? sortedSubgroups.map((sg, sgi) => (
+                  <div key={sgi}>
+                    <p style={subLabelStyle}>{sg.label}</p>
+                    {sg.links.map((lk, li) => (
+                      <a key={li} href={lk.url} target="_blank" rel="noopener noreferrer" style={linkStyle}
+                        onMouseEnter={e => e.target.style.textDecoration="underline"}
+                        onMouseLeave={e => e.target.style.textDecoration="none"}>
+                        {lk.label}
+                      </a>
+                    ))}
+                  </div>
+                )) : sortedLinks.map((lk, li) => (
+                  <a key={li} href={lk.url} target="_blank" rel="noopener noreferrer" style={linkStyle}
+                    onMouseEnter={e => e.target.style.textDecoration="underline"}
+                    onMouseLeave={e => e.target.style.textDecoration="none"}>
+                    {lk.label}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+});
+
+// Single source of truth for section title style — used by tab components and App.
+const makeSecTitle = (fontSize) => ({ fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" });
+
+const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT }) {
+  const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
+  const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
+  const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
+  const secTitle = makeSecTitle(fontSize);
+  return (
+    <div style={listPanelStyle}>
+      {PHRASES.map((sec, si) => (
+        <div key={si} style={secWrap}>
+          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+          <table style={tbl}><tbody>
+            {sec.items.map((item, ii) => (
+              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                  <button onClick={() => speakListPT(item.pt)}
+                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                </td>
+                <td style={tdL}>{item.pt}</td>
+                <td style={tdR}>{item.en}</td>
+              </tr>
+            ))}
+          </tbody></table>
+        </div>
+      ))}
+    </div>
+  );
+});
+
+const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT }) {
+  const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
+  const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
+  const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
+  return (
+    <div style={listPanelStyle}>
+      <table style={tbl}><tbody>
+        {IDIOMS.map((item, i) => (
+          <tr key={i} style={{ borderBottom: "1px solid #d1d5db" }}>
+            <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+              <button onClick={() => speakListPT(item.pt)}
+                style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+            </td>
+            <td style={{ ...tdL, width: "34%", paddingBottom: 8, paddingTop: 6 }}>{item.pt}</td>
+            <td style={{ ...tdR, width: "32%", paddingBottom: 8, paddingTop: 6 }}>{item.en}</td>
+            <td style={{ ...tdR, paddingBottom: 8, paddingTop: 6, fontStyle: "italic" }}>{item.when}</td>
+          </tr>
+        ))}
+      </tbody></table>
+    </div>
+  );
+});
+
+const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT }) {
+  const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
+  const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
+  const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
+  const secTitle = makeSecTitle(fontSize);
+  return (
+    <div style={listPanelStyle}>
+      {NUMBERS.map((sec, si) => (
+        <div key={si} style={secWrap}>
+          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+          <table style={tbl}><tbody>
+            {sec.items.map((item, ii) => (
+              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                  <button onClick={() => speakListPT(item.pt)}
+                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                </td>
+                <td style={tdL}>{item.pt}</td>
+                <td style={tdR}>{item.en}</td>
+              </tr>
+            ))}
+          </tbody></table>
+        </div>
+      ))}
+    </div>
+  );
+});
+
+const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
+  const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
+  const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
+  const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
+  const secTitle = makeSecTitle(fontSize);
+  return (
+    <div style={listPanelStyle}>
+      {COGNATES.map((sec, si) => (
+        <div key={si} style={secWrap}>
+          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+          {sec.rule ? <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
+          <table style={tbl}><tbody>
+            {sec.items.map((item, ii) => {
+              const hasMF = item.pt.includes("/a") || item.pt.includes("/o");
+              const speakText = hasMF
+                ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
+                : item.pt;
+              return (
+                <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                  <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                    <button onClick={() => speakListPT(speakText)}
+                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                  </td>
+                  <td style={tdL}>{item.pt}</td>
+                  <td style={tdR}>{item.en}</td>
+                </tr>
+              );
+            })}
+          </tbody></table>
+          {sec.exceptions.length > 0 && (
+            <div style={{ marginTop: 4, padding: "4px 8px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize, color: "var(--color-text-warning)" }}>
+              {sec.exceptions.map((e, ei) => <div key={ei}>⚠ {e}</div>)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+});
+
 const LIGHT_VARS = {
   "--color-background-primary": "#ffffff",
   "--color-background-secondary": "#f3f4f6",
@@ -1496,6 +1807,17 @@ const DARK_VARS = {
   "--color-text-danger": "#f87171",
   "--color-border-tertiary": "#374151",
 };
+
+// Stable message ID counter — incremented each time a message object is created.
+let _msgId = 0;
+const nextMsgId = () => ++_msgId;
+
+// Find a real browser SpeechSynthesisVoice for fallback — never pass the fake __azure__ sentinel object
+function findBrowserVoice(lang) {
+  const vs = window.speechSynthesis.getVoices();
+  if (lang === "en-US") return vs.find(x => x.lang === "en-US") || vs.find(x => x.lang.startsWith("en")) || null;
+  return vs.find(x => x.lang === "pt-PT") || vs.find(x => x.lang.startsWith("pt")) || null;
+}
 
 function App() {
 
@@ -1529,7 +1851,7 @@ function App() {
   const [conjugation, setConjugation] = useState(null);
   const [conjLoading, setConjLoading] = useState(false);
   const [conjError, setConjError] = useState("");
-  const [conjOpenGroups, setConjOpenGroups] = useState(true);   // true = all groups open
+  const [conjOpenGroups, setConjOpenGroups] = useState(() => new Set(CONJ_LEVEL_GROUPS.map(g => g.level)));   // Set of open group ids
   const [conjUsageOpen, setConjUsageOpen] = useState(false);    // false = all usage sections closed
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [focusIdiom, setFocusIdiom] = useState(null);
@@ -1574,6 +1896,7 @@ function App() {
   const [speaking, setSpeaking] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(() => ls("pe_tts_enabled", false));
   const [ttsRate, setTtsRate] = useState(() => ls("pe_tts_rate", 1.0));
+  const ttsRateRef = useRef(ttsRate);
   const [voices, setVoices] = useState([]);
   const [selectedVoice, setSelectedVoice] = useState(null);
   const [speechLang, setSpeechLang] = useState("pt-PT");
@@ -1593,7 +1916,7 @@ function App() {
           const ptPT = v.find(x => x.lang === "pt-PT");
           const ptBR = v.find(x => x.lang === "pt-BR");
           const anyPt = v.find(x => x.lang.startsWith("pt"));
-          setSelectedVoice(ptPT || ptBR || anyPt || v[0]);
+          setSelectedVoice(ptPT || ptBR || anyPt || null);
         }
       }
     };
@@ -1664,13 +1987,13 @@ function App() {
     setListening(false);
   };
 
-  const speakViaAzure = async (text, lang = "pt-PT") => {
+  const speakViaAzure = useCallback(async (text, lang = "pt-PT") => {
     if (!azureKey || !azureRegion || !text) return false;
     try {
-      const ratePercent = Math.round((ttsRate - 1) * 100) + "%";
+      const ratePercent = Math.round((ttsRateRef.current - 1) * 100) + "%";
       const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-      const azureVoiceName = selectedVoiceRef.current?.azureVoice || "pt-PT-RaquelNeural";
-      const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='pt-PT'><voice name='${azureVoiceName}'><prosody rate='${ratePercent}'>${escaped}</prosody></voice></speak>`;
+      const azureVoiceName = lang.startsWith("en") ? "en-US-JennyNeural" : (selectedVoiceRef.current?.azureVoice || "pt-PT-RaquelNeural");
+      const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='${lang}'><voice name='${azureVoiceName}'><prosody rate='${ratePercent}'>${escaped}</prosody></voice></speak>`;
       const resp = await fetch(`https://${azureRegion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
         method: "POST",
         headers: {
@@ -1695,31 +2018,26 @@ function App() {
       audio.play();
       return true;
     } catch (e) { console.error("Azure TTS fetch error:", e); return false; }
-  };
+  }, [azureKey, azureRegion]);
 
   // Find a real browser SpeechSynthesisVoice for fallback — never pass the fake __azure__ object
-  const findBrowserVoice = (lang) => {
-    const vs = window.speechSynthesis.getVoices();
-    if (lang === "en-US") return vs.find(x => x.lang === "en-US") || vs.find(x => x.lang.startsWith("en")) || null;
-    return vs.find(x => x.lang === "pt-PT") || vs.find(x => x.lang.startsWith("pt")) || null;
-  };
 
-  const speakViaBrowser = (text, lang, voice) => {
+  const speakViaBrowser = useCallback((text, lang, voice) => {
     if (!ttsSupported) return;
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(text);
     // Only assign a real SpeechSynthesisVoice — never the fake __azure__ sentinel
     const realVoice = (voice && voice.name !== "__azure__") ? voice : findBrowserVoice(lang || "pt-PT");
     if (realVoice) { utt.voice = realVoice; utt.lang = realVoice.lang; } else { utt.lang = lang || "pt-PT"; }
-    utt.rate = ttsRate;
+    utt.rate = ttsRateRef.current;
     utt.pitch = 1;
     utt.onstart = () => setSpeaking(true);
     utt.onend = () => setSpeaking(false);
     utt.onerror = () => setSpeaking(false);
     window.speechSynthesis.speak(utt);
-  };
+  }, [ttsSupported]);
 
-  const speak = async (text) => {
+  const speak = useCallback(async (text) => {
     // Strip markdown-ish symbols and correction block
     const clean = text
       .replace(/---[\s\S]*$/m, "")
@@ -1735,30 +2053,30 @@ function App() {
       if (ok) return;
     }
     speakViaBrowser(clean, "pt-PT", currentVoice);
-  };
+  }, [azureKey, azureRegion, speakViaAzure, speakViaBrowser]);
 
-  const stopSpeaking = () => {
+  const stopSpeaking = useCallback(() => {
     window.speechSynthesis.cancel();
     setSpeaking(false);
-  };
+  }, []);
 
-  // Shared TTS helper for list tabs. Routes through Azure if key+region set and lang is pt-PT.
-  const speakListPT = async (text, lang = "pt-PT") => {
+  // Shared TTS helper for list tabs. Routes through Azure if key+region set and lang is pt-PT or en-*.
+  const speakListPT = useCallback(async (text, lang = "pt-PT") => {
     if (!text) return;
     const isAzureVoice = selectedVoiceRef.current === null || selectedVoiceRef.current?.name?.startsWith("__azure");
-    if (azureKey && azureRegion && lang === "pt-PT" && isAzureVoice) {
-      const ok = await speakViaAzure(text, "pt-PT");
+    if (azureKey && azureRegion && (lang === "pt-PT" || lang.startsWith("en")) && isAzureVoice) {
+      const ok = await speakViaAzure(text, lang);
       if (ok) return;
     }
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
-    u.rate = ttsRate;
+    u.rate = ttsRateRef.current;
     const v = findBrowserVoice(lang);
     if (v) u.voice = v;
     window.speechSynthesis.speak(u);
-  };
+  }, [azureKey, azureRegion, speakViaAzure]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
 
@@ -1770,7 +2088,7 @@ function App() {
         speak(last.content);
       }
     }
-  }, [loading]);
+  }, [loading, ttsEnabled, speak]);
   useEffect(() => {
     const handler = (e) => {
       if (verbDropdownRef.current && !verbDropdownRef.current.contains(e.target)) setVerbDropdownOpen(false);
@@ -1781,12 +2099,13 @@ function App() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const applyTheme = (t) => { setTheme(t); lsSet("pe_theme", t); };
-  const applyLevel = (l) => { setLevel(l); lsSet("pe_level", l); };
-  const applyCorrection = (c) => { setCorrectionMode(c); lsSet("pe_correction", c); };
-  const applyRegister = (r) => { setRegisterMode(r); lsSet("pe_register", r); };
-  const applyBaseFontSize = (size) => { setBaseFontSize(size); setFontOffset(0); lsSet("pe_fontsize", size); };
-  const adjustFontOffset = (delta) => setFontOffset(prev => Math.max(11 - baseFontSize, Math.min(24 - baseFontSize, prev + delta)));
+  const makeSetting = (setter, key) => (val) => { setter(val); lsSet(key, val); };
+  const applyTheme      = useCallback(makeSetting(setTheme,          "pe_theme"),      []);
+  const applyLevel      = useCallback(makeSetting(setLevel,          "pe_level"),      []);
+  const applyCorrection = useCallback(makeSetting(setCorrectionMode, "pe_correction"), []);
+  const applyRegister   = useCallback(makeSetting(setRegisterMode,   "pe_register"),   []);
+  const applyBaseFontSize = useCallback((size) => { setBaseFontSize(size); setFontOffset(0); lsSet("pe_fontsize", size); }, []);
+  const adjustFontOffset  = useCallback((delta) => setFontOffset(prev => Math.max(11 - baseFontSize, Math.min(24 - baseFontSize, prev + delta))), [baseFontSize]);
 
   const toggleTopic = (i) => setTopics(prev => {
     const next = prev.map((t, idx) => idx === i ? { ...t, selected: !t.selected } : t);
@@ -1794,7 +2113,7 @@ function App() {
   });
   const addCustomTopic = () => {
     const trimmed = customTopic.trim();
-    if (trimmed && !topics.find(t => t.label.toLowerCase() === trimmed.toLowerCase())) {
+    if (trimmed && trimmed.length <= 60 && !topics.find(t => t.label.toLowerCase() === trimmed.toLowerCase())) {
       setTopics(prev => { const next = [...prev, { label: trimmed, selected: true }]; lsSet("pe_topics", next); return next; });
       setCustomTopic("");
     }
@@ -1812,7 +2131,7 @@ function App() {
     }
     const text = (overrideText || input).trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
     if (!text || loading) return;
-    const userMsg = { role: "user", content: text };
+    const userMsg = { id: nextMsgId(), role: "user", content: text };
 
     // Build clean strictly-alternating API history
     const rawHistory = messages.filter(m =>
@@ -1842,7 +2161,7 @@ function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "anthropic-version": "2023-06-01",
+          "anthropic-version": ANTHROPIC_API_VERSION,
           "anthropic-dangerous-direct-browser-access": "true",
           ...(apiKey ? { "x-api-key": apiKey } : {})
         },
@@ -1854,14 +2173,14 @@ function App() {
       });
       const data = await resp.json();
       if (data.error) {
-        setMessages(prev => [...prev, { role: "assistant", content: `*(API error: ${data.error.message})*` }]);
+        setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(API error: ${data.error.message})*` }]);
       } else {
         const reply = data.content?.find(b => b.type === "text")?.text || "Desculpa, não percebi. Podes repetir?";
-        setMessages(prev => [...prev, { role: "assistant", content: reply }]);
+        setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: reply }]);
       }
     } catch (err) {
       const errMsg = err?.message || String(err);
-      setMessages(prev => [...prev, { role: "assistant", content: `*(Error: ${errMsg})*` }]);
+      setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(Error: ${errMsg})*` }]);
     } finally {
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -1879,7 +2198,7 @@ function App() {
     const bookQuote = SH_QUOTES[pos]?.[word] || "";
     try {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
         body: JSON.stringify({
           model: "claude-sonnet-4-6", max_tokens: 600,
           messages: [{ role: "user", content: buildVocabPrompt(word, pos, level, bookQuote) }],
@@ -1899,7 +2218,9 @@ function App() {
 
   const drawVocabCard = () => {
     const list = SH_VOCAB[vocabPos] || [];
-    const word = list[Math.floor(Math.random() * list.length)];
+    const current = vocabCard?.word_bp;
+    const pool = list.length > 1 && current ? list.filter(w => w !== current) : list;
+    const word = pool[Math.floor(Math.random() * pool.length)];
     fetchVocabCard(word, vocabPos);
   };
 
@@ -1915,7 +2236,7 @@ function App() {
     setConjLoading(true); setConjugation(null); setConjError("");
     try {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
         body: JSON.stringify({
           model: "claude-sonnet-4-6", max_tokens: 3500,
           messages: [{ role: "user", content: buildConjugationPrompt(v) }],
@@ -1937,9 +2258,14 @@ function App() {
   const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
 
-  const themeVars = theme === "light" ? LIGHT_VARS : theme === "dark" ? DARK_VARS : {};
+  // Apply theme CSS variables to :root once per theme change instead of spreading into inline style every render.
+  useEffect(() => {
+    const vars = theme === "dark" ? DARK_VARS : LIGHT_VARS;
+    const el = document.documentElement;
+    Object.entries(vars).forEach(([k, v]) => el.style.setProperty(k, v));
+  }, [theme]);
 
-  const secTitle = { fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" };
+  const secTitle = makeSecTitle(fontSize);
   const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
   const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
   const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
@@ -1960,7 +2286,7 @@ function App() {
 
 
   return (
-    <div style={{ ...themeVars, colorScheme: theme === "system" ? "light dark" : theme, fontFamily: "var(--font-sans)", display: "flex", flexDirection: "column", height: "100vh", maxHeight: 760, minHeight: 500, background: "var(--color-background-primary)" }}>
+    <div style={{ colorScheme: theme === "system" ? "light dark" : theme, fontFamily: "var(--font-sans)", display: "flex", flexDirection: "column", height: "100vh", minHeight: 500, background: "var(--color-background-primary)" }}>
 
       {/* Header */}
       <div style={{ padding: "8px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, gap: 8, flexWrap: "wrap" }}>
@@ -2006,14 +2332,16 @@ function App() {
         <div ref={verbDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Verb</span>
           <button onClick={() => { setVerbDropdownOpen(o => !o); setVerbDropdownSearch(""); }}
-            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 220, overflow: "hidden" }}>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {(() => {
               const rawEn = ALL_VERBS_MAP.get(verbOfSession) || "";
               const en = rawEn.replace(/\(([^()]+\([^()]+\)[^()]*)\)/g, (m, outer) => `(${outer.replace(/\(([^()]+)\)/g, '[$1]')})`);
               const isIrreg = IRREGULAR_VERBS_SET.has(verbOfSession);
               return <>{verbOfSession.toUpperCase()}{en ? <span style={{ fontWeight: 400 }}> — ({en})</span> : null}{isIrreg ? <span style={{ fontWeight: 400 }}> irr</span> : null}</>;
             })()}
-            <span style={{ fontSize: 12, marginLeft: 2 }}>▾</span>
+            </span>
+            <span style={{ fontSize: 12, marginLeft: 2, flexShrink: 0 }}>▾</span>
           </button>
           {verbDropdownOpen && (
             <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 320, maxHeight: 320, display: "flex", flexDirection: "column" }}>
@@ -2028,14 +2356,15 @@ function App() {
                   const color = isIrreg ? "#800000" : "#2563eb";
                   const isSelected = v === verbOfSession;
                   return (
-                    <div key={v} onClick={() => { setVerbOfSession(v); setVerbDropdownOpen(false); setVerbDropdownSearch(""); }}
-                      style={{ padding: "5px 12px", cursor: "pointer", background: isSelected ? "#dbeafe" : "#ffffff", display: "flex", alignItems: "baseline", gap: 6 }}
-                      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "#f3f4f6"; }}
-                      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "#ffffff"; }}>
+                    <HoverDiv key={v}
+                      baseBg={isSelected ? "#dbeafe" : "#ffffff"}
+                      hoverBg={isSelected ? "#dbeafe" : "#f3f4f6"}
+                      style={{ padding: "5px 12px", cursor: "pointer", display: "flex", alignItems: "baseline", gap: 6 }}
+                      onClick={() => { setVerbOfSession(v); setVerbDropdownOpen(false); setVerbDropdownSearch(""); }}>
                       <span style={{ fontSize: 16, fontWeight: 700, color }}>{v.toUpperCase()}</span>
                       {en && <span style={{ fontSize: 16, color: "#6b7280" }}>({en})</span>}
                       {isIrreg && <span style={{ fontSize: 12, color: "#800000" }}>irr</span>}
-                    </div>
+                    </HoverDiv>
                   );
                 })}
               </div>
@@ -2061,27 +2390,26 @@ function App() {
                 onChange={e => setIdiomDropdownSearch(e.target.value)}
                 style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid #e5e7eb", outline: "none", background: "#f9fafb", color: "#111827", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
               <div style={{ overflowY: "auto", flex: 1, background: "#ffffff" }}>
-                <div onClick={() => { setFocusIdiom(null); setIdiomDropdownOpen(false); setIdiomDropdownSearch(""); }}
+                <HoverDiv baseBg="#ffffff" hoverBg="#f3f4f6"
                   style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "#6b7280", fontStyle: "italic" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#f3f4f6"}
-                  onMouseLeave={e => e.currentTarget.style.background = "#ffffff"}>None</div>
+                  onClick={() => { setFocusIdiom(null); setIdiomDropdownOpen(false); setIdiomDropdownSearch(""); }}>None</HoverDiv>
                 {IDIOMS.filter(id => {
                   const q = idiomDropdownSearch.toLowerCase();
                   return !q || id.pt.toLowerCase().includes(q) || id.en.toLowerCase().includes(q) || id.when.toLowerCase().includes(q);
                 }).map((id, i) => {
                   const isSelected = focusIdiom?.pt === id.pt;
                   return (
-                    <div key={i}
+                    <HoverDiv key={i}
+                      baseBg={isSelected ? "#f3e8ff" : "#ffffff"}
+                      hoverBg={isSelected ? "#f3e8ff" : "#f3f4f6"}
+                      style={{ padding: "6px 12px", cursor: "pointer", borderBottom: "0.5px solid #f3f4f6" }}
                       onClick={() => {
                         setFocusIdiom(id); setIdiomDropdownOpen(false); setIdiomDropdownSearch("");
-                        setMessages(prev => [...prev.filter(m => m._idiomCard !== true), { role: "assistant", _idiomCard: true, _idiom: id, content: "__IDIOM_CARD__" }]);
-                      }}
-                      style={{ padding: "6px 12px", cursor: "pointer", background: isSelected ? "#f3e8ff" : "#ffffff", borderBottom: "0.5px solid #f3f4f6" }}
-                      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "#f3f4f6"; }}
-                      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "#ffffff"; }}>
+                        setMessages(prev => [...prev.filter(m => m._idiomCard !== true), { id: nextMsgId(), role: "assistant", _idiomCard: true, _idiom: id, content: "__IDIOM_CARD__" }]);
+                      }}>
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#7c3aed", margin: "0 0 1px" }}>{id.pt}</p>
                       <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>{id.when}</p>
-                    </div>
+                    </HoverDiv>
                   );
                 })}
               </div>
@@ -2103,24 +2431,23 @@ function App() {
           </button>
           {grammarDropdownOpen && (
             <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 220, display: "flex", flexDirection: "column" }}>
-              <div onClick={() => { setFocusGrammar(null); setGrammarDropdownOpen(false); }}
+              <HoverDiv baseBg="#ffffff" hoverBg="#f3f4f6"
                 style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "#6b7280", fontStyle: "italic", borderBottom: "0.5px solid #f3f4f6" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#f3f4f6"}
-                onMouseLeave={e => e.currentTarget.style.background = "#ffffff"}>None</div>
+                onClick={() => { setFocusGrammar(null); setGrammarDropdownOpen(false); }}>None</HoverDiv>
               {GRAMMAR_FOCUS_TOPICS.map((t, i) => {
                 const isSelected = focusGrammar?.id === t.id;
                 return (
-                  <div key={i}
+                  <HoverDiv key={i}
+                    baseBg={isSelected ? "#e0f2fe" : "#ffffff"}
+                    hoverBg={isSelected ? "#e0f2fe" : "#f0f9ff"}
+                    style={{ padding: "7px 12px", cursor: "pointer", borderBottom: "0.5px solid #f3f4f6" }}
                     onClick={() => {
                       setFocusGrammar(t); setGrammarDropdownOpen(false);
                       const fullTopic = GRAMMAR_TOPICS.find(gt => gt.id === t.id);
-                      setMessages(prev => [...prev.filter(m => m._grammarCard !== true), { role: "assistant", _grammarCard: true, _grammar: fullTopic, content: "__GRAMMAR_CARD__" }]);
-                    }}
-                    style={{ padding: "7px 12px", cursor: "pointer", background: isSelected ? "#e0f2fe" : "#ffffff", borderBottom: "0.5px solid #f3f4f6" }}
-                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "#f0f9ff"; }}
-                    onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "#ffffff"; }}>
+                      setMessages(prev => [...prev.filter(m => m._grammarCard !== true), { id: nextMsgId(), role: "assistant", _grammarCard: true, _grammar: fullTopic, content: "__GRAMMAR_CARD__" }]);
+                    }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: "#0369a1", margin: 0 }}>{t.label}</p>
-                  </div>
+                  </HoverDiv>
                 );
               })}
             </div>
@@ -2148,8 +2475,8 @@ function App() {
           <div style={{ marginBottom: 12 }}>
             {apiKey ? (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 14, color: "#16a34a", fontWeight: 600 }}>✓ API key saved</span>
-                <span style={{ fontSize: 13, color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({apiKey.slice(0, 12)}…)</span>
+                <span style={{ fontSize, color: "#16a34a", fontWeight: 600 }}>✓ API key saved</span>
+                <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({apiKey.slice(0, 12)}…)</span>
                 <button style={{ ...toolBtn(false), marginLeft: "auto", color: "#dc2626" }}
                   onClick={() => { setApiKey(""); lsSet("pe_api_key", ""); setApiKeyInput(""); }}>Remove</button>
               </div>
@@ -2160,12 +2487,12 @@ function App() {
                   placeholder="Paste your sk-ant-... key here"
                   value={apiKeyInput}
                   onChange={e => setApiKeyInput(e.target.value)}
-                  style={{ flex: 1, fontSize: 14, padding: "5px 10px", border: "1.5px solid #2563eb", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
+                  style={{ flex: 1, fontSize, padding: "5px 10px", border: "1.5px solid #2563eb", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
                 <button style={{ ...toolBtn(true), background: "#2563eb", color: "#fff", padding: "5px 14px" }}
                   onClick={() => { const k = apiKeyInput.trim().replace(/[^\x20-\x7E\xA0-\xFF]/g, ""); if (k) { setApiKey(k); lsSet("pe_api_key", k); setApiKeyInput(""); } }}>Save</button>
               </div>
             )}
-            <p style={{ fontSize: 11, color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
               Stored locally in your browser only. Never sent anywhere except Anthropic's API. Get a key at console.anthropic.com.
             </p>
           </div>
@@ -2173,9 +2500,9 @@ function App() {
           <div style={{ marginBottom: 12 }}>
             {azureKey ? (
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 14, color: "#16a34a", fontWeight: 600 }}>✓ Azure key saved</span>
-                <span style={{ fontSize: 13, color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({azureKey.slice(0, 8)}…)</span>
-                <span style={{ fontSize: 13, color: "var(--color-text-secondary)" }}>Region: <strong>{azureRegion || "not set"}</strong></span>
+                <span style={{ fontSize, color: "#16a34a", fontWeight: 600 }}>✓ Azure key saved</span>
+                <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({azureKey.slice(0, 8)}…)</span>
+                <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)" }}>Region: <strong>{azureRegion || "not set"}</strong></span>
                 <button style={{ ...toolBtn(false), marginLeft: "auto", color: "#dc2626" }}
                   onClick={() => { setAzureKey(""); lsSet("pe_azure_key", ""); setAzureKeyInput(""); setAzureRegion(""); lsSet("pe_azure_region", ""); setSelectedVoice(null); }}>Remove</button>
               </div>
@@ -2186,18 +2513,18 @@ function App() {
                   placeholder="Paste Azure Speech key here"
                   value={azureKeyInput}
                   onChange={e => setAzureKeyInput(e.target.value)}
-                  style={{ flex: 2, minWidth: 180, fontSize: 14, padding: "5px 10px", border: "1.5px solid #7c3aed", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
+                  style={{ flex: 2, minWidth: 180, fontSize, padding: "5px 10px", border: "1.5px solid #7c3aed", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
                 <input
                   type="text"
                   placeholder="Region (e.g. eastus)"
                   value={azureRegion}
                   onChange={e => { setAzureRegion(e.target.value.trim()); lsSet("pe_azure_region", e.target.value.trim()); }}
-                  style={{ flex: 1, minWidth: 100, fontSize: 14, padding: "5px 10px", border: "1.5px solid #7c3aed", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
+                  style={{ flex: 1, minWidth: 100, fontSize, padding: "5px 10px", border: "1.5px solid #7c3aed", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
                 <button style={{ ...toolBtn(true), background: "#7c3aed", color: "#fff", padding: "5px 14px" }}
                   onClick={() => { const k = azureKeyInput.trim(); if (k && azureRegion) { setAzureKey(k); lsSet("pe_azure_key", k); setAzureKeyInput(""); setSelectedVoice({ name: "__azure_raquel__", lang: "pt-PT", azureVoice: "pt-PT-RaquelNeural" }); } }}>Save</button>
               </div>
             )}
-            <p style={{ fontSize: 11, color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
               Stored locally only. Used for Azure Cognitive Services TTS (Inês Neural, pt-PT). Get a key at portal.azure.com.
             </p>
           </div>
@@ -2210,7 +2537,7 @@ function App() {
               })}
             </div>
             {fontOffset !== 0 && (
-              <p style={{ fontSize: 11, color: "#f59e0b", margin: "5px 0 0", fontStyle: "italic" }}>
+              <p style={{ fontSize: Math.max(11, fontSize - 3), color: "#f59e0b", margin: "5px 0 0", fontStyle: "italic" }}>
                 ● Session override active ({fontOffset > 0 ? "+" : ""}{fontOffset}px). Closes with the app.
               </p>
             )}
@@ -2250,7 +2577,7 @@ function App() {
                 return <button key={m.id} style={segBtn(registerMode === m.id, pos)} onClick={() => applyRegister(m.id)}>{m.label}</button>;
               })}
             </div>
-            <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "5px 0 12px", fontStyle: "italic" }}>
+            <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "5px 0 12px", fontStyle: "italic" }}>
               {registerMode === "colloquial"
                 ? "Colloquial: the bot uses street vocabulary, contractions, slang, and filler words a local would use in casual conversation."
                 : "Standard: the bot uses correct, textbook-quality European Portuguese — clear vocabulary, complete sentences."}
@@ -2280,9 +2607,14 @@ function App() {
             ))}
           </div>
           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-            <input style={{ fontSize: 12, flex: 1, padding: "4px 8px", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 999, background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none" }}
-              placeholder="Add custom topic…" value={customTopic}
-              onChange={e => setCustomTopic(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomTopic()} />
+            <div style={{ flex: 1, position: "relative" }}>
+              <input style={{ fontSize, width: "100%", padding: "4px 8px", border: "0.5px solid " + (customTopic.length > 60 ? "#dc2626" : "var(--color-border-tertiary)"), borderRadius: 999, background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", boxSizing: "border-box" }}
+                placeholder="Add custom topic…" value={customTopic} maxLength={60}
+                onChange={e => setCustomTopic(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomTopic()} />
+              {customTopic.length > 40 && (
+                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 10, color: customTopic.length >= 60 ? "#dc2626" : "var(--color-text-tertiary)", pointerEvents: "none" }}>{60 - customTopic.length}</span>
+              )}
+            </div>
             <button style={{ ...toolBtn(false), background: "#eff6ff", color: "#2563eb" }} onClick={addCustomTopic}>+ Add</button>
           </div>
         </div>
@@ -2371,166 +2703,22 @@ function App() {
               ))}
             </div>
           )}
-          {listTab === "pairs" && (() => {
-            const pair = MINIMAL_PAIRS[pairsOrder[pairIndex]];
-            const shuffle = () => {
-              const arr = MINIMAL_PAIRS.map((_, i) => i);
-              for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-              }
-              setPairsOrder(arr);
-              setPairIndex(0);
-              setQuizTarget(null);
-              setQuizResult(null);
-            };
-            const startQuiz = () => {
-              setQuizTarget(Math.random() < 0.5 ? "a" : "b");
-              setQuizResult(null);
-            };
-            const playQuizWord = () => {
-              if (quizTarget) speakListPT(pair[quizTarget].word);
-            };
-            const guess = (choice) => {
-              const correct = choice === quizTarget;
-              setQuizResult(correct ? "correct" : "wrong");
-              setPairsScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
-            };
-            const next = () => {
-              const nextIdx = (pairIndex + 1) % MINIMAL_PAIRS.length;
-              setPairIndex(nextIdx);
-              setQuizResult(null);
-              if (pairsQuizMode) setQuizTarget(Math.random() < 0.5 ? "a" : "b");
-            };
-            const prev = () => {
-              const prevIdx = (pairIndex - 1 + MINIMAL_PAIRS.length) % MINIMAL_PAIRS.length;
-              setPairIndex(prevIdx);
-              setQuizResult(null);
-              if (pairsQuizMode) setQuizTarget(Math.random() < 0.5 ? "a" : "b");
-            };
-            const resetScore = () => setPairsScore({ correct: 0, total: 0 });
-            const toggleMode = () => {
-              setPairsQuizMode(m => !m);
-              setQuizTarget(null);
-              setQuizResult(null);
-            };
-            const cardBtn = (label, onClick, style = {}) => (
-              <button onClick={onClick} style={{ fontSize: fontSize, padding: "5px 14px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", ...style }}>{label}</button>
-            );
-            return (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 10 }}>
-                {/* toolbar */}
-                <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                  {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "#eff6ff" : "#f0fdf4", color: pairsQuizMode ? "#2563eb" : "#166534", borderColor: pairsQuizMode ? "#bfdbfe" : "#bbf7d0" })}
-                  {cardBtn("🔀 Shuffle", shuffle)}
-                  <span style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginLeft: "auto" }}>
-                    {pairIndex + 1} / {MINIMAL_PAIRS.length}
-                    {pairsScore.total > 0 && (
-                      <span style={{ marginLeft: 10, color: pairsScore.correct / pairsScore.total >= 0.7 ? "#166534" : "#991b1b" }}>
-                        Score: {pairsScore.correct}/{pairsScore.total}
-                      </span>
-                    )}
-                    {pairsScore.total > 0 && <button onClick={resetScore} style={{ marginLeft: 6, fontSize: fontSize, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>reset</button>}
-                  </span>
-                </div>
-
-                {/* card */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
-                  {!pairsQuizMode ? (
-                    /* Browse mode — both words visible */
-                    <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-                      {["a", "b"].map(side => (
-                        <div key={side} style={{ textAlign: "center", background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: 12, padding: "18px 28px", minWidth: 140 }}>
-                          <div style={{ fontSize: fontSize * 2, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 6 }}>{pair[side].word}</div>
-                          <div style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 12, fontStyle: "italic" }}>{pair[side].meaning}</div>
-                          <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Ouvir</button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    /* Quiz mode */
-                    <div style={{ textAlign: "center", width: "100%", maxWidth: 360 }}>
-                      {!quizTarget ? (
-                        <div>
-                          <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>Press Play to hear a word, then identify which it is.</p>
-                          {cardBtn("▶ Play", startQuiz, { fontSize: fontSize, padding: "10px 32px", background: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" })}
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-                          <button onClick={playQuizWord} style={{ fontSize: 16, padding: "10px 32px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Play again</button>
-                          {quizResult === null ? (
-                            <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
-                              {["a", "b"].map(side => (
-                                <button key={side} onClick={() => guess(side)} style={{ fontSize: 22, fontFamily: "var(--font-mono)", fontWeight: 700, padding: "14px 28px", borderRadius: 10, border: "2px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", cursor: "pointer", minWidth: 110 }}>
-                                  {pair[side].word}
-                                </button>
-                              ))}
-                            </div>
-                          ) : (
-                            <div style={{ textAlign: "center" }}>
-                              <p style={{ fontSize: 20, fontWeight: 700, color: quizResult === "correct" ? "#166534" : "#991b1b", marginBottom: 6 }}>
-                                {quizResult === "correct" ? "✓ Correto" : "✗ Errado"}
-                              </p>
-                              <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 4 }}>
-                                A palavra era: <strong style={{ fontFamily: "var(--font-mono)", fontSize: fontSize }}>{pair[quizTarget].word}</strong> — {pair[quizTarget].meaning}
-                              </p>
-                              <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>
-                                {pair[quizTarget === "a" ? "b" : "a"].word} = {pair[quizTarget === "a" ? "b" : "a"].meaning}
-                              </p>
-                              {cardBtn("Próximo →", next, { background: "#f0fdf4", color: "#166534", borderColor: "#bbf7d0" })}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* nav */}
-                <div style={{ display: "flex", justifyContent: "center", gap: 12, paddingBottom: 4 }}>
-                  {cardBtn("← Anterior", prev)}
-                  {!pairsQuizMode && cardBtn("Próximo →", next)}
-                </div>
-              </div>
-            );
-          })()}
+          {listTab === "pairs" && (
+            <MinimalPairs
+              pairIndex={pairIndex} setPairIndex={setPairIndex}
+              pairsOrder={pairsOrder} setPairsOrder={setPairsOrder}
+              pairsQuizMode={pairsQuizMode} setPairsQuizMode={setPairsQuizMode}
+              quizTarget={quizTarget} setQuizTarget={setQuizTarget}
+              quizResult={quizResult} setQuizResult={setQuizResult}
+              pairsScore={pairsScore} setPairsScore={setPairsScore}
+              fontSize={fontSize} speakListPT={speakListPT}
+            />
+          )}
           {listTab === "phrases" && (
-            <div style={listPanelStyle}>
-              {PHRASES.map((sec, si) => (
-                <div key={si} style={secWrap}>
-                  <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-                  <table style={tbl}><tbody>
-                    {sec.items.map((item, ii) => (
-                      <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
-                        <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                          <button onClick={() => speakListPT(item.pt)}
-                            style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                        </td>
-                        <td style={tdL}>{item.pt}</td>
-                        <td style={tdR}>{item.en}</td>
-                      </tr>
-                    ))}
-                  </tbody></table>
-                </div>
-              ))}
-            </div>
+            <PhrasesTab fontSize={fontSize} speakListPT={speakListPT} />
           )}
           {listTab === "idioms" && (
-            <div style={listPanelStyle}>
-              <table style={tbl}><tbody>
-                {IDIOMS.map((item, i) => (
-                  <tr key={i} style={{ borderBottom: "1px solid #d1d5db" }}>
-                    <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                      <button onClick={() => speakListPT(item.pt)}
-                        style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                    </td>
-                    <td style={{ ...tdL, width: "34%", paddingBottom: 8, paddingTop: 6 }}>{item.pt}</td>
-                    <td style={{ ...tdR, width: "32%", paddingBottom: 8, paddingTop: 6 }}>{item.en}</td>
-                    <td style={{ ...tdR, paddingBottom: 8, paddingTop: 6, fontStyle: "italic" }}>{item.when}</td>
-                  </tr>
-                ))}
-              </tbody></table>
-            </div>
+            <IdiomsTab fontSize={fontSize} speakListPT={speakListPT} />
           )}
           {listTab === "verbref" && (
             <div style={listPanelStyle}>
@@ -2638,113 +2826,19 @@ function App() {
             </div>
           )}
           {listTab === "numbers" && (
-            <div style={listPanelStyle}>
-              {NUMBERS.map((sec, si) => (
-                <div key={si} style={secWrap}>
-                  <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-                  <table style={tbl}><tbody>
-                    {sec.items.map((item, ii) => (
-                      <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
-                        <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                          <button onClick={() => speakListPT(item.pt)}
-                            style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                        </td>
-                        <td style={tdL}>{item.pt}</td>
-                        <td style={tdR}>{item.en}</td>
-                      </tr>
-                    ))}
-                  </tbody></table>
-                </div>
-              ))}
-            </div>
+            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} />
           )}
           {listTab === "cognates" && (
-            <div style={listPanelStyle}>
-              {COGNATES.map((sec, si) => (
-                <div key={si} style={secWrap}>
-                  <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-                  {sec.rule ? <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
-                  <table style={tbl}><tbody>
-                    {sec.items.map((item, ii) => {
-                      // If pt contains /a (gender variant), speak both forms
-                      const hasMF = item.pt.includes("/a") || item.pt.includes("/o");
-                      const speakText = hasMF
-                        ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
-                        : item.pt;
-                      return (
-                        <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
-                          <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                            <button onClick={() => speakListPT(speakText)}
-                              style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                          </td>
-                          <td style={tdL}>{item.pt}</td>
-                          <td style={tdR}>{item.en}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody></table>
-                  {sec.exceptions.length > 0 && (
-                    <div style={{ marginTop: 4, padding: "4px 8px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize, color: "var(--color-text-warning)" }}>
-                      {sec.exceptions.map((e, ei) => <div key={ei}>⚠ {e}</div>)}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <CognatesTab fontSize={fontSize} speakListPT={speakListPT} />
           )}
-          {listTab === "media" && (() => {
-            // Data defined at module scope as MEDIA_SECTIONS / MEDIA_SECTIONS_SORTED.
-            const linkStyle = { color: "#1a56db", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block" };
-            const subLabelStyle = { fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "8px 0 4px" };
-            const sortedSections = MEDIA_SECTIONS_SORTED;
-            return (
-              <div style={listPanelStyle}>
-                {/* Sections */}
-                {sortedSections.map(sec => {
-                  const sortedLinks = sec.links ? [...sec.links].sort((a, b) => a.label.localeCompare(b.label)) : null;
-                  const sortedSubgroups = sec.subgroups ? sec.subgroups.map(sg => ({ ...sg, links: [...sg.links].sort((a, b) => a.label.localeCompare(b.label)) })) : null;
-                  return (
-                  <div key={sec.id} ref={el => mediaSectionRefs.current[sec.id] = el} style={{ marginBottom: 10, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
-                    <button onClick={() => {
-                        const newId = mediaOpenSection === sec.id ? null : sec.id;
-                        setMediaOpenSection(newId);
-                        if (newId) setTimeout(() => mediaSectionRefs.current[newId]?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
-                      }}
-                      style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                      <span>
-                        <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.pt}</span>
-                        <span style={{ fontSize: Math.max(11, fontSize - 3), color: "#1e40af", marginLeft: 6 }}>— {sec.en}</span>
-                      </span>
-                      <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{mediaOpenSection === sec.id ? "▲" : "▼"}</span>
-                    </button>
-                    {mediaOpenSection === sec.id && (
-                      <div style={{ padding: "8px 12px 12px" }}>
-                        {sortedSubgroups ? sortedSubgroups.map((sg, sgi) => (
-                          <div key={sgi}>
-                            <p style={subLabelStyle}>{sg.label}</p>
-                            {sg.links.map((lk, li) => (
-                              <a key={li} href={lk.url} target="_blank" rel="noopener noreferrer" style={linkStyle}
-                                onMouseEnter={e => e.target.style.textDecoration="underline"}
-                                onMouseLeave={e => e.target.style.textDecoration="none"}>
-                                {lk.label}
-                              </a>
-                            ))}
-                          </div>
-                        )) : sortedLinks.map((lk, li) => (
-                          <a key={li} href={lk.url} target="_blank" rel="noopener noreferrer" style={linkStyle}
-                            onMouseEnter={e => e.target.style.textDecoration="underline"}
-                            onMouseLeave={e => e.target.style.textDecoration="none"}>
-                            {lk.label}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  );
-                })}
-              </div>
-            );
-          })()}
+          {listTab === "media" && (
+            <MediaTab
+              fontSize={fontSize}
+              mediaOpenSection={mediaOpenSection}
+              setMediaOpenSection={setMediaOpenSection}
+              mediaSectionRefs={mediaSectionRefs}
+            />
+          )}
         </div>
       )}
 
@@ -2764,11 +2858,15 @@ function App() {
               {CONJ_LEVEL_GROUPS.map(group => {
                 const groupTenses = (conjugation.tenses || []).filter(t => group.tenses.includes(t.name));
                 if (groupTenses.length === 0) return null;
-                const isOpen = conjOpenGroups;
+                const isOpen = conjOpenGroups.has(group.level);
                 const isUsageOpen = conjUsageOpen;
                 return (
                   <div key={group.level} style={{ marginBottom: 12, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
-                    <button onClick={() => setConjOpenGroups(prev => !prev)}
+                    <button onClick={() => setConjOpenGroups(prev => {
+                        const next = new Set(prev);
+                        next.has(group.level) ? next.delete(group.level) : next.add(group.level);
+                        return next;
+                      })}
                       style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 10px", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#2563eb", letterSpacing: "0.05em" }}>{group.level}</span>
                       <span style={{ fontSize: 13, color: "var(--color-text-tertiary)" }}>{isOpen ? "▲" : "▼"}</span>
@@ -2935,12 +3033,14 @@ function App() {
                       )}
                     </div>
                   )}
+                  {(() => { const inReview = vocabReview.some(r => r.word_bp === vocabCard.word_bp); return (
                   <div style={{ padding: "8px 14px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 6 }}>
                     <button style={{ ...toolBtn(false), background: "var(--color-background-secondary)" }} onClick={drawVocabCard}>→ Next word</button>
-                    <button style={{ ...toolBtn(false), color: vocabReview.find(r => r.word_bp === vocabCard.word_bp) ? "#92400e" : "var(--color-text-secondary)" }} onClick={addToReview}>
-                      {vocabReview.find(r => r.word_bp === vocabCard.word_bp) ? "★ In review list" : "☆ Add to review"}
+                    <button style={{ ...toolBtn(false), color: inReview ? "#92400e" : "var(--color-text-secondary)" }} onClick={addToReview}>
+                      {inReview ? "★ In review list" : "☆ Add to review"}
                     </button>
                   </div>
+                  ); })()}
                 </div>
               )}
             </div>
@@ -3002,14 +3102,14 @@ function App() {
       {/* Chat messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: 16, display: (activePanel === "lists" || activePanel === "verblookup" || activePanel === "vocab" || activePanel === "settings") ? "none" : "flex", flexDirection: "column", gap: 12 }}>
         {messages.map((m, i) => (
-          <MessageBubble key={i} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} renderWithParens={renderWithParens} />
+          <MessageBubble key={m.id} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} />
         ))}
         {loading && <div style={{ alignSelf: "flex-start", background: "var(--color-background-secondary)", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", fontSize: 13, color: "var(--color-text-tertiary)" }}>A escrever…</div>}
         <div ref={bottomRef} />
       </div>
 
       {/* Footer */}
-      {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab") && (
+      {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
       <div style={{ padding: "10px 12px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
         {!apiKey && (
           <div style={{ padding: "6px 10px", background: "#fef3c7", borderRadius: "var(--border-radius-md)", fontSize: 13, color: "#92400e" }}>
@@ -3049,7 +3149,7 @@ function App() {
           {ttsSupported && (
             <div style={{ display: "flex", alignItems: "center", gap: 2, border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-lg)", overflow: "hidden", flexShrink: 0 }}>
               <button
-                onClick={() => { const r = Math.max(0.25, Math.round((ttsRate - 0.05) * 100) / 100); setTtsRate(r); lsSet("pe_tts_rate", r); }}
+                onClick={() => { const r = Math.max(0.25, Math.round((ttsRate - 0.05) * 100) / 100); setTtsRate(r); ttsRateRef.current = r; lsSet("pe_tts_rate", r); }}
                 disabled={ttsRate <= 0.25}
                 title="Slower"
                 style={{ padding: "4px 7px", fontSize: 13, border: "none", background: "var(--color-background-secondary)", color: ttsRate <= 0.25 ? "var(--color-text-tertiary)" : "var(--color-text-secondary)", cursor: ttsRate <= 0.25 ? "default" : "pointer" }}>−</button>
@@ -3057,13 +3157,16 @@ function App() {
                 {Math.round(ttsRate * 100)}%
               </span>
               <button
-                onClick={() => { const r = Math.min(2.0, Math.round((ttsRate + 0.05) * 100) / 100); setTtsRate(r); lsSet("pe_tts_rate", r); }}
+                onClick={() => { const r = Math.min(2.0, Math.round((ttsRate + 0.05) * 100) / 100); setTtsRate(r); ttsRateRef.current = r; lsSet("pe_tts_rate", r); }}
                 disabled={ttsRate >= 2.0}
                 title="Faster"
                 style={{ padding: "4px 7px", fontSize: 13, border: "none", background: "var(--color-background-secondary)", color: ttsRate >= 2.0 ? "var(--color-text-tertiary)" : "var(--color-text-secondary)", cursor: ttsRate >= 2.0 ? "default" : "pointer" }}>+</button>
             </div>
           )}
           {/* Voice selector */}
+          {ttsSupported && !azureKey && voices.length > 0 && !voices.some(v => v.lang.startsWith("pt")) && (
+            <span style={{ fontSize: 11, color: "var(--color-text-warning)", padding: "2px 4px" }} title="No Portuguese voice found on this device. Install one for best results.">⚠ No PT voice</span>
+          )}
           {ttsSupported && (
             <select
               value={selectedVoice?.name || (azureKey && azureRegion ? "__azure_raquel__" : "")}

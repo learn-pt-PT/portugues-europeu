@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 1.5 -->
+  <!-- version: 1.7.0 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -126,6 +126,9 @@ const MINIMAL_PAIRS = [
   { a: { word: "paz", meaning: "peace" }, b: { word: "pás", meaning: "shovels" } },
 ];
 
+// TENSE_LABELS and PRONOUNS are used exclusively in the static verb reference panel (Lists → Verb List)
+// to display the hardcoded IRREGULAR_VERBS tense tables. They are NOT used by the Conjugator panel,
+// which renders tense rows directly from the API response.
 const TENSE_LABELS = ["Presente","Pret. Perfeito","Pret. Imperfeito","Futuro","Particípio"];
 const PRONOUNS = ["eu","tu","ele/ela","nós","vós","eles/elas"];
 
@@ -239,7 +242,7 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"proteger", en:"to protect" }, { inf:"punir", en:"to punish" }, { inf:"reagir", en:"to react" },
   { inf:"reconhecer", en:"to recognize" }, { inf:"reduzir", en:"to reduce" }, { inf:"repetir", en:"to repeat" },
   { inf:"residir", en:"to reside" }, { inf:"resolver", en:"to resolve" }, { inf:"responder", en:"to respond" },
-  { inf:"reunir", en:"to gather" }, { inf:"saber", en:"to know" }, { inf:"sofrer", en:"to suffer" },
+  { inf:"reunir", en:"to gather" }, { inf:"sofrer", en:"to suffer" },
   { inf:"sugerir", en:"to suggest" }, { inf:"surpreender", en:"to surprise" }, { inf:"temer", en:"to fear" },
   { inf:"tender", en:"to tend" }, { inf:"traduzir", en:"to translate" }, { inf:"valer", en:"to be worth" },
   { inf:"vender", en:"to sell" }, { inf:"ver", en:"to see" }, { inf:"vestir", en:"to dress" },
@@ -1329,6 +1332,9 @@ function buildConjugationPrompt(verb) {
   return `You are a European Portuguese grammar reference. The user wants conjugation tables for the verb "${verb}".\n\nRespond ONLY with a JSON object and nothing else — no markdown, no backticks, no explanation.\n\nFormat:\n{\n  "infinitive": "falar",\n  "meaning": "to speak",\n  "tenses": [\n    {\n      "name": "Presente do Indicativo",\n      "rows": [\n        ["eu", "falo"],["tu", "falas"],["ele/ela", "fala"],["nós", "falamos"],["vós", "falais"],["eles/elas", "falam"]\n      ],\n      "example_pt": "Ela fala português muito bem.",\n      "example_en": "She speaks Portuguese very well."\n    }\n  ]\n}\n\nInclude exactly these 11 tenses in this order:\n1. Presente do Indicativo\n2. Imperativo\n3. Pretérito Perfeito Simples\n4. Pretérito Imperfeito do Indicativo\n5. Futuro do Indicativo\n6. Condicional\n7. Presente do Conjuntivo\n8. Infinitivo Pessoal\n9. Pretérito Mais-que-Perfeito\n10. Pretérito Imperfeito do Conjuntivo\n11. Futuro do Conjuntivo\n\nFor each tense, include one natural example sentence using a randomly chosen pronoun. The example must use the correct conjugated form of "${verb}" for that tense. Use European Portuguese naturally — contractions, clitic placement, and vocabulary appropriate for Portugal (not Brazil).\n\nFor Imperativo rows use: tu, você/ele/ela, nós, vós, vocês/eles/elas (affirmative).\nFor Infinitivo Pessoal rows use all six persons: eu, tu, ele/ela, nós, vós, eles/elas.\nUse European Portuguese forms throughout. Return only valid JSON.`;
 }
 
+// Anthropic API version string — update here when Anthropic releases a newer stable version.
+const ANTHROPIC_API_VERSION = "2023-06-01";
+
 function ls(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
@@ -1379,7 +1385,7 @@ function renderWithParens(text, baseColor, baseWeight) {
   });
 }
 
-const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak, renderWithParens }) {
+const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak }) {
   if (m._grammarCard && m._grammar) {
     const gt = m._grammar;
     const intro = gt.sections[0];
@@ -1474,6 +1480,20 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
   );
 });
 
+// Declarative hover wrapper — replaces imperative onMouseEnter/Leave style mutations in dropdowns.
+const HoverDiv = React.memo(function HoverDiv({ baseBg, hoverBg, style, onClick, children }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      style={{ ...style, background: hovered ? hoverBg : baseBg }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}>
+      {children}
+    </div>
+  );
+});
+
 const MinimalPairs = React.memo(function MinimalPairs({
   pairIndex, setPairIndex,
   pairsOrder, setPairsOrder,
@@ -1497,6 +1517,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
     setQuizResult(null);
   };
   const startQuiz = () => {
+    shuffle();
     setQuizTarget(Math.random() < 0.5 ? "a" : "b");
     setQuizResult(null);
   };
@@ -1665,11 +1686,14 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
   );
 });
 
+// Single source of truth for section title style — used by tab components and App.
+const makeSecTitle = (fontSize) => ({ fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" });
+
 const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT }) {
   const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
   const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
   const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
-  const secTitle = { fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" };
+  const secTitle = makeSecTitle(fontSize);
   return (
     <div style={listPanelStyle}>
       {PHRASES.map((sec, si) => (
@@ -1720,7 +1744,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT }) {
   const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
   const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
   const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
-  const secTitle = { fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" };
+  const secTitle = makeSecTitle(fontSize);
   return (
     <div style={listPanelStyle}>
       {NUMBERS.map((sec, si) => (
@@ -1748,7 +1772,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
   const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
   const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
   const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
-  const secTitle = { fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" };
+  const secTitle = makeSecTitle(fontSize);
   return (
     <div style={listPanelStyle}>
       {COGNATES.map((sec, si) => (
@@ -1811,6 +1835,10 @@ const DARK_VARS = {
   "--color-border-tertiary": "#374151",
 };
 
+// Stable message ID counter — incremented each time a message object is created.
+let _msgId = 0;
+const nextMsgId = () => ++_msgId;
+
 // Find a real browser SpeechSynthesisVoice for fallback — never pass the fake __azure__ sentinel object
 function findBrowserVoice(lang) {
   const vs = window.speechSynthesis.getVoices();
@@ -1850,7 +1878,7 @@ function App() {
   const [conjugation, setConjugation] = useState(null);
   const [conjLoading, setConjLoading] = useState(false);
   const [conjError, setConjError] = useState("");
-  const [conjOpenGroups, setConjOpenGroups] = useState(true);   // true = all groups open
+  const [conjOpenGroups, setConjOpenGroups] = useState(() => new Set(CONJ_LEVEL_GROUPS.map(g => g.level)));   // Set of open group ids
   const [conjUsageOpen, setConjUsageOpen] = useState(false);    // false = all usage sections closed
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [focusIdiom, setFocusIdiom] = useState(null);
@@ -1915,7 +1943,7 @@ function App() {
           const ptPT = v.find(x => x.lang === "pt-PT");
           const ptBR = v.find(x => x.lang === "pt-BR");
           const anyPt = v.find(x => x.lang.startsWith("pt"));
-          setSelectedVoice(ptPT || ptBR || anyPt || v[0]);
+          setSelectedVoice(ptPT || ptBR || anyPt || null);
         }
       }
     };
@@ -2054,13 +2082,13 @@ function App() {
     speakViaBrowser(clean, "pt-PT", currentVoice);
   }, [azureKey, azureRegion, speakViaAzure, speakViaBrowser]);
 
-  const stopSpeaking = () => {
+  const stopSpeaking = useCallback(() => {
     window.speechSynthesis.cancel();
     setSpeaking(false);
-  };
+  }, []);
 
   // Shared TTS helper for list tabs. Routes through Azure if key+region set and lang is pt-PT or en-*.
-  const speakListPT = async (text, lang = "pt-PT") => {
+  const speakListPT = useCallback(async (text, lang = "pt-PT") => {
     if (!text) return;
     const isAzureVoice = selectedVoiceRef.current === null || selectedVoiceRef.current?.name?.startsWith("__azure");
     if (azureKey && azureRegion && (lang === "pt-PT" || lang.startsWith("en")) && isAzureVoice) {
@@ -2075,7 +2103,7 @@ function App() {
     const v = findBrowserVoice(lang);
     if (v) u.voice = v;
     window.speechSynthesis.speak(u);
-  };
+  }, [azureKey, azureRegion, speakViaAzure]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
 
@@ -2099,12 +2127,12 @@ function App() {
   }, []);
 
   const makeSetting = (setter, key) => (val) => { setter(val); lsSet(key, val); };
-  const applyTheme      = makeSetting(setTheme,           "pe_theme");
-  const applyLevel      = makeSetting(setLevel,           "pe_level");
-  const applyCorrection = makeSetting(setCorrectionMode,  "pe_correction");
-  const applyRegister   = makeSetting(setRegisterMode,    "pe_register");
-  const applyBaseFontSize = (size) => { setBaseFontSize(size); setFontOffset(0); lsSet("pe_fontsize", size); };
-  const adjustFontOffset = (delta) => setFontOffset(prev => Math.max(11 - baseFontSize, Math.min(24 - baseFontSize, prev + delta)));
+  const applyTheme      = useCallback(makeSetting(setTheme,          "pe_theme"),      []);
+  const applyLevel      = useCallback(makeSetting(setLevel,          "pe_level"),      []);
+  const applyCorrection = useCallback(makeSetting(setCorrectionMode, "pe_correction"), []);
+  const applyRegister   = useCallback(makeSetting(setRegisterMode,   "pe_register"),   []);
+  const applyBaseFontSize = useCallback((size) => { setBaseFontSize(size); setFontOffset(0); lsSet("pe_fontsize", size); }, []);
+  const adjustFontOffset  = useCallback((delta) => setFontOffset(prev => Math.max(11 - baseFontSize, Math.min(24 - baseFontSize, prev + delta))), [baseFontSize]);
 
   const toggleTopic = (i) => setTopics(prev => {
     const next = prev.map((t, idx) => idx === i ? { ...t, selected: !t.selected } : t);
@@ -2112,7 +2140,7 @@ function App() {
   });
   const addCustomTopic = () => {
     const trimmed = customTopic.trim();
-    if (trimmed && !topics.find(t => t.label.toLowerCase() === trimmed.toLowerCase())) {
+    if (trimmed && trimmed.length <= 60 && !topics.find(t => t.label.toLowerCase() === trimmed.toLowerCase())) {
       setTopics(prev => { const next = [...prev, { label: trimmed, selected: true }]; lsSet("pe_topics", next); return next; });
       setCustomTopic("");
     }
@@ -2130,7 +2158,7 @@ function App() {
     }
     const text = (overrideText || input).trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
     if (!text || loading) return;
-    const userMsg = { role: "user", content: text };
+    const userMsg = { id: nextMsgId(), role: "user", content: text };
 
     // Build clean strictly-alternating API history
     const rawHistory = messages.filter(m =>
@@ -2160,7 +2188,7 @@ function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "anthropic-version": "2023-06-01",
+          "anthropic-version": ANTHROPIC_API_VERSION,
           "anthropic-dangerous-direct-browser-access": "true",
           ...(apiKey ? { "x-api-key": apiKey } : {})
         },
@@ -2172,14 +2200,14 @@ function App() {
       });
       const data = await resp.json();
       if (data.error) {
-        setMessages(prev => [...prev, { role: "assistant", content: `*(API error: ${data.error.message})*` }]);
+        setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(API error: ${data.error.message})*` }]);
       } else {
         const reply = data.content?.find(b => b.type === "text")?.text || "Desculpa, não percebi. Podes repetir?";
-        setMessages(prev => [...prev, { role: "assistant", content: reply }]);
+        setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: reply }]);
       }
     } catch (err) {
       const errMsg = err?.message || String(err);
-      setMessages(prev => [...prev, { role: "assistant", content: `*(Error: ${errMsg})*` }]);
+      setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(Error: ${errMsg})*` }]);
     } finally {
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -2197,7 +2225,7 @@ function App() {
     const bookQuote = SH_QUOTES[pos]?.[word] || "";
     try {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
         body: JSON.stringify({
           model: "claude-sonnet-4-6", max_tokens: 600,
           messages: [{ role: "user", content: buildVocabPrompt(word, pos, level, bookQuote) }],
@@ -2217,7 +2245,9 @@ function App() {
 
   const drawVocabCard = () => {
     const list = SH_VOCAB[vocabPos] || [];
-    const word = list[Math.floor(Math.random() * list.length)];
+    const current = vocabCard?.word_bp;
+    const pool = list.length > 1 && current ? list.filter(w => w !== current) : list;
+    const word = pool[Math.floor(Math.random() * pool.length)];
     fetchVocabCard(word, vocabPos);
   };
 
@@ -2233,7 +2263,7 @@ function App() {
     setConjLoading(true); setConjugation(null); setConjError("");
     try {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
         body: JSON.stringify({
           model: "claude-sonnet-4-6", max_tokens: 3500,
           messages: [{ role: "user", content: buildConjugationPrompt(v) }],
@@ -2255,9 +2285,14 @@ function App() {
   const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
 
-  const themeVars = theme === "light" ? LIGHT_VARS : theme === "dark" ? DARK_VARS : {};
+  // Apply theme CSS variables to :root once per theme change instead of spreading into inline style every render.
+  useEffect(() => {
+    const vars = theme === "dark" ? DARK_VARS : LIGHT_VARS;
+    const el = document.documentElement;
+    Object.entries(vars).forEach(([k, v]) => el.style.setProperty(k, v));
+  }, [theme]);
 
-  const secTitle = { fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" };
+  const secTitle = makeSecTitle(fontSize);
   const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
   const tdL = { fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize };
   const tdR = { color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize };
@@ -2278,7 +2313,7 @@ function App() {
 
 
   return (
-    <div style={{ ...themeVars, colorScheme: theme === "system" ? "light dark" : theme, fontFamily: "var(--font-sans)", display: "flex", flexDirection: "column", height: "100vh", maxHeight: 760, minHeight: 500, background: "var(--color-background-primary)" }}>
+    <div style={{ colorScheme: theme === "system" ? "light dark" : theme, fontFamily: "var(--font-sans)", display: "flex", flexDirection: "column", height: "100vh", minHeight: 500, background: "var(--color-background-primary)" }}>
 
       {/* Header */}
       <div style={{ padding: "8px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, gap: 8, flexWrap: "wrap" }}>
@@ -2324,14 +2359,16 @@ function App() {
         <div ref={verbDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Verb</span>
           <button onClick={() => { setVerbDropdownOpen(o => !o); setVerbDropdownSearch(""); }}
-            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 220, overflow: "hidden" }}>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {(() => {
               const rawEn = ALL_VERBS_MAP.get(verbOfSession) || "";
               const en = rawEn.replace(/\(([^()]+\([^()]+\)[^()]*)\)/g, (m, outer) => `(${outer.replace(/\(([^()]+)\)/g, '[$1]')})`);
               const isIrreg = IRREGULAR_VERBS_SET.has(verbOfSession);
               return <>{verbOfSession.toUpperCase()}{en ? <span style={{ fontWeight: 400 }}> — ({en})</span> : null}{isIrreg ? <span style={{ fontWeight: 400 }}> irr</span> : null}</>;
             })()}
-            <span style={{ fontSize: 12, marginLeft: 2 }}>▾</span>
+            </span>
+            <span style={{ fontSize: 12, marginLeft: 2, flexShrink: 0 }}>▾</span>
           </button>
           {verbDropdownOpen && (
             <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 320, maxHeight: 320, display: "flex", flexDirection: "column" }}>
@@ -2346,14 +2383,15 @@ function App() {
                   const color = isIrreg ? "#800000" : "#2563eb";
                   const isSelected = v === verbOfSession;
                   return (
-                    <div key={v} onClick={() => { setVerbOfSession(v); setVerbDropdownOpen(false); setVerbDropdownSearch(""); }}
-                      style={{ padding: "5px 12px", cursor: "pointer", background: isSelected ? "#dbeafe" : "#ffffff", display: "flex", alignItems: "baseline", gap: 6 }}
-                      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "#f3f4f6"; }}
-                      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "#ffffff"; }}>
+                    <HoverDiv key={v}
+                      baseBg={isSelected ? "#dbeafe" : "#ffffff"}
+                      hoverBg={isSelected ? "#dbeafe" : "#f3f4f6"}
+                      style={{ padding: "5px 12px", cursor: "pointer", display: "flex", alignItems: "baseline", gap: 6 }}
+                      onClick={() => { setVerbOfSession(v); setVerbDropdownOpen(false); setVerbDropdownSearch(""); }}>
                       <span style={{ fontSize: 16, fontWeight: 700, color }}>{v.toUpperCase()}</span>
                       {en && <span style={{ fontSize: 16, color: "#6b7280" }}>({en})</span>}
                       {isIrreg && <span style={{ fontSize: 12, color: "#800000" }}>irr</span>}
-                    </div>
+                    </HoverDiv>
                   );
                 })}
               </div>
@@ -2379,27 +2417,26 @@ function App() {
                 onChange={e => setIdiomDropdownSearch(e.target.value)}
                 style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid #e5e7eb", outline: "none", background: "#f9fafb", color: "#111827", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
               <div style={{ overflowY: "auto", flex: 1, background: "#ffffff" }}>
-                <div onClick={() => { setFocusIdiom(null); setIdiomDropdownOpen(false); setIdiomDropdownSearch(""); }}
+                <HoverDiv baseBg="#ffffff" hoverBg="#f3f4f6"
                   style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "#6b7280", fontStyle: "italic" }}
-                  onMouseEnter={e => e.currentTarget.style.background = "#f3f4f6"}
-                  onMouseLeave={e => e.currentTarget.style.background = "#ffffff"}>None</div>
+                  onClick={() => { setFocusIdiom(null); setIdiomDropdownOpen(false); setIdiomDropdownSearch(""); }}>None</HoverDiv>
                 {IDIOMS.filter(id => {
                   const q = idiomDropdownSearch.toLowerCase();
                   return !q || id.pt.toLowerCase().includes(q) || id.en.toLowerCase().includes(q) || id.when.toLowerCase().includes(q);
                 }).map((id, i) => {
                   const isSelected = focusIdiom?.pt === id.pt;
                   return (
-                    <div key={i}
+                    <HoverDiv key={i}
+                      baseBg={isSelected ? "#f3e8ff" : "#ffffff"}
+                      hoverBg={isSelected ? "#f3e8ff" : "#f3f4f6"}
+                      style={{ padding: "6px 12px", cursor: "pointer", borderBottom: "0.5px solid #f3f4f6" }}
                       onClick={() => {
                         setFocusIdiom(id); setIdiomDropdownOpen(false); setIdiomDropdownSearch("");
-                        setMessages(prev => [...prev.filter(m => m._idiomCard !== true), { role: "assistant", _idiomCard: true, _idiom: id, content: "__IDIOM_CARD__" }]);
-                      }}
-                      style={{ padding: "6px 12px", cursor: "pointer", background: isSelected ? "#f3e8ff" : "#ffffff", borderBottom: "0.5px solid #f3f4f6" }}
-                      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "#f3f4f6"; }}
-                      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "#ffffff"; }}>
+                        setMessages(prev => [...prev.filter(m => m._idiomCard !== true), { id: nextMsgId(), role: "assistant", _idiomCard: true, _idiom: id, content: "__IDIOM_CARD__" }]);
+                      }}>
                       <p style={{ fontSize: 14, fontWeight: 700, color: "#7c3aed", margin: "0 0 1px" }}>{id.pt}</p>
                       <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>{id.when}</p>
-                    </div>
+                    </HoverDiv>
                   );
                 })}
               </div>
@@ -2421,24 +2458,23 @@ function App() {
           </button>
           {grammarDropdownOpen && (
             <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 220, display: "flex", flexDirection: "column" }}>
-              <div onClick={() => { setFocusGrammar(null); setGrammarDropdownOpen(false); }}
+              <HoverDiv baseBg="#ffffff" hoverBg="#f3f4f6"
                 style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "#6b7280", fontStyle: "italic", borderBottom: "0.5px solid #f3f4f6" }}
-                onMouseEnter={e => e.currentTarget.style.background = "#f3f4f6"}
-                onMouseLeave={e => e.currentTarget.style.background = "#ffffff"}>None</div>
+                onClick={() => { setFocusGrammar(null); setGrammarDropdownOpen(false); }}>None</HoverDiv>
               {GRAMMAR_FOCUS_TOPICS.map((t, i) => {
                 const isSelected = focusGrammar?.id === t.id;
                 return (
-                  <div key={i}
+                  <HoverDiv key={i}
+                    baseBg={isSelected ? "#e0f2fe" : "#ffffff"}
+                    hoverBg={isSelected ? "#e0f2fe" : "#f0f9ff"}
+                    style={{ padding: "7px 12px", cursor: "pointer", borderBottom: "0.5px solid #f3f4f6" }}
                     onClick={() => {
                       setFocusGrammar(t); setGrammarDropdownOpen(false);
                       const fullTopic = GRAMMAR_TOPICS.find(gt => gt.id === t.id);
-                      setMessages(prev => [...prev.filter(m => m._grammarCard !== true), { role: "assistant", _grammarCard: true, _grammar: fullTopic, content: "__GRAMMAR_CARD__" }]);
-                    }}
-                    style={{ padding: "7px 12px", cursor: "pointer", background: isSelected ? "#e0f2fe" : "#ffffff", borderBottom: "0.5px solid #f3f4f6" }}
-                    onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "#f0f9ff"; }}
-                    onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "#ffffff"; }}>
+                      setMessages(prev => [...prev.filter(m => m._grammarCard !== true), { id: nextMsgId(), role: "assistant", _grammarCard: true, _grammar: fullTopic, content: "__GRAMMAR_CARD__" }]);
+                    }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: "#0369a1", margin: 0 }}>{t.label}</p>
-                  </div>
+                  </HoverDiv>
                 );
               })}
             </div>
@@ -2598,9 +2634,14 @@ function App() {
             ))}
           </div>
           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-            <input style={{ fontSize, flex: 1, padding: "4px 8px", border: "0.5px solid var(--color-border-tertiary)", borderRadius: 999, background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none" }}
-              placeholder="Add custom topic…" value={customTopic}
-              onChange={e => setCustomTopic(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomTopic()} />
+            <div style={{ flex: 1, position: "relative" }}>
+              <input style={{ fontSize, width: "100%", padding: "4px 8px", border: "0.5px solid " + (customTopic.length > 60 ? "#dc2626" : "var(--color-border-tertiary)"), borderRadius: 999, background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", boxSizing: "border-box" }}
+                placeholder="Add custom topic…" value={customTopic} maxLength={60}
+                onChange={e => setCustomTopic(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomTopic()} />
+              {customTopic.length > 40 && (
+                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 10, color: customTopic.length >= 60 ? "#dc2626" : "var(--color-text-tertiary)", pointerEvents: "none" }}>{60 - customTopic.length}</span>
+              )}
+            </div>
             <button style={{ ...toolBtn(false), background: "#eff6ff", color: "#2563eb" }} onClick={addCustomTopic}>+ Add</button>
           </div>
         </div>
@@ -2844,11 +2885,15 @@ function App() {
               {CONJ_LEVEL_GROUPS.map(group => {
                 const groupTenses = (conjugation.tenses || []).filter(t => group.tenses.includes(t.name));
                 if (groupTenses.length === 0) return null;
-                const isOpen = conjOpenGroups;
+                const isOpen = conjOpenGroups.has(group.level);
                 const isUsageOpen = conjUsageOpen;
                 return (
                   <div key={group.level} style={{ marginBottom: 12, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
-                    <button onClick={() => setConjOpenGroups(prev => !prev)}
+                    <button onClick={() => setConjOpenGroups(prev => {
+                        const next = new Set(prev);
+                        next.has(group.level) ? next.delete(group.level) : next.add(group.level);
+                        return next;
+                      })}
                       style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 10px", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#2563eb", letterSpacing: "0.05em" }}>{group.level}</span>
                       <span style={{ fontSize: 13, color: "var(--color-text-tertiary)" }}>{isOpen ? "▲" : "▼"}</span>
@@ -3015,12 +3060,14 @@ function App() {
                       )}
                     </div>
                   )}
+                  {(() => { const inReview = vocabReview.some(r => r.word_bp === vocabCard.word_bp); return (
                   <div style={{ padding: "8px 14px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 6 }}>
                     <button style={{ ...toolBtn(false), background: "var(--color-background-secondary)" }} onClick={drawVocabCard}>→ Next word</button>
-                    <button style={{ ...toolBtn(false), color: vocabReview.find(r => r.word_bp === vocabCard.word_bp) ? "#92400e" : "var(--color-text-secondary)" }} onClick={addToReview}>
-                      {vocabReview.find(r => r.word_bp === vocabCard.word_bp) ? "★ In review list" : "☆ Add to review"}
+                    <button style={{ ...toolBtn(false), color: inReview ? "#92400e" : "var(--color-text-secondary)" }} onClick={addToReview}>
+                      {inReview ? "★ In review list" : "☆ Add to review"}
                     </button>
                   </div>
+                  ); })()}
                 </div>
               )}
             </div>
@@ -3082,14 +3129,14 @@ function App() {
       {/* Chat messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: 16, display: (activePanel === "lists" || activePanel === "verblookup" || activePanel === "vocab" || activePanel === "settings") ? "none" : "flex", flexDirection: "column", gap: 12 }}>
         {messages.map((m, i) => (
-          <MessageBubble key={i} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} renderWithParens={renderWithParens} />
+          <MessageBubble key={m.id} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} />
         ))}
         {loading && <div style={{ alignSelf: "flex-start", background: "var(--color-background-secondary)", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", fontSize: 13, color: "var(--color-text-tertiary)" }}>A escrever…</div>}
         <div ref={bottomRef} />
       </div>
 
       {/* Footer */}
-      {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab") && (
+      {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
       <div style={{ padding: "10px 12px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
         {!apiKey && (
           <div style={{ padding: "6px 10px", background: "#fef3c7", borderRadius: "var(--border-radius-md)", fontSize: 13, color: "#92400e" }}>
@@ -3144,6 +3191,9 @@ function App() {
             </div>
           )}
           {/* Voice selector */}
+          {ttsSupported && !azureKey && voices.length > 0 && !voices.some(v => v.lang.startsWith("pt")) && (
+            <span style={{ fontSize: 11, color: "var(--color-text-warning)", padding: "2px 4px" }} title="No Portuguese voice found on this device. Install one for best results.">⚠ No PT voice</span>
+          )}
           {ttsSupported && (
             <select
               value={selectedVoice?.name || (azureKey && azureRegion ? "__azure_raquel__" : "")}
