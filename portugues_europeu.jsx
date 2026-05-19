@@ -21,6 +21,7 @@ const PANELS = [
 ];
 
 const LIST_TABS = [
+  { id: "calao", label: "Calão" },
   { id: "cognates", label: "Cognates" },
   { id: "grammar", label: "Grammar" },
   { id: "idioms", label: "Idioms" },
@@ -1053,6 +1054,135 @@ Rules:
 
 
 
+const CALAO = [
+  { section: "Expletivos de uso corrente", en: "Common expletives (mostly lost shock value in casual EP)", items: [
+    { pt: "porra", en: "damn / fuck (most common mild expletive)", example_pt: "Porra, esqueci-me das chaves outra vez!", example_en: "Damn, I forgot my keys again!" },
+    { pt: "caralho", en: "fuck / bloody hell (all-purpose expletive)", example_pt: "Caralho, que fila enorme.", example_en: "Bloody hell, what a massive queue." },
+    { pt: "foda-se", en: "fuck it / for fuck's sake", example_pt: "Foda-se, perdi o autocarro.", example_en: "For fuck's sake, I missed the bus.", context: true },
+    { pt: "vai-te foder", en: "fuck off (stronger than vai à merda)", example_pt: "Mandei-o vai-te foder e fui-me embora.", example_en: "I told him to fuck off and left.", context: true },
+    { pt: "vai à merda", en: "go to hell / fuck off", example_pt: "Disse-lhe para ir à merda e fui-me embora.", example_en: "I told him to go to hell and left.", context: true },
+    { pt: "merda", en: "shit", example_pt: "Que merda de tempo, não para de chover.", example_en: "What shit weather, it won't stop raining." },
+    { pt: "filho da puta", en: "son of a bitch", example_pt: "O filho da puta partiu o espelho do carro e fugiu.", example_en: "The son of a bitch broke the car mirror and ran off.", context: true },
+    { pt: "filha da puta", en: "son of a bitch (said of a woman)", example_pt: "A filha da puta denunciou-me ao chefe.", example_en: "The bitch reported me to the boss.", context: true },
+    { pt: "puta que pariu", en: "fucking hell (lit: the whore who gave birth)", example_pt: "Puta que pariu, custou duzentos euros!", example_en: "Fucking hell, it cost two hundred euros!", context: true },
+    { pt: "treta", en: "bullshit / nonsense", example_pt: "Isso que disseste é tudo treta.", example_en: "What you just said is complete bullshit." },
+    { pt: "bosta", en: "shit (cruder than merda)", example_pt: "Isto não presta, é uma bosta.", example_en: "This is useless, it's crap.", context: true },
+  ]},
+  { section: "Eufemismos e anatomia vulgar", en: "Euphemisms and crude anatomy", items: [
+    { pt: "tomates", en: "testicles (lit: tomatoes)", example_pt: "Precisa de tomates para fazer isso.", example_en: "You need balls to do that." },
+    { pt: "couves", en: "testicles (lit: cabbages)", example_pt: "Tem couves para dizer isso à cara dele.", example_en: "He's got the balls to say that to his face." },
+    { pt: "bagos", en: "testicles (lit: grapes/berries)", example_pt: "Não tem bagos nenhuns, é um cobarde.", example_en: "He's got no balls whatsoever, he's a coward." },
+    { pt: "piça", en: "cock (vulgar slang)", example_pt: "Expressão usada como insulto ou referência anatómica.", example_en: "Used as an insult or anatomical reference.", context: true },
+    { pt: "pila", en: "cock (slightly softer slang)", example_pt: "Expressão usada em linguagem de calão.", example_en: "Used in crude slang speech.", context: true },
+    { pt: "cona", en: "cunt (very strong — also used as a general insult)", example_pt: "Expressão muito forte — reconhecimento apenas.", example_en: "Very strong — recognition only.", context: true },
+    { pt: "rata", en: "vagina (vulgar)", example_pt: "Termo vulgar — reconhecimento apenas.", example_en: "Vulgar term — recognition only.", context: true },
+    { pt: "rabo", en: "arse (common, not very offensive)", example_pt: "Cai no rabo e não se magoou nada.", example_en: "He fell on his arse and didn't hurt himself at all." },
+    { pt: "cu", en: "arse / arsehole (cruder than rabo)", example_pt: "Vai meter no cu — expressão de rejeição total.", example_en: "Shove it up your arse — expression of total rejection.", context: true },
+    { pt: "caguei-me nas calças", en: "I shit myself (fear or laughter)", example_pt: "Quando vi o cão a correr para mim, caguei-me nas calças.", example_en: "When I saw the dog running at me, I shit myself." },
+    { pt: "cagar para", en: "to not give a shit about", example_pt: "Ele caga para a opinião dos outros.", example_en: "He doesn't give a shit what others think." },
+    { pt: "trepar", en: "to fuck (vulgar)", example_pt: "Expressão vulgar para relações sexuais — reconhecimento apenas.", example_en: "Vulgar term for sex — recognition only.", context: true },
+    { pt: "meter", en: "to fuck (lit: to put in — context-dependent)", example_pt: "Usado como eufemismo sexual dependendo do contexto.", example_en: "Used as a sexual euphemism depending on context.", context: true },
+    { pt: "dar", en: "to give it up sexually (said of a woman — context-dependent)", example_pt: "Conotação sexual dependendo do contexto.", example_en: "Sexual connotation depending on context.", context: true },
+    { pt: "lixar-se", en: "to get screwed / go fuck yourself (milder)", example_pt: "Pode lixar-se, não lhe dou mais nada.", example_en: "He can go screw himself, I'm not giving him anything else." },
+  ]},
+  { section: "Insultos", en: "Insults", items: [
+    { pt: "parvo / parva", en: "twit / idiot (very EP)", example_pt: "Não sejas parvo, isso não funciona assim.", example_en: "Don't be an idiot, that's not how it works." },
+    { pt: "tonto / tonta", en: "daft / dizzy fool", example_pt: "És mesmo tonto, não viste que era uma armadilha?", example_en: "You're really daft, couldn't you see it was a trap?" },
+    { pt: "palerma", en: "dimwit / numpty", example_pt: "O palerma nem percebeu que estava a ser enganado.", example_en: "The dimwit didn't even realise he was being conned." },
+    { pt: "lorpa", en: "clumsy dimwit", example_pt: "Parte tudo o lorpa, não lhe emprestes nada.", example_en: "The clumsy oaf breaks everything, don't lend him anything." },
+    { pt: "bronco / bronca", en: "thick / boorish oaf", example_pt: "Que bronco, nem sabe como se porta à mesa.", example_en: "What a boor, he doesn't even know how to behave at the table." },
+    { pt: "chato / chata", en: "bore / pain in the arse", example_pt: "Que chato, só fala de futebol.", example_en: "What a bore, all he talks about is football." },
+    { pt: "chato de galocha", en: "massive bore (lit: bore of a rubber boot)", example_pt: "A reunião foi uma seca, o gajo é chato de galocha.", example_en: "The meeting was a drag, the bloke is a complete bore." },
+    { pt: "cabrão / cabra", en: "bastard / bitch (also: cuckold — context matters)", example_pt: "O cabrão não me pagou o que me devia.", example_en: "The bastard didn't pay me what he owed.", context: true },
+    { pt: "puta", en: "whore / bitch (context matters — can be affectionate among friends)", example_pt: "Essa puta da máquina não funciona!", example_en: "This bloody machine doesn't work! (puta used as intensifier)", context: true },
+    { pt: "paneleiro", en: "faggot (highly offensive — recognition only)", example_pt: "Termo muito ofensivo — reconhecimento apenas.", example_en: "Highly offensive — recognition only.", context: true },
+    { pt: "aldrabão", en: "liar / cheat", example_pt: "Não acredites nele, é um aldrabão.", example_en: "Don't believe him, he's a cheat." },
+    { pt: "vigarista", en: "crook / swindler", example_pt: "Aquele vendedor é um vigarista, cuidado.", example_en: "That salesman is a crook, watch out." },
+    { pt: "maricas", en: "wimp / sissy (also: gay — offensive in that use)", example_pt: "Não sejas maricas, enfrenta o problema.", example_en: "Don't be a wimp, face the problem.", context: true },
+    { pt: "lamecha", en: "soppy wimp / sap", example_pt: "Chora por tudo, é um lamecha.", example_en: "He cries about everything, what a sap." },
+    { pt: "cobarde", en: "coward", example_pt: "Não fugiste? Cobarde.", example_en: "You didn't run? Coward." },
+  ]},
+  { section: "Calão de rua essencial", en: "Essential street slang", items: [
+    { pt: "gajo / gaja", en: "bloke / woman (most common EP slang word)", example_pt: "O gajo apareceu sem avisar, acreditas?", example_en: "The bloke showed up without warning, can you believe it?" },
+    { pt: "puto / puta", en: "kid / young lad (puta has dual meaning — context critical)", example_pt: "Os putos de hoje não têm respeito por nada.", example_en: "Kids today have no respect for anything.", context: true },
+    { pt: "miúdo / miúda", en: "kid / young person (very EP)", example_pt: "Os miúdos de hoje não sabem o que é trabalhar.", example_en: "Kids today don't know what it means to work." },
+    { pt: "tipo / tipa", en: "guy / girl (neutral)", example_pt: "Havia um tipo à porta que queria falar contigo.", example_en: "There was a guy at the door who wanted to talk to you." },
+    { pt: "bué", en: "loads / very (Lisbon urban slang)", example_pt: "Tá bué de calor hoje, não consigo fazer nada.", example_en: "It's absolutely boiling today, I can't do anything." },
+    { pt: "fixe", en: "cool / great", example_pt: "Que fixe, conseguiste os bilhetes!", example_en: "How cool, you got the tickets!" },
+    { pt: "brutal", en: "awesome (lit: brutal)", example_pt: "O concerto foi mesmo brutal.", example_en: "The concert was absolutely awesome." },
+    { pt: "bestial", en: "awesome (lit: beastly — slightly older slang)", example_pt: "A festa foi bestial, toda a gente adorou.", example_en: "The party was awesome, everyone loved it." },
+    { pt: "porreiro / porriera", en: "great / decent / sound", example_pt: "É um gajo porreiro, tens de conhecer.", example_en: "He's a decent bloke, you have to meet him." },
+    { pt: "giro / gira", en: "cute / nice / cool", example_pt: "Que giro esse café, nunca tinha visto.", example_en: "What a nice café, I'd never seen it before." },
+    { pt: "manhoso / manhosa", en: "sneaky / crafty", example_pt: "Cuidado com ela, é muito manhosa.", example_en: "Watch out for her, she's very crafty." },
+    { pt: "tanga", en: "rip-off / scam", example_pt: "Vinte euros por aquilo? Que tanga!", example_en: "Twenty euros for that? What a rip-off!" },
+    { pt: "aldrabice", en: "con / swindle", example_pt: "Aquela loja é tudo aldrabice, não compres lá.", example_en: "That shop is all a con, don't buy there." },
+    { pt: "disparate", en: "nonsense / stupid thing", example_pt: "Que disparate, quem é que pensa nisto?", example_en: "What nonsense, who thinks of this stuff?" },
+    { pt: "asneira", en: "stupid mistake / rude word", example_pt: "Fez uma grande asneira ao assinar aquilo.", example_en: "He made a big mistake signing that." },
+    { pt: "desenrascar", en: "to wing it / sort it out somehow (cultural concept)", example_pt: "Não temos o material certo mas desenrascamo-nos.", example_en: "We don't have the right materials but we'll sort it out somehow." },
+    { pt: "enrascado / enrascada", en: "in trouble / in a fix", example_pt: "Estou mesmo enrascado, não sei o que fazer.", example_en: "I'm really in a fix, I don't know what to do." },
+    { pt: "safo / safa", en: "sorted / fine / out of trouble", example_pt: "Já está safo, resolvi o problema.", example_en: "It's sorted, I solved the problem." },
+    { pt: "bazar", en: "to leave / scarper", example_pt: "Vamos bazar daqui antes que cheguem.", example_en: "Let's get out of here before they arrive." },
+    { pt: "marchar", en: "to leave / move along", example_pt: "Já são horas, tenho de marchar.", example_en: "It's time, I have to be off." },
+    { pt: "tramado / tramada", en: "in a bad way / screwed", example_pt: "Depois do acidente ficou tramado das costas.", example_en: "After the accident his back was in a bad way." },
+    { pt: "chanfrado / chanfrada", en: "dodgy / screwed up", example_pt: "Esse negócio é todo chanfrado, não te metas.", example_en: "That deal is all dodgy, don't get involved." },
+    { pt: "passar-se", en: "to lose it / go mad", example_pt: "O gajo passou-se todo quando soube da notícia.", example_en: "The bloke completely lost the plot when he heard the news." },
+  ]},
+  { section: "Contrações e reduções faladas", en: "Spoken contractions and reductions", items: [
+    { pt: "tou / 'tou", en: "I am (estou)", example_pt: "Tou bem, obrigado, e tu?", example_en: "I'm fine, thanks, and you?" },
+    { pt: "tás", en: "you are (estás)", example_pt: "Tás a brincar comigo ou quê?", example_en: "Are you messing with me or what?" },
+    { pt: "tá", en: "it is / OK (está)", example_pt: "Tá bem, faço isso já a seguir.", example_en: "OK, I'll do that right after." },
+    { pt: "tá bem", en: "alright / OK (está bem)", example_pt: "Tá bem, não te preocupes com isso.", example_en: "Alright, don't worry about that." },
+    { pt: "pra / pa", en: "for / to (para)", example_pt: "Isso não serve pra nada.", example_en: "That's no good for anything." },
+    { pt: "dum / duma", en: "of a (de um / de uma)", example_pt: "Preciso dum favor, se não te importas.", example_en: "I need a favour, if you don't mind." },
+    { pt: "num / numa", en: "in a (em um / em uma)", example_pt: "Estava numa situação difícil.", example_en: "I was in a difficult situation." },
+    { pt: "brigado / brigada", en: "thanks (obrigado/a)", example_pt: "Brigado, foste muito simpático.", example_en: "Thanks, you were very kind." },
+    { pt: "s'calhar", en: "maybe / perhaps (se calhar)", example_pt: "S'calhar é melhor ligares antes de ir.", example_en: "Maybe you'd better call before you go." },
+    { pt: "'pera aí", en: "hang on (espera aí)", example_pt: "'Pera aí, já volto.", example_en: "Hang on, I'll be right back." },
+    { pt: "né?", en: "isn't it? / right? (não é?)", example_pt: "Está muito caro, né?", example_en: "It's very expensive, right?" },
+    { pt: "ya", en: "yeah (ubiquitous)", example_pt: "Ya, percebi o que quiseste dizer.", example_en: "Yeah, I got what you meant." },
+    { pt: "tás a ver?", en: "you see? / know what I mean?", example_pt: "Fiz tudo como mandaram e ainda assim reclamaram, tás a ver?", example_en: "I did everything as instructed and they still complained, you see?" },
+  ]},
+  { section: "Interjeições e palavras de preenchimento", en: "Exclamations and filler words", items: [
+    { pt: "pois", en: "yeah / right / indeed (national filler — unavoidable)", example_pt: "Pois, tens razão, não tinha pensado nisso.", example_en: "Yeah, you're right, I hadn't thought of that." },
+    { pt: "pois é", en: "yeah exactly / tell me about it", example_pt: "Pois é, a vida está cada vez mais cara.", example_en: "Tell me about it, the cost of living keeps going up." },
+    { pt: "epá / epa", en: "hey / wow / man (very common)", example_pt: "Epá, não sabia que eras tu!", example_en: "Hey, I didn't know it was you!" },
+    { pt: "ó pá", en: "oh man / mate", example_pt: "Ó pá, isso é mesmo mau.", example_en: "Oh man, that's really bad." },
+    { pt: "olha", en: "look / hey (discourse marker)", example_pt: "Olha, não sei bem o que te dizer.", example_en: "Look, I'm not really sure what to tell you." },
+    { pt: "ora bolas", en: "oh come on / for goodness sake (mild)", example_pt: "Ora bolas, esqueci-me outra vez.", example_en: "Oh come on, I forgot again." },
+    { pt: "bolas", en: "damn / balls (mild)", example_pt: "Bolas, perdi o comboio por um segundo.", example_en: "Damn, I missed the train by a second." },
+    { pt: "caramba", en: "damn / crikey (euphemism for caralho)", example_pt: "Caramba, que susto me deste!", example_en: "Crikey, you gave me a fright!" },
+    { pt: "credo", en: "ugh / yikes / God forbid", example_pt: "Credo, que mau cheiro.", example_en: "Ugh, what a bad smell." },
+    { pt: "raios", en: "damn / blast (lit: lightning — slightly old-fashioned)", example_pt: "Raios, parti o ecrã outra vez.", example_en: "Damn, I've broken the screen again." },
+    { pt: "não me digas", en: "no way / you don't say", example_pt: "Não me digas que já acabou o prazo!", example_en: "No way, has the deadline already passed!" },
+    { pt: "que horror", en: "how awful / how dreadful", example_pt: "Que horror, aquele acidente foi mesmo mau.", example_en: "How awful, that accident was really bad." },
+    { pt: "que vergonha", en: "how shameful / what a disgrace", example_pt: "Que vergonha, tratarem as pessoas assim.", example_en: "What a disgrace, treating people like that." },
+    { pt: "que disparate", en: "how stupid / what nonsense", example_pt: "Que disparate, quem é que aprova isso?", example_en: "What nonsense, who approves something like that?" },
+  ]},
+  { section: "Expressões de calão idiomático", en: "Crude idiomatic expressions", items: [
+    { pt: "não vale um caralho", en: "it's not worth a damn", example_pt: "Esse contrato não vale um caralho, não assines.", example_en: "That contract isn't worth a damn, don't sign it.", context: true },
+    { pt: "não percebe um caralho", en: "he doesn't understand a fucking thing", example_pt: "Aquele técnico não percebe um caralho do assunto.", example_en: "That technician doesn't understand a damn thing about it.", context: true },
+    { pt: "que se lixe", en: "screw it / to hell with it", example_pt: "Que se lixe, vou fazer à minha maneira.", example_en: "Screw it, I'm doing it my way." },
+    { pt: "estou lixado / lixada", en: "I'm screwed", example_pt: "Se perco este emprego estou lixado.", example_en: "If I lose this job I'm screwed." },
+    { pt: "estou farto / farta", en: "I'm fed up", example_pt: "Estou farto de ouvir sempre a mesma história.", example_en: "I'm fed up of hearing the same story over and over." },
+    { pt: "estou tramado / tramada", en: "I'm in a bad way / I'm done for", example_pt: "Com esta dívida estou tramado.", example_en: "With this debt I'm done for." },
+    { pt: "não me chateies", en: "don't annoy me / don't bother me", example_pt: "Não me chateies agora, estou ocupado.", example_en: "Don't bother me now, I'm busy." },
+    { pt: "deixa-me em paz", en: "leave me alone", example_pt: "Já te disse, deixa-me em paz.", example_en: "I already told you, leave me alone." },
+    { pt: "vai-te embora", en: "go away", example_pt: "Vai-te embora, não quero falar contigo.", example_en: "Go away, I don't want to talk to you." },
+    { pt: "cala-te", en: "shut up", example_pt: "Cala-te, estou a tentar ouvir.", example_en: "Shut up, I'm trying to listen.", context: true },
+    { pt: "cala a boca", en: "shut your mouth (stronger)", example_pt: "Cala a boca, ninguém te perguntou nada.", example_en: "Shut your mouth, nobody asked you anything.", context: true },
+    { pt: "mete-te na tua vida", en: "mind your own business", example_pt: "Isso não é da tua conta, mete-te na tua vida.", example_en: "That's none of your business, mind your own." },
+    { pt: "tar-se nas tintas", en: "to not give a damn (lit: to be in the paints)", example_pt: "Ele tá-se nas tintas para o que pensam.", example_en: "He doesn't give a damn what they think." },
+    { pt: "tou-me a borrifar", en: "I couldn't care less (lit: I'm sprinkling myself)", example_pt: "Tou-me a borrifar para as críticas deles.", example_en: "I couldn't care less about their criticism." },
+    { pt: "comer o pão que o diabo amassou", en: "to go through hell (lit: eat bread kneaded by the devil)", example_pt: "Nesse emprego comeu o pão que o diabo amassou.", example_en: "In that job he went through absolute hell." },
+    { pt: "vai pentear macacos", en: "get lost (lit: go comb monkeys)", example_pt: "Quando ele me pediu mais dinheiro disse-lhe para ir pentear macacos.", example_en: "When he asked me for more money I told him to get lost." },
+    { pt: "vai plantar batatas", en: "get lost (lit: go plant potatoes)", example_pt: "Chega, vai plantar batatas e deixa-me em paz.", example_en: "Enough, get lost and leave me alone." },
+    { pt: "bater mal da bola", en: "to be unhinged / not right in the head", example_pt: "Aquela gaja bate mesmo mal da bola.", example_en: "That woman is really not right in the head." },
+    { pt: "tramou-me", en: "he screwed me over", example_pt: "O sócio tramou-me e ficou com tudo.", example_en: "The partner screwed me over and kept everything." },
+    { pt: "estar fudido / fudida", en: "to be fucked / in deep trouble", example_pt: "Com essa dívida toda, está mesmo fudido.", example_en: "With all that debt, he's well and truly fucked.", context: true },
+    { pt: "mete-te onde cabes", en: "shove it where you fit / get lost", example_pt: "Se não gostas, mete-te onde cabes.", example_en: "If you don't like it, shove it.", context: true },
+  ]},
+];
+
 const GRAMMAR_TOPICS = [
   {
     id: "word_order", label: "Word Order",
@@ -1166,7 +1296,7 @@ function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusId
     ? `\n\nFocus grammar: ${focusGrammar.instruction}`
     : "";
   const registerInstruction = registerMode === "colloquial"
-    ? "\n\nRegister: speak and write like a relaxed local Portuguese person, not a textbook. Use colloquial vocabulary, contractions, and reductions natural to spoken EP — for example: 'tou' for 'estou', 'tás' for 'estás', 'pra' for 'para', 'dum' for 'de um', 'gajo'/'gaja', 'fixe', 'pois', 'olha', 'tipo', 'que seca', 'bué'. Drop subjects where a native would. Use filler words and discourse markers naturally. When correcting the learner, prefer what a native speaker would actually say over strictly textbook forms."
+    ? "\n\nRegister: speak and write exactly like a relaxed, educated Lisbon local — not a textbook and not a caricature. Apply all of the following naturally and organically, never mechanically:\n\nContractions and reductions: use 'tou' for 'estou', 'tás' for 'estás', 'tá'/'tá bem' for 'está'/'está bem', 'pra'/'pa' for 'para', 's'calhar' for 'se calhar', ''pera aí' for 'espera aí', 'né' for 'não é', 'ya' for 'sim/yeah'. Drop subjects where a native would.\n\nCore slang vocabulary: use 'gajo'/'gaja' for bloke/woman, 'miúdo'/'miúda' for kid/young person, 'fixe'/'brutal'/'porreiro' for cool/great, 'bué' for very/loads, 'tanga' for rip-off, 'enrascado' for in a fix, 'safo' for sorted, 'tramado' for in a bad way, 'manhoso' for crafty, 'bazar'/'marchar' for to leave.\n\nFiller words and discourse markers: use 'pois'/'pois é' frequently (this is unavoidable in natural EP), 'epá'/'ó pá' for emphasis or surprise, 'olha' to introduce a point, 'tás a ver?' to check understanding, 'não me digas' for disbelief, 'ora bolas'/'bolas' for mild frustration, 'caramba' as a softer expletive.\n\nMild expletives: use 'porra' and 'caralho' as natural discourse particles when appropriate — they carry roughly the weight of 'damn' or 'bloody hell' in casual EP speech and are not considered strongly offensive in informal conversation. Use 'merda' for 'shit', 'treta' for bullshit/nonsense, 'que se lixe' for screw it, 'estou farto/a' for I'm fed up, 'não me chateies' for don't bother me.\n\nCultural concepts: use 'desenrascar'/'desenrascamo-nos' when relevant (the Portuguese concept of winging it), 'tar-se nas tintas para' or 'tou-me a borrifar' for not giving a damn.\n\nDo NOT use these in every sentence — that would be unnatural. Distribute them as a native speaker would: some sentences will be perfectly standard EP, others will be heavy with this register. Vary it. When correcting the learner, always prefer what a native speaker would actually say over strictly textbook forms."
     : "\n\nRegister: use clear, correct, standard European Portuguese — the kind a learner would encounter in a well-written textbook or a formal conversation. Avoid heavy slang and contractions. Model grammatically complete sentences.";
   return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. Keep responses concise — 2 to 4 sentences unless the learner asks for more detail.\n\nDo not use any emoji in your responses under any circumstances.`;
 }
@@ -1781,6 +1911,60 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
   );
 });
 
+const CalaoTab = React.memo(function CalaoTab({ fontSize, speakListPT }) {
+  const secTitle = makeSecTitle(fontSize);
+  const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
+  return (
+    <div style={listPanelStyle}>
+      <div style={{ padding: "6px 0 10px", borderBottom: "0.5px solid var(--color-border-tertiary)", marginBottom: 12 }}>
+        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic", lineHeight: 1.5 }}>
+          Calão is the Portuguese word for slang and street language. This list covers authentic EP usage — for passive recognition.
+          Items marked <span style={{ background: "#fef3c7", color: "#92400e", fontWeight: 700, padding: "0 4px", borderRadius: 3, fontStyle: "normal" }}>context</span> can cause serious offence if used without care or carry meanings that shift with context.
+        </p>
+      </div>
+      {CALAO.map((sec, si) => (
+        <div key={si} style={{ marginBottom: 18 }}>
+          <p style={{ ...secTitle, color: "#7c2d12", fontWeight: 700, textDecoration: "underline", marginBottom: 2 }}>{sec.section}</p>
+          <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.en}</p>
+          <table style={tbl}><tbody>
+            {sec.items.map((item, ii) => (
+              <tr key={ii} style={{ borderBottom: "1px solid #f3e8d0", verticalAlign: "top" }}>
+                {/* Phrase play button */}
+                <td style={{ width: 32, paddingRight: 4, paddingTop: 8, paddingBottom: 8, verticalAlign: "top" }}>
+                  <button onClick={() => speakListPT(item.pt)}
+                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d6c98a", background: "#fef9ec", color: "#92700a", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                </td>
+                {/* PT phrase + context badge */}
+                <td style={{ width: "22%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
+                  <span style={{ fontFamily: "var(--font-mono)", color: "#7c2d12", fontWeight: 700, fontSize }}>{item.pt}</span>
+                  {item.context && (
+                    <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d", verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>context</span>
+                  )}
+                </td>
+                {/* EN meaning */}
+                <td style={{ width: "18%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
+                  <span style={{ color: "var(--color-text-secondary)", fontSize }}>{item.en}</span>
+                </td>
+                {/* Example with its own play button */}
+                <td style={{ paddingTop: 8, paddingBottom: 4, verticalAlign: "top" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
+                    <button onClick={() => speakListPT(item.example_pt)}
+                      style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
+                    <div>
+                      <p style={{ fontSize, fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
+                      <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody></table>
+        </div>
+      ))}
+    </div>
+  );
+});
+
 const LIGHT_VARS = {
   "--color-background-primary": "#ffffff",
   "--color-background-secondary": "#f3f4f6",
@@ -1885,6 +2069,9 @@ function App() {
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const vocabCache = useRef({});
+  const conjCache = useRef({});
+  const nextVocabWord = useRef(null);   // pre-picked word for the next draw
+  const sendMessageRef = useRef(null);
   const recognitionRef = useRef(null);
   const selectedVoiceRef = useRef(null);
   const intentionalStopRef = useRef(false);
@@ -1963,7 +2150,7 @@ function App() {
       const final = finalTranscriptRef.current.trim();
       if (final) {
         setInput(final);
-        sendMessage(final);
+        sendMessageRef.current?.(final);
       }
     };
     return r;
@@ -2200,7 +2387,7 @@ function App() {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6", max_tokens: 600,
+          model: "claude-haiku-4-5-20251001", max_tokens: 600,
           messages: [{ role: "user", content: buildVocabPrompt(word, pos, level, bookQuote) }],
         }),
       });
@@ -2216,12 +2403,48 @@ function App() {
     setVocabLoading(false);
   };
 
+  // Silently fetch a word into the cache without touching any visible state.
+  // Called speculatively so the next draw is instant if the fetch completes in time.
+  const prefetchVocabCard = async (word, pos) => {
+    if (!word || !apiKey) return;
+    const cacheKey = `${pos}:${word}`;
+    if (vocabCache.current[cacheKey]) return;
+    const bookQuote = SH_QUOTES[pos]?.[word] || "";
+    try {
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001", max_tokens: 600,
+          messages: [{ role: "user", content: buildVocabPrompt(word, pos, level, bookQuote) }],
+        }),
+      });
+      const data = await resp.json();
+      if (data.error) return;
+      const raw = data.content?.find(b => b.type === "text")?.text || "";
+      try {
+        const card = JSON.parse(raw.replace(/```json|```/g, "").trim());
+        vocabCache.current[cacheKey] = card;
+      } catch { /* silently discard malformed prefetch */ }
+    } catch { /* silently discard network errors on prefetch */ }
+  };
+
+  // Pick a random word from the pool, excluding the given word.
+  const pickNextVocabWord = (pos, excludeWord) => {
+    const list = SH_VOCAB[pos] || [];
+    const pool = list.length > 1 && excludeWord ? list.filter(w => w !== excludeWord) : list;
+    return pool[Math.floor(Math.random() * pool.length)] || null;
+  };
+
   const drawVocabCard = () => {
-    const list = SH_VOCAB[vocabPos] || [];
-    const current = vocabCard?.word_bp;
-    const pool = list.length > 1 && current ? list.filter(w => w !== current) : list;
-    const word = pool[Math.floor(Math.random() * pool.length)];
-    fetchVocabCard(word, vocabPos);
+    const pos = vocabPos;
+    // Use the pre-picked word if available and it matches the current pos; otherwise pick now.
+    const word = nextVocabWord.current || pickNextVocabWord(pos, vocabCard?.word_bp);
+    nextVocabWord.current = null;
+    fetchVocabCard(word, pos);
+    // Pre-pick and prefetch the word after this one so the next draw can be instant.
+    const upcoming = pickNextVocabWord(pos, word);
+    nextVocabWord.current = upcoming;
+    prefetchVocabCard(upcoming, pos);
   };
 
   const addToReview = () => {
@@ -2233,12 +2456,18 @@ function App() {
   const lookupVerb = async () => {
     const v = verbInput.trim();
     if (!v) return;
+    // Serve from cache if available — avoids a round-trip for repeated lookups.
+    if (conjCache.current[v]) {
+      setConjugation(conjCache.current[v]);
+      setConjError("");
+      return;
+    }
     setConjLoading(true); setConjugation(null); setConjError("");
     try {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6", max_tokens: 3500,
+          model: "claude-haiku-4-5-20251001", max_tokens: 3500,
           messages: [{ role: "user", content: buildConjugationPrompt(v) }],
         }),
       });
@@ -2247,7 +2476,9 @@ function App() {
       const raw = data.content?.find(b => b.type === "text")?.text || "";
       if (!raw) { setConjError("Empty response from API. Try again."); setConjLoading(false); return; }
       try {
-        setConjugation(JSON.parse(raw.replace(/```json|```/g, "").trim()));
+        const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+        conjCache.current[v] = parsed;
+        setConjugation(parsed);
       } catch (parseErr) {
         setConjError(`Could not parse conjugation data. Try again. (${parseErr.message})`);
       }
@@ -2257,6 +2488,9 @@ function App() {
 
   const handleKey = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
+  // Keep sendMessageRef pointing at the current sendMessage so speech recognition's
+  // onEnd handler never holds a stale closure over it.
+  useEffect(() => { sendMessageRef.current = sendMessage; });
 
   // Apply theme CSS variables to :root once per theme change instead of spreading into inline style every render.
   useEffect(() => {
@@ -2579,7 +2813,7 @@ function App() {
             </div>
             <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "5px 0 12px", fontStyle: "italic" }}>
               {registerMode === "colloquial"
-                ? "Colloquial: the bot uses street vocabulary, contractions, slang, and filler words a local would use in casual conversation."
+                ? "Colloquial: the bot speaks like a relaxed Lisbon local — contractions (tou, tás, tá), core slang (gajo, fixe, bué, porreiro), fillers (pois, epá, ó pá), mild expletives (porra, caralho, merda) used naturally, and cultural vocabulary (desenrascar, enrascado, tanga). Not every sentence — distributed as a native speaker would."
                 : "Standard: the bot uses correct, textbook-quality European Portuguese — clear vocabulary, complete sentences."}
             </p>
           </div>
@@ -2839,6 +3073,9 @@ function App() {
               mediaSectionRefs={mediaSectionRefs}
             />
           )}
+          {listTab === "calao" && (
+            <CalaoTab fontSize={fontSize} speakListPT={speakListPT} />
+          )}
         </div>
       )}
 
@@ -2972,6 +3209,7 @@ function App() {
                     onChange={e => {
                       if (!e.target.value) return;
                       setVocabPos(pos);
+                      nextVocabWord.current = null;
                       fetchVocabCard(e.target.value, pos);
                       e.target.value = "";
                     }}>
