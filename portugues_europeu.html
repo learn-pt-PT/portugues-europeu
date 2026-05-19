@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 1.7.5 -->
+  <!-- version: 1.7.6 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -46,6 +46,14 @@ const PANELS = [
   { id: "vocab", label: "S&H Vocab" },
   { id: "settings", label: "Settings" },
 ];
+
+const APP_META = {
+  version: "1.7.6",
+  date: "2025-05-19",
+  developer: "Steve Frederick",
+  repo: "learn-pt-PT/portugues-europeu",
+  file: "portugues_europeu.html",
+};
 
 const LIST_TABS = [
   { id: "calao", label: "Calão" },
@@ -2082,6 +2090,9 @@ function App() {
   const [verbDropdownSearch, setVerbDropdownSearch] = useState("");
   const verbDropdownRef = useRef(null);
 
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [commitDate, setCommitDate] = useState(APP_META.date);
+
   // Minimal pairs state
   const [pairsOrder, setPairsOrder] = useState(() => MINIMAL_PAIRS.map((_, i) => i));
   const [pairIndex, setPairIndex] = useState(0);
@@ -2141,6 +2152,19 @@ function App() {
 
   // Keep ref in sync so speak() always sees the current voice without stale closure issues
   useEffect(() => { selectedVoiceRef.current = selectedVoice; }, [selectedVoice]);
+
+  // Fetch last commit date for this file from GitHub API (runs once on mount)
+  useEffect(() => {
+    fetch(`https://api.github.com/repos/${APP_META.repo}/commits?path=${APP_META.file}&per_page=1`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.length > 0) {
+          const iso = data[0].commit?.committer?.date || data[0].commit?.author?.date;
+          if (iso) setCommitDate(iso.slice(0, 10));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const createRecognition = (SR, lang) => {
     const r = new SR();
@@ -2727,6 +2751,9 @@ function App() {
           const label = isSettings ? `⚙ ${p.label}` : p.id === "lists" ? `☰ ${p.label}` : p.label;
           return <button key={p.id} style={style} onClick={() => setActivePanel(ap => ap === p.id ? null : p.id)}>{label}</button>;
         })}
+        <button
+          style={{ ...toolBtn(false), fontSize: 15, fontWeight: 700, background: "#f3f4f6", color: "#6b7280", marginLeft: 4 }}
+          onClick={() => setAboutOpen(true)}>ℹ About</button>
       </div>
 
       {/* Settings panel */}
@@ -3464,6 +3491,57 @@ function App() {
             onClick={() => sendMessage()} disabled={loading || !input.trim()}> ENVIAR</button>
         </div>
       </div>
+      )}
+
+      {/* About modal */}
+      {aboutOpen && (
+        <div
+          onClick={() => setAboutOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div
+            onClick={e => e.stopPropagation()}
+            onKeyDown={e => e.key === "Escape" && setAboutOpen(false)}
+            style={{ background: "var(--color-background-primary)", borderRadius: "var(--border-radius-lg)", boxShadow: "0 16px 48px rgba(0,0,0,0.3)", width: "min(480px, 92vw)", padding: "28px 28px 22px", position: "relative", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)" }}>
+            {/* Close button */}
+            <button
+              onClick={() => setAboutOpen(false)}
+              style={{ position: "absolute", top: 14, right: 16, background: "transparent", border: "none", fontSize: 20, cursor: "pointer", color: "var(--color-text-tertiary)", lineHeight: 1 }}>✕</button>
+            {/* Title */}
+            <p style={{ fontSize: 20, fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 4px" }}>Português Europeu</p>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "0 0 18px", fontStyle: "italic" }}>
+              An interactive European Portuguese conversation partner and reference tool for English-speaking learners, built specifically for the European (PT-PT) standard.
+            </p>
+            {/* Version / Date */}
+            <div style={{ display: "flex", gap: 24, marginBottom: 16, padding: "10px 14px", background: "var(--color-background-secondary)", borderRadius: "var(--border-radius-md)", fontSize: 13 }}>
+              <div>
+                <p style={{ margin: 0, fontWeight: 600, color: "var(--color-text-tertiary)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em" }}>Version</p>
+                <p style={{ margin: 0, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)" }}>{APP_META.version}</p>
+              </div>
+              <div>
+                <p style={{ margin: 0, fontWeight: 600, color: "var(--color-text-tertiary)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em" }}>Last Published</p>
+                <p style={{ margin: 0, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)" }}>{commitDate}</p>
+              </div>
+              <div>
+                <p style={{ margin: 0, fontWeight: 600, color: "var(--color-text-tertiary)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em" }}>Developer</p>
+                <p style={{ margin: 0, fontWeight: 700, color: "var(--color-text-primary)" }}>{APP_META.developer}</p>
+              </div>
+            </div>
+            {/* Powered by */}
+            <div style={{ marginBottom: 14 }}>
+              <p style={{ margin: "0 0 6px", fontWeight: 600, fontSize: 12, color: "var(--color-text-tertiary)", textTransform: "uppercase", letterSpacing: "0.07em" }}>Powered by</p>
+              <p style={{ margin: "0 0 3px", fontSize: 13, color: "var(--color-text-secondary)" }}>Anthropic Claude — AI conversation partner and language tools</p>
+              <p style={{ margin: 0, fontSize: 13, color: "var(--color-text-secondary)" }}>Microsoft Azure Cognitive Services — European Portuguese text-to-speech</p>
+            </div>
+            {/* License */}
+            <p style={{ margin: "0 0 12px", fontSize: 12, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>
+              Personal project. Not for redistribution.
+            </p>
+            {/* Disclaimer */}
+            <p style={{ margin: 0, fontSize: 12, padding: "8px 12px", background: "#fef3c7", borderRadius: "var(--border-radius-sm)", color: "#92400e", lineHeight: 1.5 }}>
+              ⚠ The AI conversation partner can make mistakes in European Portuguese. Treat its output as practice material, not as authoritative reference.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );
