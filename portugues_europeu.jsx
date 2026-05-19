@@ -21,7 +21,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "1.7.6",
+  version: "1.7.8",
   date: "2025-05-19",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -29,7 +29,6 @@ const APP_META = {
 };
 
 const LIST_TABS = [
-  { id: "calao", label: "Calão" },
   { id: "cognates", label: "Cognates" },
   { id: "grammar", label: "Grammar" },
   { id: "idioms", label: "Idioms" },
@@ -38,6 +37,7 @@ const LIST_TABS = [
   { id: "pairs", label: "Min. Pairs" },
   { id: "phrases", label: "Phrases" },
   { id: "sounds", label: "Pronunciation" },
+  { id: "slang", label: "Slang" },
   { id: "verbref", label: "Verb List" },
 ];
 
@@ -1062,7 +1062,7 @@ Rules:
 
 
 
-const CALAO = [
+const SLANG = [
   { section: "Expletivos de uso corrente", en: "Common expletives (mostly lost shock value in casual EP)", items: [
     { pt: "porra", en: "damn / fuck (most common mild expletive)", example_pt: "Porra, esqueci-me das chaves outra vez!", example_en: "Damn, I forgot my keys again!" },
     { pt: "caralho", en: "fuck / bloody hell (all-purpose expletive)", example_pt: "Caralho, que fila enorme.", example_en: "Bloody hell, what a massive queue." },
@@ -1110,7 +1110,7 @@ const CALAO = [
     { pt: "lamecha", en: "soppy wimp / sap", example_pt: "Chora por tudo, é um lamecha.", example_en: "He cries about everything, what a sap." },
     { pt: "cobarde", en: "coward", example_pt: "Não fugiste? Cobarde.", example_en: "You didn't run? Coward." },
   ]},
-  { section: "Calão de rua essencial", en: "Essential street slang", items: [
+  { section: "Slang de rua essencial", en: "Essential street slang", items: [
     { pt: "gajo / gaja", en: "bloke / woman (most common EP slang word)", example_pt: "O gajo apareceu sem avisar, acreditas?", example_en: "The bloke showed up without warning, can you believe it?" },
     { pt: "puto / puta", en: "kid / young lad (puta has dual meaning — context critical)", example_pt: "Os putos de hoje não têm respeito por nada.", example_en: "Kids today have no respect for anything.", context: true },
     { pt: "miúdo / miúda", en: "kid / young person (very EP)", example_pt: "Os miúdos de hoje não sabem o que é trabalhar.", example_en: "Kids today don't know what it means to work." },
@@ -1166,7 +1166,7 @@ const CALAO = [
     { pt: "que vergonha", en: "how shameful / what a disgrace", example_pt: "Que vergonha, tratarem as pessoas assim.", example_en: "What a disgrace, treating people like that." },
     { pt: "que disparate", en: "how stupid / what nonsense", example_pt: "Que disparate, quem é que aprova isso?", example_en: "What nonsense, who approves something like that?" },
   ]},
-  { section: "Expressões de calão idiomático", en: "Crude idiomatic expressions", items: [
+  { section: "Expressões de slang idiomático", en: "Crude idiomatic expressions", items: [
     { pt: "não vale um caralho", en: "it's not worth a damn", example_pt: "Esse contrato não vale um caralho, não assines.", example_en: "That contract isn't worth a damn, don't sign it.", context: true },
     { pt: "não percebe um caralho", en: "he doesn't understand a fucking thing", example_pt: "Aquele técnico não percebe um caralho do assunto.", example_en: "That technician doesn't understand a damn thing about it.", context: true },
     { pt: "que se lixe", en: "screw it / to hell with it", example_pt: "Que se lixe, vou fazer à minha maneira.", example_en: "Screw it, I'm doing it my way." },
@@ -1919,7 +1919,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
   );
 });
 
-const CalaoTab = React.memo(function CalaoTab({ fontSize, speakListPT }) {
+const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT }) {
   const secTitle = makeSecTitle(fontSize);
   const tbl = { width: "100%", borderCollapse: "collapse", fontSize };
   return (
@@ -1930,7 +1930,7 @@ const CalaoTab = React.memo(function CalaoTab({ fontSize, speakListPT }) {
           Items marked <span style={{ background: "#fef3c7", color: "#92400e", fontWeight: 700, padding: "0 4px", borderRadius: 3, fontStyle: "normal" }}>context</span> can cause serious offence if used without care or carry meanings that shift with context.
         </p>
       </div>
-      {CALAO.map((sec, si) => (
+      {SLANG.map((sec, si) => (
         <div key={si} style={{ marginBottom: 18 }}>
           <p style={{ ...secTitle, color: "#7c2d12", fontWeight: 700, textDecoration: "underline", marginBottom: 2 }}>{sec.section}</p>
           <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.en}</p>
@@ -2590,7 +2590,7 @@ function App() {
         <div ref={verbDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Verb</span>
           <button onClick={() => { setVerbDropdownOpen(o => !o); setVerbDropdownSearch(""); }}
-            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 220, overflow: "hidden" }}>
+            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 330, overflow: "hidden" }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {(() => {
               const rawEn = ALL_VERBS_MAP.get(verbOfSession) || "";
@@ -2602,7 +2602,7 @@ function App() {
             <span style={{ fontSize: 12, marginLeft: 2, flexShrink: 0 }}>▾</span>
           </button>
           {verbDropdownOpen && (
-            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 320, maxHeight: 320, display: "flex", flexDirection: "column" }}>
+            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 330, maxHeight: 320, display: "flex", flexDirection: "column" }}>
               <input autoFocus placeholder="Search verbs…" value={verbDropdownSearch}
                 onChange={e => setVerbDropdownSearch(e.target.value)}
                 style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid #e5e7eb", outline: "none", background: "#f9fafb", color: "#111827", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
@@ -3100,8 +3100,8 @@ function App() {
               mediaSectionRefs={mediaSectionRefs}
             />
           )}
-          {listTab === "calao" && (
-            <CalaoTab fontSize={fontSize} speakListPT={speakListPT} />
+          {listTab === "slang" && (
+            <SlangTab fontSize={fontSize} speakListPT={speakListPT} />
           )}
         </div>
       )}
