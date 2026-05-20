@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.1.0 -->
+  <!-- version: 2.1.8 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -32,8 +32,8 @@
   <div id="root">
     <div id="pe-loading" aria-label="Loading Português Europeu…">
       <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="16" cy="16" r="13" stroke="#e5e7eb" stroke-width="3"/>
-        <path d="M16 3 A13 13 0 0 1 29 16" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="13" stroke="var(--color-border-tertiary)" stroke-width="3"/>
+        <path d="M16 3 A13 13 0 0 1 29 16" stroke="var(--color-accent-blue)" stroke-width="3" stroke-linecap="round"/>
       </svg>
       <span>A carregar…</span>
     </div>
@@ -62,7 +62,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.1.0",
+  version: "2.1.8",
   date: "2026-05-20",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -665,110 +665,130 @@ const IDIOMS = [
 
 const NUMBERS = [
   { section: "Cardinal numbers", items: [
-    { pt: "zero", en: "0" },
-    { pt: "um / uma", en: "1 (m/f)" },
-    { pt: "dois / duas", en: "2 (m/f)" },
-    { pt: "três", en: "3" },
-    { pt: "quatro", en: "4" },
-    { pt: "cinco", en: "5" },
-    { pt: "seis", en: "6" },
-    { pt: "sete", en: "7" },
-    { pt: "oito", en: "8" },
-    { pt: "nove", en: "9" },
-    { pt: "dez", en: "10" },
-    { pt: "onze", en: "11" },
-    { pt: "doze", en: "12" },
-    { pt: "treze", en: "13" },
-    { pt: "catorze", en: "14" },
-    { pt: "quinze", en: "15" },
-    { pt: "dezasseis", en: "16" },
-    { pt: "dezassete", en: "17" },
-    { pt: "dezoito", en: "18" },
-    { pt: "dezanove", en: "19" },
-    { pt: "vinte", en: "20" },
-    { pt: "trinta", en: "30" },
-    { pt: "quarenta", en: "40" },
-    { pt: "cinquenta", en: "50" },
-    { pt: "sessenta", en: "60" },
-    { pt: "setenta", en: "70" },
-    { pt: "oitenta", en: "80" },
-    { pt: "noventa", en: "90" },
-    { pt: "cem", en: "100 (exactly)" },
-    { pt: "cento e um", en: "101" },
-    { pt: "cento e dois", en: "102" },
-    { pt: "duzentos / duzentas", en: "200 (m/f)" },
-    { pt: "trezentos / trezentas", en: "300 (m/f)" },
-    { pt: "quatrocentos / quatrocentas", en: "400 (m/f)" },
-    { pt: "quinhentos / quinhentas", en: "500 (m/f)" },
-    { pt: "seiscentos / seiscentas", en: "600 (m/f)" },
-    { pt: "setecentos / setecentas", en: "700 (m/f)" },
-    { pt: "oitocentos / oitocentas", en: "800 (m/f)" },
-    { pt: "novecentos / novecentas", en: "900 (m/f)" },
-    { pt: "mil", en: "1,000" },
-    { pt: "dois mil", en: "2,000" },
-    { pt: "cem mil", en: "100,000" },
-    { pt: "duzentos mil", en: "200,000" },
-    { pt: "um milhão", en: "1,000,000" },
-    { pt: "dois milhões", en: "2,000,000" },
-    { pt: "um bilião", en: "1,000,000,000 (EP)" },
-    { pt: "um trilião", en: "1,000,000,000,000 (EP)" },
-    { pt: "mil e oitocentos e sessenta e seis", en: "1866" },
+    { pt: "zero",                              en: "0" },
+    { pt: "um",                                en: "1",             gender: "m" },
+    { pt: "uma",                               en: "1",             gender: "f" },
+    { pt: "dois",                              en: "2",             gender: "m" },
+    { pt: "duas",                              en: "2",             gender: "f" },
+    { pt: "três",                              en: "3" },
+    { pt: "quatro",                            en: "4" },
+    { pt: "cinco",                             en: "5" },
+    { pt: "seis",                              en: "6" },
+    { pt: "sete",                              en: "7" },
+    { pt: "oito",                              en: "8" },
+    { pt: "nove",                              en: "9" },
+    { pt: "dez",                               en: "10" },
+    { pt: "onze",                              en: "11" },
+    { pt: "doze",                              en: "12" },
+    { pt: "treze",                             en: "13" },
+    { pt: "catorze",                           en: "14" },
+    { pt: "quinze",                            en: "15" },
+    { pt: "dezasseis",                         en: "16" },
+    { pt: "dezassete",                         en: "17" },
+    { pt: "dezoito",                           en: "18" },
+    { pt: "dezanove",                          en: "19" },
+    { pt: "vinte",                             en: "20" },
+    { pt: "trinta",                            en: "30" },
+    { pt: "quarenta",                          en: "40" },
+    { pt: "cinquenta",                         en: "50" },
+    { pt: "sessenta",                          en: "60" },
+    { pt: "setenta",                           en: "70" },
+    { pt: "oitenta",                           en: "80" },
+    { pt: "noventa",                           en: "90" },
+    { pt: "cem",                               en: "100 (exactly)" },
+    { pt: "cento e um",                        en: "101" },
+    { pt: "cento e dois",                      en: "102" },
+    { pt: "duzentos",                          en: "200",           gender: "m" },
+    { pt: "duzentas",                          en: "200",           gender: "f" },
+    { pt: "trezentos",                         en: "300",           gender: "m" },
+    { pt: "trezentas",                         en: "300",           gender: "f" },
+    { pt: "quatrocentos",                      en: "400",           gender: "m" },
+    { pt: "quatrocentas",                      en: "400",           gender: "f" },
+    { pt: "quinhentos",                        en: "500",           gender: "m" },
+    { pt: "quinhentas",                        en: "500",           gender: "f" },
+    { pt: "seiscentos",                        en: "600",           gender: "m" },
+    { pt: "seiscentas",                        en: "600",           gender: "f" },
+    { pt: "setecentos",                        en: "700",           gender: "m" },
+    { pt: "setecentas",                        en: "700",           gender: "f" },
+    { pt: "oitocentos",                        en: "800",           gender: "m" },
+    { pt: "oitocentas",                        en: "800",           gender: "f" },
+    { pt: "novecentos",                        en: "900",           gender: "m" },
+    { pt: "novecentas",                        en: "900",           gender: "f" },
+    { pt: "mil",                               en: "1,000" },
+    { pt: "dois mil",                          en: "2,000" },
+    { pt: "cem mil",                           en: "100,000" },
+    { pt: "duzentos mil",                      en: "200,000" },
+    { pt: "um milhão",                         en: "1,000,000" },
+    { pt: "dois milhões",                      en: "2,000,000" },
+    { pt: "um bilião",                         en: "1,000,000,000 (EP)" },
+    { pt: "um trilião",                        en: "1,000,000,000,000 (EP)" },
+    { pt: "mil e oitocentos e sessenta e seis",en: "1866" },
     { pt: "mil novecentos e cinquenta e oito", en: "1958" },
-    { pt: "dois mil e vinte e seis", en: "2026" },
+    { pt: "dois mil e vinte e seis",           en: "2026" },
   ]},
   { section: "Ordinal numbers", items: [
-    { pt: "primeiro / primeira", en: "1st (m/f)" },
-    { pt: "segundo / segunda", en: "2nd (m/f)" },
-    { pt: "terceiro / terceira", en: "3rd (m/f)" },
-    { pt: "quarto / quarta", en: "4th (m/f)" },
-    { pt: "quinto / quinta", en: "5th (m/f)" },
-    { pt: "sexto / sexta", en: "6th (m/f)" },
-    { pt: "sétimo / sétima", en: "7th (m/f)" },
-    { pt: "oitavo / oitava", en: "8th (m/f)" },
-    { pt: "nono / nona", en: "9th (m/f)" },
-    { pt: "décimo / décima", en: "10th (m/f)" },
+    { pt: "primeiro",  en: "1st",  gender: "m" },
+    { pt: "primeira",  en: "1st",  gender: "f" },
+    { pt: "segundo",   en: "2nd",  gender: "m" },
+    { pt: "segunda",   en: "2nd",  gender: "f" },
+    { pt: "terceiro",  en: "3rd",  gender: "m" },
+    { pt: "terceira",  en: "3rd",  gender: "f" },
+    { pt: "quarto",    en: "4th",  gender: "m" },
+    { pt: "quarta",    en: "4th",  gender: "f" },
+    { pt: "quinto",    en: "5th",  gender: "m" },
+    { pt: "quinta",    en: "5th",  gender: "f" },
+    { pt: "sexto",     en: "6th",  gender: "m" },
+    { pt: "sexta",     en: "6th",  gender: "f" },
+    { pt: "sétimo",    en: "7th",  gender: "m" },
+    { pt: "sétima",    en: "7th",  gender: "f" },
+    { pt: "oitavo",    en: "8th",  gender: "m" },
+    { pt: "oitava",    en: "8th",  gender: "f" },
+    { pt: "nono",      en: "9th",  gender: "m" },
+    { pt: "nona",      en: "9th",  gender: "f" },
+    { pt: "décimo",    en: "10th", gender: "m" },
+    { pt: "décima",    en: "10th", gender: "f" },
   ]},
   { section: "Days of the week", items: [
     { pt: "segunda-feira", en: "Monday" },
-    { pt: "terça-feira", en: "Tuesday" },
-    { pt: "quarta-feira", en: "Wednesday" },
-    { pt: "quinta-feira", en: "Thursday" },
-    { pt: "sexta-feira", en: "Friday" },
-    { pt: "sábado", en: "Saturday" },
-    { pt: "domingo", en: "Sunday" },
+    { pt: "terça-feira",   en: "Tuesday" },
+    { pt: "quarta-feira",  en: "Wednesday" },
+    { pt: "quinta-feira",  en: "Thursday" },
+    { pt: "sexta-feira",   en: "Friday" },
+    { pt: "sábado",        en: "Saturday" },
+    { pt: "domingo",       en: "Sunday" },
   ]},
   { section: "Months", items: [
-    { pt: "janeiro", en: "January" },
+    { pt: "janeiro",   en: "January" },
     { pt: "fevereiro", en: "February" },
-    { pt: "março", en: "March" },
-    { pt: "abril", en: "April" },
-    { pt: "maio", en: "May" },
-    { pt: "junho", en: "June" },
-    { pt: "julho", en: "July" },
-    { pt: "agosto", en: "August" },
-    { pt: "setembro", en: "September" },
-    { pt: "outubro", en: "October" },
-    { pt: "novembro", en: "November" },
-    { pt: "dezembro", en: "December" },
+    { pt: "março",     en: "March" },
+    { pt: "abril",     en: "April" },
+    { pt: "maio",      en: "May" },
+    { pt: "junho",     en: "June" },
+    { pt: "julho",     en: "July" },
+    { pt: "agosto",    en: "August" },
+    { pt: "setembro",  en: "September" },
+    { pt: "outubro",   en: "October" },
+    { pt: "novembro",  en: "November" },
+    { pt: "dezembro",  en: "December" },
   ]},
   { section: "Dates", items: [
-    { pt: "Que dia é hoje?", en: "What day is today?" },
-    { pt: "Hoje é (dia) vinte de março", en: "Today is the 20th of March" },
-    { pt: "Em que ano?", en: "In what year?" },
-    { pt: "Em dois mil e vinte e seis", en: "In 2026" },
+    { pt: "Que dia é hoje?",              en: "What day is today?" },
+    { pt: "Hoje é (dia) vinte de março",  en: "Today is the 20th of March" },
+    { pt: "Em que ano?",                  en: "In what year?" },
+    { pt: "Em dois mil e vinte e seis",   en: "In 2026" },
   ]},
   { section: "Telling time", items: [
-    { pt: "Que horas são?", en: "What time is it?" },
-    { pt: "São duas horas", en: "It is two o\'clock" },
-    { pt: "É uma hora e meia", en: "It is half past one" },
-    { pt: "São três e um quarto", en: "It is quarter past three" },
-    { pt: "São quatro menos um quarto", en: "It is quarter to four" },
-    { pt: "São cinco e vinte", en: "It is twenty past five" },
-    { pt: "É meio-dia", en: "It is noon" },
-    { pt: "É meia-noite", en: "It is midnight" },
-    { pt: "da manhã", en: "in the morning" },
-    { pt: "da tarde", en: "in the afternoon" },
-    { pt: "da noite", en: "in the evening" },
+    { pt: "Que horas são?",              en: "What time is it?" },
+    { pt: "São duas horas",              en: "It is two o\'clock" },
+    { pt: "É uma hora e meia",           en: "It is half past one" },
+    { pt: "São três e um quarto",        en: "It is quarter past three" },
+    { pt: "São quatro menos um quarto",  en: "It is quarter to four" },
+    { pt: "São cinco e vinte",           en: "It is twenty past five" },
+    { pt: "É meio-dia",                  en: "It is noon" },
+    { pt: "É meia-noite",               en: "It is midnight" },
+    { pt: "da manhã",                    en: "in the morning" },
+    { pt: "da tarde",                    en: "in the afternoon" },
+    { pt: "da noite",                    en: "in the evening" },
   ]},
 ];
 
@@ -1083,7 +1103,6 @@ const MEDIA_SECTIONS = [
       { label: "A Vida Privada dos Livros (RTP)", url: "https://www.rtp.pt/play/p9466/e577708/a-vida-privada-dos-livros" },
     ]},
     { label: "Bibliotecas e Arquivos Digitais", links: [
-      { label: "Biblioteca Digital Camões", url: "http://cvc.instituto-camoes.pt/conhecer/biblioteca-digital-camoes.html" },
       { label: "Imprensa Nacional — Livros em PDF", url: "https://imprensanacional.pt/livros-em-pdf/" },
       { label: "Project Gutenberg — Português", url: "https://www.gutenberg.org/browse/languages/pt" },
       { label: "Fundação Gulbenkian — Publicações", url: "https://gulbenkian.pt/publicacoes/" },
@@ -1657,6 +1676,8 @@ const ANTHROPIC_API_VERSION = "2023-06-01";
 // TOOLS_MODEL: conjugator, vocab card, prefetch (lower cost; structured JSON output only).
 const CHAT_MODEL  = "claude-sonnet-4-6";
 const TOOLS_MODEL = "claude-haiku-4-5-20251001";
+// Context window for CHAT_MODEL. Update if model changes. claude-sonnet-4-6 = 200k tokens.
+const CHAT_MODEL_CTX = 200000;
 
 function ls(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
 function lsSet(key, val) {
@@ -1670,7 +1691,7 @@ function lsSet(key, val) {
       window._peStorageWarnShown = true;
       const banner = document.createElement("div");
       banner.textContent = "\u26a0 Settings could not be saved \u2014 storage is full or unavailable (e.g. private browsing). Changes will be lost on reload.";
-      Object.assign(banner.style, { position: "fixed", bottom: "12px", left: "50%", transform: "translateX(-50%)", zIndex: "99999", background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d", borderRadius: "8px", padding: "10px 18px", fontSize: "13px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", maxWidth: "90vw", textAlign: "center", cursor: "pointer" });
+      Object.assign(banner.style, { position: "fixed", bottom: "12px", left: "50%", transform: "translateX(-50%)", zIndex: "99999", background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", borderRadius: "8px", padding: "10px 18px", fontSize: "13px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", maxWidth: "90vw", textAlign: "center", cursor: "pointer" });
       banner.title = "Click to dismiss";
       banner.onclick = () => banner.remove();
       document.body.appendChild(banner);
@@ -1714,7 +1735,7 @@ const PE_SCHEMA_RESET_KEYS = ["pe_topics", "pe_vocab_review", "pe_conj_cache"];
 const chip = (active) => ({
   display: "inline-block", fontSize: 12, padding: "4px 14px", borderRadius: 999,
   border: active ? "2px solid #2563eb" : "2px solid transparent",
-  background: active ? "#2563eb" : "var(--color-background-secondary)",
+  background: active ? "var(--color-accent-blue)" : "var(--color-background-secondary)",
   color: active ? "#fff" : "var(--color-text-tertiary)",
   cursor: "pointer", margin: "2px", fontFamily: "var(--font-sans)", outline: "none",
   fontWeight: active ? 600 : 400, textTransform: "uppercase", transition: "all 0.15s",
@@ -1723,8 +1744,8 @@ const segCtrl = { display: "inline-flex", borderRadius: 999, overflow: "hidden",
 const segBtn = (active, pos) => ({
   fontSize: 12, fontWeight: active ? 700 : 400,
   padding: "4px 14px",
-  background: active ? "#2563eb" : "transparent",
-  color: active ? "#fff" : "#2563eb",
+  background: active ? "var(--color-accent-blue)" : "transparent",
+  color: active ? "#fff" : "var(--color-accent-blue)",
   border: "none",
   borderLeft: pos === "mid" || pos === "last" ? "1px solid #2563eb" : "none",
   cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none",
@@ -1733,7 +1754,7 @@ const segBtn = (active, pos) => ({
 const toolBtn = (active) => ({
   fontSize: 13, fontWeight: 600, padding: "5px 14px", borderRadius: 999,
   border: "none",
-  background: active ? "#2563eb" : "var(--color-background-secondary)",
+  background: active ? "var(--color-accent-blue)" : "var(--color-background-secondary)",
   color: active ? "#fff" : "var(--color-text-secondary)",
   cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none", whiteSpace: "nowrap",
   textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s",
@@ -1753,8 +1774,8 @@ function renderWithParens(text, baseColor, baseWeight, fontSize) {
         || /\bnão\b|\bem vez de\b|\bdevia\b|\bdeveria\b/.test(inner);
       // Same font as surrounding bubble text; only color differs. No parentheses.
       return isCorrection
-        ? <span key={pi} style={{ color: "#800000", fontWeight: baseWeight, fontStyle: "normal" }}>{inner}</span>
-        : <span key={pi} style={{ color: "#166534", fontWeight: baseWeight, fontStyle: "normal" }}>{inner}</span>;
+        ? <span key={pi} style={{ color: "var(--color-accent-maroon)", fontWeight: baseWeight, fontStyle: "normal" }}>{inner}</span>
+        : <span key={pi} style={{ color: "var(--color-accent-green)", fontWeight: baseWeight, fontStyle: "normal" }}>{inner}</span>;
     }
     return <span key={pi} style={{ color: baseColor, fontWeight: baseWeight }}>{part}</span>;
   });
@@ -1790,20 +1811,20 @@ function useFocusTrap(containerRef, active, onEscape) {
   }, [active, containerRef, onEscape]);
 }
 
-const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak, showTranslation }) {
+const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak, showTranslation, onRetry }) {
   if (m._grammarCard && m._grammar) {
     const gt = m._grammar;
     const intro = gt.sections[0];
     const examples = gt.sections.slice(1, 3);
     return (
       <div style={{ maxWidth: "85%", alignSelf: "flex-start" }}>
-        <div style={{ background: "#f0f9ff", border: "1.5px solid #0369a1", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, color: "#0369a1", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>Focus Grammar</p>
-          <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "#0c4a6e", margin: "0 0 8px" }}>{gt.label}</p>
+        <div style={{ background: "var(--color-background-teal)", border: "1.5px solid #0369a1", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "var(--color-accent-teal)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 4px" }}>Focus Grammar</p>
+          <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "var(--color-accent-teal-deep)", margin: "0 0 8px" }}>{gt.label}</p>
           <p style={{ fontSize: Math.max(14, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 8px", lineHeight: 1.6 }}>{intro.body}</p>
           {examples.map((sec, si) => (
             <div key={si} style={{ paddingTop: 6, borderTop: "0.5px solid #bae6fd", marginTop: 4 }}>
-              <p style={{ fontSize, fontWeight: 700, color: "#0369a1", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 2px" }}>{sec.title}</p>
+              <p style={{ fontSize, fontWeight: 700, color: "var(--color-accent-teal)", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 2px" }}>{sec.title}</p>
               <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.5 }}>{sec.body}</p>
             </div>
           ))}
@@ -1815,16 +1836,16 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
     const id = m._idiom;
     return (
       <div style={{ maxWidth: "85%", alignSelf: "flex-start" }}>
-        <div style={{ background: "#f5f3ff", border: "1.5px solid #7c3aed", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 6px" }}>Focus Idiom</p>
-          <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "#4c1d95", margin: "0 0 6px", fontStyle: "italic" }}>{id.pt}</p>
+        <div style={{ background: "var(--color-background-violet)", border: "1.5px solid #7c3aed", borderRadius: "18px 18px 18px 4px", padding: "12px 16px", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "var(--color-accent-violet)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 6px" }}>Focus Idiom</p>
+          <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "var(--color-accent-violet-deep)", margin: "0 0 6px", fontStyle: "italic" }}>{id.pt}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 3, paddingTop: 6, borderTop: "0.5px solid #ddd6fe" }}>
             <p style={{ fontSize: Math.max(14, fontSize - 1), margin: 0 }}>
-              <span style={{ fontWeight: 600, color: "#6d28d9" }}>Literal: </span>
+              <span style={{ fontWeight: 600, color: "var(--color-accent-violet-mid)" }}>Literal: </span>
               <span style={{ color: "var(--color-text-primary)" }}>{id.en}</span>
             </p>
             <p style={{ fontSize: Math.max(14, fontSize - 1), margin: 0 }}>
-              <span style={{ fontWeight: 600, color: "#6d28d9" }}>Used when: </span>
+              <span style={{ fontWeight: 600, color: "var(--color-accent-violet-mid)" }}>Used when: </span>
               <span style={{ color: "var(--color-text-primary)" }}>{id.when}</span>
             </p>
           </div>
@@ -1867,7 +1888,7 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
   }
 
   const translationEl = (translation && showTranslation) ? (
-    <p style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 400, color: "#166534", fontStyle: "italic", margin: "4px 0 0", lineHeight: 1.5 }}>
+    <p style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 400, color: "var(--color-accent-green)", fontStyle: "italic", margin: "4px 0 0", lineHeight: 1.5 }}>
       ({translation})
     </p>
   ) : null;
@@ -1875,18 +1896,18 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
   // Render correction as inline spans so it inherits the bubble container's font exactly.
   // A leading newline gives visual separation in the pre-wrap context without a block element.
   const correctionEl = endCorrection ? (
-    <span style={{ color: "#800000", fontWeight: 700, fontStyle: "normal" }}>
+    <span style={{ color: "var(--color-accent-maroon)", fontWeight: 700, fontStyle: "normal" }}>
       {"\n\nCorrection: "}{endCorrection}
     </span>
   ) : null;
 
-  const bubbleStyle = { maxWidth: "80%", alignSelf: m.role === "user" ? "flex-end" : "flex-start", background: m.role === "user" ? "var(--color-background-info)" : "var(--color-background-secondary)", padding: "10px 14px", borderRadius: m.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px", fontSize: Math.max(16, fontSize), lineHeight: 1.6, whiteSpace: "pre-wrap", color: isAssistant ? "#1a56db" : "var(--color-text-info)" };
+  const bubbleStyle = { maxWidth: "80%", alignSelf: m.role === "user" ? "flex-end" : "flex-start", background: m.role === "user" ? "var(--color-background-info)" : "var(--color-background-secondary)", padding: "10px 14px", borderRadius: m.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px", fontSize: Math.max(16, fontSize), lineHeight: 1.6, whiteSpace: "pre-wrap", color: isAssistant ? "var(--color-accent-blue-chat)" : "var(--color-text-info)" };
 
   if (isAssistant && endCorrection) {
     return (
       <div style={{ maxWidth: "80%", alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 6 }}>
         <div style={{ ...bubbleStyle, alignSelf: undefined }}>
-          {renderWithParens(rawContent, "#1a56db", 700, fontSize)}
+          {renderWithParens(rawContent, "var(--color-accent-blue-chat)", 700, fontSize)}
           {translationEl}
           {correctionEl}
         </div>
@@ -1900,14 +1921,19 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
   }
   return (
     <div style={{ maxWidth: "80%", alignSelf: isAssistant ? "flex-start" : "flex-end", display: "flex", flexDirection: "column", gap: 3 }}>
-      <div style={{ ...bubbleStyle, color: isAssistant ? "#1a56db" : "var(--color-text-info)", fontWeight: isAssistant ? 700 : 400 }}>
-        {isAssistant ? renderWithParens(rawContent, "#1a56db", 700, fontSize) : renderWithParens(m.content, "var(--color-text-info)", 400, fontSize)}
+      <div style={{ ...bubbleStyle, color: isAssistant ? "var(--color-accent-blue-chat)" : "var(--color-text-info)", fontWeight: isAssistant ? 700 : 400 }}>
+        {isAssistant ? renderWithParens(rawContent, "var(--color-accent-blue-chat)", 700, fontSize) : renderWithParens(m.content, "var(--color-text-info)", 400, fontSize)}
         {isAssistant && translationEl}
       </div>
       {isAssistant && ttsSupported && (
         <button onClick={() => speak(m.content)}
           style={{ alignSelf: "flex-start", background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "var(--color-text-tertiary)", padding: "0 4px" }}
           aria-label="Read aloud" title="Read aloud">🔊</button>
+      )}
+      {m._retryable && onRetry && (
+        <button onClick={() => onRetry(m._retryText)}
+          style={{ alignSelf: "flex-start", background: "none", border: "1px solid #dc2626", borderRadius: "var(--border-radius-md)", cursor: "pointer", fontSize: 12, color: "var(--color-text-danger)", padding: "2px 8px", marginTop: 2 }}
+          title="Resend the last message">&#8629; Retry</button>
       )}
     </div>
   );
@@ -1988,12 +2014,12 @@ const MinimalPairs = React.memo(function MinimalPairs({
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 10 }}>
       {/* toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "#eff6ff" : "#f0fdf4", color: pairsQuizMode ? "#2563eb" : "#166534", borderColor: pairsQuizMode ? "#bfdbfe" : "#bbf7d0" })}
+        {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "#eff6ff" : "var(--color-background-green)", color: pairsQuizMode ? "var(--color-accent-blue)" : "var(--color-accent-green)", borderColor: pairsQuizMode ? "var(--color-border-info)" : "var(--color-border-green)" })}
         {cardBtn("🔀 Shuffle", shuffle)}
         <span style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginLeft: "auto" }}>
           {pairIndex + 1} / {MINIMAL_PAIRS.length}
           {pairsScore.total > 0 && (
-            <span style={{ marginLeft: 10, color: pairsScore.correct / pairsScore.total >= 0.7 ? "#166534" : "#991b1b" }}>
+            <span style={{ marginLeft: 10, color: pairsScore.correct / pairsScore.total >= 0.7 ? "var(--color-accent-green)" : "var(--color-accent-red-deep)" }}>
               Score: {pairsScore.correct}/{pairsScore.total}
             </span>
           )}
@@ -2010,7 +2036,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
               <div key={side} style={{ textAlign: "center", background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: 12, padding: "18px 28px", minWidth: 140 }}>
                 <div style={{ fontSize: fontSize * 2, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 6 }}>{pair[side].word}</div>
                 <div style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 12, fontStyle: "italic" }}>{pair[side].meaning}</div>
-                <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Ouvir</button>
+                <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Ouvir</button>
               </div>
             ))}
           </div>
@@ -2020,11 +2046,11 @@ const MinimalPairs = React.memo(function MinimalPairs({
             {!quizTarget ? (
               <div>
                 <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>Press Play to hear a word, then identify which it is.</p>
-                {cardBtn("▶ Play", startQuiz, { fontSize: fontSize, padding: "10px 32px", background: "#eff6ff", color: "#2563eb", borderColor: "#bfdbfe" })}
+                {cardBtn("▶ Play", startQuiz, { fontSize: fontSize, padding: "10px 32px", background: "#eff6ff", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-                <button onClick={playQuizWord} style={{ fontSize: 16, padding: "10px 32px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer" }}>▶ Play again</button>
+                <button onClick={playQuizWord} style={{ fontSize: 16, padding: "10px 32px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Play again</button>
                 {quizResult === null ? (
                   <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
                     {["a", "b"].map(side => (
@@ -2035,7 +2061,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
                   </div>
                 ) : (
                   <div style={{ textAlign: "center" }}>
-                    <p style={{ fontSize: 20, fontWeight: 700, color: quizResult === "correct" ? "#166534" : "#991b1b", marginBottom: 6 }}>
+                    <p style={{ fontSize: 20, fontWeight: 700, color: quizResult === "correct" ? "var(--color-accent-green)" : "var(--color-accent-red-deep)", marginBottom: 6 }}>
                       {quizResult === "correct" ? "✓ Correto" : "✗ Errado"}
                     </p>
                     <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 4 }}>
@@ -2044,7 +2070,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
                     <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>
                       {pair[quizTarget === "a" ? "b" : "a"].word} = {pair[quizTarget === "a" ? "b" : "a"].meaning}
                     </p>
-                    {cardBtn("Próximo →", next, { background: "#f0fdf4", color: "#166534", borderColor: "#bbf7d0" })}
+                    {cardBtn("Próximo →", next, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)" })}
                   </div>
                 )}
               </div>
@@ -2065,7 +2091,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
 const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs }) {
   const { useMemo } = React;
   const linkStyle = useMemo(() => ({
-    color: "#1a56db", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block",
+    color: "var(--color-accent-blue-chat)", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block",
   }), [fontSize]);
   const subLabelStyle = useMemo(() => ({
     fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "8px 0 4px",
@@ -2086,7 +2112,7 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
               style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <span>
                 <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.pt}</span>
-                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "#1e40af", marginLeft: 6, fontStyle: "italic" }}>({sec.en})</span>
+                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-info)", marginLeft: 6, fontStyle: "italic" }}>({sec.en})</span>
               </span>
               <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{mediaOpenSection === sec.id ? "▲" : "▼"}</span>
             </button>
@@ -2131,14 +2157,14 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT }) {
     <div style={listPanelStyle}>
       {PHRASES.map((sec, si) => (
         <div key={si} style={secWrap}>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
           <table style={tbl}><tbody>
             {sec.items.map((item, ii) => (
               <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
                 <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
                   <button onClick={() => speakListPT(item.pt)}
                     aria-label={`Hear: ${item.pt}`}
-                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                 </td>
                 <td style={tdL}>{item.pt}</td>
                 <td style={tdR}>{item.en}</td>
@@ -2163,7 +2189,7 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT }) {
             <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
               <button onClick={() => speakListPT(item.pt)}
                 aria-label={`Hear: ${item.pt}`}
-                style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
             </td>
             <td style={{ ...tdL, width: "34%", paddingBottom: 8, paddingTop: 6 }}>{item.pt}</td>
             <td style={{ ...tdR, width: "32%", paddingBottom: 8, paddingTop: 6 }}>{item.en}</td>
@@ -2175,31 +2201,379 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT }) {
   );
 });
 
-const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT }) {
-  const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
-  const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
-  const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
-  const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
-  return (
-    <div style={listPanelStyle}>
-      {NUMBERS.map((sec, si) => (
-        <div key={si} style={secWrap}>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-          <table style={tbl}><tbody>
-            {sec.items.map((item, ii) => (
-              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
-                <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                  <button onClick={() => speakListPT(item.pt)}
-                    aria-label={`Hear: ${item.pt}`}
-                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                </td>
-                <td style={tdL}>{item.pt}</td>
-                <td style={tdR}>{item.en}</td>
-              </tr>
-            ))}
-          </tbody></table>
+// Quiz pools — Cardinals separate, everything else combined.
+// Each item carries category tag for scoped distractor picking.
+const NUMBERS_QUIZ_POOLS = (() => {
+  const tag = (section, cat) =>
+    (NUMBERS.find(s => s.section === section)?.items || []).map(item => ({ ...item, _cat: cat }));
+  return {
+    cardinals: tag("Cardinal numbers", "cardinals"),
+    other: [
+      ...tag("Ordinal numbers", "other"),
+      ...tag("Days of the week", "other"),
+      ...tag("Months", "other"),
+    ],
+  };
+})();
+
+// Normalise a string for answer comparison: lowercase, strip accents, collapse whitespace.
+function normaliseAnswer(s) {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, " ");
+}
+
+// Build a shuffled order array.
+function makeOrder(len) {
+  const arr = Array.from({ length: len }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Pick up to 3 distractors: same category, different en value, shuffled.
+function pickDistractors(pool, correctItem) {
+  const correctEn = correctItem.en;
+  const candidates = pool.filter(it => it._cat === correctItem._cat && it.en !== correctEn);
+  for (let i = candidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+  }
+  // Deduplicate en values in distractors (e.g. both "duzentos" and "duzentas" have en="200").
+  const seen = new Set();
+  const unique = [];
+  for (const c of candidates) {
+    if (!seen.has(c.en)) { seen.add(c.en); unique.push(c.en); }
+    if (unique.length === 3) break;
+  }
+  return unique;
+}
+
+const GENDER_BADGE = (gender) => gender
+  ? <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: gender === "m" ? "#eff6ff" : "var(--color-background-gender-f)", color: gender === "m" ? "var(--color-accent-blue-deep)" : "var(--color-accent-violet)", border: `1px solid ${gender === "m" ? "var(--color-border-info)" : "var(--color-border-gender-f)"}`, verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>{gender === "m" ? "m" : "f"}</span>
+  : null;
+
+const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speechSupported }) {
+  const { useState: S, useRef: R, useEffect: E, useMemo: M } = React;
+
+  // ── Mode ──
+  const [quizMode, setQuizMode]       = S(false);
+  const [direction, setDirection]     = S("pt-en"); // "pt-en" | "en-pt"
+  const [inputMethod, setInputMethod] = S("choice"); // "choice" | "mic"
+  const [category, setCategory]       = S("all");   // "all" | "cardinals" | "other"
+
+  // Active pool derived from category selection.
+  const activePool = M(() => {
+    if (category === "cardinals") return NUMBERS_QUIZ_POOLS.cardinals;
+    if (category === "other")     return NUMBERS_QUIZ_POOLS.other;
+    return [...NUMBERS_QUIZ_POOLS.cardinals, ...NUMBERS_QUIZ_POOLS.other];
+  }, [category]);
+
+  // ── Quiz state ──
+  const [order, setOrder]             = S(() => makeOrder(NUMBERS_QUIZ_POOLS.cardinals.length + NUMBERS_QUIZ_POOLS.other.length));
+  const [qIdx, setQIdx]               = S(0);
+  const [options, setOptions]         = S([]);
+  const [result, setResult]           = S(null);
+  const [wrongAnswer, setWrongAnswer] = S("");
+  const [score, setScore]             = S({ correct: 0, total: 0 });
+  const [micActive, setMicActive]     = S(false);
+  const [transcript, setTranscript]   = S("");
+  const micRef                        = R(null);
+
+  const item    = activePool[order[qIdx] % activePool.length];
+  const micLang = direction === "pt-en" ? "en-US" : "pt-PT";
+
+  // Auto-play PT audio in pt-en mode — cancel any in-flight TTS first.
+  E(() => {
+    if (!quizMode || direction !== "pt-en" || !item) return;
+    window.speechSynthesis?.cancel();
+    speakListPT(item.pt);
+  }, [quizMode, direction, qIdx, order]);
+
+  // Auto-speak EN in en-pt mode — cancel any in-flight TTS first.
+  E(() => {
+    if (!quizMode || direction !== "en-pt" || !item) return;
+    window.speechSynthesis?.cancel();
+    speakListPT(item.en, "en-US");
+  }, [quizMode, direction, qIdx, order]);
+
+  // Build choice options whenever the question changes in pt-en/choice mode.
+  E(() => {
+    if (!quizMode || direction !== "pt-en" || inputMethod !== "choice" || !item) return;
+    const distractors = pickDistractors(activePool, item);
+    const opts = [item.en, ...distractors];
+    for (let i = opts.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [opts[i], opts[j]] = [opts[j], opts[i]];
+    }
+    setOptions(opts);
+  }, [quizMode, direction, inputMethod, qIdx, order]);
+
+  // Reset result/transcript on question or mode change.
+  E(() => {
+    if (!quizMode) return;
+    setResult(null);
+    setWrongAnswer("");
+    setTranscript("");
+  }, [qIdx, order, direction, inputMethod, quizMode]);
+
+  // Stop mic on mode/direction change.
+  E(() => { return () => stopMic(); }, [quizMode, direction, inputMethod, category]);
+
+  function stopMic() {
+    if (micRef.current) { try { micRef.current.stop(); } catch (_) {} micRef.current = null; }
+    setMicActive(false);
+  }
+
+  function startMic(lang) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+    stopMic();
+    const r = new SR();
+    r.lang = lang; r.continuous = false; r.interimResults = true; r.maxAlternatives = 3;
+    let finalText = "";
+    r.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalText += (finalText ? " " : "") + e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      setTranscript((finalText + (interim ? " " + interim : "")).trim());
+    };
+    r.onerror = () => { setMicActive(false); micRef.current = null; };
+    r.onend   = () => { setMicActive(false); micRef.current = null; if (finalText.trim()) evaluateMic(finalText.trim()); };
+    micRef.current = r;
+    r.start();
+    setMicActive(true);
+    setTranscript("");
+  }
+
+  function evaluateMic(raw) {
+    const heard = normaliseAnswer(raw);
+    let correct = false;
+    if (direction === "pt-en") {
+      correct = heard === normaliseAnswer(item.en);
+    } else {
+      // EN→PT: match against the exact pt field (data is now clean — no slash variants).
+      correct = heard === normaliseAnswer(item.pt);
+    }
+    setResult(correct ? "correct" : "wrong");
+    setWrongAnswer(raw);
+    setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+  }
+
+  function guessChoice(chosen) {
+    if (result !== null) return;
+    const correct = chosen === item.en;
+    setResult(correct ? "correct" : "wrong");
+    setWrongAnswer(correct ? "" : chosen);
+    setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+  }
+
+  function next() { stopMic(); setQIdx(i => (i + 1) % activePool.length); }
+  function prev() { stopMic(); setQIdx(i => (i - 1 + activePool.length) % activePool.length); }
+
+  function shuffle() {
+    stopMic();
+    setOrder(makeOrder(activePool.length));
+    setQIdx(0); setResult(null); setTranscript("");
+  }
+
+  function resetQuiz() {
+    stopMic();
+    window.speechSynthesis?.cancel();
+    setResult(null); setTranscript(""); setScore({ correct: 0, total: 0 });
+    setOrder(makeOrder(activePool.length)); setQIdx(0);
+  }
+
+  function toggleQuizMode() { stopMic(); setQuizMode(m => !m); resetQuiz(); }
+
+  const cardBtn = (label, onClick, style = {}) => (
+    <button onClick={onClick} style={{ fontSize, padding: "5px 14px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", ...style }}>{label}</button>
+  );
+
+  const segBtnStyle = (active, accent = "var(--color-accent-blue)") => ({
+    fontSize: Math.max(12, fontSize - 2), padding: "4px 10px", border: "none", cursor: "pointer",
+    fontFamily: "var(--font-sans)", fontWeight: active ? 700 : 400,
+    background: active ? accent : "var(--color-background-secondary)",
+    color: active ? "#fff" : "var(--color-text-secondary)",
+  });
+
+  // ── Browse mode ──
+  const tbl    = M(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
+  const tdL    = M(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "middle", width: "42%", fontSize }), [fontSize]);
+  const tdR    = M(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "middle", fontSize }), [fontSize]);
+  const secTit = M(() => makeSecTitle(fontSize), [fontSize]);
+
+  if (!quizMode) {
+    return (
+      <div style={listPanelStyle}>
+        <div style={{ marginBottom: 10 }}>
+          {cardBtn("🎯 Quiz", toggleQuizMode, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)" })}
         </div>
-      ))}
+        {NUMBERS.map((sec, si) => (
+          <div key={si} style={secWrap}>
+            <p style={{ ...secTit, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+            <table style={tbl}><tbody>
+              {sec.items.map((it, ii) => (
+                <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                  <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                    <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
+                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                  </td>
+                  <td style={tdL}>{it.pt}{GENDER_BADGE(it.gender)}</td>
+                  <td style={tdR}>{it.en}</td>
+                </tr>
+              ))}
+            </tbody></table>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ── Quiz mode ──
+  // Gender cue for the prompt — displayed, never spoken.
+  const genderCue = item.gender ? ` (${item.gender === "m" ? "masculine" : "feminine"})` : "";
+
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 10 }}>
+
+      {/* Toolbar row 1: mode + shuffle + score */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        {cardBtn("📋 Browse", toggleQuizMode, { background: "#eff6ff", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
+        {cardBtn("🔀 Shuffle", shuffle)}
+        <span style={{ fontSize, color: "var(--color-text-secondary)", marginLeft: "auto", whiteSpace: "nowrap" }}>
+          {qIdx + 1} / {activePool.length}
+          {score.total > 0 && (
+            <span style={{ marginLeft: 10, color: score.correct / score.total >= 0.7 ? "var(--color-accent-green)" : "var(--color-accent-red-deep)" }}>
+              {score.correct}/{score.total}
+            </span>
+          )}
+          {score.total > 0 && (
+            <button onClick={() => setScore({ correct: 0, total: 0 })}
+              style={{ marginLeft: 6, fontSize: Math.max(11, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>reset</button>
+          )}
+        </span>
+      </div>
+
+      {/* Toolbar row 2: category · direction · input method */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        {/* Category */}
+        <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
+          {[["all","All"],["cardinals","Cardinals"],["other","Other"]].map(([id, label]) => (
+            <button key={id} onClick={() => { setCategory(id); resetQuiz(); }} style={segBtnStyle(category === id, "var(--color-accent-purple)")}>{label}</button>
+          ))}
+        </div>
+        {/* Direction */}
+        <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
+          {[["pt-en","PT → EN"],["en-pt","EN → PT"]].map(([id, label]) => (
+            <button key={id} onClick={() => { stopMic(); setDirection(id); setResult(null); setTranscript(""); }}
+              style={segBtnStyle(direction === id)}>{label}</button>
+          ))}
+        </div>
+        {/* Input method — only for pt-en */}
+        {direction === "pt-en" && speechSupported && (
+          <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
+            {[["choice","Buttons"],["mic","Mic"]].map(([id, label]) => (
+              <button key={id} onClick={() => { stopMic(); setInputMethod(id); setResult(null); setTranscript(""); }}
+                style={segBtnStyle(inputMethod === id, "var(--color-accent-violet)")}>{label}</button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Card */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
+
+        {/* Prompt */}
+        <div style={{ textAlign: "center" }}>
+          {direction === "pt-en" ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+              <p style={{ fontSize: Math.max(13, fontSize - 1), color: "var(--color-text-tertiary)", margin: 0, fontStyle: "italic" }}>
+                {inputMethod === "choice" ? "Hear the Portuguese — select the English" : "Hear the Portuguese — say the English"}
+              </p>
+              {item.gender && (
+                <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: 0 }}>
+                  ({item.gender === "m" ? "masculine" : "feminine"} form)
+                </p>
+              )}
+              <button onClick={() => speakListPT(item.pt)}
+                style={{ fontSize, padding: "10px 28px", borderRadius: 8, border: "1.5px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer", fontWeight: 700 }}>
+                ▶ Play Portuguese
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+              <p style={{ fontSize: Math.max(13, fontSize - 1), color: "var(--color-text-tertiary)", margin: 0, fontStyle: "italic" }}>
+                {speechSupported ? "See/hear the English — speak the Portuguese" : "See the English — speak the Portuguese"}
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: fontSize * 1.6, fontWeight: 700, color: "var(--color-text-primary)", fontFamily: "var(--font-mono)" }}>{item.en}</span>
+                {item.gender && (
+                  <span style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)" }}>
+                    ({item.gender === "m" ? "masculine" : "feminine"} form)
+                  </span>
+                )}
+                <button onClick={() => speakListPT(item.en, "en-US")}
+                  style={{ fontSize: Math.max(12, fontSize - 2), padding: "4px 14px", borderRadius: 6, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer" }}>▶ Hear English</button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Answer area */}
+        {result === null ? (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, width: "100%", maxWidth: 420 }}>
+            {direction === "pt-en" && inputMethod === "choice" && (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, width: "100%" }}>
+                {options.map((opt, oi) => (
+                  <button key={oi} onClick={() => guessChoice(opt)}
+                    style={{ fontSize, padding: "12px 8px", borderRadius: 8, border: "1.5px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", cursor: "pointer", fontFamily: "var(--font-mono)", fontWeight: 600, textAlign: "center" }}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            )}
+            {(direction === "en-pt" || (direction === "pt-en" && inputMethod === "mic")) && speechSupported && (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <button onClick={micActive ? stopMic : () => startMic(micLang)}
+                  style={{ fontSize, padding: "10px 28px", borderRadius: 8, border: micActive ? "2px solid #dc2626" : "1.5px solid var(--color-border-tertiary)", background: micActive ? "var(--color-background-danger)" : "var(--color-background-secondary)", color: micActive ? "var(--color-text-danger)" : "var(--color-text-secondary)", cursor: "pointer", fontWeight: 700 }}>
+                  {micActive ? "⏹ Stop" : `🎤 Speak ${direction === "pt-en" ? "English" : "Portuguese"}`}
+                </button>
+                {transcript && <p style={{ fontSize, color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic" }}>"{transcript}"</p>}
+                <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: 0 }}>Listening in {micLang}</p>
+              </div>
+            )}
+            {(direction === "en-pt" || (direction === "pt-en" && inputMethod === "mic")) && !speechSupported && (
+              <p style={{ fontSize, color: "var(--color-text-warning)", background: "var(--color-background-warning)", padding: "8px 14px", borderRadius: 6, margin: 0 }}>
+                Speech recognition is not supported in this browser.
+              </p>
+            )}
+          </div>
+        ) : (
+          <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+            <p style={{ fontSize: fontSize * 1.3, fontWeight: 700, color: result === "correct" ? "var(--color-accent-green)" : "var(--color-accent-red-deep)", margin: 0 }}>
+              {result === "correct" ? "✓ Correto" : "✗ Errado"}
+            </p>
+            {result === "wrong" && <p style={{ fontSize, color: "var(--color-text-secondary)", margin: 0 }}>You said: <em>"{wrongAnswer}"</em></p>}
+            <div style={{ fontSize, color: "var(--color-text-secondary)", margin: "4px 0 0", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-info)", fontSize: fontSize * 1.1 }}>{item.pt}</span>
+              {GENDER_BADGE(item.gender)}
+              <span>—</span>
+              <span>{item.en}</span>
+              <button onClick={() => speakListPT(item.pt)} style={{ fontSize: 13, padding: "1px 6px", borderRadius: 4, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶</button>
+            </div>
+            {cardBtn("Próximo →", next, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)", marginTop: 6 })}
+          </div>
+        )}
+      </div>
+
+      {/* Nav */}
+      <div style={{ display: "flex", justifyContent: "center", gap: 12, paddingBottom: 4 }}>
+        {cardBtn("← Anterior", prev)}
+        {result !== null && cardBtn("Próximo →", next, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)" })}
+      </div>
     </div>
   );
 });
@@ -2213,7 +2587,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
     <div style={listPanelStyle}>
       {COGNATES.map((sec, si) => (
         <div key={si} style={secWrap}>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
           {sec.rule ? <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
           <table style={tbl}><tbody>
             {sec.items.map((item, ii) => {
@@ -2226,7 +2600,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
                   <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
                     <button onClick={() => speakListPT(speakText)}
                       aria-label={`Hear: ${item.pt}`}
-                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                   </td>
                   <td style={tdL}>{item.pt}</td>
                   <td style={tdR}>{item.en}</td>
@@ -2253,12 +2627,12 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT }) {
       <div style={{ padding: "6px 0 10px", borderBottom: "0.5px solid var(--color-border-tertiary)", marginBottom: 12 }}>
         <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic", lineHeight: 1.5 }}>
           Calão is the Portuguese word for slang and street language. This list covers authentic EP usage — for passive recognition.
-          Items marked <span style={{ background: "#fef3c7", color: "#92400e", fontWeight: 700, padding: "0 4px", borderRadius: 3, fontStyle: "normal" }}>context</span> can cause serious offence if used without care or carry meanings that shift with context.
+          Items marked <span style={{ background: "var(--color-background-warning)", color: "var(--color-text-warning)", fontWeight: 700, padding: "0 4px", borderRadius: 3, fontStyle: "normal" }}>context</span> can cause serious offence if used without care or carry meanings that shift with context.
         </p>
       </div>
       {SLANG.map((sec, si) => (
         <div key={si} style={{ marginBottom: 18 }}>
-          <p style={{ ...secTitle, color: "#7c2d12", fontWeight: 700, textDecoration: "underline", marginBottom: 2 }}>{sec.section}</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-sienna)", fontWeight: 700, textDecoration: "underline", marginBottom: 2 }}>{sec.section}</p>
           <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.en}</p>
           <table style={tbl}><tbody>
             {sec.items.map((item, ii) => (
@@ -2267,13 +2641,13 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT }) {
                 <td style={{ width: 32, paddingRight: 4, paddingTop: 8, paddingBottom: 8, verticalAlign: "top" }}>
                   <button onClick={() => speakListPT(item.pt)}
                     aria-label={`Hear: ${item.pt}`}
-                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d6c98a", background: "#fef9ec", color: "#92700a", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d6c98a", background: "var(--color-background-sienna)", color: "var(--color-text-sienna)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                 </td>
                 {/* PT phrase + context badge */}
                 <td style={{ width: "22%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", color: "#7c2d12", fontWeight: 700, fontSize }}>{item.pt}</span>
+                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-sienna)", fontWeight: 700, fontSize }}>{item.pt}</span>
                   {item.context && (
-                    <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d", verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>context</span>
+                    <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>context</span>
                   )}
                 </td>
                 {/* EN meaning */}
@@ -2285,7 +2659,7 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT }) {
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
                     <button onClick={() => speakListPT(item.example_pt)}
                       aria-label={`Hear example: ${item.example_pt}`}
-                      style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
+                      style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
                     <div>
                       <p style={{ fontSize, fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
                       <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>
@@ -2313,6 +2687,44 @@ const LIGHT_VARS = {
   "--color-text-warning": "#92400e",
   "--color-text-danger": "#b91c1c",
   "--color-border-tertiary": "#e5e7eb",
+  // Accent colours — all must have dark counterparts in DARK_VARS
+  "--color-accent-purple":        "#581c87",
+  "--color-accent-violet":        "#7c3aed",
+  "--color-accent-violet-mid":    "#6d28d9",
+  "--color-accent-violet-deep":   "#4c1d95",
+  "--color-background-violet":    "#f5f3ff",
+  "--color-border-violet":        "#ddd6fe",
+  "--color-accent-blue":          "#2563eb",
+  "--color-accent-blue-chat":     "#1a56db",
+  "--color-accent-blue-deep":     "#1d4ed8",
+  "--color-accent-teal":          "#0369a1",
+  "--color-accent-teal-deep":     "#0c4a6e",
+  "--color-background-teal":      "#f0f9ff",
+  "--color-border-info":          "#bfdbfe",
+  "--color-background-green":     "#f0fdf4",
+  "--color-border-green":         "#bbf7d0",
+  "--color-accent-green":         "#166534",
+  "--color-accent-green-mid":     "#16a34a",
+  "--color-background-lime":      "#f7fee7",
+  "--color-accent-lime":          "#3f6212",
+  "--color-accent-lime-mid":      "#4d7c0f",
+  "--color-accent-red-deep":      "#991b1b",
+  "--color-background-danger":    "#fee2e2",
+  "--color-accent-maroon":        "#800000",
+  "--color-accent-sienna":        "#7c2d12",
+  "--color-background-sienna":    "#fef9ec",
+  "--color-border-sienna":        "#d6c98a",
+  "--color-text-sienna":          "#92700a",
+  "--color-accent-amber":         "#d97706",
+  "--color-accent-amber-indicator":"#f59e0b",
+  "--color-surface":              "#f9fafb",
+  "--color-surface-raised":       "#f3f4f6",
+  "--color-background-book":      "#f9f7f0",
+  "--color-border-book":          "#d6c98a",
+  "--color-text-book-quote":      "#5a4a1a",
+  "--color-text-book-cite":       "#7a5c10",
+  "--color-background-gender-f":  "#fdf4ff",
+  "--color-border-gender-f":      "#e9d5ff",
 };
 const DARK_VARS = {
   "--color-background-primary": "#1f2937",
@@ -2326,6 +2738,44 @@ const DARK_VARS = {
   "--color-text-warning": "#fcd34d",
   "--color-text-danger": "#f87171",
   "--color-border-tertiary": "#374151",
+  // Accent colours
+  "--color-accent-purple":        "#c084fc",
+  "--color-accent-violet":        "#a78bfa",
+  "--color-accent-violet-mid":    "#c4b5fd",
+  "--color-accent-violet-deep":   "#ddd6fe",
+  "--color-background-violet":    "#2e1065",
+  "--color-border-violet":        "#4c1d95",
+  "--color-accent-blue":          "#60a5fa",
+  "--color-accent-blue-chat":     "#93c5fd",
+  "--color-accent-blue-deep":     "#93c5fd",
+  "--color-accent-teal":          "#38bdf8",
+  "--color-accent-teal-deep":     "#7dd3fc",
+  "--color-background-teal":      "#0c2a4a",
+  "--color-border-info":          "#1d4ed8",
+  "--color-background-green":     "#052e16",
+  "--color-border-green":         "#166534",
+  "--color-accent-green":         "#4ade80",
+  "--color-accent-green-mid":     "#22c55e",
+  "--color-background-lime":      "#1a2e05",
+  "--color-accent-lime":          "#a3e635",
+  "--color-accent-lime-mid":      "#84cc16",
+  "--color-accent-red-deep":      "#fca5a5",
+  "--color-background-danger":    "#450a0a",
+  "--color-accent-maroon":        "#f87171",
+  "--color-accent-sienna":        "#fb923c",
+  "--color-background-sienna":    "#3c1a06",
+  "--color-border-sienna":        "#7c5a2a",
+  "--color-text-sienna":          "#fcd34d",
+  "--color-accent-amber":         "#fbbf24",
+  "--color-accent-amber-indicator":"#fbbf24",
+  "--color-surface":              "#374151",
+  "--color-surface-raised":       "#374151",
+  "--color-background-book":      "#1c1a14",
+  "--color-border-book":          "#4a3f1a",
+  "--color-text-book-quote":      "#e2c97e",
+  "--color-text-book-cite":       "#d4a54a",
+  "--color-background-gender-f":  "#2e1065",
+  "--color-border-gender-f":      "#4c1d95",
 };
 
 // Stable message ID counter — incremented each time a message object is created.
@@ -2359,6 +2809,7 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [lastUsage, setLastUsage] = useState(null); // { input_tokens, output_tokens } from last successful chat response
   const [activePanel, setActivePanel] = useState(null);
   const [listTab, setListTab] = useState("cognates");
   const [baseFontSize, setBaseFontSize] = useState(() => ls("pe_fontsize", 16));
@@ -2415,6 +2866,7 @@ function App() {
   const inputRef = useRef(null);
   const vocabCache = useRef({});
   const conjCache = useRef(ls("pe_conj_cache", {}));  // persisted across sessions
+  const [conjCacheCount, setConjCacheCount] = useState(() => Object.keys(ls("pe_conj_cache", {})).length);
   const nextVocabWord = useRef(null);   // pre-picked word for the next draw
   const prefetchAbortRef = useRef(null); // AbortController for in-flight prefetch
   const sendMessageRef = useRef(null);
@@ -2681,6 +3133,13 @@ function App() {
   };
   const removeTopic = (i) => setTopics(prev => { const next = prev.filter((_, idx) => idx !== i); lsSet("pe_topics", next); return next; });
 
+  const clearConjCache = useCallback(() => {
+    conjCache.current = {};
+    lsSet("pe_conj_cache", {});
+    setConjCacheCount(0);
+    setConjugation(null);
+  }, []);
+
   const sendMessage = async (overrideText) => {
     if (listening) {
       intentionalStopRef.current = true;
@@ -2744,10 +3203,11 @@ function App() {
       } else {
         const reply = data.content?.find(b => b.type === "text")?.text || "Desculpa, não percebi. Podes repetir?";
         setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: reply }]);
+        if (data.usage) setLastUsage({ input_tokens: data.usage.input_tokens ?? 0, output_tokens: data.usage.output_tokens ?? 0 });
       }
     } catch (err) {
       const errMsg = err?.message || String(err);
-      setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(Error: ${errMsg})*` }]);
+      setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(Error: ${errMsg})*`, _retryable: true, _retryText: text }]);
     } finally {
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -2873,7 +3333,12 @@ function App() {
       try {
         const parsed = extractJSON(raw);
         conjCache.current[v] = parsed;
+        // LRU cap: evict oldest entry when cache exceeds 100 verbs.
+        if (Object.keys(conjCache.current).length > 100) {
+          delete conjCache.current[Object.keys(conjCache.current)[0]];
+        }
         lsSet("pe_conj_cache", conjCache.current);
+        setConjCacheCount(Object.keys(conjCache.current).length);
         setConjugation(parsed);
       } catch (parseErr) {
         setConjError(`Could not parse conjugation data. Try again. (${parseErr.message})`);
@@ -2949,10 +3414,27 @@ function App() {
             <button style={{ ...toolBtn(false), padding: "3px 10px" }} onClick={() => adjustFontOffset(1)}>A+</button>
             {fontOffset !== 0 && (
               <span title={`Session override: ${fontOffset > 0 ? "+" : ""}${fontOffset}px (base: ${baseFontSize}px)`}
-                style={{ position: "absolute", top: 1, right: 1, width: 6, height: 6, borderRadius: "50%", background: "#f59e0b", pointerEvents: "none" }} />
+                style={{ position: "absolute", top: 1, right: 1, width: 6, height: 6, borderRadius: "50%", background: "var(--color-accent-amber-indicator)", pointerEvents: "none" }} />
             )}
           </div>
-          <button style={{ ...toolBtn(false), marginLeft: 4, color: "#16a34a", background: "#dcfce7" }} onClick={() => setMessages([])}>↺ Clear</button>
+          <button style={{ ...toolBtn(false), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)" }} onClick={() => { setMessages([]); setLastUsage(null); }}>↺ Clear</button>
+          {lastUsage && (() => {
+            const used = lastUsage.input_tokens;
+            const pct  = Math.min(100, (used / CHAT_MODEL_CTX) * 100);
+            const color = pct >= 80 ? "var(--color-text-danger)" : pct >= 50 ? "var(--color-accent-amber)" : "var(--color-accent-green-mid)";
+            const msgCount = messages.filter(m => m.role === "user" || m.role === "assistant").length;
+            return (
+              <div title={`Context used (last response): ${used.toLocaleString()} / ${CHAT_MODEL_CTX.toLocaleString()} tokens (${pct.toFixed(1)}%). ${msgCount} messages this session.`}
+                style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, marginLeft: 6, minWidth: 72 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color, fontFamily: "var(--font-mono)", whiteSpace: "nowrap" }}>
+                  {pct.toFixed(1)}% · {msgCount}msg
+                </span>
+                <div style={{ width: 72, height: 4, borderRadius: 2, background: "var(--color-border-tertiary)", overflow: "hidden" }}>
+                  <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: 2, transition: "width 0.4s ease, background 0.4s ease" }} />
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -2962,7 +3444,7 @@ function App() {
         <div ref={verbDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Verb</span>
           <button onClick={() => { setVerbDropdownOpen(o => !o); setVerbDropdownSearch(""); }}
-            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #2563eb", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "#800000" : "#2563eb", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 330, overflow: "hidden" }}>
+            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "var(--color-accent-maroon)" : "var(--color-accent-blue)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 330, overflow: "hidden" }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {(() => {
               const rawEn = ALL_VERBS_MAP.get(verbOfSession) || "";
@@ -2974,26 +3456,26 @@ function App() {
             <span style={{ fontSize: 12, marginLeft: 2, flexShrink: 0 }}>▾</span>
           </button>
           {verbDropdownOpen && (
-            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 330, maxHeight: 320, display: "flex", flexDirection: "column" }}>
+            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "var(--color-background-primary)", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 330, maxHeight: 320, display: "flex", flexDirection: "column" }}>
               <input autoFocus placeholder="Search verbs…" value={verbDropdownSearch}
                 onChange={e => setVerbDropdownSearch(e.target.value)}
-                style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid #e5e7eb", outline: "none", background: "#f9fafb", color: "#111827", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
-              <div style={{ overflowY: "auto", flex: 1, background: "#ffffff" }}>
+                style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid var(--color-border-tertiary)", outline: "none", background: "var(--color-surface)", color: "var(--color-text-primary)", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
+              <div style={{ overflowY: "auto", flex: 1, background: "var(--color-background-primary)" }}>
                 {filteredVerbDropdown.map(v => {
                   const isIrreg = IRREGULAR_VERBS_SET.has(v);
                   const rawEn = ALL_VERBS_MAP.get(v) || "";
                   const en = rawEn.replace(/\(([^()]+\([^()]+\)[^()]*)\)/g, (m, outer) => `(${outer.replace(/\(([^()]+)\)/g, '[$1]')})`);
-                  const color = isIrreg ? "#800000" : "#2563eb";
+                  const color = isIrreg ? "var(--color-accent-maroon)" : "var(--color-accent-blue)";
                   const isSelected = v === verbOfSession;
                   return (
                     <HoverDiv key={v}
-                      baseBg={isSelected ? "#dbeafe" : "#ffffff"}
-                      hoverBg={isSelected ? "#dbeafe" : "#f3f4f6"}
+                      baseBg={isSelected ? "#dbeafe" : "var(--color-background-primary)"}
+                      hoverBg={isSelected ? "#dbeafe" : "var(--color-surface-raised)"}
                       style={{ padding: "5px 12px", cursor: "pointer", display: "flex", alignItems: "baseline", gap: 6 }}
                       onClick={() => { setVerbOfSession(v); setVerbDropdownOpen(false); setVerbDropdownSearch(""); }}>
                       <span style={{ fontSize: 16, fontWeight: 700, color }}>{v.toUpperCase()}</span>
-                      {en && <span style={{ fontSize: 16, color: "#6b7280" }}>({en})</span>}
-                      {isIrreg && <span style={{ fontSize: 12, color: "#800000" }}>irr</span>}
+                      {en && <span style={{ fontSize: 16, color: "var(--color-text-secondary)" }}>({en})</span>}
+                      {isIrreg && <span style={{ fontSize: 12, color: "var(--color-accent-maroon)" }}>irr</span>}
                     </HoverDiv>
                   );
                 })}
@@ -3006,24 +3488,24 @@ function App() {
         <div ref={idiomDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Idiom</span>
           <button onClick={() => { setIdiomDropdownOpen(o => !o); setIdiomDropdownSearch(""); }}
-            style={{ fontSize: 14, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #7c3aed", background: "var(--color-background-primary)", color: "#7c3aed", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 260 }}>
+            style={{ fontSize: 14, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-violet)", background: "var(--color-background-primary)", color: "var(--color-accent-violet)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 260 }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{focusIdiom ? focusIdiom.pt : "None"}</span>
             {focusIdiom && (
               <button
                 onClick={e => { e.stopPropagation(); setFocusIdiom(null); setMessages(prev => prev.filter(m => m._idiomCard !== true)); }}
                 aria-label="Clear focus idiom"
-                style={{ fontSize: 12, color: "#7c3aed", opacity: 0.6, marginLeft: 2, flexShrink: 0, background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>✕</button>
+                style={{ fontSize: 12, color: "var(--color-accent-violet)", opacity: 0.6, marginLeft: 2, flexShrink: 0, background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>✕</button>
             )}
             <span style={{ fontSize: 12, marginLeft: "auto", flexShrink: 0 }}>▾</span>
           </button>
           {idiomDropdownOpen && (
-            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 340, maxHeight: 320, display: "flex", flexDirection: "column" }}>
+            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "var(--color-background-primary)", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 340, maxHeight: 320, display: "flex", flexDirection: "column" }}>
               <input autoFocus placeholder="Search idioms…" value={idiomDropdownSearch}
                 onChange={e => setIdiomDropdownSearch(e.target.value)}
-                style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid #e5e7eb", outline: "none", background: "#f9fafb", color: "#111827", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
-              <div style={{ overflowY: "auto", flex: 1, background: "#ffffff" }}>
-                <HoverDiv baseBg="#ffffff" hoverBg="#f3f4f6"
-                  style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "#6b7280", fontStyle: "italic" }}
+                style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid var(--color-border-tertiary)", outline: "none", background: "var(--color-surface)", color: "var(--color-text-primary)", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
+              <div style={{ overflowY: "auto", flex: 1, background: "var(--color-background-primary)" }}>
+                <HoverDiv baseBg="var(--color-background-primary)" hoverBg="var(--color-surface-raised)"
+                  style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "var(--color-text-secondary)", fontStyle: "italic" }}
                   onClick={() => { setFocusIdiom(null); setIdiomDropdownOpen(false); setIdiomDropdownSearch(""); }}>None</HoverDiv>
                 {IDIOMS.filter(id => {
                   const q = idiomDropdownSearch.toLowerCase();
@@ -3032,15 +3514,15 @@ function App() {
                   const isSelected = focusIdiom?.pt === id.pt;
                   return (
                     <HoverDiv key={i}
-                      baseBg={isSelected ? "#f3e8ff" : "#ffffff"}
-                      hoverBg={isSelected ? "#f3e8ff" : "#f3f4f6"}
-                      style={{ padding: "6px 12px", cursor: "pointer", borderBottom: "0.5px solid #f3f4f6" }}
+                      baseBg={isSelected ? "#f3e8ff" : "var(--color-background-primary)"}
+                      hoverBg={isSelected ? "#f3e8ff" : "var(--color-surface-raised)"}
+                      style={{ padding: "6px 12px", cursor: "pointer", borderBottom: "0.5px solid var(--color-surface-raised)" }}
                       onClick={() => {
                         setFocusIdiom(id); setIdiomDropdownOpen(false); setIdiomDropdownSearch("");
                         setMessages(prev => [...prev.filter(m => m._idiomCard !== true), { id: nextMsgId(), role: "assistant", _idiomCard: true, _idiom: id, content: "__IDIOM_CARD__" }]);
                       }}>
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#7c3aed", margin: "0 0 1px" }}>{id.pt}</p>
-                      <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>{id.when}</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "var(--color-accent-violet)", margin: "0 0 1px" }}>{id.pt}</p>
+                      <p style={{ fontSize: 12, color: "var(--color-text-secondary)", margin: 0 }}>{id.when}</p>
                     </HoverDiv>
                   );
                 })}
@@ -3053,34 +3535,34 @@ function App() {
         <div ref={grammarDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Grammar</span>
           <button onClick={() => setGrammarDropdownOpen(o => !o)}
-            style={{ fontSize: 14, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid #0369a1", background: "var(--color-background-primary)", color: "#0369a1", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 220 }}>
+            style={{ fontSize: 14, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-teal)", background: "var(--color-background-primary)", color: "var(--color-accent-teal)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 220 }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{focusGrammar ? focusGrammar.label : "None"}</span>
             {focusGrammar && (
               <button
                 onClick={e => { e.stopPropagation(); setFocusGrammar(null); setMessages(prev => prev.filter(m => m._grammarCard !== true)); }}
                 aria-label="Clear focus grammar"
-                style={{ fontSize: 12, color: "#0369a1", opacity: 0.6, marginLeft: 2, flexShrink: 0, background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>✕</button>
+                style={{ fontSize: 12, color: "var(--color-accent-teal)", opacity: 0.6, marginLeft: 2, flexShrink: 0, background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>✕</button>
             )}
             <span style={{ fontSize: 12, marginLeft: "auto", flexShrink: 0 }}>▾</span>
           </button>
           {grammarDropdownOpen && (
-            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "#ffffff", border: "1px solid #d1d5db", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 220, display: "flex", flexDirection: "column" }}>
-              <HoverDiv baseBg="#ffffff" hoverBg="#f3f4f6"
-                style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "#6b7280", fontStyle: "italic", borderBottom: "0.5px solid #f3f4f6" }}
+            <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "var(--color-background-primary)", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 220, display: "flex", flexDirection: "column" }}>
+              <HoverDiv baseBg="var(--color-background-primary)" hoverBg="var(--color-surface-raised)"
+                style={{ padding: "5px 12px", cursor: "pointer", fontSize: 13, color: "var(--color-text-secondary)", fontStyle: "italic", borderBottom: "0.5px solid var(--color-surface-raised)" }}
                 onClick={() => { setFocusGrammar(null); setGrammarDropdownOpen(false); }}>None</HoverDiv>
               {GRAMMAR_FOCUS_TOPICS.map((t, i) => {
                 const isSelected = focusGrammar?.id === t.id;
                 return (
                   <HoverDiv key={i}
-                    baseBg={isSelected ? "#e0f2fe" : "#ffffff"}
-                    hoverBg={isSelected ? "#e0f2fe" : "#f0f9ff"}
-                    style={{ padding: "7px 12px", cursor: "pointer", borderBottom: "0.5px solid #f3f4f6" }}
+                    baseBg={isSelected ? "var(--color-background-teal)" : "var(--color-background-primary)"}
+                    hoverBg={isSelected ? "var(--color-background-teal)" : "var(--color-background-teal)"}
+                    style={{ padding: "7px 12px", cursor: "pointer", borderBottom: "0.5px solid var(--color-surface-raised)" }}
                     onClick={() => {
                       setFocusGrammar(t); setGrammarDropdownOpen(false);
                       const fullTopic = GRAMMAR_TOPICS.find(gt => gt.id === t.id);
                       setMessages(prev => [...prev.filter(m => m._grammarCard !== true), { id: nextMsgId(), role: "assistant", _grammarCard: true, _grammar: fullTopic, content: "__GRAMMAR_CARD__" }]);
                     }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "#0369a1", margin: 0 }}>{t.label}</p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "var(--color-accent-teal)", margin: 0 }}>{t.label}</p>
                   </HoverDiv>
                 );
               })}
@@ -3095,26 +3577,26 @@ function App() {
           const isSettings = p.id === "settings";
           const isActive = activePanel === p.id;
           const style = isSettings
-            ? { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "#16a34a" : "#dcfce7", color: isActive ? "#fff" : "#16a34a" }
-            : { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "#2563eb" : "transparent", color: isActive ? "#fff" : "var(--color-text-secondary)" };
+            ? { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "var(--color-accent-green-mid)" : "var(--color-background-green)", color: isActive ? "#fff" : "var(--color-accent-green-mid)" }
+            : { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "var(--color-accent-blue)" : "transparent", color: isActive ? "#fff" : "var(--color-text-secondary)" };
           const label = isSettings ? `⚙ ${p.label}` : p.id === "lists" ? `☰ ${p.label}` : p.label;
           return <button key={p.id} style={style} onClick={() => setActivePanel(ap => ap === p.id ? null : p.id)}>{label}</button>;
         })}
         <button
-          style={{ ...toolBtn(false), fontSize: 15, fontWeight: 700, background: "#f3f4f6", color: "#6b7280", marginLeft: 4 }}
+          style={{ ...toolBtn(false), fontSize: 15, fontWeight: 700, background: "var(--color-surface-raised)", color: "var(--color-text-secondary)", marginLeft: 4 }}
           onClick={() => setAboutOpen(true)}>ℹ About</button>
       </div>
 
       {/* Settings panel */}
       {activePanel === "settings" && (
         <div style={{ ...panelStyle, flex: 1, maxHeight: "none" }}>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Anthropic API Key</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Anthropic API Key</p>
           <div style={{ marginBottom: 12 }}>
             {apiKey ? (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize, color: "#16a34a", fontWeight: 600 }}>✓ API key saved</span>
+                <span style={{ fontSize, color: "var(--color-accent-green-mid)", fontWeight: 600 }}>✓ API key saved</span>
                 <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({apiKey.slice(0, 12)}…)</span>
-                <button style={{ ...toolBtn(false), marginLeft: "auto", color: "#dc2626" }}
+                <button style={{ ...toolBtn(false), marginLeft: "auto", color: "var(--color-text-danger)" }}
                   onClick={() => { setApiKey(""); lsSet("pe_api_key", ""); setApiKeyInput(""); }}>Remove</button>
               </div>
             ) : (
@@ -3124,23 +3606,23 @@ function App() {
                   placeholder="Paste your sk-ant-... key here"
                   value={apiKeyInput}
                   onChange={e => setApiKeyInput(e.target.value)}
-                  style={{ flex: 1, fontSize, padding: "5px 10px", border: "1.5px solid #2563eb", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
-                <button style={{ ...toolBtn(true), background: "#2563eb", color: "#fff", padding: "5px 14px" }}
+                  style={{ flex: 1, fontSize, padding: "5px 10px", border: "1.5px solid var(--color-accent-blue)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
+                <button style={{ ...toolBtn(true), background: "var(--color-accent-blue)", color: "#fff", padding: "5px 14px" }}
                   onClick={() => { const k = apiKeyInput.trim().replace(/[^\x20-\x7E\xA0-\xFF]/g, ""); if (k) { setApiKey(k); lsSet("pe_api_key", k); setApiKeyInput(""); } }}>Save</button>
               </div>
             )}
-            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "#92400e", margin: "5px 0 0", fontStyle: "italic", background: "#fef3c7", padding: "4px 8px", borderRadius: "var(--border-radius-sm)" }}>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-warning)", margin: "5px 0 0", fontStyle: "italic", background: "var(--color-background-warning)", padding: "4px 8px", borderRadius: "var(--border-radius-sm)" }}>
               ⚠ Stored in browser localStorage — readable by any browser extension with access to this page. Sent only to Anthropic's API. Get a key at console.anthropic.com.
             </p>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Azure TTS Key</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Azure TTS Key</p>
           <div style={{ marginBottom: 12 }}>
             {azureKey ? (
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ fontSize, color: "#16a34a", fontWeight: 600 }}>✓ Azure key saved</span>
+                <span style={{ fontSize, color: "var(--color-accent-green-mid)", fontWeight: 600 }}>✓ Azure key saved</span>
                 <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({azureKey.slice(0, 8)}…)</span>
                 <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)" }}>Region: <strong>{azureRegion || "not set"}</strong></span>
-                <button style={{ ...toolBtn(false), marginLeft: "auto", color: "#dc2626" }}
+                <button style={{ ...toolBtn(false), marginLeft: "auto", color: "var(--color-text-danger)" }}
                   onClick={() => { setAzureKey(""); lsSet("pe_azure_key", ""); setAzureKeyInput(""); setAzureRegion(""); lsSet("pe_azure_region", ""); setSelectedVoice(null); }}>Remove</button>
               </div>
             ) : (
@@ -3150,22 +3632,22 @@ function App() {
                   placeholder="Paste Azure Speech key here"
                   value={azureKeyInput}
                   onChange={e => setAzureKeyInput(e.target.value)}
-                  style={{ flex: 2, minWidth: 180, fontSize, padding: "5px 10px", border: "1.5px solid #7c3aed", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
+                  style={{ flex: 2, minWidth: 180, fontSize, padding: "5px 10px", border: "1.5px solid var(--color-accent-violet)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
                 <input
                   type="text"
                   placeholder="Region (e.g. eastus)"
                   value={azureRegion}
                   onChange={e => { setAzureRegion(e.target.value.trim()); lsSet("pe_azure_region", e.target.value.trim()); }}
-                  style={{ flex: 1, minWidth: 100, fontSize, padding: "5px 10px", border: "1.5px solid #7c3aed", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
-                <button style={{ ...toolBtn(true), background: "#7c3aed", color: "#fff", padding: "5px 14px" }}
+                  style={{ flex: 1, minWidth: 100, fontSize, padding: "5px 10px", border: "1.5px solid var(--color-accent-violet)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
+                <button style={{ ...toolBtn(true), background: "var(--color-accent-violet)", color: "#fff", padding: "5px 14px" }}
                   onClick={() => { const k = azureKeyInput.trim(); if (k && azureRegion) { setAzureKey(k); lsSet("pe_azure_key", k); setAzureKeyInput(""); setSelectedVoice({ name: "__azure_raquel__", lang: "pt-PT", azureVoice: "pt-PT-RaquelNeural" }); } }}>Save</button>
               </div>
             )}
-            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "#92400e", margin: "5px 0 0", fontStyle: "italic", background: "#fef3c7", padding: "4px 8px", borderRadius: "var(--border-radius-sm)" }}>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-warning)", margin: "5px 0 0", fontStyle: "italic", background: "var(--color-background-warning)", padding: "4px 8px", borderRadius: "var(--border-radius-sm)" }}>
               ⚠ Stored in browser localStorage — readable by any browser extension with access to this page. Sent only to Azure Cognitive Services. Voices: Raquel, Fernanda, Duarte (pt-PT). Get a key at portal.azure.com.
             </p>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Default Font Size</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Default Font Size</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
               {[[14,"Small"],[16,"Medium"],[18,"Large"],[20,"X-Large"]].map(([size, label], i, arr) => {
@@ -3174,12 +3656,12 @@ function App() {
               })}
             </div>
             {fontOffset !== 0 && (
-              <p style={{ fontSize: Math.max(11, fontSize - 3), color: "#f59e0b", margin: "5px 0 0", fontStyle: "italic" }}>
+              <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-accent-amber-indicator)", margin: "5px 0 0", fontStyle: "italic" }}>
                 ● Session override active ({fontOffset > 0 ? "+" : ""}{fontOffset}px). Closes with the app.
               </p>
             )}
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Display Theme</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Display Theme</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
               {[["light","☀ Light"],["dark","☾ Dark"],["system","⊙ System"]].map(([id, label], i, arr) => {
@@ -3188,7 +3670,7 @@ function App() {
               })}
             </div>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Language Level</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Language Level</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
               {LEVELS.map((l, i) => {
@@ -3197,7 +3679,7 @@ function App() {
               })}
             </div>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Error correction</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Error correction</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
               {CORRECTION_MODES.map((m, i) => {
@@ -3206,7 +3688,7 @@ function App() {
               })}
             </div>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Conversation Register</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Conversation Register</p>
           <div style={{ marginBottom: 4 }}>
             <div style={segCtrl}>
               {REGISTER_MODES.map((m, i) => {
@@ -3220,7 +3702,7 @@ function App() {
                 : "Standard: the bot uses correct, textbook-quality European Portuguese — clear vocabulary, complete sentences."}
             </p>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Speaker Default</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Speaker Default</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
               {[["on","🔊 On"],["off","🔇 Off"]].map(([id, label], i, arr) => {
@@ -3235,7 +3717,7 @@ function App() {
               })}
             </div>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>English Translation</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>English Translation</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
               {[["show","Show"],["hide","Hide"]].map(([id, label], i) => {
@@ -3252,7 +3734,7 @@ function App() {
               Shows or hides the English translation appended to each chatbot reply.
             </p>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>S&H Vocab Panel</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>S&H Vocab Panel</p>
           <div style={{ marginBottom: 12 }}>
             <div style={segCtrl}>
               {[["show","Show"],["hide","Hide"]].map(([id, label], i) => {
@@ -3270,7 +3752,7 @@ function App() {
               Hides or shows the S&H Vocab button in the panel tab bar.
             </p>
           </div>
-          <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>Topics</p>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Topics</p>
           <div style={{ marginBottom: 8 }}>
             {topics.map((t, i) => (
               <button key={i} style={chip(t.selected)} onClick={() => toggleTopic(i)}>
@@ -3280,25 +3762,37 @@ function App() {
           </div>
           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
             <div style={{ flex: 1, position: "relative" }}>
-              <input style={{ fontSize, width: "100%", padding: "4px 8px", border: "0.5px solid " + (customTopic.length > 60 ? "#dc2626" : "var(--color-border-tertiary)"), borderRadius: 999, background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", boxSizing: "border-box" }}
+              <input style={{ fontSize, width: "100%", padding: "4px 8px", border: "0.5px solid " + (customTopic.length > 60 ? "var(--color-text-danger)" : "var(--color-border-tertiary)"), borderRadius: 999, background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", boxSizing: "border-box" }}
                 placeholder="Add custom topic…" value={customTopic} maxLength={60}
                 onChange={e => setCustomTopic(e.target.value)} onKeyDown={e => e.key === "Enter" && addCustomTopic()} />
               {customTopic.length > 40 && (
-                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 10, color: customTopic.length >= 60 ? "#dc2626" : "var(--color-text-tertiary)", pointerEvents: "none" }}>{60 - customTopic.length}</span>
+                <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 10, color: customTopic.length >= 60 ? "var(--color-text-danger)" : "var(--color-text-tertiary)", pointerEvents: "none" }}>{60 - customTopic.length}</span>
               )}
             </div>
-            <button style={{ ...toolBtn(false), background: "#eff6ff", color: "#2563eb" }} onClick={addCustomTopic}>+ Add</button>
+            <button style={{ ...toolBtn(false), background: "var(--color-background-info)", color: "var(--color-accent-blue)" }} onClick={addCustomTopic}>+ Add</button>
+          </div>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Conjugation Cache</p>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize, color: "var(--color-text-secondary)" }}>
+                {conjCacheCount === 0 ? "Cache is empty." : `${conjCacheCount} verb${conjCacheCount !== 1 ? "s" : ""} cached.`}
+              </span>
+              {conjCacheCount > 0 && (
+                <button style={{ ...toolBtn(false), color: "var(--color-text-danger)" }} onClick={clearConjCache}>Clear</button>
+              )}
+            </div>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
+              Conjugation results are cached in localStorage to avoid repeat API calls. Cache is capped at 100 verbs (oldest evicted first). Clear if storage is full or data seems stale.
+            </p>
           </div>
         </div>
       )}
-
-      {/* Lists panel */}
       {activePanel === "lists" && (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ padding: "4px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 2, flexWrap: "wrap", background: "var(--color-background-secondary)", flexShrink: 0 }}>
             {LIST_TABS.map(t => (
               <button key={t.id}
-                style={{ fontSize: 14, fontWeight: 700, padding: "3px 10px", borderRadius: 999, border: "none", background: listTab === t.id ? "#2563eb" : "transparent", color: listTab === t.id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
+                style={{ fontSize: 14, fontWeight: 700, padding: "3px 10px", borderRadius: 999, border: "none", background: listTab === t.id ? "var(--color-accent-blue)" : "transparent", color: listTab === t.id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
                 onClick={() => setListTab(t.id)}>{t.label}</button>
             ))}
           </div>
@@ -3308,7 +3802,7 @@ function App() {
               <div style={{ padding: "4px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 6, background: "var(--color-background-secondary)", flexShrink: 0 }}>
                 {[["letters", "Letters"], ["ipa", "IPA"]].map(([id, label]) => (
                   <button key={id}
-                    style={{ fontSize: 13, fontWeight: 700, padding: "3px 14px", borderRadius: 999, border: "none", background: soundsTab === id ? "#7c3aed" : "transparent", color: soundsTab === id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
+                    style={{ fontSize: 13, fontWeight: 700, padding: "3px 14px", borderRadius: 999, border: "none", background: soundsTab === id ? "var(--color-accent-violet)" : "transparent", color: soundsTab === id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
                     onClick={() => setSoundsTab(id)}>{label}</button>
                 ))}
               </div>
@@ -3318,7 +3812,7 @@ function App() {
                 <div style={listPanelStyle}>
                   {PRONUNCIATION_GUIDE.map((sec, si) => (
                     <div key={si} style={secWrap}>
-                      <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+                      <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
                       <table style={tbl}><tbody>
                         {sec.items.map((item, ii) => {
                           const renderSyllables = () => {
@@ -3333,28 +3827,28 @@ function App() {
                             return (
                               <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)", letterSpacing: "0.02em" }}>
                                 {before}
-                                <span style={{ textDecoration: "underline", textDecorationColor: "#7c3aed", textDecorationThickness: 2, fontWeight: 700, color: "#7c3aed" }}>{match}</span>
+                                <span style={{ textDecoration: "underline", textDecorationColor: "var(--color-accent-violet)", textDecorationThickness: 2, fontWeight: 700, color: "var(--color-accent-violet)" }}>{match}</span>
                                 {after}
                               </span>
                             );
                           };
                           if (!item.example && !item.example_en) {
                             return (
-                              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                              <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
                                 <td style={{ width: 32 }}></td>
-                                <td colSpan={3} style={{ ...tdL, fontWeight: 700, color: item.symbol.startsWith("—") ? "#581c87" : "var(--color-text-primary)", fontStyle: item.symbol.startsWith("—") ? "normal" : "italic", paddingTop: 6, paddingBottom: 4 }}>{item.symbol}</td>
+                                <td colSpan={3} style={{ ...tdL, fontWeight: 700, color: item.symbol.startsWith("—") ? "var(--color-accent-purple)" : "var(--color-text-primary)", fontStyle: item.symbol.startsWith("—") ? "normal" : "italic", paddingTop: 6, paddingBottom: 4 }}>{item.symbol}</td>
                               </tr>
                             );
                           }
                           if (item.example_en) {
                             return (
-                              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                              <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
                                 <td style={{ width: 32, paddingRight: 4, verticalAlign: "middle" }}>
                                   <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                                     <button onClick={() => speakListPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
-                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#eff6ff", color: "#2563eb", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
+                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
                                     <button onClick={() => speakListPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
-                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#f0fdf4", color: "#166534", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
+                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-green)", color: "var(--color-accent-green)", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
                                   </div>
                                 </td>
                                 <td style={tdL}>{item.symbol}</td>
@@ -3364,12 +3858,12 @@ function App() {
                             );
                           }
                           return (
-                            <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                            <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
                               <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
                                 {item.example && (
                                   <button onClick={() => speakListPT(item.example, "pt-PT")}
                                     aria-label={`Hear: ${item.example}`} title={`Hear: ${item.example}`}
-                                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                                 )}
                               </td>
                               <td style={tdL}>{item.symbol}</td>
@@ -3390,23 +3884,23 @@ function App() {
               {soundsTab === "ipa" && (
                 <div style={listPanelStyle}>
                   {/* Legend */}
-                  <div style={{ marginBottom: 14, padding: "8px 12px", background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: "var(--border-radius-md)", fontSize: Math.max(11, fontSize - 2), color: "#4c1d95", lineHeight: 1.6 }}>
+                  <div style={{ marginBottom: 14, padding: "8px 12px", background: "var(--color-background-violet)", border: "1px solid var(--color-border-violet)", borderRadius: "var(--border-radius-md)", fontSize: Math.max(11, fontSize - 2), color: "var(--color-accent-violet-deep)", lineHeight: 1.6 }}>
                     <strong>Conventions:</strong> CAPS = stressed syllable · (n) = nasalized through the nose · ⚠ = approximation, no true English anchor · <span style={{ fontFamily: "var(--font-mono)" }}>IPA</span> in monospace
                   </div>
                   {IPA_GUIDE.map((sec, si) => (
                     <div key={si} style={secWrap}>
-                      <p style={{ ...secTitle, color: "#7c3aed", fontWeight: 700, textDecoration: "underline" }}>
+                      <p style={{ ...secTitle, color: "var(--color-accent-violet)", fontWeight: 700, textDecoration: "underline" }}>
                         {sec.section}
-                        {sec.nasal && <span style={{ marginLeft: 8, fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "#6d28d9", textTransform: "none", textDecoration: "none" }}>— all (n) = nasalized</span>}
+                        {sec.nasal && <span style={{ marginLeft: 8, fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "var(--color-accent-violet-mid)", textTransform: "none", textDecoration: "none" }}>— all (n) = nasalized</span>}
                       </p>
                       {/* Column headers */}
                       <table style={{ ...tbl, marginBottom: 4 }}><thead>
-                        <tr style={{ borderBottom: "2px solid #ddd6fe" }}>
+                        <tr style={{ borderBottom: "2px solid var(--color-border-violet)" }}>
                           <th style={{ width: 32 }}></th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "18%" }}>IPA</th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "14%" }}>Fake phonetic</th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "20%" }}>EN anchor</th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 0 4px 0" }}>PT example · fake phonetic</th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "18%" }}>IPA</th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "14%" }}>Fake phonetic</th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "20%" }}>EN anchor</th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 0 4px 0" }}>PT example · fake phonetic</th>
                         </tr>
                       </thead><tbody>
                         {sec.items.map((item, ii) => {
@@ -3421,16 +3915,16 @@ function App() {
                                 <td style={{ width: 32, paddingRight: 4, paddingTop: 6, verticalAlign: "middle" }}>
                                   <button onClick={() => speakListPT(speakText, "pt-PT")}
                                     aria-label={`Hear: ${item.example_pt}`}
-                                    style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #ddd6fe", background: "#f5f3ff", color: "#7c3aed", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                                    style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid var(--color-border-violet)", background: "var(--color-background-violet)", color: "var(--color-accent-violet)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                                 </td>
                                 {/* IPA symbol */}
-                                <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "#4c1d95", fontWeight: 700, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.ipa}</td>
+                                <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "var(--color-accent-violet-deep)", fontWeight: 700, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.ipa}</td>
                                 {/* Fake phonetic */}
                                 <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "var(--color-text-primary)", fontWeight: 600, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.fake}</td>
                                 {/* EN anchor */}
                                 <td style={{ fontSize, padding: "5px 8px 5px 0", verticalAlign: "top" }}>
                                   {item.anchorFlag
-                                    ? <span style={{ color: "#92400e" }}>⚠{item.anchor ? " " + item.anchor : ""}</span>
+                                    ? <span style={{ color: "var(--color-text-warning)" }}>⚠{item.anchor ? " " + item.anchor : ""}</span>
                                     : <span style={{ color: "var(--color-text-secondary)", fontStyle: "italic" }}>{item.anchor}</span>
                                   }
                                 </td>
@@ -3438,7 +3932,7 @@ function App() {
                                 <td style={{ fontSize, padding: "5px 0 5px 0", verticalAlign: "top" }}>
                                   <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", fontWeight: 700 }}>{item.example_pt}</span>
                                   <span style={{ color: "var(--color-text-tertiary)", margin: "0 4px" }}>→</span>
-                                  <span style={{ fontFamily: "var(--font-mono)", color: "#166534" }}>{item.example_fake}</span>
+                                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-green)" }}>{item.example_fake}</span>
                                 </td>
                               </tr>
                               {/* Note row — anchor note and/or production note, italic, below main row */}
@@ -3448,7 +3942,7 @@ function App() {
                                   <td colSpan={4} style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", paddingBottom: 5, paddingRight: 8, lineHeight: 1.5 }}>
                                     {item.anchorFlag && item.anchorNote && <span>{item.anchorNote}</span>}
                                     {item.anchorFlag && item.anchorNote && item.note && <span> · </span>}
-                                    {item.note && <span style={{ color: "#92400e" }}>{item.note}</span>}
+                                    {item.note && <span style={{ color: "var(--color-text-warning)" }}>{item.note}</span>}
                                   </td>
                                 </tr>
                               ) : null}
@@ -3573,7 +4067,7 @@ function App() {
             <div style={listPanelStyle}>
               {GRAMMAR_TOPICS.map((topic, ti) => (
                 <div key={ti} style={secWrap}>
-                  <p style={{ ...secTitle, color: "#0369a1", fontWeight: 700, textDecoration: "underline" }}>{topic.label}</p>
+                  <p style={{ ...secTitle, color: "var(--color-accent-teal)", fontWeight: 700, textDecoration: "underline" }}>{topic.label}</p>
                   {topic.sections.map((sec, si) => (
                     <div key={si} style={{ marginBottom: 10 }}>
                       <p style={{ fontSize, fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{sec.title}</p>
@@ -3585,7 +4079,7 @@ function App() {
             </div>
           )}
           {listTab === "numbers" && (
-            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} />
+            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} />
           )}
           {listTab === "cognates" && (
             <CognatesTab fontSize={fontSize} speakListPT={speakListPT} />
@@ -3611,7 +4105,7 @@ function App() {
             <input style={{ fontSize: 16, flex: 1, padding: "5px 10px", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none" }}
               placeholder="Type any verb, e.g. falar, ser, ter…"
               value={verbInput} onChange={e => setVerbInput(e.target.value)} onKeyDown={e => e.key === "Enter" && lookupVerb()} />
-            <button style={{ ...toolBtn(true), padding: "5px 14px", fontSize: 16, background: "#2563eb", color: "#fff" }} onClick={lookupVerb} disabled={conjLoading}>{conjLoading ? "…" : "⟳ Look up"}</button>
+            <button style={{ ...toolBtn(true), padding: "5px 14px", fontSize: 16, background: "var(--color-accent-blue)", color: "#fff" }} onClick={lookupVerb} disabled={conjLoading}>{conjLoading ? "…" : "⟳ Look up"}</button>
           </div>
           {conjError && <p style={{ fontSize: 16, color: "var(--color-text-danger)", margin: "0 16px" }}>{conjError}</p>}
           {conjugation && (
@@ -3630,7 +4124,7 @@ function App() {
                         return next;
                       })}
                       style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 10px", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#2563eb", letterSpacing: "0.05em" }}>{group.level}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-accent-blue)", letterSpacing: "0.05em" }}>{group.level}</span>
                       <span style={{ fontSize: 13, color: "var(--color-text-tertiary)" }}>{isOpen ? "▲" : "▼"}</span>
                     </button>
                     {isOpen && (
@@ -3655,26 +4149,26 @@ function App() {
                         </div>
                         <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)" }}>
                           <button onClick={() => setConjUsageOpen(prev => !prev)}
-                            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "5px 10px", background: "#f0f9ff", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: "#0369a1" }}>WHEN TO USE THESE TENSES</span>
-                            <span style={{ fontSize: 12, color: "#0369a1" }}>{isUsageOpen ? "▲" : "▼"}</span>
+                            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "5px 10px", background: "var(--color-background-teal)", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-accent-teal)" }}>WHEN TO USE THESE TENSES</span>
+                            <span style={{ fontSize: 12, color: "var(--color-accent-teal)" }}>{isUsageOpen ? "▲" : "▼"}</span>
                           </button>
                           {isUsageOpen && (
-                            <div style={{ padding: "10px 12px", background: "#f0f9ff", display: "flex", flexDirection: "column", gap: 12 }}>
+                            <div style={{ padding: "10px 12px", background: "var(--color-background-teal)", display: "flex", flexDirection: "column", gap: 12 }}>
                               {groupTenses.map((tense, ti) => {
                                 const usage = TENSE_USAGE[tense.name];
                                 if (!usage) return null;
                                 return (
                                   <div key={ti}>
-                                    <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 700, color: "#0369a1", margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{tense.name}</p>
+                                    <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 700, color: "var(--color-accent-teal)", margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{tense.name}</p>
                                     <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 4px", lineHeight: 1.5 }}>{usage.when}</p>
                                     {usage.contrast && (
-                                      <p style={{ fontSize: Math.max(11, fontSize - 2), color: "#92400e", margin: "0 0 6px", fontStyle: "italic", lineHeight: 1.5 }}>⚠ {usage.contrast}</p>
+                                      <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-warning)", margin: "0 0 6px", fontStyle: "italic", lineHeight: 1.5 }}>⚠ {usage.contrast}</p>
                                     )}
                                     <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                                       {usage.examples.map((ex, ei) => (
                                         <div key={ei} style={{ paddingLeft: 8, borderLeft: "2px solid #bae6fd" }}>
-                                          <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 600, color: "#1d4ed8", margin: 0, fontStyle: "italic" }}>{ex.pt}</p>
+                                          <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 600, color: "var(--color-accent-blue-deep)", margin: 0, fontStyle: "italic" }}>{ex.pt}</p>
                                           <p style={{ fontSize: Math.max(10, fontSize - 3), color: "var(--color-text-secondary)", margin: 0 }}>{ex.en}</p>
                                         </div>
                                       ))}
@@ -3692,25 +4186,25 @@ function App() {
               })}
               <div style={{ marginTop: 4, border: "0.5px solid #a3e635", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
                 <button onClick={() => setShortcutsOpen(o => !o)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 10px", background: "#f7fee7", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#3f6212", letterSpacing: "0.04em" }}>SPOKEN EP SHORTCUTS — PAST & FUTURE ALTERNATIVES</span>
-                  <span style={{ fontSize: 13, color: "#3f6212" }}>{shortcutsOpen ? "▲" : "▼"}</span>
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 10px", background: "var(--color-background-lime)", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-accent-lime)", letterSpacing: "0.04em" }}>SPOKEN EP SHORTCUTS — PAST & FUTURE ALTERNATIVES</span>
+                  <span style={{ fontSize: 13, color: "var(--color-accent-lime)" }}>{shortcutsOpen ? "▲" : "▼"}</span>
                 </button>
                 {shortcutsOpen && (
-                  <div style={{ padding: "12px", background: "#f7fee7", display: "flex", flexDirection: "column", gap: 16 }}>
+                  <div style={{ padding: "12px", background: "var(--color-background-lime)", display: "flex", flexDirection: "column", gap: 16 }}>
                     {SPOKEN_SHORTCUTS.map((section, si) => (
                       <div key={si}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#3f6212", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{section.title}</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "var(--color-accent-lime)", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{section.title}</p>
                         <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 6 }}>
                           {section.items.map((item, ii) => (
                             <div key={ii} style={{ paddingLeft: 8, borderLeft: "2px solid #84cc16" }}>
-                              <p style={{ fontSize: 11, fontWeight: 600, color: "#4d7c0f", margin: "0 0 1px", textTransform: "uppercase", letterSpacing: "0.03em" }}>{item.label}</p>
-                              <p style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "#1d4ed8", margin: 0, fontStyle: "italic" }}>{item.pt}</p>
+                              <p style={{ fontSize: 11, fontWeight: 600, color: "var(--color-accent-lime-mid)", margin: "0 0 1px", textTransform: "uppercase", letterSpacing: "0.03em" }}>{item.label}</p>
+                              <p style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-accent-blue-deep)", margin: 0, fontStyle: "italic" }}>{item.pt}</p>
                               <p style={{ fontSize: Math.max(10, fontSize - 3), color: "var(--color-text-secondary)", margin: 0 }}>{item.en}</p>
                             </div>
                           ))}
                         </div>
-                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "#92400e", margin: 0, fontStyle: "italic", lineHeight: 1.5 }}>⚠ {section.note}</p>
+                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-warning)", margin: 0, fontStyle: "italic", lineHeight: 1.5 }}>⚠ {section.note}</p>
                       </div>
                     ))}
                   </div>
@@ -3729,7 +4223,7 @@ function App() {
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
                 {Object.keys(SH_POS_LABELS).map(pos => (
                   <select key={pos}
-                    style={{ fontSize: 16, padding: "4px 6px", border: "2px solid #2563eb", borderRadius: "var(--border-radius-md)", background: vocabPos === pos ? "#eff6ff" : "var(--color-background-primary)", color: "var(--color-text-primary)", cursor: "pointer", maxWidth: 220 }}
+                    style={{ fontSize: 16, padding: "4px 6px", border: "2px solid var(--color-accent-blue)", borderRadius: "var(--border-radius-md)", background: vocabPos === pos ? "var(--color-background-info)" : "var(--color-background-primary)", color: "var(--color-text-primary)", cursor: "pointer", maxWidth: 220 }}
                     value=""
                     onChange={e => {
                       if (!e.target.value) return;
@@ -3745,7 +4239,7 @@ function App() {
                     })}
                   </select>
                 ))}
-                <button style={{ ...toolBtn(true), marginLeft: 4, background: "#2563eb", color: "#fff" }} onClick={drawVocabCard} disabled={vocabLoading}>
+                <button style={{ ...toolBtn(true), marginLeft: 4, background: "var(--color-accent-blue)", color: "#fff" }} onClick={drawVocabCard} disabled={vocabLoading}>
                   {vocabLoading ? "…" : "⟳ Random"}
                 </button>
                 {vocabReview.length > 0 && (
@@ -3761,21 +4255,21 @@ function App() {
                     <span style={{ fontSize: Math.max(18, fontSize + 2), fontWeight: 700, color: "var(--color-text-primary)", fontFamily: "var(--font-mono)" }}>{vocabCard.word_bp}</span>
                     <span style={{ fontSize, color: "var(--color-text-secondary)", fontStyle: "italic" }}>{vocabCard.meaning_en}</span>
                     {vocabCard.is_bp_specific && (
-                      <span style={{ fontSize: 13, fontWeight: 700, padding: "2px 7px", borderRadius: 20, background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d" }}>BP form</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, padding: "2px 7px", borderRadius: 20, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid var(--color-text-warning)" }}>BP form</span>
                     )}
                   </div>
                   {vocabCard.is_bp_specific && (
-                    <div style={{ padding: "8px 14px", background: "#eff6ff", borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
-                      <span style={{ fontSize, fontWeight: 600, color: "#1d4ed8" }}>EP: </span>
-                      <span style={{ fontSize, fontFamily: "var(--font-mono)", color: "#1d4ed8" }}>{vocabCard.ep_equivalent}</span>
-                      {vocabCard.ep_note && <span style={{ fontSize, color: "#3b82f6", marginLeft: 8 }}>— {vocabCard.ep_note}</span>}
+                    <div style={{ padding: "8px 14px", background: "var(--color-background-info)", borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+                      <span style={{ fontSize, fontWeight: 600, color: "var(--color-accent-blue-deep)" }}>EP: </span>
+                      <span style={{ fontSize, fontFamily: "var(--font-mono)", color: "var(--color-accent-blue-deep)" }}>{vocabCard.ep_equivalent}</span>
+                      {vocabCard.ep_note && <span style={{ fontSize, color: "var(--color-accent-blue)", marginLeft: 8 }}>— {vocabCard.ep_note}</span>}
                     </div>
                   )}
                   <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                       <button onClick={() => speakListPT(vocabCard.example_ep)}
                         title="Hear EP example (pt-PT)"
-                        style={{ fontSize: 12, padding: "2px 6px", borderRadius: 4, border: "1px solid #d1d5db", background: "#eff6ff", color: "#2563eb", cursor: "pointer", flexShrink: 0, marginTop: 2 }}>▶ PT-PT</button>
+                        style={{ fontSize: 12, padding: "2px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", flexShrink: 0, marginTop: 2 }}>▶ PT-PT</button>
                       <p style={{ fontSize, fontStyle: "italic", color: "var(--color-text-primary)", margin: 0 }}>{vocabCard.example_ep}</p>
                     </div>
                     <div style={{ paddingTop: 4, borderTop: "0.5px solid var(--color-border-tertiary)" }}>
@@ -3783,23 +4277,23 @@ function App() {
                     </div>
                   </div>
                   {vocabCard.book_quote && (
-                    <div style={{ padding: "10px 14px", background: "#f9f7f0", borderTop: "0.5px solid #d6c98a" }}>
-                      <p style={{ fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#92700a", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Ciência e Saúde</p>
+                    <div style={{ padding: "10px 14px", background: "var(--color-background-book)", borderTop: "0.5px solid var(--color-border-sienna)" }}>
+                      <p style={{ fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-text-sienna)", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Ciência e Saúde</p>
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                         <button onClick={() => speakListPT(vocabCard.book_quote)}
                           title="Hear book quote (pt-PT)"
-                          style={{ fontSize: 12, padding: "2px 6px", borderRadius: 4, border: "1px solid #d6c98a", background: "#f0e8c0", color: "#92700a", cursor: "pointer", flexShrink: 0, marginTop: 2 }}>▶ PT-PT</button>
-                        <p style={{ fontSize: Math.max(12, fontSize - 1), fontStyle: "italic", color: "#5a4a1a", margin: 0, lineHeight: 1.6 }}>"{vocabCard.book_quote}"</p>
+                          style={{ fontSize: 12, padding: "2px 6px", borderRadius: 4, border: "1px solid var(--color-border-sienna)", background: "#f0e8c0", color: "var(--color-text-sienna)", cursor: "pointer", flexShrink: 0, marginTop: 2 }}>▶ PT-PT</button>
+                        <p style={{ fontSize: Math.max(12, fontSize - 1), fontStyle: "italic", color: "var(--color-text-book-quote)", margin: 0, lineHeight: 1.6 }}>"{vocabCard.book_quote}"</p>
                       </div>
                       {vocabCard.book_quote_en && (
-                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "#7a5c10", margin: "6px 0 0 0", fontStyle: "italic", paddingLeft: 2 }}>{vocabCard.book_quote_en}</p>
+                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-book-cite)", margin: "6px 0 0 0", fontStyle: "italic", paddingLeft: 2 }}>{vocabCard.book_quote_en}</p>
                       )}
                     </div>
                   )}
                   {(() => { const inReview = vocabReview.some(r => r.word_bp === vocabCard.word_bp); return (
                   <div style={{ padding: "8px 14px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 6 }}>
                     <button style={{ ...toolBtn(false), background: "var(--color-background-secondary)" }} onClick={drawVocabCard}>→ Next word</button>
-                    <button style={{ ...toolBtn(false), color: inReview ? "#92400e" : "var(--color-text-secondary)" }} onClick={toggleReview}>
+                    <button style={{ ...toolBtn(false), color: inReview ? "var(--color-text-warning)" : "var(--color-text-secondary)" }} onClick={toggleReview}>
                       {inReview ? "★ Remove from review" : "☆ Add to review"}
                     </button>
                   </div>
@@ -3817,16 +4311,16 @@ function App() {
               </div>
               {vocabReview.filter(c => c.is_bp_specific).length > 0 && (
                 <div style={{ marginBottom: 14 }}>
-                  <p style={{ ...secTitle, color: "#92400e", marginBottom: 6 }}>BP Flagged — {vocabReview.filter(c => c.is_bp_specific).length} words</p>
+                  <p style={{ ...secTitle, color: "var(--color-text-warning)", marginBottom: 6 }}>BP Flagged — {vocabReview.filter(c => c.is_bp_specific).length} words</p>
                   <table style={tbl}><tbody>
                     {vocabReview.filter(c => c.is_bp_specific).map((card, i) => (
                       <tr key={i} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
                         <td style={{ ...tdL, width: "28%", paddingTop: 6, paddingBottom: 6, fontWeight: 600 }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 5px", borderRadius: 10, background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d", marginRight: 5 }}>BP</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, padding: "1px 5px", borderRadius: 10, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid var(--color-text-warning)", marginRight: 5 }}>BP</span>
                           {card.word_bp}
                         </td>
                         <td style={{ ...tdR, width: "18%", paddingTop: 6, paddingBottom: 6 }}>{card.meaning_en}</td>
-                        <td style={{ ...tdR, paddingTop: 6, paddingBottom: 6, color: "#1d4ed8" }}>EP: {card.ep_equivalent}</td>
+                        <td style={{ ...tdR, paddingTop: 6, paddingBottom: 6, color: "var(--color-accent-blue-deep)" }}>EP: {card.ep_equivalent}</td>
                         <td style={{ paddingTop: 6, paddingBottom: 6, textAlign: "right" }}>
                           <button style={{ textDecoration: "underline", cursor: "pointer", background: "transparent", border: "none", fontSize: 13, color: "var(--color-text-secondary)", padding: "1px 6px" }}
                             onClick={() => setVocabReview(prev => { const next = prev.filter(c => c.word_bp !== card.word_bp); lsSet("pe_vocab_review", next); return next; })}>×</button>
@@ -3865,7 +4359,7 @@ function App() {
       {/* Chat messages */}
       <div style={{ flex: 1, overflowY: "auto", padding: 16, display: (activePanel === "lists" || activePanel === "verblookup" || activePanel === "vocab" || activePanel === "settings") ? "none" : "flex", flexDirection: "column", gap: 12 }}>
         {messages.map((m, i) => (
-          <MessageBubble key={m.id} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} showTranslation={showTranslation} />
+          <MessageBubble key={m.id} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} showTranslation={showTranslation} onRetry={sendMessage} />
         ))}
         {loading && <div style={{ alignSelf: "flex-start", background: "var(--color-background-secondary)", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", fontSize: 13, color: "var(--color-text-tertiary)" }}>A escrever…</div>}
         <div ref={bottomRef} />
@@ -3875,7 +4369,7 @@ function App() {
       {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
       <div style={{ padding: "10px 12px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
         {!apiKey && (
-          <div style={{ padding: "6px 10px", background: "#fef3c7", borderRadius: "var(--border-radius-md)", fontSize: 13, color: "#92400e" }}>
+          <div style={{ padding: "6px 10px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize: 13, color: "var(--color-text-warning)" }}>
             ⚠ No API key — open <strong>⚙ Settings</strong> and paste your Anthropic key to start chatting.
           </div>
         )}
@@ -3886,7 +4380,7 @@ function App() {
             <button
               onClick={listening ? stopListening : startListening}
               title={listening ? "Stop listening" : `Speak (${speechLang})`}
-              style={{ padding: "6px 12px", fontSize: 18, borderRadius: "var(--border-radius-lg)", border: listening ? "2px solid #dc2626" : "1px solid var(--color-border-tertiary)", background: listening ? "#fee2e2" : "var(--color-background-secondary)", color: listening ? "#dc2626" : "var(--color-text-secondary)", cursor: "pointer", flexShrink: 0 }}>
+              style={{ padding: "6px 12px", fontSize: 18, borderRadius: "var(--border-radius-lg)", border: listening ? "2px solid var(--color-text-danger)" : "1px solid var(--color-border-tertiary)", background: listening ? "var(--color-background-danger)" : "var(--color-background-secondary)", color: listening ? "var(--color-text-danger)" : "var(--color-text-secondary)", cursor: "pointer", flexShrink: 0 }}>
               {listening ? "⏹" : "🎤"}
             </button>
           )}
@@ -3904,7 +4398,7 @@ function App() {
           {ttsSupported && (
             <button onClick={() => { setTtsEnabled(o => !o); if (speaking) stopSpeaking(); }}
               title={ttsEnabled ? "Auto-speak on — click to turn off" : "Auto-speak off — click to turn on"}
-              style={{ padding: "6px 12px", fontSize: 13, borderRadius: "var(--border-radius-lg)", border: ttsEnabled ? "2px solid #2563eb" : "1px solid var(--color-border-tertiary)", background: ttsEnabled ? "#eff6ff" : "var(--color-background-secondary)", color: ttsEnabled ? "#2563eb" : "var(--color-text-secondary)", cursor: "pointer", fontWeight: ttsEnabled ? 700 : 400, flexShrink: 0 }}>
+              style={{ padding: "6px 12px", fontSize: 13, borderRadius: "var(--border-radius-lg)", border: ttsEnabled ? "2px solid var(--color-accent-blue)" : "1px solid var(--color-border-tertiary)", background: ttsEnabled ? "var(--color-background-info)" : "var(--color-background-secondary)", color: ttsEnabled ? "var(--color-accent-blue)" : "var(--color-text-secondary)", cursor: "pointer", fontWeight: ttsEnabled ? 700 : 400, flexShrink: 0 }}>
               {speaking ? "🔊 …" : ttsEnabled ? "🔊 ON" : "🔇 OFF"}
             </button>
           )}
@@ -3916,7 +4410,7 @@ function App() {
                 disabled={ttsRate <= 0.25}
                 title="Slower"
                 style={{ padding: "4px 7px", fontSize: 13, border: "none", background: "var(--color-background-secondary)", color: ttsRate <= 0.25 ? "var(--color-text-tertiary)" : "var(--color-text-secondary)", cursor: ttsRate <= 0.25 ? "default" : "pointer" }}>−</button>
-              <span style={{ fontSize: 12, fontWeight: 600, color: ttsRate !== 1.0 ? "#2563eb" : "var(--color-text-secondary)", minWidth: 36, textAlign: "center", padding: "0 2px" }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: ttsRate !== 1.0 ? "var(--color-accent-blue)" : "var(--color-text-secondary)", minWidth: 36, textAlign: "center", padding: "0 2px" }}>
                 {Math.round(ttsRate * 100)}%
               </span>
               <button
@@ -3966,7 +4460,7 @@ function App() {
               el.style.height = Math.min(el.scrollHeight, 120) + "px";
             }}
             onKeyDown={handleKey} />
-          <button style={{ padding: "8px 16px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "none", background: loading || !input.trim() ? "var(--color-background-secondary)" : "#2563eb", color: loading || !input.trim() ? "var(--color-text-tertiary)" : "#fff", cursor: loading || !input.trim() ? "default" : "pointer", fontWeight: 500 }}
+          <button style={{ padding: "8px 16px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "none", background: loading || !input.trim() ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || !input.trim() ? "var(--color-text-tertiary)" : "#fff", cursor: loading || !input.trim() ? "default" : "pointer", fontWeight: 500 }}
             onClick={() => sendMessage()} disabled={loading || !input.trim()}> ENVIAR</button>
         </div>
       </div>
@@ -4020,7 +4514,7 @@ function App() {
               Personal project. Not for redistribution.
             </p>
             {/* Disclaimer */}
-            <p style={{ margin: 0, fontSize: 12, padding: "8px 12px", background: "#fef3c7", borderRadius: "var(--border-radius-sm)", color: "#92400e", lineHeight: 1.5 }}>
+            <p style={{ margin: 0, fontSize: 12, padding: "8px 12px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-sm)", color: "var(--color-text-warning)", lineHeight: 1.5 }}>
               ⚠ The AI conversation partner can make mistakes in European Portuguese. Treat its output as practice material, not as authoritative reference.
             </p>
           </div>
