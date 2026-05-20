@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.1.8 -->
+  <!-- version: 2.3.1 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -62,7 +62,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.1.8",
+  version: "2.3.1",
   date: "2026-05-20",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -153,7 +153,7 @@ const MINIMAL_PAIRS = [
 // to display the hardcoded IRREGULAR_VERBS tense tables. They are NOT used by the Conjugator panel,
 // which renders tense rows directly from the API response.
 const TENSE_LABELS = ["Presente","Pret. Perfeito","Pret. Imperfeito","Futuro","Particípio"];
-const PRONOUNS = ["eu","tu","ele/ela","nós","vós","eles/elas"];
+const PRONOUNS = ["eu","tu","ele/ela","nós","vocês","eles/elas"];
 
 const IRREGULAR_VERBS = [
   { inf:"estar", en:"to be (temp)", tenses:[
@@ -1154,7 +1154,7 @@ const MEDIA_SECTIONS = [
     { label: "O Ciclista Improvável (YouTube)", url: "https://www.youtube.com/c/OCiclistaImprov%C3%A1vel/videos" },
     { label: "Podcast Futebol PT (Spotify)", url: "https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B" },
   ]},
-  { id: "s18", pt: "Artesanato, DIY e Casa", en: "Crafts, DIY & Home", links: [
+  { id: "s17", pt: "Artesanato, DIY e Casa", en: "Crafts, DIY & Home", links: [
     { label: "Trabalhos Manuais da Di (YouTube)", url: "https://www.youtube.com/c/TrabalhosManuaisdaDi/videos" },
     { label: "Fios Cruzados (YouTube)", url: "https://www.youtube.com/@fioscruzados/videos" },
     { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos" },
@@ -1163,7 +1163,7 @@ const MEDIA_SECTIONS = [
     { label: "GEM — Revistas de Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
     { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos" },
   ]},
-  { id: "s19", pt: "Média Moçambicana e Africana em Português", en: "Mozambican & African Portuguese Media", subgroups: [
+  { id: "s18", pt: "Média Moçambicana e Africana em Português", en: "Mozambican & African Portuguese Media", subgroups: [
     { label: "Televisão e Rádio", links: [
       { label: "RTP África", url: "https://www.rtp.pt/rtpafrica" },
     ]},
@@ -1176,7 +1176,7 @@ const MEDIA_SECTIONS = [
       { label: "Pátria Minha — Moz (YouTube)", url: "https://www.youtube.com/@patriaminhaMoz/videos" },
     ]},
   ]},
-  { id: "s20", pt: "Revistas e Publicações", en: "Magazines & Publications", links: [
+  { id: "s19", pt: "Revistas e Publicações", en: "Magazines & Publications", links: [
     { label: "Expresso", url: "https://expresso.pt/" },
     { label: "Visão", url: "https://www.visao.pt/" },
     { label: "Sábado", url: "https://www.sabado.pt/" },
@@ -1186,7 +1186,7 @@ const MEDIA_SECTIONS = [
     { label: "GEM — Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
     { label: "Echo Boomer", url: "https://echoboomer.pt/" },
   ]},
-  { id: "s23", pt: "Criadores Portugueses — YouTube", en: "Portuguese YouTube Creators (Various)", links: [
+  { id: "s20", pt: "Criadores Portugueses — YouTube", en: "Portuguese YouTube Creators (Various)", links: [
     { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos" },
     { label: "A Tua Filosofia", url: "https://www.youtube.com/@ATuaFilosofia/videos" },
     { label: "Luís Pinto TekTest — Tecnologia", url: "https://www.youtube.com/@LuisPintoTekTest/videos" },
@@ -1195,7 +1195,7 @@ const MEDIA_SECTIONS = [
     { label: "Como os Pés na Terra", url: "https://www.youtube.com/c/Comosp%C3%A9snaterra" },
     { label: "Jornalismo Porto Net", url: "https://www.youtube.com/c/JornalismoPortoNet" },
   ]},
-  { id: "s24", pt: "Teatro e Artes Performativas", en: "Theatre & Performing Arts", links: [
+  { id: "s21", pt: "Teatro e Artes Performativas", en: "Theatre & Performing Arts", links: [
     { label: "RTP Palco — Teatro", url: "https://www.rtp.pt/play/palco/espetaculos/teatro/todos" },
     { label: "RTP Palco — Música ao Vivo", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
     { label: "Teatro Nacional São João — Porto", url: "https://www.tnsj.pt/" },
@@ -1665,7 +1665,7 @@ const SPOKEN_SHORTCUTS = [
 ];
 
 function buildConjugationPrompt(verb) {
-  return `You are a European Portuguese grammar reference. The user wants conjugation tables for the verb "${verb}".\n\nRespond ONLY with a JSON object and nothing else — no markdown, no backticks, no explanation.\n\nFormat:\n{\n  "infinitive": "falar",\n  "meaning": "to speak",\n  "tenses": [\n    {\n      "name": "Presente do Indicativo",\n      "rows": [\n        ["eu", "falo"],["tu", "falas"],["ele/ela", "fala"],["nós", "falamos"],["vós", "falais"],["eles/elas", "falam"]\n      ],\n      "example_pt": "Ela fala português muito bem.",\n      "example_en": "She speaks Portuguese very well."\n    }\n  ]\n}\n\nInclude exactly these 11 tenses in this order:\n1. Presente do Indicativo\n2. Imperativo\n3. Pretérito Perfeito Simples\n4. Pretérito Imperfeito do Indicativo\n5. Futuro do Indicativo\n6. Condicional\n7. Presente do Conjuntivo\n8. Infinitivo Pessoal\n9. Pretérito Mais-que-Perfeito\n10. Pretérito Imperfeito do Conjuntivo\n11. Futuro do Conjuntivo\n\nFor each tense, include one natural example sentence using a randomly chosen pronoun. The example must use the correct conjugated form of "${verb}" for that tense. Use European Portuguese naturally — contractions, clitic placement, and vocabulary appropriate for Portugal (not Brazil).\n\nFor Imperativo rows use: tu, você/ele/ela, nós, vós, vocês/eles/elas (affirmative).\nFor Infinitivo Pessoal rows use all six persons: eu, tu, ele/ela, nós, vós, eles/elas.\nUse European Portuguese forms throughout. Return only valid JSON.`;
+  return `You are a European Portuguese grammar reference. The user wants conjugation tables for the verb "${verb}".\n\nRespond ONLY with a JSON object and nothing else — no markdown, no backticks, no explanation.\n\nFormat:\n{\n  "infinitive": "falar",\n  "meaning": "to speak",\n  "tenses": [\n    {\n      "name": "Presente do Indicativo",\n      "rows": [\n        ["eu", "falo"],["tu", "falas"],["ele/ela", "fala"],["nós", "falamos"],["vocês", "falam"],["eles/elas", "falam"]\n      ],\n      "example_pt": "Ela fala português muito bem.",\n      "example_en": "She speaks Portuguese very well."\n    }\n  ]\n}\n\nInclude exactly these 11 tenses in this order:\n1. Presente do Indicativo\n2. Imperativo\n3. Pretérito Perfeito Simples\n4. Pretérito Imperfeito do Indicativo\n5. Futuro do Indicativo\n6. Condicional\n7. Presente do Conjuntivo\n8. Infinitivo Pessoal\n9. Pretérito Mais-que-Perfeito\n10. Pretérito Imperfeito do Conjuntivo\n11. Futuro do Conjuntivo\n\nFor each tense, include one natural example sentence using a randomly chosen pronoun. The example must use the correct conjugated form of "${verb}" for that tense. Use European Portuguese naturally — contractions, clitic placement, and vocabulary appropriate for Portugal (not Brazil).\n\nFor Imperativo rows use: tu, você/ele/ela, nós, vocês/eles/elas (affirmative).\nFor Infinitivo Pessoal rows use all six persons: eu, tu, ele/ela, nós, vocês, eles/elas.\nUse European Portuguese forms throughout. Return only valid JSON.`;
 }
 
 // Anthropic API version string — update here when Anthropic releases a newer stable version.
@@ -2148,16 +2148,24 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
 // Single source of truth for section title style — used by tab components and App.
 const makeSecTitle = (fontSize) => ({ fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" });
 
-const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT }) {
+const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listFilter }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
   const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
+  const needle = (listFilter || "").toLowerCase();
+  const filteredSections = useMemo(() => {
+    if (!needle) return PHRASES;
+    return PHRASES.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
+  }, [needle]);
+  const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
-      {PHRASES.map((sec, si) => (
+      {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
+      {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
+      {filteredSections.map((sec, si) => (
         <div key={si} style={secWrap}>
-          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+          {!needle && <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
           <table style={tbl}><tbody>
             {sec.items.map((item, ii) => (
               <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
@@ -2177,14 +2185,18 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT }) {
   );
 });
 
-const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT }) {
+const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFilter }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
+  const needle = (listFilter || "").toLowerCase();
+  const visible = useMemo(() => needle ? IDIOMS.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle) || (it.when && it.when.toLowerCase().includes(needle))) : IDIOMS, [needle]);
   return (
     <div style={listPanelStyle}>
+      {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{visible.length} match{visible.length !== 1 ? "es" : ""}</p>}
+      {visible.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
       <table style={tbl}><tbody>
-        {IDIOMS.map((item, i) => (
+        {visible.map((item, i) => (
           <tr key={i} style={{ borderBottom: "1px solid #d1d5db" }}>
             <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
               <button onClick={() => speakListPT(item.pt)}
@@ -2253,7 +2265,7 @@ const GENDER_BADGE = (gender) => gender
   ? <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: gender === "m" ? "#eff6ff" : "var(--color-background-gender-f)", color: gender === "m" ? "var(--color-accent-blue-deep)" : "var(--color-accent-violet)", border: `1px solid ${gender === "m" ? "var(--color-border-info)" : "var(--color-border-gender-f)"}`, verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>{gender === "m" ? "m" : "f"}</span>
   : null;
 
-const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speechSupported }) {
+const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speechSupported, listFilter }) {
   const { useState: S, useRef: R, useEffect: E, useMemo: M } = React;
 
   // ── Mode ──
@@ -2330,35 +2342,76 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
     if (!SR) return;
     stopMic();
     const r = new SR();
-    r.lang = lang; r.continuous = false; r.interimResults = true; r.maxAlternatives = 3;
-    let finalText = "";
+    r.lang = lang; r.continuous = false; r.interimResults = true; r.maxAlternatives = 5;
+    // Collect all alternatives from every final result, not just [0].
+    // alts: array-of-arrays — one inner array per final result segment, each containing up to 5 transcripts.
+    const alts = [];
+    let displayText = "";
     r.onresult = (e) => {
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) finalText += (finalText ? " " : "") + e.results[i][0].transcript;
-        else interim += e.results[i][0].transcript;
+        if (e.results[i].isFinal) {
+          const seg = [];
+          for (let a = 0; a < e.results[i].length; a++) seg.push(e.results[i][a].transcript);
+          alts.push(seg);
+          displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
+        } else {
+          interim = e.results[i][0].transcript;
+        }
       }
-      setTranscript((finalText + (interim ? " " + interim : "")).trim());
+      setTranscript((displayText + (interim ? " " + interim : "")).trim());
     };
     r.onerror = () => { setMicActive(false); micRef.current = null; };
-    r.onend   = () => { setMicActive(false); micRef.current = null; if (finalText.trim()) evaluateMic(finalText.trim()); };
+    r.onend   = () => {
+      setMicActive(false); micRef.current = null;
+      if (alts.length > 0) evaluateMic(alts, displayText.trim());
+    };
     micRef.current = r;
     r.start();
     setMicActive(true);
     setTranscript("");
   }
 
-  function evaluateMic(raw) {
-    const heard = normaliseAnswer(raw);
-    let correct = false;
-    if (direction === "pt-en") {
-      correct = heard === normaliseAnswer(item.en);
-    } else {
-      // EN→PT: match against the exact pt field (data is now clean — no slash variants).
-      correct = heard === normaliseAnswer(item.pt);
+  function evaluateMic(alts, displayRaw) {
+    // alts: array-of-arrays of transcript strings from all final result segments + alternatives.
+    // Flatten into a deduplicated candidate list.
+    const seen = new Set();
+    const candidates = [];
+    for (const seg of alts) for (const t of seg) {
+      const n = normaliseAnswer(t);
+      if (n && !seen.has(n)) { seen.add(n); candidates.push(n); }
     }
+
+    // For EN→PT: build the set of acceptable normalised PT answers.
+    // Include all pool items that share the same en value (gender siblings).
+    const targets = new Set();
+    if (direction === "en-pt") {
+      targets.add(normaliseAnswer(item.pt));
+      // Gender siblings: other pool entries with the same en value.
+      activePool.forEach(it => { if (it.en === item.en) targets.add(normaliseAnswer(it.pt)); });
+      // Also accept the bare numeral (engine occasionally returns "5" for "cinco").
+      targets.add(normaliseAnswer(item.en));
+    }
+
+    function matchesTarget(c) {
+      if (direction === "pt-en") {
+        const tgt = normaliseAnswer(item.en);
+        // Exact, or the answer is contained in what was heard, or heard contained in answer.
+        return c === tgt || c.includes(tgt) || tgt.includes(c);
+      } else {
+        // Check all acceptable PT forms.
+        for (const t of targets) {
+          if (c === t) return true;           // exact
+          if (t && c.includes(t)) return true; // heard contains answer word
+          if (t && t.includes(c)) return true; // answer contains heard (partial recognition)
+        }
+        return false;
+      }
+    }
+
+    const correct = candidates.some(matchesTarget);
     setResult(correct ? "correct" : "wrong");
-    setWrongAnswer(raw);
+    setWrongAnswer(displayRaw);
     setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
   }
 
@@ -2404,6 +2457,12 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   const tdL    = M(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "middle", width: "42%", fontSize }), [fontSize]);
   const tdR    = M(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "middle", fontSize }), [fontSize]);
   const secTit = M(() => makeSecTitle(fontSize), [fontSize]);
+  const needle = ((listFilter || "").toLowerCase());
+  const filteredNumberSections = M(() => {
+    if (!needle) return NUMBERS;
+    return NUMBERS.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
+  }, [needle]);
+  const numTotalMatches = needle ? filteredNumberSections.reduce((n, s) => n + s.items.length, 0) : null;
 
   if (!quizMode) {
     return (
@@ -2411,9 +2470,11 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
         <div style={{ marginBottom: 10 }}>
           {cardBtn("🎯 Quiz", toggleQuizMode, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)" })}
         </div>
-        {NUMBERS.map((sec, si) => (
+        {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{numTotalMatches} match{numTotalMatches !== 1 ? "es" : ""}</p>}
+        {filteredNumberSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
+        {filteredNumberSections.map((sec, si) => (
           <div key={si} style={secWrap}>
-            <p style={{ ...secTit, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+            {!needle && <p style={{ ...secTit, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
             <table style={tbl}><tbody>
               {sec.items.map((it, ii) => (
                 <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
@@ -2578,17 +2639,25 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   );
 });
 
-const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
+const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, listFilter }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
   const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
+  const needle = (listFilter || "").toLowerCase();
+  const filteredSections = useMemo(() => {
+    if (!needle) return COGNATES;
+    return COGNATES.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
+  }, [needle]);
+  const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
-      {COGNATES.map((sec, si) => (
+      {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
+      {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
+      {filteredSections.map((sec, si) => (
         <div key={si} style={secWrap}>
-          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-          {sec.rule ? <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
+          {!needle && <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
+          {!needle && sec.rule ? <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
           <table style={tbl}><tbody>
             {sec.items.map((item, ii) => {
               const hasMF = item.pt.includes("/a") || item.pt.includes("/o");
@@ -2608,7 +2677,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
               );
             })}
           </tbody></table>
-          {sec.exceptions.length > 0 && (
+          {!needle && sec.exceptions.length > 0 && (
             <div style={{ marginTop: 4, padding: "4px 8px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize, color: "var(--color-text-warning)" }}>
               {sec.exceptions.map((e, ei) => <div key={ei}>⚠ {e}</div>)}
             </div>
@@ -2619,9 +2688,15 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT }) {
   );
 });
 
-const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT }) {
+const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT, listFilter }) {
   const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
+  const needle = (listFilter || "").toLowerCase();
+  const filteredSections = useMemo(() => {
+    if (!needle) return SLANG;
+    return SLANG.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle) || (it.example_pt && it.example_pt.toLowerCase().includes(needle)) || (it.example_en && it.example_en.toLowerCase().includes(needle))) })).filter(sec => sec.items.length > 0);
+  }, [needle]);
+  const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
       <div style={{ padding: "6px 0 10px", borderBottom: "0.5px solid var(--color-border-tertiary)", marginBottom: 12 }}>
@@ -2630,10 +2705,12 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT }) {
           Items marked <span style={{ background: "var(--color-background-warning)", color: "var(--color-text-warning)", fontWeight: 700, padding: "0 4px", borderRadius: 3, fontStyle: "normal" }}>context</span> can cause serious offence if used without care or carry meanings that shift with context.
         </p>
       </div>
-      {SLANG.map((sec, si) => (
+      {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
+      {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
+      {filteredSections.map((sec, si) => (
         <div key={si} style={{ marginBottom: 18 }}>
           <p style={{ ...secTitle, color: "var(--color-accent-sienna)", fontWeight: 700, textDecoration: "underline", marginBottom: 2 }}>{sec.section}</p>
-          <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.en}</p>
+          {!needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.en}</p>}
           <table style={tbl}><tbody>
             {sec.items.map((item, ii) => (
               <tr key={ii} style={{ borderBottom: "1px solid #f3e8d0", verticalAlign: "top" }}>
@@ -2812,6 +2889,7 @@ function App() {
   const [lastUsage, setLastUsage] = useState(null); // { input_tokens, output_tokens } from last successful chat response
   const [activePanel, setActivePanel] = useState(null);
   const [listTab, setListTab] = useState("cognates");
+  const [listFilter, setListFilter] = useState("");
   const [baseFontSize, setBaseFontSize] = useState(() => ls("pe_fontsize", 16));
   const [fontOffset, setFontOffset] = useState(0);
   const fontSize = Math.max(11, Math.min(24, baseFontSize + fontOffset));
@@ -2989,6 +3067,7 @@ function App() {
   };
 
   const azureBlobUrlRef = useRef(null);
+  const azureAudioRef = useRef(null);   // tracks live Azure Audio element for stop
 
   const speakViaAzure = useCallback(async (text, lang = "pt-PT") => {
     if (!azureKey || !azureRegion || !text) return false;
@@ -3018,9 +3097,11 @@ function App() {
       const url = URL.createObjectURL(blob);
       azureBlobUrlRef.current = url;
       const audio = new Audio(url);
+      azureAudioRef.current = audio;
       setSpeaking(true);
       const cleanup = () => {
         setSpeaking(false);
+        azureAudioRef.current = null;
         if (azureBlobUrlRef.current === url) {
           URL.revokeObjectURL(url);
           azureBlobUrlRef.current = null;
@@ -3070,6 +3151,12 @@ function App() {
 
   const stopSpeaking = useCallback(() => {
     window.speechSynthesis.cancel();
+    if (azureAudioRef.current) {
+      azureAudioRef.current.pause();
+      azureAudioRef.current.src = "";
+      azureAudioRef.current = null;
+    }
+    if (azureBlobUrlRef.current) { URL.revokeObjectURL(azureBlobUrlRef.current); azureBlobUrlRef.current = null; }
     setSpeaking(false);
   }, []);
 
@@ -3088,6 +3175,9 @@ function App() {
     u.rate = ttsRateRef.current;
     const v = findBrowserVoice(lang);
     if (v) u.voice = v;
+    u.onstart = () => setSpeaking(true);
+    u.onend   = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
     window.speechSynthesis.speak(u);
   }, [azureKey, azureRegion, speakViaAzure]);
 
@@ -3102,6 +3192,9 @@ function App() {
       }
     }
   }, [loading, ttsEnabled, speak]);
+  // Reset filter whenever active list tab changes
+  useEffect(() => { setListFilter(""); }, [listTab]);
+
   useEffect(() => {
     const handler = (e) => {
       if (verbDropdownRef.current && !verbDropdownRef.current.contains(e.target)) setVerbDropdownOpen(false);
@@ -3796,6 +3889,23 @@ function App() {
                 onClick={() => setListTab(t.id)}>{t.label}</button>
             ))}
           </div>
+          {/* Filter bar — shown for searchable list tabs */}
+          {["phrases","idioms","slang","cognates","numbers"].includes(listTab) && (
+            <div style={{ padding: "5px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 8, background: "var(--color-background-primary)", flexShrink: 0 }}>
+              <span style={{ fontSize: 13, color: "var(--color-text-tertiary)", flexShrink: 0 }}>🔍</span>
+              <input
+                type="text"
+                value={listFilter}
+                onChange={e => setListFilter(e.target.value)}
+                placeholder="Filter by Portuguese or English…"
+                style={{ flex: 1, fontSize: 13, padding: "4px 8px", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", outline: "none" }}
+              />
+              {listFilter && (
+                <button onClick={() => setListFilter("")}
+                  style={{ fontSize: 13, padding: "2px 8px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-secondary)", cursor: "pointer", flexShrink: 0 }}>✕</button>
+              )}
+            </div>
+          )}
           {listTab === "sounds" && (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
               {/* Sounds sub-tab bar: Letters / IPA */}
@@ -3843,12 +3953,12 @@ function App() {
                           if (item.example_en) {
                             return (
                               <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                                <td style={{ width: 32, paddingRight: 4, verticalAlign: "middle" }}>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <td style={{ width: 72, paddingRight: 6, verticalAlign: "top", paddingTop: 6 }}>
+                                  <div style={{ display: "flex", flexDirection: "row", gap: 4 }}>
                                     <button onClick={() => speakListPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
-                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
+                                      style={{ fontSize: 13, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
                                     <button onClick={() => speakListPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
-                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-green)", color: "var(--color-accent-green)", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
+                                      style={{ fontSize: 13, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-green)", color: "var(--color-accent-green)", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
                                   </div>
                                 </td>
                                 <td style={tdL}>{item.symbol}</td>
@@ -3859,7 +3969,7 @@ function App() {
                           }
                           return (
                             <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                              <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                              <td style={{ width: 32, paddingRight: 6, verticalAlign: "top", paddingTop: 6 }}>
                                 {item.example && (
                                   <button onClick={() => speakListPT(item.example, "pt-PT")}
                                     aria-label={`Hear: ${item.example}`} title={`Hear: ${item.example}`}
@@ -3968,10 +4078,10 @@ function App() {
             />
           )}
           {listTab === "phrases" && (
-            <PhrasesTab fontSize={fontSize} speakListPT={speakListPT} />
+            <PhrasesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
           )}
           {listTab === "idioms" && (
-            <IdiomsTab fontSize={fontSize} speakListPT={speakListPT} />
+            <IdiomsTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
           )}
           {listTab === "verbref" && (
             <div style={listPanelStyle}>
@@ -4079,10 +4189,10 @@ function App() {
             </div>
           )}
           {listTab === "numbers" && (
-            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} />
+            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} listFilter={listFilter} />
           )}
           {listTab === "cognates" && (
-            <CognatesTab fontSize={fontSize} speakListPT={speakListPT} />
+            <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
           )}
           {listTab === "media" && (
             <MediaTab
@@ -4093,7 +4203,7 @@ function App() {
             />
           )}
           {listTab === "slang" && (
-            <SlangTab fontSize={fontSize} speakListPT={speakListPT} />
+            <SlangTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
           )}
         </div>
       )}
@@ -4401,6 +4511,12 @@ function App() {
               style={{ padding: "6px 12px", fontSize: 13, borderRadius: "var(--border-radius-lg)", border: ttsEnabled ? "2px solid var(--color-accent-blue)" : "1px solid var(--color-border-tertiary)", background: ttsEnabled ? "var(--color-background-info)" : "var(--color-background-secondary)", color: ttsEnabled ? "var(--color-accent-blue)" : "var(--color-text-secondary)", cursor: "pointer", fontWeight: ttsEnabled ? 700 : 400, flexShrink: 0 }}>
               {speaking ? "🔊 …" : ttsEnabled ? "🔊 ON" : "🔇 OFF"}
             </button>
+          )}
+          {/* Stop-all button — visible whenever audio is playing */}
+          {ttsSupported && speaking && (
+            <button onClick={stopSpeaking}
+              title="Stop playback"
+              style={{ padding: "6px 10px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-secondary)", cursor: "pointer", flexShrink: 0 }}>⏹</button>
           )}
           {/* Speed control */}
           {ttsSupported && (
