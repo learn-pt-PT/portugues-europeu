@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.0.4 -->
+  <!-- version: 2.0.9 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -62,7 +62,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.0.4",
+  version: "2.0.9",
   date: "2026-05-20",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -1346,7 +1346,17 @@ function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusId
   const registerInstruction = registerMode === "colloquial"
     ? "\n\nRegister: speak and write exactly like a relaxed, educated Lisbon local — not a textbook and not a caricature. Apply all of the following naturally and organically, never mechanically:\n\nContractions and reductions: use 'tou' for 'estou', 'tás' for 'estás', 'tá'/'tá bem' for 'está'/'está bem', 'pra'/'pa' for 'para', 's'calhar' for 'se calhar', ''pera aí' for 'espera aí', 'né' for 'não é', 'ya' for 'sim/yeah'. Drop subjects where a native would.\n\nCore slang vocabulary: use 'gajo'/'gaja' for bloke/woman, 'miúdo'/'miúda' for kid/young person, 'fixe'/'brutal'/'porreiro' for cool/great, 'bué' for very/loads, 'tanga' for rip-off, 'enrascado' for in a fix, 'safo' for sorted, 'tramado' for in a bad way, 'manhoso' for crafty, 'bazar'/'marchar' for to leave.\n\nFiller words and discourse markers: use 'pois'/'pois é' frequently (this is unavoidable in natural EP), 'epá'/'ó pá' for emphasis or surprise, 'olha' to introduce a point, 'tás a ver?' to check understanding, 'não me digas' for disbelief, 'ora bolas'/'bolas' for mild frustration, 'caramba' as a softer expletive.\n\nMild expletives: use 'porra' and 'caralho' as natural discourse particles when appropriate — they carry roughly the weight of 'damn' or 'bloody hell' in casual EP speech and are not considered strongly offensive in informal conversation. Use 'merda' for 'shit', 'treta' for bullshit/nonsense, 'que se lixe' for screw it, 'estou farto/a' for I'm fed up, 'não me chateies' for don't bother me.\n\nCultural concepts: use 'desenrascar'/'desenrascamo-nos' when relevant (the Portuguese concept of winging it), 'tar-se nas tintas para' or 'tou-me a borrifar' for not giving a damn.\n\nDo NOT use these in every sentence — that would be unnatural. Distribute them as a native speaker would: some sentences will be perfectly standard EP, others will be heavy with this register. Vary it. When correcting the learner, always prefer what a native speaker would actually say over strictly textbook forms."
     : "\n\nRegister: use clear, correct, standard European Portuguese — the kind a learner would encounter in a well-written textbook or a formal conversation. Avoid heavy slang and contractions. Model grammatically complete sentences.";
-  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. Keep responses concise — 2 to 4 sentences unless the learner asks for more detail.\n\nDo not use any emoji in your responses under any circumstances.${showTranslation ? "\n\nAFTER your full Portuguese reply (and after any correction block if present), append an English translation of your Portuguese reply ONLY — not of the correction. Use EXACTLY this format with no variations:\n===\n[English translation here]\n\nRules: (1) The === must be on its own line. (2) The translation must immediately follow on the next line. (3) Translate only the main Portuguese content — never the correction block. (4) Always include this block, even when the reply is short." : "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only (plus any correction block if applicable)."}`;
+  // Whether the correction policy can produce a correction block at all.
+  // Only "end" mode appends an explicit block; "onrequest" and "never" do not.
+  const correctionBlockPossible = correctionMode === "end";
+  const translationInstruction = showTranslation
+    ? correctionBlockPossible
+      ? "\n\nAFTER your full Portuguese reply (and after any correction block if present), append an English translation of your Portuguese reply ONLY — not of the correction. Use EXACTLY this format with no variations:\n===\n[English translation here]\n\nRules: (1) The === must be on its own line. (2) The translation must immediately follow on the next line. (3) Translate only the main Portuguese content — never the correction block. (4) Always include this block, even when the reply is short."
+      : "\n\nAFTER your full Portuguese reply, append an English translation. Use EXACTLY this format with no variations:\n===\n[English translation here]\n\nRules: (1) The === must be on its own line. (2) The translation must immediately follow on the next line. (3) Always include this block, even when the reply is short."
+    : correctionBlockPossible
+      ? "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only (plus any correction block if applicable)."
+      : "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only.";
+  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. Keep responses concise — 2 to 4 sentences unless the learner asks for more detail.\n\nDo not use any emoji in your responses under any circumstances.${translationInstruction}`;
 }
 
 // Tense-to-level mapping used by the conjugator display
@@ -1579,15 +1589,16 @@ const secWrap = { marginBottom: 14 };
 // Pure function — no state or prop dependencies; stable reference across renders.
 // Defined at module scope so React.memo on MessageBubble is not defeated by a new reference each render.
 function renderWithParens(text, baseColor, baseWeight, fontSize) {
-  const correctionSize = Math.max(13, (fontSize || 16) - 1);
   const parts = text.split(/(\([^)]+\))/g);
   return parts.map((part, pi) => {
     if (/^\([^)]+\)$/.test(part)) {
-      const inner = part.slice(1, -1).toLowerCase();
-      const isCorrection = /\bnot\b|\bnão\b|\binstead of\b|\bem vez de\b|\buse\b|\bshould be\b|\bdevia\b|\bdeveria\b|\bcorrect\b/.test(inner);
+      const inner = part.slice(1, -1);
+      const isCorrection = /\bnot\b|\bnao\b|\binstead of\b|\buse\b|\bshould be\b|\bcorrect\b/i.test(inner)
+        || /\bnão\b|\bem vez de\b|\bdevia\b|\bdeveria\b/.test(inner);
+      // Same font as surrounding bubble text; only color differs. No parentheses.
       return isCorrection
-        ? <span key={pi} style={{ color: "#800000", fontWeight: 400, fontSize: correctionSize, fontStyle: "italic" }}>{part}</span>
-        : <span key={pi} style={{ color: "#166534", fontWeight: 400, fontSize: correctionSize, fontStyle: "italic" }}>{part}</span>;
+        ? <span key={pi} style={{ color: "#800000", fontWeight: baseWeight, fontStyle: "normal" }}>{inner}</span>
+        : <span key={pi} style={{ color: "#166534", fontWeight: baseWeight, fontStyle: "normal" }}>{inner}</span>;
     }
     return <span key={pi} style={{ color: baseColor, fontWeight: baseWeight }}>{part}</span>;
   });
@@ -1705,10 +1716,12 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
     </p>
   ) : null;
 
+  // Render correction as inline spans so it inherits the bubble container's font exactly.
+  // A leading newline gives visual separation in the pre-wrap context without a block element.
   const correctionEl = endCorrection ? (
-    <p style={{ maxWidth: "80%", margin: 0, fontSize: Math.max(16, fontSize), fontWeight: 700, fontStyle: "normal", color: "#800000", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
-      {endCorrection}
-    </p>
+    <span style={{ color: "#800000", fontWeight: 700, fontStyle: "normal" }}>
+      {"\n\nCorrection: "}{endCorrection}
+    </span>
   ) : null;
 
   const bubbleStyle = { maxWidth: "80%", alignSelf: m.role === "user" ? "flex-end" : "flex-start", background: m.role === "user" ? "var(--color-background-info)" : "var(--color-background-secondary)", padding: "10px 14px", borderRadius: m.role === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px", fontSize: Math.max(16, fontSize), lineHeight: 1.6, whiteSpace: "pre-wrap", color: isAssistant ? "#1a56db" : "var(--color-text-info)" };
@@ -1719,8 +1732,8 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
         <div style={{ ...bubbleStyle, alignSelf: undefined }}>
           {renderWithParens(rawContent, "#1a56db", 700, fontSize)}
           {translationEl}
+          {correctionEl}
         </div>
-        {correctionEl}
         {ttsSupported && (
           <button onClick={() => speak(m.content)}
             style={{ alignSelf: "flex-start", background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "var(--color-text-tertiary)", padding: "0 4px" }}
@@ -2429,9 +2442,9 @@ function App() {
   }, [ttsSupported]);
 
   const speak = useCallback(async (text) => {
-    // Strip correction block (--- on its own line) and translation block (=== on its own line).
+    // Strip correction block (--- or Correction:/Correção: on its own line) and translation block (=== on its own line).
     const clean = text
-      .replace(/(^|\n)(---|===)[\s\S]*$/, "")
+      .replace(/(^|\n)(---|===|Correction:|Corre[cç][aã]o:)[\s\S]*$/, "")
       .replace(/\*[^*]+\*/g, "")
       .replace(/\[.*?\]/g, "")
       .replace(/[#_`]/g, "")
@@ -2664,8 +2677,12 @@ function App() {
 
   const VOCAB_REVIEW_CAP = 200;
 
-  const addToReview = () => {
-    if (vocabCard && !vocabReview.find(r => r.word_bp === vocabCard.word_bp)) {
+  const toggleReview = () => {
+    if (!vocabCard) return;
+    const inReview = vocabReview.some(r => r.word_bp === vocabCard.word_bp);
+    if (inReview) {
+      setVocabReview(prev => { const next = prev.filter(r => r.word_bp !== vocabCard.word_bp); lsSet("pe_vocab_review", next); return next; });
+    } else {
       if (vocabReview.length >= VOCAB_REVIEW_CAP) {
         alert(`Review list is full (${VOCAB_REVIEW_CAP} words). Remove some entries before adding more.`);
         return;
@@ -3539,8 +3556,8 @@ function App() {
                   {(() => { const inReview = vocabReview.some(r => r.word_bp === vocabCard.word_bp); return (
                   <div style={{ padding: "8px 14px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 6 }}>
                     <button style={{ ...toolBtn(false), background: "var(--color-background-secondary)" }} onClick={drawVocabCard}>→ Next word</button>
-                    <button style={{ ...toolBtn(false), color: inReview ? "#92400e" : "var(--color-text-secondary)" }} onClick={addToReview}>
-                      {inReview ? "★ In review list" : "☆ Add to review"}
+                    <button style={{ ...toolBtn(false), color: inReview ? "#92400e" : "var(--color-text-secondary)" }} onClick={toggleReview}>
+                      {inReview ? "★ Remove from review" : "☆ Add to review"}
                     </button>
                   </div>
                   ); })()}
