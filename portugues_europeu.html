@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.0.9 -->
+  <!-- version: 2.1.0 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -62,7 +62,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.0.9",
+  version: "2.1.0",
   date: "2026-05-20",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -380,6 +380,162 @@ const PRONUNCIATION_GUIDE = [
     { symbol: "e — Closed E", desc: "Unique to EP: a central unrounded vowel /ɨ/. Closest English: the unstressed 'the'. Occurs in unstressed syllables — often barely audible.", example: "feliz", example_en: "the", syllables: "fe-liz", highlight: "e" },
     { symbol: "u — Closed U", desc: "Lips fully rounded and pursed. Like 'food' in English.", example: "peru", example_en: "food", syllables: "pe-ru", highlight: "u" },
     { symbol: "Key rule", desc: "STRESSED vowels tend to be open or medium. UNSTRESSED vowels tend to close — sometimes disappearing entirely. This is why EP sounds 'swallowed' compared to BP, which keeps vowels open even when unstressed.", example: "porta", syllables: "por-ta", highlight: "o" },
+  ]},
+];
+
+// IPA Reference — pt-PT phoneme inventory with fake English phonetic spellings.
+// Columns: ipa, fake, anchor, anchorFlag (true = approximation), anchorNote, example_pt, example_fake, note.
+// Fake phonetic convention: CAPS = stressed syllable; (n) suffix = nasalized through the nose.
+// example_pt with ' · ' separator = two words; TTS speaks both with a pause.
+const IPA_GUIDE = [
+  { section: "Oral Vowels", items: [
+    { ipa: "/a/",  fake: "AH",    anchor: "father",  anchorFlag: false, anchorNote: "",
+      example_pt: "casa",   example_fake: "KAH-zuh",
+      note: "" },
+    { ipa: "/ɐ/ (stressed — â)",  fake: "UH",    anchor: "nut",     anchorFlag: false, anchorNote: "",
+      example_pt: "câmara", example_fake: "KAM-uh-ruh",
+      note: "" },
+    { ipa: "/ɐ/ (unstressed reduction)", fake: "uh", anchor: "about", anchorFlag: false, anchorNote: "",
+      example_pt: "casa",   example_fake: "KAH-zuh",
+      note: "The final -zuh is this sound. Unstressed /a/ reduces to /ɐ/ in fast EP speech — the main reason EP sounds 'swallowed'." },
+    { ipa: "/e/",  fake: "AY",    anchor: "hay",     anchorFlag: true,  anchorNote: "No clean EN anchor — /e/ is a pure monophthong. EN 'hay' glides toward /ɪ/; hold just the start of that vowel still.",
+      example_pt: "mesa",   example_fake: "MAY-zuh",
+      note: "No glide — hold the vowel still. Introducing a glide here sounds Brazilian." },
+    { ipa: "/ɛ/",  fake: "EH",    anchor: "bed",     anchorFlag: false, anchorNote: "",
+      example_pt: "pé",     example_fake: "PEH",
+      note: "" },
+    { ipa: "/ɨ/",  fake: "ih",    anchor: "",        anchorFlag: true,  anchorNote: "No clean EN anchor — /ɨ/ is high central unrounded, unique to EP. Nearest: unstressed 'the' but higher and more central.",
+      example_pt: "feliz",  example_fake: "fih-LEESH",
+      note: "The unstressed fe- in feliz is exactly this sound — the example is self-illustrating. Often deleted entirely in fast speech." },
+    { ipa: "/i/",  fake: "EE",    anchor: "feet",    anchorFlag: false, anchorNote: "",
+      example_pt: "fio",    example_fake: "FEE-oo",
+      note: "" },
+    { ipa: "/o/",  fake: "OH",    anchor: "note",    anchorFlag: true,  anchorNote: "No clean EN anchor — /o/ is a pure monophthong. EN 'note' glides toward /ʊ/; hold just the start of that vowel still.",
+      example_pt: "avô",    example_fake: "uh-VOH",
+      note: "No glide — hold the vowel still. Introducing a glide here sounds Brazilian." },
+    { ipa: "/ɔ/",  fake: "AW",    anchor: "fall",    anchorFlag: true,  anchorNote: "Dialect-variable in EN — rhotic accents (much of US) lack this vowel. Non-rhotic EN speakers have a clean anchor.",
+      example_pt: "pó",     example_fake: "PAW",
+      note: "" },
+    { ipa: "/u/",  fake: "OO",    anchor: "food",    anchorFlag: false, anchorNote: "",
+      example_pt: "furo",   example_fake: "FOO-roo",
+      note: "" },
+  ]},
+  { section: "Nasal Vowels", nasal: true, items: [
+    { ipa: "/ɐ̃/",  fake: "UH(n)", anchor: "",        anchorFlag: true,  anchorNote: "No EN anchor. Vowel quality is UH (mid-central), not AH — the spelling ã suggests AH but the actual sound is more centralized.",
+      example_pt: "irmã",   example_fake: "eer-MAH(n)",
+      note: "The final syllable is UH(n), not AH(n). The ã spelling misleads — the vowel is mid-central, not open front." },
+    { ipa: "/ẽ/",  fake: "EH(n)", anchor: "",        anchorFlag: true,  anchorNote: "No EN anchor.",
+      example_pt: "bem",    example_fake: "BEH(n)",
+      note: "" },
+    { ipa: "/ĩ/",  fake: "EE(n)", anchor: "",        anchorFlag: true,  anchorNote: "No EN anchor.",
+      example_pt: "fim",    example_fake: "FEE(n)",
+      note: "" },
+    { ipa: "/õ/",  fake: "OH(n)", anchor: "",        anchorFlag: true,  anchorNote: "No EN anchor.",
+      example_pt: "bom",    example_fake: "BOH(n)",
+      note: "" },
+    { ipa: "/ũ/",  fake: "OO(n)", anchor: "",        anchorFlag: true,  anchorNote: "No EN anchor.",
+      example_pt: "um",     example_fake: "OO(n)",
+      note: "" },
+  ]},
+  { section: "Oral Diphthongs", items: [
+    { ipa: "/aj/",  fake: "AH-ee", anchor: "eye",    anchorFlag: false, anchorNote: "",
+      example_pt: "pai",    example_fake: "PAH-ee",
+      note: "" },
+    { ipa: "/ɐj/",  fake: "uh-ee", anchor: "",       anchorFlag: true,  anchorNote: "No clean EN anchor — 'uh' gliding to 'ee'. Merges with /ej/ in casual speech.",
+      example_pt: "lei",    example_fake: "luh-ee",
+      note: "Distinct from /ej/ in careful speech; merges with it in casual register." },
+    { ipa: "/ej/",  fake: "AY-ee", anchor: "day",    anchorFlag: true,  anchorNote: "Approximation — EN 'day' glides toward /ɪ/, then this diphthong continues further to a full EE.",
+      example_pt: "lei",    example_fake: "LAY-ee",
+      note: "" },
+    { ipa: "/ɛj/",  fake: "EH-ee", anchor: "",       anchorFlag: true,  anchorNote: "No EN anchor — 'bed' vowel gliding to EE.",
+      example_pt: "hotéis", example_fake: "oh-TEH-eesh",
+      note: "" },
+    { ipa: "/oj/",  fake: "OH-ee", anchor: "",       anchorFlag: true,  anchorNote: "No clean EN anchor — pure OH gliding to EE. No glide on the OH component.",
+      example_pt: "boi",    example_fake: "BOH-ee",
+      note: "" },
+    { ipa: "/ɔj/",  fake: "AW-ee", anchor: "boy",    anchorFlag: false, anchorNote: "",
+      example_pt: "anzol",  example_fake: "ahn-ZAW-ee",
+      note: "" },
+    { ipa: "/uj/",  fake: "OO-ee", anchor: "",       anchorFlag: true,  anchorNote: "No EN anchor — 'food' vowel gliding to EE.",
+      example_pt: "azuis",  example_fake: "uh-ZOO-eesh",
+      note: "" },
+    { ipa: "/aw/",  fake: "AH-oo", anchor: "cow",    anchorFlag: false, anchorNote: "",
+      example_pt: "mau",    example_fake: "MAH-oo",
+      note: "" },
+    { ipa: "/ɐw/",  fake: "uh-oo", anchor: "",       anchorFlag: true,  anchorNote: "No clean EN anchor — mid-central vowel gliding to OO.",
+      example_pt: "mau",    example_fake: "MAH-oo",
+      note: "Reduced variant of /aw/; appears in unstressed syllables." },
+    { ipa: "/ew/ · /ɛw/", fake: "EH-oo", anchor: "", anchorFlag: true, anchorNote: "No EN anchor for either. Phonemically distinct (seu /ew/ vs céu /ɛw/) but merge perceptually in casual speech — fake phonetics are identical.",
+      example_pt: "seu · céu", example_fake: "SEH-oo · SEH-oo",
+      note: "Distinct in careful speech; treat as one sound for practical purposes unless aiming for formal register." },
+    { ipa: "/iw/",  fake: "EE-oo", anchor: "",       anchorFlag: true,  anchorNote: "No EN anchor — EE gliding to OO.",
+      example_pt: "viu",    example_fake: "VEE-oo",
+      note: "" },
+    { ipa: "/ow/",  fake: "OH-oo", anchor: "",       anchorFlag: true,  anchorNote: "No clean EN anchor — pure OH gliding to OO. EN 'go' has a glide on the OH component that pt-PT lacks.",
+      example_pt: "comprou", example_fake: "kohm-PROH-oo",
+      note: "" },
+  ]},
+  { section: "Nasal Diphthongs", nasal: true, items: [
+    { ipa: "/ɐ̃w̃/", fake: "UH(n)-oo(n)", anchor: "", anchorFlag: true, anchorNote: "No EN anchor. Both components nasalized. Vowel quality is UH(n) not AH(n) — same caveat as /ɐ̃/.",
+      example_pt: "pão",    example_fake: "PAH(n)-oo(n)",
+      note: "The vowel is mid-central UH(n), though the spelling suggests AH(n)." },
+    { ipa: "/ɐ̃j̃/", fake: "UH(n)-ee(n)", anchor: "", anchorFlag: true, anchorNote: "No EN anchor. Both components nasalized.",
+      example_pt: "mãe",    example_fake: "MAH(n)-ee(n)",
+      note: "Same UH(n) caveat — the vowel is more centralized than the ã spelling implies." },
+    { ipa: "/õj̃/", fake: "OH(n)-ee(n)", anchor: "", anchorFlag: true, anchorNote: "No EN anchor.",
+      example_pt: "limões", example_fake: "lee-MOH(n)-ee(n)sh",
+      note: "" },
+    { ipa: "/ũj̃/", fake: "OO(n)-ee(n)", anchor: "", anchorFlag: true, anchorNote: "No EN anchor. Example is approximate — muito often surfaces as oral /uj/ in casual EP.",
+      example_pt: "muito",  example_fake: "MOO(n)-ee(n)-too",
+      note: "Approximate example: muito can surface as oral /uj/ in casual speech. The fully nasal form is rare." },
+  ]},
+  { section: "Consonants", items: [
+    { ipa: "/p/",  fake: "P",   anchor: "pen",     anchorFlag: false, anchorNote: "",
+      example_pt: "pai",    example_fake: "PAH-ee",   note: "" },
+    { ipa: "/b/",  fake: "B",   anchor: "bed",     anchorFlag: false, anchorNote: "",
+      example_pt: "bom",    example_fake: "BOH(n)",   note: "" },
+    { ipa: "/t/",  fake: "T",   anchor: "top",     anchorFlag: false, anchorNote: "",
+      example_pt: "tarde",  example_fake: "TAR-duh",
+      note: "EP /t/ is dental — tongue touches the back of the upper teeth, not the alveolar ridge as in EN." },
+    { ipa: "/d/",  fake: "D",   anchor: "dog",     anchorFlag: false, anchorNote: "",
+      example_pt: "dar",    example_fake: "DAR",
+      note: "EP /d/ is dental — same caveat as /t/." },
+    { ipa: "/k/",  fake: "K",   anchor: "cat",     anchorFlag: false, anchorNote: "",
+      example_pt: "casa",   example_fake: "KAH-zuh",  note: "" },
+    { ipa: "/ɡ/",  fake: "G",   anchor: "go",      anchorFlag: false, anchorNote: "",
+      example_pt: "gato",   example_fake: "GAH-too",  note: "" },
+    { ipa: "/f/",  fake: "F",   anchor: "fee",     anchorFlag: false, anchorNote: "",
+      example_pt: "falar",  example_fake: "fuh-LAR",  note: "" },
+    { ipa: "/v/",  fake: "V",   anchor: "van",     anchorFlag: false, anchorNote: "",
+      example_pt: "vir",    example_fake: "VEER",     note: "" },
+    { ipa: "/s/",  fake: "S",   anchor: "see",     anchorFlag: false, anchorNote: "",
+      example_pt: "saber",  example_fake: "suh-BEHR", note: "" },
+    { ipa: "/z/",  fake: "Z",   anchor: "zoo",     anchorFlag: false, anchorNote: "",
+      example_pt: "mesa",   example_fake: "MAY-zuh",  note: "" },
+    { ipa: "/ʃ/",  fake: "SH",  anchor: "shoe",    anchorFlag: false, anchorNote: "",
+      example_pt: "chave",  example_fake: "SHAHv",    note: "Established notation throughout this app." },
+    { ipa: "/ʒ/",  fake: "ZH",  anchor: "measure", anchorFlag: false, anchorNote: "",
+      example_pt: "janela", example_fake: "zhuh-NEH-luh", note: "" },
+    { ipa: "/m/",  fake: "M",   anchor: "man",     anchorFlag: false, anchorNote: "",
+      example_pt: "mala",   example_fake: "MAH-luh",  note: "" },
+    { ipa: "/n/",  fake: "N",   anchor: "no",      anchorFlag: false, anchorNote: "",
+      example_pt: "não",    example_fake: "PAH(n)-oo(n)", note: "" },
+    { ipa: "/ɲ/",  fake: "NY",  anchor: "canyon",  anchorFlag: true,  anchorNote: "Approximation — 'canyon' uses a consonant cluster NY; /ɲ/ is a single palatal nasal.",
+      example_pt: "vinho",  example_fake: "VEE-nyoo", note: "" },
+    { ipa: "/l/",  fake: "L",   anchor: "lamp",    anchorFlag: false, anchorNote: "",
+      example_pt: "lago",   example_fake: "LAH-goo",  note: "" },
+    { ipa: "/ʎ/",  fake: "LY",  anchor: "million", anchorFlag: true,  anchorNote: "Approximation — 'million' uses a cluster LY; /ʎ/ is a single palatal lateral.",
+      example_pt: "filho",  example_fake: "FEE-lyoo", note: "" },
+    { ipa: "/ɾ/",  fake: "r",   anchor: "butter",  anchorFlag: true,  anchorNote: "American English only — the flap in 'butter'/'ladder' is this sound. BrEng speakers have no equivalent anchor.",
+      example_pt: "caro",   example_fake: "KAH-roo",
+      note: "Single tap of the tongue — not the EN trill or the EP uvular /ʁ/. AmEng speakers: this is the T/D sound in 'butter'." },
+    { ipa: "/ʁ/",  fake: "RR",  anchor: "",        anchorFlag: true,  anchorNote: "No EN anchor. Uvular fricative — does not exist in EN. Closest non-EN references: French 'r', German 'ch' in 'Bach'.",
+      example_pt: "carro",  example_fake: "KAH-RRoo",
+      note: "Produced at the back of the throat — like clearing it gently but voiced. The hardest EP consonant for EN speakers. RR here is a label, not a phonetic guide." },
+    { ipa: "/w/",  fake: "W",   anchor: "wet",     anchorFlag: false, anchorNote: "",
+      example_pt: "qual",   example_fake: "KWAHL",    note: "" },
+    { ipa: "/j/",  fake: "Y",   anchor: "yes",     anchorFlag: false, anchorNote: "",
+      example_pt: "maior",  example_fake: "my-OR",    note: "" },
   ]},
 ];
 
@@ -2253,6 +2409,7 @@ function App() {
 
   const [mediaOpenSection, setMediaOpenSection] = useState(null);
   const mediaSectionRefs = useRef({});
+  const [soundsTab, setSoundsTab] = useState("letters"); // "letters" | "ipa"
 
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
@@ -3146,77 +3303,163 @@ function App() {
             ))}
           </div>
           {listTab === "sounds" && (
-            <div style={listPanelStyle}>
-              {PRONUNCIATION_GUIDE.map((sec, si) => (
-                <div key={si} style={secWrap}>
-                  <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-                  <table style={tbl}><tbody>
-                    {sec.items.map((item, ii) => {
-                      const renderSyllables = () => {
-                        if (!item.syllables || !item.highlight) return null;
-                        const syllables = item.syllables;
-                        const highlight = item.highlight;
-                        const idx = syllables.toLowerCase().indexOf(highlight.toLowerCase());
-                        if (idx === -1) return <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)" }}>{syllables}</span>;
-                        const before = syllables.slice(0, idx);
-                        const match = syllables.slice(idx, idx + highlight.length);
-                        const after = syllables.slice(idx + highlight.length);
-                        return (
-                          <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)", letterSpacing: "0.02em" }}>
-                            {before}
-                            <span style={{ textDecoration: "underline", textDecorationColor: "#7c3aed", textDecorationThickness: 2, fontWeight: 700, color: "#7c3aed" }}>{match}</span>
-                            {after}
-                          </span>
-                        );
-                      };
-                      // Section header rows (no example)
-                      if (!item.example && !item.example_en) {
-                        return (
-                          <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
-                            <td style={{ width: 32 }}></td>
-                            <td colSpan={3} style={{ ...tdL, fontWeight: 700, color: item.symbol.startsWith("—") ? "#581c87" : "var(--color-text-primary)", fontStyle: item.symbol.startsWith("—") ? "normal" : "italic", paddingTop: 6, paddingBottom: 4 }}>{item.symbol}</td>
-                          </tr>
-                        );
-                      }
-                      // Rows with both PT and EN examples (Open/Medium/Closed section)
-                      if (item.example_en) {
-                        return (
-                          <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
-                            <td style={{ width: 32, paddingRight: 4, verticalAlign: "middle" }}>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                <button onClick={() => speakListPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
-                                  style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#eff6ff", color: "#2563eb", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
-                                <button onClick={() => speakListPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
-                                  style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#f0fdf4", color: "#166534", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
-                              </div>
-                            </td>
-                            <td style={tdL}>{item.symbol}</td>
-                            <td style={{ ...tdR, width: "18%", whiteSpace: "nowrap" }}>{renderSyllables()}</td>
-                            <td style={tdR}>{item.desc}</td>
-                          </tr>
-                        );
-                      }
-                      // Standard rows (PT only)
-                      return (
-                        <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
-                          <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                            {item.example && (
-                              <button onClick={() => speakListPT(item.example, "pt-PT")}
-                                aria-label={`Hear: ${item.example}`} title={`Hear: ${item.example}`}
-                                style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                            )}
-                          </td>
-                          <td style={tdL}>{item.symbol}</td>
-                          <td style={{ verticalAlign: "top", padding: "4px 12px 4px 0", width: "18%", whiteSpace: "nowrap" }}>
-                            {renderSyllables()}
-                          </td>
-                          <td style={tdR}>{item.desc}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody></table>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              {/* Sounds sub-tab bar: Letters / IPA */}
+              <div style={{ padding: "4px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 6, background: "var(--color-background-secondary)", flexShrink: 0 }}>
+                {[["letters", "Letters"], ["ipa", "IPA"]].map(([id, label]) => (
+                  <button key={id}
+                    style={{ fontSize: 13, fontWeight: 700, padding: "3px 14px", borderRadius: 999, border: "none", background: soundsTab === id ? "#7c3aed" : "transparent", color: soundsTab === id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
+                    onClick={() => setSoundsTab(id)}>{label}</button>
+                ))}
+              </div>
+
+              {/* Letters sub-tab — existing PRONUNCIATION_GUIDE */}
+              {soundsTab === "letters" && (
+                <div style={listPanelStyle}>
+                  {PRONUNCIATION_GUIDE.map((sec, si) => (
+                    <div key={si} style={secWrap}>
+                      <p style={{ ...secTitle, color: "#581c87", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
+                      <table style={tbl}><tbody>
+                        {sec.items.map((item, ii) => {
+                          const renderSyllables = () => {
+                            if (!item.syllables || !item.highlight) return null;
+                            const syllables = item.syllables;
+                            const highlight = item.highlight;
+                            const idx = syllables.toLowerCase().indexOf(highlight.toLowerCase());
+                            if (idx === -1) return <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)" }}>{syllables}</span>;
+                            const before = syllables.slice(0, idx);
+                            const match = syllables.slice(idx, idx + highlight.length);
+                            const after = syllables.slice(idx + highlight.length);
+                            return (
+                              <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)", letterSpacing: "0.02em" }}>
+                                {before}
+                                <span style={{ textDecoration: "underline", textDecorationColor: "#7c3aed", textDecorationThickness: 2, fontWeight: 700, color: "#7c3aed" }}>{match}</span>
+                                {after}
+                              </span>
+                            );
+                          };
+                          if (!item.example && !item.example_en) {
+                            return (
+                              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                                <td style={{ width: 32 }}></td>
+                                <td colSpan={3} style={{ ...tdL, fontWeight: 700, color: item.symbol.startsWith("—") ? "#581c87" : "var(--color-text-primary)", fontStyle: item.symbol.startsWith("—") ? "normal" : "italic", paddingTop: 6, paddingBottom: 4 }}>{item.symbol}</td>
+                              </tr>
+                            );
+                          }
+                          if (item.example_en) {
+                            return (
+                              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                                <td style={{ width: 32, paddingRight: 4, verticalAlign: "middle" }}>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                    <button onClick={() => speakListPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
+                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#eff6ff", color: "#2563eb", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
+                                    <button onClick={() => speakListPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
+                                      style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #d1d5db", background: "#f0fdf4", color: "#166534", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
+                                  </div>
+                                </td>
+                                <td style={tdL}>{item.symbol}</td>
+                                <td style={{ ...tdR, width: "18%", whiteSpace: "nowrap" }}>{renderSyllables()}</td>
+                                <td style={tdR}>{item.desc}</td>
+                              </tr>
+                            );
+                          }
+                          return (
+                            <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                              <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                                {item.example && (
+                                  <button onClick={() => speakListPT(item.example, "pt-PT")}
+                                    aria-label={`Hear: ${item.example}`} title={`Hear: ${item.example}`}
+                                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "#f9fafb", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                                )}
+                              </td>
+                              <td style={tdL}>{item.symbol}</td>
+                              <td style={{ verticalAlign: "top", padding: "4px 12px 4px 0", width: "18%", whiteSpace: "nowrap" }}>
+                                {renderSyllables()}
+                              </td>
+                              <td style={tdR}>{item.desc}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody></table>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {/* IPA sub-tab — phoneme inventory reference */}
+              {soundsTab === "ipa" && (
+                <div style={listPanelStyle}>
+                  {/* Legend */}
+                  <div style={{ marginBottom: 14, padding: "8px 12px", background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: "var(--border-radius-md)", fontSize: Math.max(11, fontSize - 2), color: "#4c1d95", lineHeight: 1.6 }}>
+                    <strong>Conventions:</strong> CAPS = stressed syllable · (n) = nasalized through the nose · ⚠ = approximation, no true English anchor · <span style={{ fontFamily: "var(--font-mono)" }}>IPA</span> in monospace
+                  </div>
+                  {IPA_GUIDE.map((sec, si) => (
+                    <div key={si} style={secWrap}>
+                      <p style={{ ...secTitle, color: "#7c3aed", fontWeight: 700, textDecoration: "underline" }}>
+                        {sec.section}
+                        {sec.nasal && <span style={{ marginLeft: 8, fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "#6d28d9", textTransform: "none", textDecoration: "none" }}>— all (n) = nasalized</span>}
+                      </p>
+                      {/* Column headers */}
+                      <table style={{ ...tbl, marginBottom: 4 }}><thead>
+                        <tr style={{ borderBottom: "2px solid #ddd6fe" }}>
+                          <th style={{ width: 32 }}></th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "18%" }}>IPA</th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "14%" }}>Fake phonetic</th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "20%" }}>EN anchor</th>
+                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 0 4px 0" }}>PT example · fake phonetic</th>
+                        </tr>
+                      </thead><tbody>
+                        {sec.items.map((item, ii) => {
+                          // TTS: speak both words if separated by ' · ', with a short pause word between
+                          const speakText = item.example_pt.includes(" · ")
+                            ? item.example_pt.replace(" · ", " ... ")
+                            : item.example_pt;
+                          return (
+                            <React.Fragment key={ii}>
+                              <tr style={{ borderBottom: item.note ? "none" : "1px solid #ede9fe", verticalAlign: "top" }}>
+                                {/* TTS button */}
+                                <td style={{ width: 32, paddingRight: 4, paddingTop: 6, verticalAlign: "middle" }}>
+                                  <button onClick={() => speakListPT(speakText, "pt-PT")}
+                                    aria-label={`Hear: ${item.example_pt}`}
+                                    style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid #ddd6fe", background: "#f5f3ff", color: "#7c3aed", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                                </td>
+                                {/* IPA symbol */}
+                                <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "#4c1d95", fontWeight: 700, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.ipa}</td>
+                                {/* Fake phonetic */}
+                                <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "var(--color-text-primary)", fontWeight: 600, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.fake}</td>
+                                {/* EN anchor */}
+                                <td style={{ fontSize, padding: "5px 8px 5px 0", verticalAlign: "top" }}>
+                                  {item.anchorFlag
+                                    ? <span style={{ color: "#92400e" }}>⚠{item.anchor ? " " + item.anchor : ""}</span>
+                                    : <span style={{ color: "var(--color-text-secondary)", fontStyle: "italic" }}>{item.anchor}</span>
+                                  }
+                                </td>
+                                {/* PT example + fake phonetic */}
+                                <td style={{ fontSize, padding: "5px 0 5px 0", verticalAlign: "top" }}>
+                                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", fontWeight: 700 }}>{item.example_pt}</span>
+                                  <span style={{ color: "var(--color-text-tertiary)", margin: "0 4px" }}>→</span>
+                                  <span style={{ fontFamily: "var(--font-mono)", color: "#166534" }}>{item.example_fake}</span>
+                                </td>
+                              </tr>
+                              {/* Note row — anchor note and/or production note, italic, below main row */}
+                              {(item.anchorFlag && item.anchorNote) || item.note ? (
+                                <tr style={{ borderBottom: "1px solid #ede9fe" }}>
+                                  <td></td>
+                                  <td colSpan={4} style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", paddingBottom: 5, paddingRight: 8, lineHeight: 1.5 }}>
+                                    {item.anchorFlag && item.anchorNote && <span>{item.anchorNote}</span>}
+                                    {item.anchorFlag && item.anchorNote && item.note && <span> · </span>}
+                                    {item.note && <span style={{ color: "#92400e" }}>{item.note}</span>}
+                                  </td>
+                                </tr>
+                              ) : null}
+                            </React.Fragment>
+                          );
+                        })}
+                      </tbody></table>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
           {listTab === "pairs" && (
