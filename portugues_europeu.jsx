@@ -20,8 +20,8 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.3.1",
-  date: "2026-05-20",
+  version: "2.3.8",
+  date: "2026-05-21",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
   file: "portugues_europeu.html",
@@ -1720,6 +1720,7 @@ const toolBtn = (active) => ({
 const panelStyle = { padding: "12px 16px", borderBottom: "0.5px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", flexShrink: 0, overflowY: "auto", maxHeight: 300 };
 const listPanelStyle = { padding: "12px 16px", background: "var(--color-background-secondary)", flex: 1, overflowY: "auto" };
 const secWrap = { marginBottom: 14 };
+const mediaSubLabelStyle = { fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "8px 0 4px" };
 
 // Pure function — no state or prop dependencies; stable reference across renders.
 // Defined at module scope so React.memo on MessageBubble is not defeated by a new reference each render.
@@ -2051,10 +2052,7 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
   const linkStyle = useMemo(() => ({
     color: "var(--color-accent-blue-chat)", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block",
   }), [fontSize]);
-  const subLabelStyle = useMemo(() => ({
-    fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "8px 0 4px",
-  }), []);
-
+  
   return (
     <div style={listPanelStyle}>
       {MEDIA_SECTIONS_SORTED.map(sec => {
@@ -2078,7 +2076,7 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
               <div style={{ padding: "8px 12px 12px" }}>
                 {sortedSubgroups ? sortedSubgroups.map((sg, sgi) => (
                   <div key={sgi}>
-                    <p style={subLabelStyle}>{sg.label}</p>
+                    <p style={mediaSubLabelStyle}>{sg.label}</p>
                     {sg.links.map((lk, li) => (
                       <a key={li} href={lk.url} target="_blank" rel="noopener noreferrer" style={linkStyle}
                         onMouseEnter={e => e.target.style.textDecoration="underline"}
@@ -2942,8 +2940,8 @@ function App() {
       }
     };
     load();
-    window.speechSynthesis.onvoiceschanged = load;
-    return () => { window.speechSynthesis.onvoiceschanged = null; };
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => { window.speechSynthesis.removeEventListener("voiceschanged", load); };
   }, []);
 
   // Keep ref in sync so speak() always sees the current voice without stale closure issues
