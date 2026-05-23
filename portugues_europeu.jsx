@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.4.16",
+  version: "2.4.17",
   date: "2026-05-23",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -113,7 +113,7 @@ const MINIMAL_PAIRS = [
 // TENSE_LABELS and PRONOUNS are used exclusively in the static verb reference panel (Lists → Verb List)
 // to display the hardcoded IRREGULAR_VERBS tense tables. They are NOT used by the Conjugator panel,
 // which renders tense rows directly from the API response.
-const TENSE_LABELS = ["Presente","Pret. Perfeito","Pret. Imperfeito","Futuro","Particípio"];
+const TENSE_LABELS = ["Presente","Pret. Perfeito","Pret. Imperfeito","Futuro","Condicional","Particípio"];
 const PRONOUNS = ["eu","tu","ele/ela","nós","vocês","eles/elas"];
 
 const IRREGULAR_VERBS = [
@@ -122,67 +122,113 @@ const IRREGULAR_VERBS = [
     ["estive","estiveste","esteve","estivemos","estiveram","estiveram"],
     ["estava","estavas","estava","estávamos","estavam","estavam"],
     ["estarei","estarás","estará","estaremos","estarão","estarão"],
+    ["estaria","estarias","estaria","estaríamos","estariam","estariam"],
     ["estado"]]},
   { inf:"fazer", en:"to do/make", tenses:[
     ["faço","fazes","faz","fazemos","fazem","fazem"],
     ["fiz","fizeste","fez","fizemos","fizeram","fizeram"],
     ["fazia","fazias","fazia","fazíamos","faziam","faziam"],
     ["farei","farás","fará","faremos","farão","farão"],
+    ["faria","farias","faria","faríamos","fariam","fariam"],
     ["feito"]]},
   { inf:"haver", en:"to have/exist (modern EP: only 'há' is common — other forms are archaic)", tenses:[
     ["hei","hás","há","havemos","hão","hão"],
     ["houve","houveste","houve","houvemos","houveram","houveram"],
     ["havia","havias","havia","havíamos","haviam","haviam"],
     ["haverei","haverás","haverá","haveremos","haverão","haverão"],
+    ["haveria","haverias","haveria","haveríamos","haveriam","haveriam"],
     ["havido"]]},
   { inf:"ir", en:"to go", tenses:[
     ["vou","vais","vai","vamos","vão","vão"],
     ["fui","foste","foi","fomos","foram","foram"],
     ["ia","ias","ia","íamos","iam","iam"],
     ["irei","irás","irá","iremos","irão","irão"],
+    ["iria","irias","iria","iríamos","iriam","iriam"],
     ["ido"]]},
   { inf:"poder", en:"to be able to", tenses:[
     ["posso","podes","pode","podemos","podem","podem"],
     ["pude","pudeste","pôde","pudemos","puderam","puderam"],
     ["podia","podias","podia","podíamos","podiam","podiam"],
     ["poderei","poderás","poderá","poderemos","poderão","poderão"],
+    ["poderia","poderias","poderia","poderíamos","poderiam","poderiam"],
     ["podido"]]},
   { inf:"querer", en:"to want", tenses:[
     ["quero","queres","quer","queremos","querem","querem"],
     ["quis","quiseste","quis","quisemos","quiseram","quiseram"],
     ["queria","querias","queria","queríamos","queriam","queriam"],
     ["quererei","quererás","quererá","quereremos","quererão","quererão"],
+    ["quereria","quererias","quereria","quereríamos","quereriam","quereriam"],
     ["querido"]]},
   { inf:"saber", en:"to know", tenses:[
     ["sei","sabes","sabe","sabemos","sabem","sabem"],
     ["soube","soubeste","soube","soubemos","souberam","souberam"],
     ["sabia","sabias","sabia","sabíamos","sabiam","sabiam"],
     ["saberei","saberás","saberá","saberemos","saberão","saberão"],
+    ["saberia","saberias","saberia","saberíamos","saberiam","saberiam"],
     ["sabido"]]},
   { inf:"ser", en:"to be (perm)", tenses:[
     ["sou","és","é","somos","são","são"],
     ["fui","foste","foi","fomos","foram","foram"],
     ["era","eras","era","éramos","eram","eram"],
     ["serei","serás","será","seremos","serão","serão"],
+    ["seria","serias","seria","seríamos","seriam","seriam"],
     ["sido"]]},
   { inf:"ter", en:"to have", tenses:[
     ["tenho","tens","tem","temos","têm","têm"],
     ["tive","tiveste","teve","tivemos","tiveram","tiveram"],
     ["tinha","tinhas","tinha","tínhamos","tinham","tinham"],
     ["terei","terás","terá","teremos","terão","terão"],
+    ["teria","terias","teria","teríamos","teriam","teriam"],
     ["tido"]]},
   { inf:"vir", en:"to come", tenses:[
     ["venho","vens","vem","vimos","vêm","vêm"],
     ["vim","vieste","veio","viemos","vieram","vieram"],
     ["vinha","vinhas","vinha","vínhamos","vinham","vinham"],
     ["virei","virás","virá","viremos","virão","virão"],
+    ["viria","virias","viria","viríamos","viriam","viriam"],
     ["vindo"]]},
   { inf:"ver", en:"to see", tenses:[
     ["vejo","vês","vê","vemos","veem","veem"],
     ["vi","viste","viu","vimos","viram","viram"],
     ["via","vias","via","víamos","viam","viam"],
     ["verei","verás","verá","veremos","verão","verão"],
+    ["veria","verias","veria","veríamos","veriam","veriam"],
     ["visto"]]},
+  { inf:"pôr", en:"to put", tenses:[
+    ["ponho","pões","põe","pomos","põem","põem"],
+    ["pus","puseste","pôs","pusemos","puseram","puseram"],
+    ["punha","punhas","punha","púnhamos","punham","punham"],
+    ["porei","porás","porá","poremos","porão","porão"],
+    ["poria","porias","poria","poríamos","poriam","poriam"],
+    ["posto"]]},
+  { inf:"dar", en:"to give", tenses:[
+    ["dou","dás","dá","damos","dão","dão"],
+    ["dei","deste","deu","demos","deram","deram"],
+    ["dava","davas","dava","dávamos","davam","davam"],
+    ["darei","darás","dará","daremos","darão","darão"],
+    ["daria","darias","daria","daríamos","dariam","dariam"],
+    ["dado"]]},
+  { inf:"dizer", en:"to say", tenses:[
+    ["digo","dizes","diz","dizemos","dizem","dizem"],
+    ["disse","disseste","disse","dissemos","disseram","disseram"],
+    ["dizia","dizias","dizia","dizíamos","diziam","diziam"],
+    ["direi","dirás","dirá","diremos","dirão","dirão"],
+    ["diria","dirias","diria","diríamos","diriam","diriam"],
+    ["dito"]]},
+  { inf:"trazer", en:"to bring", tenses:[
+    ["trago","trazes","traz","trazemos","trazem","trazem"],
+    ["trouxe","trouxeste","trouxe","trouxemos","trouxeram","trouxeram"],
+    ["trazia","trazias","trazia","trazíamos","traziam","traziam"],
+    ["trarei","trarás","trará","traremos","trarão","trarão"],
+    ["traria","trarias","traria","traríamos","trariam","trariam"],
+    ["trazido"]]},
+  { inf:"ler", en:"to read", tenses:[
+    ["leio","lês","lê","lemos","leem","leem"],
+    ["li","leste","leu","lemos","leram","leram"],
+    ["lia","lias","lia","líamos","liam","liam"],
+    ["lerei","lerás","lerá","leremos","lerão","lerão"],
+    ["leria","lerias","leria","leríamos","leriam","leriam"],
+    ["lido"]]},
 ];
 
 const REGULAR_AR_VERBS = [
@@ -226,7 +272,7 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"medir", en:"to measure" }, { inf:"mentir", en:"to lie" }, { inf:"merecer", en:"to deserve" },
   { inf:"morrer", en:"to die" }, { inf:"nascer", en:"to be born" }, { inf:"nutrir", en:"to nourish" },
   { inf:"obedecer", en:"to obey" }, { inf:"oferecer", en:"to offer" }, { inf:"omitir", en:"to omit" },
-  { inf:"parecer", en:"to seem" }, { inf:"perceber", en:"to understand/perceive" }, { inf:"perder", en:"to lose" },
+  { inf:"parecer", en:"to seem" }, { inf:"perceber", en:"to understand/perceive" },
   { inf:"permitir", en:"to permit" }, { inf:"pertencer", en:"to belong" }, { inf:"preferir", en:"to prefer" },
   { inf:"pretender", en:"to intend" }, { inf:"proibir", en:"to forbid" }, { inf:"prometer", en:"to promise" },
   { inf:"proteger", en:"to protect" }, { inf:"punir", en:"to punish" }, { inf:"reagir", en:"to react" },
@@ -241,8 +287,13 @@ const REGULAR_ER_IR_VERBS = [
 const SEMI_IRREGULAR_ER_IR_VERBS = [
   { inf:"caber", en:"to fit" },
   { inf:"manter", en:"to maintain" },
-  { inf:"doer", en:"to hurt" },
+  { inf:"doer", en:"to hurt", defective: true },
   { inf:"valer", en:"to be worth" },
+  { inf:"pedir", en:"to ask for/request" },
+  { inf:"perder", en:"to lose" },
+  { inf:"subir", en:"to go up/climb" },
+  { inf:"rir", en:"to laugh" },
+  { inf:"sorrir", en:"to smile" },
 ];
 
 
