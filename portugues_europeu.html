@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.4.17 -->
+  <!-- version: 2.5.0 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
@@ -64,7 +64,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.4.17",
+  version: "2.5.0",
   date: "2026-05-23",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -81,6 +81,7 @@ const LIST_TABS = [
   { id: "phrases", label: "Phrases" },
   { id: "sounds", label: "Pronunciation" },
   { id: "slang", label: "Slang" },
+  { id: "verbquiz", label: "Verb Quiz" },
   { id: "verbref", label: "Verb List" },
 ];
 
@@ -2031,6 +2032,516 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
 });
 
 // Declarative hover wrapper — replaces imperative onMouseEnter/Leave style mutations in dropdowns.
+// ── VERB TENSE QUIZ ─────────────────────────────────────────────────────────
+
+// Tense names must match the keys returned by the API in conjugation.tenses[].name
+// These are the canonical tense names from buildConjugationPrompt.
+const QUIZ_TENSES_BY_LEVEL = {
+  "A1": ["Presente do Indicativo"],
+  "A2": ["Presente do Indicativo", "Pretérito Perfeito Simples", "Pretérito Imperfeito do Indicativo"],
+  "B1": ["Presente do Indicativo", "Pretérito Perfeito Simples", "Pretérito Imperfeito do Indicativo", "Futuro do Indicativo", "Condicional"],
+  "B2+": ["Presente do Indicativo", "Pretérito Perfeito Simples", "Pretérito Imperfeito do Indicativo", "Futuro do Indicativo", "Condicional", "Presente do Conjuntivo", "Pretérito Imperfeito do Conjuntivo"],
+};
+
+// Pronouns for the quiz — in order matching the API row indices [0..5]
+const QUIZ_PRONOUNS = ["eu", "tu", "ele/ela", "nós", "vocês", "eles/elas"];
+
+// Strip diacritics for lenient retry matching
+function stripDiacritics(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Shuffle an array in place (Fisher-Yates)
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Extract the correct form for a given pronoun (by index 0-5) from a conjugation tense object.
+// tense.rows is [[pronoun, form], ...]. Match by row index (the API always returns 6 rows in order).
+function getFormFromTense(tense, pronounIndex) {
+  if (!tense || !tense.rows || !tense.rows[pronounIndex]) return null;
+  return tense.rows[pronounIndex][1] || null;
+}
+
+const VerbQuizTab = React.memo(function VerbQuizTab({
+  level, conjCache, apiKey, verbInput, setVerbInput,
+  speakListPT, fontSize,
+  externalLaunch, // {verb, en} | null — set by "Quiz this verb" button in Conjugator
+  clearExternalLaunch,
+}) {
+  // ── Quiz setup state ────────────────────────────────────────────────────
+  const [quizVerb, setQuizVerb] = useState("");
+  const [quizVerbEn, setQuizVerbEn] = useState("");
+  const [quizDropSearch, setQuizDropSearch] = useState("");
+  const [quizDropOpen, setQuizDropOpen] = useState(false);
+  const quizDropRef = useRef(null);
+
+  // ── Quiz session state ───────────────────────────────────────────────────
+  const [session, setSession] = useState(null);     // null = not started; array of items when active
+  const [itemIdx, setItemIdx] = useState(0);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [attempt, setAttempt] = useState(0);        // 0 = first attempt, 1 = retry
+  const [feedback, setFeedback] = useState(null);   // null | { status: "correct"|"helpknown"|"missed", correct: string }
+  const [results, setResults] = useState([]);        // [{item, status: "correct"|"helpknown"|"missed"}]
+  const [sessionDone, setSessionDone] = useState(false);
+
+  // ── Loading/error for on-demand conjugation fetch ────────────────────────
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [fetchError, setFetchError] = useState("");
+
+  const inputRef = useRef(null);
+
+  // Honour externalLaunch (from "Quiz this verb" button in Conjugator)
+  useEffect(() => {
+    if (externalLaunch) {
+      setQuizVerb(externalLaunch.verb);
+      setQuizVerbEn(externalLaunch.en || ALL_VERBS_MAP.get(externalLaunch.verb) || "");
+      setSession(null);
+      setSessionDone(false);
+      setResults([]);
+      clearExternalLaunch();
+    }
+  }, [externalLaunch]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (quizDropRef.current && !quizDropRef.current.contains(e.target)) setQuizDropOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Focus input when a new item starts
+  useEffect(() => {
+    if (session && !sessionDone && feedback === null) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [itemIdx, session, sessionDone, feedback]);
+
+  const activeTenses = QUIZ_TENSES_BY_LEVEL[level] || QUIZ_TENSES_BY_LEVEL["A2"];
+
+  // Build session items from conjugation data
+  function buildItems(conjData) {
+    const isDefective = SEMI_IRREGULAR_ER_IR_VERBS.find(v => v.inf === conjData.infinitive)?.defective === true
+      || conjData.defective === true;
+    const items = [];
+    for (const tenseName of activeTenses) {
+      const tenseObj = (conjData.tenses || []).find(t => t.name === tenseName);
+      if (!tenseObj) continue;
+      QUIZ_PRONOUNS.forEach((pronoun, pi) => {
+        // Defective verbs: skip eu(0), tu(1), nós(3), vocês(4), eles/elas(5); only ele/ela(2)
+        if (isDefective && pi !== 2) return;
+        const form = getFormFromTense(tenseObj, pi);
+        if (!form) return;
+        items.push({ tenseName, pronoun, form, infinitive: conjData.infinitive, meaning: conjData.meaning });
+      });
+    }
+    return shuffleArray(items);
+  }
+
+  async function fetchConjugation(verb) {
+    // Check cache first
+    if (conjCache.current[verb]) return { ok: true, data: conjCache.current[verb] };
+    setFetchLoading(true);
+    setFetchError("");
+    try {
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "anthropic-version": ANTHROPIC_API_VERSION,
+          "anthropic-dangerous-direct-browser-access": "true",
+          ...(apiKey ? { "x-api-key": apiKey } : {}),
+        },
+        body: JSON.stringify({
+          model: TOOLS_MODEL, max_tokens: 3500,
+          messages: [{ role: "user", content: buildConjugationPrompt(verb) }],
+        }),
+      });
+      if (!resp.ok) {
+        setFetchLoading(false);
+        return { ok: false, error: resp.status === 429 ? "Rate limit — wait and retry." : `HTTP ${resp.status}` };
+      }
+      const data = await resp.json();
+      const raw = data.content?.find(b => b.type === "text")?.text || "";
+      if (!raw) { setFetchLoading(false); return { ok: false, error: "Empty API response." }; }
+      const parsed = extractJSON(raw);
+      conjCache.current[verb] = parsed;
+      if (Object.keys(conjCache.current).length > 100) {
+        delete conjCache.current[Object.keys(conjCache.current)[0]];
+      }
+      lsSet("pe_conj_cache", conjCache.current);
+      setFetchLoading(false);
+      return { ok: true, data: parsed };
+    } catch (err) {
+      setFetchLoading(false);
+      return { ok: false, error: `Connection error: ${err.message}` };
+    }
+  }
+
+  async function startSession() {
+    if (!quizVerb) return;
+    setFetchError("");
+    const result = await fetchConjugation(quizVerb);
+    if (!result.ok) {
+      setFetchError("Conjugation data unavailable for this verb. Try the Conjugator panel or choose a different verb.");
+      return;
+    }
+    const items = buildItems(result.data);
+    if (items.length === 0) {
+      setFetchError("No quiz items could be generated for this verb at the current level. Try a higher level or a different verb.");
+      return;
+    }
+    setSession(items);
+    setItemIdx(0);
+    setUserAnswer("");
+    setAttempt(0);
+    setFeedback(null);
+    setResults([]);
+    setSessionDone(false);
+  }
+
+  function handleSubmit() {
+    if (!session || sessionDone || feedback !== null) return;
+    const item = session[itemIdx];
+    const trimmed = userAnswer.trim();
+    if (!trimmed) return;
+
+    if (attempt === 0) {
+      // First attempt: exact match required (diacritics matter)
+      if (trimmed === item.form) {
+        // Correct on first attempt
+        speakListPT(item.form, "pt-PT");
+        const newResult = { item, status: "correct" };
+        setResults(prev => [...prev, newResult]);
+        setFeedback({ status: "correct", correct: item.form });
+      } else {
+        // Wrong first attempt — show correct, offer retry
+        speakListPT(item.form, "pt-PT");
+        setFeedback({ status: "wrong_first", correct: item.form });
+        setAttempt(1);
+        setUserAnswer("");
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
+    } else {
+      // Retry: accept with diacritics stripped
+      const norm = (s) => stripDiacritics(s.toLowerCase().trim());
+      if (norm(trimmed) === norm(item.form)) {
+        speakListPT(item.form, "pt-PT");
+        const newResult = { item, status: "helpknown" };
+        setResults(prev => [...prev, newResult]);
+        setFeedback({ status: "helpknown", correct: item.form });
+      } else {
+        speakListPT(item.form, "pt-PT");
+        const newResult = { item, status: "missed" };
+        setResults(prev => [...prev, newResult]);
+        setFeedback({ status: "missed", correct: item.form });
+      }
+    }
+  }
+
+  function advanceItem() {
+    const nextIdx = itemIdx + 1;
+    if (nextIdx >= session.length) {
+      setSessionDone(true);
+    } else {
+      setItemIdx(nextIdx);
+      setUserAnswer("");
+      setAttempt(0);
+      setFeedback(null);
+    }
+  }
+
+  // Diff helper: highlight character differences between user answer and correct form
+  function renderDiff(userAns, correct) {
+    const u = userAns.split("");
+    const c = correct.split("");
+    const maxLen = Math.max(u.length, c.length);
+    const spans = [];
+    for (let i = 0; i < maxLen; i++) {
+      const uc = u[i] || "";
+      const cc = c[i] || "";
+      if (uc === cc) {
+        spans.push(<span key={i}>{cc}</span>);
+      } else {
+        spans.push(<span key={i} style={{ color: "#dc2626", fontWeight: 700, textDecoration: "underline" }}>{cc}</span>);
+      }
+    }
+    return spans;
+  }
+
+  const filteredDrop = useMemo(() => {
+    const q = quizDropSearch.toLowerCase();
+    if (!q) return ALL_VERB_INFS_SORTED;
+    return ALL_VERB_INFS_SORTED.filter(v => {
+      const en = ALL_VERBS_MAP.get(v) || "";
+      return v.includes(q) || en.toLowerCase().includes(q);
+    });
+  }, [quizDropSearch]);
+
+  const cardStyle = {
+    border: "0.5px solid var(--color-border-tertiary)",
+    borderRadius: "var(--border-radius-md)",
+    padding: "16px",
+    background: "var(--color-background-primary)",
+    marginBottom: 12,
+  };
+
+  const btnPrimary = {
+    fontSize, fontWeight: 700, padding: "7px 18px",
+    borderRadius: "var(--border-radius-md)", border: "none",
+    background: "var(--color-accent-blue)", color: "#fff",
+    cursor: "pointer", fontFamily: "var(--font-sans)",
+  };
+
+  const btnSecondary = {
+    fontSize: Math.max(12, fontSize - 2), fontWeight: 600, padding: "5px 12px",
+    borderRadius: "var(--border-radius-md)",
+    border: "1px solid var(--color-border-tertiary)",
+    background: "var(--color-background-secondary)", color: "var(--color-text-secondary)",
+    cursor: "pointer", fontFamily: "var(--font-sans)",
+  };
+
+  // ── SUMMARY SCREEN ───────────────────────────────────────────────────────
+  if (sessionDone && session) {
+    const known = results.filter(r => r.status === "correct").length;
+    const helped = results.filter(r => r.status === "helpknown").length;
+    const missed = results.filter(r => r.status === "missed").length;
+    const missedItems = results.filter(r => r.status === "missed");
+    return (
+      <div style={{ padding: "16px", overflowY: "auto", flex: 1 }}>
+        <div style={cardStyle}>
+          <p style={{ fontSize: Math.max(14, fontSize), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 10px" }}>
+            Session complete — {quizVerb} ({quizVerbEn})
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 12 }}>
+            <span style={{ fontSize, fontWeight: 700, color: "#16a34a" }}>✓ {known} correct</span>
+            <span style={{ fontSize, fontWeight: 700, color: "#d97706" }}>⚡ {helped} known with help</span>
+            <span style={{ fontSize, fontWeight: 700, color: "#dc2626" }}>✗ {missed} missed</span>
+            <span style={{ fontSize, color: "var(--color-text-secondary)" }}>{results.length} total</span>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button style={btnPrimary} onClick={startSession}>Retry session</button>
+            <button style={btnSecondary} onClick={() => { setSession(null); setSessionDone(false); setResults([]); setFetchError(""); }}>Change verb</button>
+          </div>
+        </div>
+        {missedItems.length > 0 && (
+          <div style={cardStyle}>
+            <p style={{ fontSize: Math.max(12, fontSize - 2), fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 8px" }}>Missed — review</p>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize }}>
+              <tbody>
+                {missedItems.map((r, i) => (
+                  <tr key={i} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+                    <td style={{ padding: "4px 8px 4px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>{r.item.tenseName}</td>
+                    <td style={{ padding: "4px 8px 4px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>{r.item.pronoun}</td>
+                    <td style={{ padding: "4px 0", fontWeight: 700, color: "var(--color-text-primary)", fontFamily: "var(--font-mono)" }}>{r.item.form}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── ACTIVE QUIZ ───────────────────────────────────────────────────────────
+  if (session) {
+    const item = session[itemIdx];
+    const progress = `${itemIdx + 1} / ${session.length}`;
+    const feedbackColor = feedback
+      ? feedback.status === "correct" ? "#16a34a"
+        : feedback.status === "helpknown" ? "#d97706"
+        : feedback.status === "missed" ? "#dc2626"
+        : "#d97706"  // wrong_first — amber prompt
+      : null;
+
+    return (
+      <div style={{ padding: "16px", overflowY: "auto", flex: 1 }}>
+        {/* Progress bar */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+          <div style={{ flex: 1, height: 5, background: "var(--color-border-tertiary)", borderRadius: 3, overflow: "hidden" }}>
+            <div style={{ width: `${((itemIdx) / session.length) * 100}%`, height: "100%", background: "var(--color-accent-blue)", borderRadius: 3, transition: "width 0.3s ease" }} />
+          </div>
+          <span style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}>{progress}</span>
+          <button style={btnSecondary} onClick={() => { setSession(null); setSessionDone(false); setResults([]); }}>✕ End</button>
+        </div>
+
+        {/* Prompt card */}
+        <div style={cardStyle}>
+          <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>{item.tenseName}</p>
+          <p style={{ fontSize: Math.max(18, fontSize + 4), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 4px", fontFamily: "var(--font-mono)" }}>
+            {item.infinitive}
+            <span style={{ fontSize: Math.max(13, fontSize), fontWeight: 400, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}> ({item.meaning})</span>
+          </p>
+          <p style={{ fontSize: Math.max(15, fontSize + 1), color: "var(--color-accent-blue)", fontWeight: 600, margin: "0 0 14px" }}>
+            {item.pronoun} →
+          </p>
+
+          {feedback === null || feedback.status === "wrong_first" ? (
+            <>
+              {feedback?.status === "wrong_first" && (
+                <div style={{ marginBottom: 10, padding: "8px 12px", borderRadius: "var(--border-radius-sm)", background: "#fef3c7", border: "1px solid #fcd34d" }}>
+                  <p style={{ fontSize: Math.max(12, fontSize - 2), color: "#92400e", margin: "0 0 2px", fontWeight: 600 }}>Not quite. Correct form:</p>
+                  <p style={{ fontSize: Math.max(14, fontSize), fontWeight: 700, color: "#92400e", margin: 0, fontFamily: "var(--font-mono)" }}>{feedback.correct}</p>
+                  <p style={{ fontSize: Math.max(11, fontSize - 3), color: "#92400e", margin: "4px 0 0", fontStyle: "italic" }}>Diacritics optional on retry.</p>
+                </div>
+              )}
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={userAnswer}
+                  onChange={e => setUserAnswer(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") handleSubmit(); }}
+                  placeholder={attempt === 0 ? "Type the conjugated form…" : "Retry (diacritics optional)…"}
+                  autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+                  style={{ flex: 1, fontSize, padding: "6px 10px", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-mono)", outline: "none" }}
+                />
+                <button style={btnPrimary} onClick={handleSubmit}>Check</button>
+              </div>
+            </>
+          ) : (
+            <div>
+              {/* Post-answer feedback */}
+              <div style={{ marginBottom: 12, padding: "10px 14px", borderRadius: "var(--border-radius-sm)", background: feedback.status === "correct" ? "#dcfce7" : feedback.status === "helpknown" ? "#fef3c7" : "#fee2e2", border: `1px solid ${feedback.status === "correct" ? "#86efac" : feedback.status === "helpknown" ? "#fcd34d" : "#fca5a5"}` }}>
+                <p style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 700, color: feedbackColor, margin: "0 0 2px" }}>
+                  {feedback.status === "correct" ? "✓ Correct" : feedback.status === "helpknown" ? "⚡ Known with help" : "✗ Missed"}
+                </p>
+                <p style={{ fontSize: Math.max(14, fontSize), fontWeight: 700, color: feedbackColor, margin: "0 0 4px", fontFamily: "var(--font-mono)" }}>
+                  {renderDiff(userAnswer.trim(), feedback.correct)}
+                </p>
+                {feedback.status !== "correct" && (
+                  <p style={{ fontSize: Math.max(11, fontSize - 2), color: feedbackColor, margin: 0, fontStyle: "italic" }}>Correct: {feedback.correct}</p>
+                )}
+              </div>
+              <button style={btnPrimary} onClick={advanceItem}>
+                {itemIdx + 1 < session.length ? "Next →" : "Finish"}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Score strip */}
+        {results.length > 0 && (
+          <div style={{ display: "flex", gap: 10, fontSize: Math.max(11, fontSize - 2) }}>
+            <span style={{ color: "#16a34a", fontWeight: 600 }}>✓ {results.filter(r => r.status === "correct").length}</span>
+            <span style={{ color: "#d97706", fontWeight: 600 }}>⚡ {results.filter(r => r.status === "helpknown").length}</span>
+            <span style={{ color: "#dc2626", fontWeight: 600 }}>✗ {results.filter(r => r.status === "missed").length}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── SETUP SCREEN ─────────────────────────────────────────────────────────
+  const currentTenses = QUIZ_TENSES_BY_LEVEL[level] || [];
+
+  return (
+    <div style={{ padding: "16px", overflowY: "auto", flex: 1 }}>
+      <div style={cardStyle}>
+        <p style={{ fontSize: Math.max(14, fontSize), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 12px" }}>Verb Tense Quiz</p>
+
+        {/* Level indicator */}
+        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 4px" }}>
+          Level: <strong style={{ color: "var(--color-accent-blue)" }}>{level}</strong> — quizzing {currentTenses.length} tense{currentTenses.length !== 1 ? "s" : ""}: {currentTenses.join(", ")}
+        </p>
+        <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 16px" }}>
+          Change level in the header to adjust which tenses are tested.
+        </p>
+
+        {/* Verb selection */}
+        <p style={{ fontSize: Math.max(12, fontSize - 2), fontWeight: 600, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 8px" }}>Select verb</p>
+
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-start", marginBottom: 12 }}>
+          {/* Filterable dropdown */}
+          <div ref={quizDropRef} style={{ position: "relative" }}>
+            <button
+              onClick={() => { setQuizDropOpen(o => !o); setQuizDropSearch(""); }}
+              style={{ fontSize, fontWeight: 700, padding: "5px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: "var(--color-background-primary)", color: quizVerb ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, minWidth: 180 }}>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {quizVerb ? `${quizVerb}${quizVerbEn ? " — " + quizVerbEn : ""}` : "Choose a verb…"}
+              </span>
+              <span style={{ fontSize: 12, marginLeft: "auto", flexShrink: 0 }}>▾</span>
+            </button>
+            {quizDropOpen && (
+              <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 9999, background: "var(--color-background-primary)", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", boxShadow: "0 8px 24px rgba(0,0,0,0.25)", minWidth: 280, maxHeight: 280, display: "flex", flexDirection: "column" }}>
+                <input autoFocus placeholder="Search verbs…" value={quizDropSearch}
+                  onChange={e => setQuizDropSearch(e.target.value)}
+                  style={{ fontSize: 14, padding: "6px 10px", border: "none", borderBottom: "1px solid var(--color-border-tertiary)", outline: "none", background: "var(--color-background-primary)", color: "var(--color-text-primary)", borderRadius: "var(--border-radius-md) var(--border-radius-md) 0 0" }} />
+                <div style={{ overflowY: "auto", flex: 1 }}>
+                  {filteredDrop.map(v => {
+                    const en = ALL_VERBS_MAP.get(v) || "";
+                    const isIrreg = IRREGULAR_VERBS_SET.has(v);
+                    const isSelected = v === quizVerb;
+                    return (
+                      <div key={v}
+                        style={{ padding: "5px 12px", cursor: "pointer", background: isSelected ? "#dbeafe" : "transparent", display: "flex", alignItems: "baseline", gap: 6 }}
+                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "var(--color-surface-raised)"; }}
+                        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
+                        onClick={() => { setQuizVerb(v); setQuizVerbEn(en); setQuizDropOpen(false); setQuizDropSearch(""); }}>
+                        <span style={{ fontSize: 15, fontWeight: 700, color: isIrreg ? "var(--color-accent-maroon)" : "var(--color-accent-blue)" }}>{v}</span>
+                        {en && <span style={{ fontSize: 14, color: "var(--color-text-secondary)" }}>({en})</span>}
+                        {isIrreg && <span style={{ fontSize: 11, color: "var(--color-accent-maroon)" }}>irr</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Random verb */}
+          <button style={btnSecondary} onClick={() => {
+            const v = pickRandom(ALL_VERB_INFS_SORTED);
+            setQuizVerb(v);
+            setQuizVerbEn(ALL_VERBS_MAP.get(v) || "");
+          }}>🎲 Random verb</button>
+
+          {/* Random irregular verb */}
+          <button style={btnSecondary} onClick={() => {
+            const irregArr = [...IRREGULAR_VERBS_SET];
+            const v = irregArr[Math.floor(Math.random() * irregArr.length)];
+            setQuizVerb(v);
+            setQuizVerbEn(ALL_VERBS_MAP.get(v) || "");
+          }}>🎲 Random irregular</button>
+        </div>
+
+        {quizVerb && (
+          <p style={{ fontSize, color: "var(--color-text-primary)", margin: "0 0 14px" }}>
+            Selected: <strong style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-blue)" }}>{quizVerb}</strong>
+            {quizVerbEn && <span style={{ color: "var(--color-text-secondary)" }}> — {quizVerbEn}</span>}
+            {IRREGULAR_VERBS_SET.has(quizVerb) && <span style={{ marginLeft: 6, fontSize: Math.max(11, fontSize - 2), color: "var(--color-accent-maroon)", fontWeight: 600 }}>irregular</span>}
+          </p>
+        )}
+
+        {fetchError && (
+          <p style={{ fontSize, color: "var(--color-text-danger)", margin: "0 0 10px" }}>{fetchError}</p>
+        )}
+
+        <button
+          style={{ ...btnPrimary, opacity: !quizVerb || fetchLoading ? 0.5 : 1 }}
+          disabled={!quizVerb || fetchLoading}
+          onClick={startSession}>
+          {fetchLoading ? "Loading conjugation…" : "Start Quiz →"}
+        </button>
+      </div>
+
+      <div style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", lineHeight: 1.6 }}>
+        <p style={{ margin: "0 0 4px" }}>First attempt: exact match required (diacritics count).</p>
+        <p style={{ margin: "0 0 4px" }}>If wrong: see correct answer, retry without diacritics for partial credit.</p>
+        <p style={{ margin: 0 }}>Conjugation data is fetched from the API (or served from cache at zero cost).</p>
+      </div>
+    </div>
+  );
+});
+
 const HoverDiv = React.memo(function HoverDiv({ baseBg, hoverBg, style, onClick, children }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -3052,6 +3563,9 @@ function App() {
   const mediaSectionRefs = useRef({});
   const [soundsTab, setSoundsTab] = useState("letters"); // "letters" | "ipa"
 
+  // Verb Quiz external launch state (set when user clicks "Quiz this verb" in Conjugator)
+  const [verbQuizLaunch, setVerbQuizLaunch] = useState(null); // {verb, en} | null
+
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const vocabCache = useRef({});
@@ -3569,6 +4083,39 @@ function App() {
         setConjError(`Could not parse conjugation data. Try again. (${parseErr.message})`);
       }
     } catch (err) { if (err?.name === "AbortError") { setConjLoading(false); return; } setConjError(`Connection error: ${err.message}`); }
+    setConjLoading(false);
+  };
+
+  // lookupVerbFor: same as lookupVerb but takes an explicit verb string (used by Random verb button)
+  const lookupVerbFor = async (verb) => {
+    const v = verb.trim();
+    if (!v) return;
+    setVerbInput(v);
+    if (conjCache.current[v]) {
+      setConjugation(conjCache.current[v]);
+      setConjError("");
+      return;
+    }
+    setConjLoading(true); setConjugation(null); setConjError("");
+    try {
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        body: JSON.stringify({ model: TOOLS_MODEL, max_tokens: 3500, messages: [{ role: "user", content: buildConjugationPrompt(v) }] }),
+      });
+      if (!resp.ok) { setConjError(resp.status === 429 ? "Rate limit reached — wait a moment and try again." : `HTTP ${resp.status} — try again.`); setConjLoading(false); return; }
+      const data = await resp.json();
+      if (data.error) { setConjError(`API error: ${data.error.message}`); setConjLoading(false); return; }
+      const raw = data.content?.find(b => b.type === "text")?.text || "";
+      if (!raw) { setConjError("Empty response from API. Try again."); setConjLoading(false); return; }
+      try {
+        const parsed = extractJSON(raw);
+        conjCache.current[v] = parsed;
+        if (Object.keys(conjCache.current).length > 100) { delete conjCache.current[Object.keys(conjCache.current)[0]]; }
+        lsSet("pe_conj_cache", conjCache.current);
+        setConjCacheCount(Object.keys(conjCache.current).length);
+        setConjugation(parsed);
+      } catch (parseErr) { setConjError(`Could not parse conjugation data. Try again. (${parseErr.message})`); }
+    } catch (err) { setConjError(`Connection error: ${err.message}`); }
     setConjLoading(false);
   };
 
@@ -4230,6 +4777,19 @@ function App() {
           {listTab === "idioms" && (
             <IdiomsTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
           )}
+          {listTab === "verbquiz" && (
+            <VerbQuizTab
+              level={level}
+              conjCache={conjCache}
+              apiKey={apiKey}
+              verbInput={verbInput}
+              setVerbInput={setVerbInput}
+              speakListPT={speakListPT}
+              fontSize={fontSize}
+              externalLaunch={verbQuizLaunch}
+              clearExternalLaunch={() => setVerbQuizLaunch(null)}
+            />
+          )}
           {listTab === "verbref" && (
             <div style={listPanelStyle}>
               <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
@@ -4370,7 +4930,26 @@ function App() {
           {conjError && <p style={{ fontSize: 16, color: "var(--color-text-danger)", margin: "0 16px" }}>{conjError}</p>}
           {conjugation && (
             <div style={{ flex: 1, overflowY: "auto", padding: "0 16px 16px" }}>
-              <p style={{ fontSize: 16, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 12px" }}>{conjugation.infinitive} — {conjugation.meaning}</p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", margin: "0 0 12px" }}>
+                <p style={{ fontSize: 16, fontWeight: 500, color: "var(--color-text-primary)", margin: 0 }}>{conjugation.infinitive} — {conjugation.meaning}</p>
+                <button
+                  style={{ fontSize: 13, fontWeight: 700, padding: "3px 12px", borderRadius: 999, border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer", fontFamily: "var(--font-sans)", flexShrink: 0 }}
+                  onClick={() => {
+                    setVerbQuizLaunch({ verb: conjugation.infinitive, en: conjugation.meaning });
+                    setActivePanel("lists");
+                    setListTab("verbquiz");
+                  }}>
+                  Quiz this verb
+                </button>
+                <button
+                  style={{ fontSize: 13, fontWeight: 600, padding: "3px 12px", borderRadius: 999, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", flexShrink: 0 }}
+                  onClick={() => {
+                    const v = pickRandom(ALL_VERB_INFS_SORTED);
+                    lookupVerbFor(v);
+                  }}>
+                  🎲 Random verb
+                </button>
+              </div>
               {CONJ_LEVEL_GROUPS.map(group => {
                 const groupTenses = (conjugation.tenses || []).filter(t => group.tenses.includes(t.name));
                 if (groupTenses.length === 0) return null;
