@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.5.1 -->
+  <!-- version: 2.5.2 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
@@ -64,8 +64,8 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.5.1",
-  date: "2026-05-23",
+  version: "2.5.2",
+  date: "2026-05-24",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
   file: "portugues_europeu.html",
@@ -89,70 +89,70 @@ const VERB_REF_TABS = ["irregular", "ar", "erir", "semi"];
 const VERB_REF_LABELS = { irregular: "Irregular", ar: "Regular -AR", erir: "Regular -ER/-IR", semi: "Semi-irregular" };
 
 const MINIMAL_PAIRS = [
-  { a: { word: "pão", meaning: "bread" }, b: { word: "pau", meaning: "stick" } },
-  { a: { word: "avó", meaning: "grandmother" }, b: { word: "avô", meaning: "grandfather" } },
-  { a: { word: "casa", meaning: "house" }, b: { word: "caça", meaning: "hunt" } },
-  { a: { word: "só", meaning: "alone" }, b: { word: "sou", meaning: "I am" } },
-  { a: { word: "pode", meaning: "can" }, b: { word: "pôde", meaning: "could" } },
-  { a: { word: "pé", meaning: "foot" }, b: { word: "pê", meaning: "letter P" } },
-  { a: { word: "é", meaning: "is" }, b: { word: "e", meaning: "and" } },
-  { a: { word: "sede", meaning: "thirst" }, b: { word: "cede", meaning: "yields" } },
-  { a: { word: "dá", meaning: "gives" }, b: { word: "da", meaning: "of the" } },
-  { a: { word: "vi", meaning: "I saw" }, b: { word: "vim", meaning: "I came" } },
-  { a: { word: "si", meaning: "self" }, b: { word: "sim", meaning: "yes" } },
-  { a: { word: "sei", meaning: "I know" }, b: { word: "sem", meaning: "without" } },
-  { a: { word: "tem", meaning: "has" }, b: { word: "têm", meaning: "have" } },
-  { a: { word: "sou", meaning: "I am" }, b: { word: "som", meaning: "sound" } },
-  { a: { word: "vou", meaning: "I go" }, b: { word: "vão", meaning: "they go" } },
-  { a: { word: "lá", meaning: "there" }, b: { word: "lã", meaning: "wool" } },
-  { a: { word: "chá", meaning: "tea" }, b: { word: "já", meaning: "already" } },
-  { a: { word: "mala", meaning: "bag" }, b: { word: "malha", meaning: "mesh" } },
-  { a: { word: "fala", meaning: "speech" }, b: { word: "falha", meaning: "fault" } },
-  { a: { word: "vela", meaning: "candle" }, b: { word: "velha", meaning: "old" } },
-  { a: { word: "sono", meaning: "sleep" }, b: { word: "sonho", meaning: "dream" } },
-  { a: { word: "caro", meaning: "expensive" }, b: { word: "carro", meaning: "car" } },
-  { a: { word: "coro", meaning: "choir" }, b: { word: "corro", meaning: "I run" } },
-  { a: { word: "terra", meaning: "earth" }, b: { word: "terá", meaning: "will have" } },
-  { a: { word: "pato", meaning: "duck" }, b: { word: "bato", meaning: "I hit" } },
-  { a: { word: "tela", meaning: "screen" }, b: { word: "dela", meaning: "of her" } },
-  { a: { word: "cama", meaning: "bed" }, b: { word: "gama", meaning: "range" } },
-  { a: { word: "pai", meaning: "father" }, b: { word: "pá", meaning: "shovel" } },
-  { a: { word: "mau", meaning: "bad (m)" }, b: { word: "má", meaning: "bad (f)" } },
-  { a: { word: "mãe", meaning: "mother" }, b: { word: "mês", meaning: "month" } },
-  { a: { word: "dúvida", meaning: "doubt" }, b: { word: "duvida", meaning: "he doubts" } },
-  { a: { word: "sábia", meaning: "wise" }, b: { word: "sabia", meaning: "knew" } },
-  { a: { word: "a", meaning: "to" }, b: { word: "há", meaning: "there is" } },
-  { a: { word: "por", meaning: "by" }, b: { word: "pôr", meaning: "to put" } },
-  { a: { word: "casa", meaning: "house" }, b: { word: "caso", meaning: "case" } },
-  { a: { word: "pala", meaning: "visor" }, b: { word: "palha", meaning: "straw" } },
-  { a: { word: "pena", meaning: "feather" }, b: { word: "penha", meaning: "cliff" } },
-  { a: { word: "pelo", meaning: "hair" }, b: { word: "belo", meaning: "beautiful" } },
-  { a: { word: "mão", meaning: "hand" }, b: { word: "mó", meaning: "millstone" } },
-  { a: { word: "publico", meaning: "I publish" }, b: { word: "público", meaning: "public" } },
-  { a: { word: "pratico", meaning: "I practice" }, b: { word: "prático", meaning: "practical" } },
-  { a: { word: "fato", meaning: "suit" }, b: { word: "fado", meaning: "fado music" } },
-  { a: { word: "pico", meaning: "peak" }, b: { word: "bico", meaning: "beak" } },
-  { a: { word: "copo", meaning: "glass" }, b: { word: "corpo", meaning: "body" } },
-  { a: { word: "faca", meaning: "knife" }, b: { word: "vaca", meaning: "cow" } },
-  { a: { word: "tio", meaning: "uncle" }, b: { word: "dia", meaning: "day" } },
-  { a: { word: "piso", meaning: "floor" }, b: { word: "peso", meaning: "weight" } },
-  { a: { word: "lago", meaning: "lake" }, b: { word: "logo", meaning: "soon" } },
-  { a: { word: "cinto", meaning: "belt" }, b: { word: "sinto", meaning: "I feel" } },
-  { a: { word: "penso", meaning: "I think" }, b: { word: "peso", meaning: "weight" } },
-  { a: { word: "caro", meaning: "expensive" }, b: { word: "cara", meaning: "face" } },
-  { a: { word: "mala", meaning: "bag" }, b: { word: "mola", meaning: "spring" } },
-  { a: { word: "pato", meaning: "duck" }, b: { word: "prato", meaning: "plate" } },
-  { a: { word: "casa", meaning: "house" }, b: { word: "capa", meaning: "cover" } },
-  { a: { word: "fino", meaning: "thin" }, b: { word: "vinho", meaning: "wine" } },
-  { a: { word: "ser", meaning: "to be" }, b: { word: "ver", meaning: "to see" } },
-  { a: { word: "mal", meaning: "badly" }, b: { word: "mel", meaning: "honey" } },
-  { a: { word: "bola", meaning: "ball" }, b: { word: "boca", meaning: "mouth" } },
-  { a: { word: "vale", meaning: "valley" }, b: { word: "bule", meaning: "kettle" } },
-  { a: { word: "luz", meaning: "light" }, b: { word: "noz", meaning: "walnut" } },
-  { a: { word: "vir", meaning: "to come" }, b: { word: "ver", meaning: "to see" } },
-  { a: { word: "fui", meaning: "I went" }, b: { word: "fiz", meaning: "I did" } },
-  { a: { word: "fio", meaning: "thread" }, b: { word: "frio", meaning: "cold" } },
-  { a: { word: "paz", meaning: "peace" }, b: { word: "pás", meaning: "shovels" } },
+  { a: { word: "pão", meaning: "bread" }, b: { word: "pau", meaning: "stick" }, contrast: "nasal-diphthong" },
+  { a: { word: "avó", meaning: "grandmother" }, b: { word: "avô", meaning: "grandfather" }, contrast: "vowel-quality" },
+  { a: { word: "casa", meaning: "house" }, b: { word: "caça", meaning: "hunt" }, contrast: "consonant-onset" },
+  { a: { word: "só", meaning: "alone" }, b: { word: "sou", meaning: "I am" }, contrast: "vowel-quality" },
+  { a: { word: "pode", meaning: "can" }, b: { word: "pôde", meaning: "could" }, contrast: "stress-accent" },
+  { a: { word: "pé", meaning: "foot" }, b: { word: "pê", meaning: "letter P" }, contrast: "vowel-quality" },
+  { a: { word: "é", meaning: "is" }, b: { word: "e", meaning: "and" }, contrast: "stress-accent" },
+  { a: { word: "sede", meaning: "thirst" }, b: { word: "cede", meaning: "yields" }, contrast: "consonant-onset" },
+  { a: { word: "dá", meaning: "gives" }, b: { word: "da", meaning: "of the" }, contrast: "stress-accent" },
+  { a: { word: "vi", meaning: "I saw" }, b: { word: "vim", meaning: "I came" }, contrast: "nasal-oral" },
+  { a: { word: "si", meaning: "self" }, b: { word: "sim", meaning: "yes" }, contrast: "nasal-oral" },
+  { a: { word: "sei", meaning: "I know" }, b: { word: "sem", meaning: "without" }, contrast: "nasal-oral" },
+  { a: { word: "tem", meaning: "has" }, b: { word: "têm", meaning: "have" }, contrast: "stress-accent" },
+  { a: { word: "sou", meaning: "I am" }, b: { word: "som", meaning: "sound" }, contrast: "nasal-oral" },
+  { a: { word: "vou", meaning: "I go" }, b: { word: "vão", meaning: "they go" }, contrast: "nasal-diphthong" },
+  { a: { word: "lá", meaning: "there" }, b: { word: "lã", meaning: "wool" }, contrast: "nasal-oral" },
+  { a: { word: "chá", meaning: "tea" }, b: { word: "já", meaning: "already" }, contrast: "consonant-onset" },
+  { a: { word: "mala", meaning: "bag" }, b: { word: "malha", meaning: "mesh" }, contrast: "consonant-onset" },
+  { a: { word: "fala", meaning: "speech" }, b: { word: "falha", meaning: "fault" }, contrast: "consonant-onset" },
+  { a: { word: "vela", meaning: "candle" }, b: { word: "velha", meaning: "old" }, contrast: "consonant-onset" },
+  { a: { word: "sono", meaning: "sleep" }, b: { word: "sonho", meaning: "dream" }, contrast: "consonant-onset" },
+  { a: { word: "caro", meaning: "expensive" }, b: { word: "carro", meaning: "car" }, contrast: "consonant-double" },
+  { a: { word: "coro", meaning: "choir" }, b: { word: "corro", meaning: "I run" }, contrast: "consonant-double" },
+  { a: { word: "terra", meaning: "earth" }, b: { word: "terá", meaning: "will have" }, contrast: "stress-accent" },
+  { a: { word: "pato", meaning: "duck" }, b: { word: "bato", meaning: "I hit" }, contrast: "consonant-voiced" },
+  { a: { word: "tela", meaning: "screen" }, b: { word: "dela", meaning: "of her" }, contrast: "consonant-onset" },
+  { a: { word: "cama", meaning: "bed" }, b: { word: "gama", meaning: "range" }, contrast: "consonant-onset" },
+  { a: { word: "pai", meaning: "father" }, b: { word: "pá", meaning: "shovel" }, contrast: "vowel-quality" },
+  { a: { word: "mau", meaning: "bad (m)" }, b: { word: "má", meaning: "bad (f)" }, contrast: "vowel-quality" },
+  { a: { word: "mãe", meaning: "mother" }, b: { word: "mês", meaning: "month" }, contrast: "vowel-quality" },
+  { a: { word: "dúvida", meaning: "doubt" }, b: { word: "duvida", meaning: "he doubts" }, contrast: "stress-accent" },
+  { a: { word: "sábia", meaning: "wise" }, b: { word: "sabia", meaning: "knew" }, contrast: "stress-accent" },
+  { a: { word: "a", meaning: "to" }, b: { word: "há", meaning: "there is" }, contrast: "orthographic" },
+  { a: { word: "por", meaning: "by" }, b: { word: "pôr", meaning: "to put" }, contrast: "orthographic" },
+  { a: { word: "casa", meaning: "house" }, b: { word: "caso", meaning: "case" }, contrast: "vowel-quality" },
+  { a: { word: "pala", meaning: "visor" }, b: { word: "palha", meaning: "straw" }, contrast: "consonant-onset" },
+  { a: { word: "pena", meaning: "feather" }, b: { word: "penha", meaning: "cliff" }, contrast: "consonant-onset" },
+  { a: { word: "pelo", meaning: "hair" }, b: { word: "belo", meaning: "beautiful" }, contrast: "consonant-onset" },
+  { a: { word: "mão", meaning: "hand" }, b: { word: "mó", meaning: "millstone" }, contrast: "nasal-oral" },
+  { a: { word: "publico", meaning: "I publish" }, b: { word: "público", meaning: "public" }, contrast: "stress-accent" },
+  { a: { word: "pratico", meaning: "I practice" }, b: { word: "prático", meaning: "practical" }, contrast: "stress-accent" },
+  { a: { word: "fato", meaning: "suit" }, b: { word: "fado", meaning: "fado music" }, contrast: "consonant-voiced" },
+  { a: { word: "pico", meaning: "peak" }, b: { word: "bico", meaning: "beak" }, contrast: "consonant-voiced" },
+  { a: { word: "copo", meaning: "glass" }, b: { word: "corpo", meaning: "body" }, contrast: "cluster" },
+  { a: { word: "faca", meaning: "knife" }, b: { word: "vaca", meaning: "cow" }, contrast: "consonant-voiced" },
+  { a: { word: "tio", meaning: "uncle" }, b: { word: "dia", meaning: "day" }, contrast: "consonant-onset" },
+  { a: { word: "piso", meaning: "floor" }, b: { word: "peso", meaning: "weight" }, contrast: "vowel-quality" },
+  { a: { word: "lago", meaning: "lake" }, b: { word: "logo", meaning: "soon" }, contrast: "vowel-quality" },
+  { a: { word: "cinto", meaning: "belt" }, b: { word: "sinto", meaning: "I feel" }, contrast: "consonant-onset" },
+  { a: { word: "penso", meaning: "I think" }, b: { word: "peso", meaning: "weight" }, contrast: "nasal-oral" },
+  { a: { word: "caro", meaning: "expensive" }, b: { word: "cara", meaning: "face" }, contrast: "vowel-quality" },
+  { a: { word: "mala", meaning: "bag" }, b: { word: "mola", meaning: "spring" }, contrast: "vowel-quality" },
+  { a: { word: "pato", meaning: "duck" }, b: { word: "prato", meaning: "plate" }, contrast: "cluster" },
+  { a: { word: "casa", meaning: "house" }, b: { word: "capa", meaning: "cover" }, contrast: "consonant-onset" },
+  { a: { word: "fino", meaning: "thin" }, b: { word: "vinho", meaning: "wine" }, contrast: "cluster" },
+  { a: { word: "ser", meaning: "to be" }, b: { word: "ver", meaning: "to see" }, contrast: "consonant-onset" },
+  { a: { word: "mal", meaning: "badly" }, b: { word: "mel", meaning: "honey" }, contrast: "vowel-quality" },
+  { a: { word: "bola", meaning: "ball" }, b: { word: "boca", meaning: "mouth" }, contrast: "consonant-onset" },
+  { a: { word: "vale", meaning: "valley" }, b: { word: "bule", meaning: "kettle" }, contrast: "consonant-onset" },
+  { a: { word: "luz", meaning: "light" }, b: { word: "noz", meaning: "walnut" }, contrast: "consonant-onset" },
+  { a: { word: "vir", meaning: "to come" }, b: { word: "ver", meaning: "to see" }, contrast: "vowel-quality" },
+  { a: { word: "fui", meaning: "I went" }, b: { word: "fiz", meaning: "I did" }, contrast: "consonant-onset" },
+  { a: { word: "fio", meaning: "thread" }, b: { word: "frio", meaning: "cold" }, contrast: "cluster" },
+  { a: { word: "paz", meaning: "peace" }, b: { word: "pás", meaning: "shovels" }, contrast: "stress-accent" },
 ];
 
 // TENSE_LABELS and PRONOUNS are used exclusively in the static verb reference panel (Lists → Verb List)
@@ -667,93 +667,93 @@ const PHRASES = [
 ];
 
 const IDIOMS = [
-  { pt: "A galinha do vizinho sempre é mais gorda", en: "The neighbor's chicken is always fatter", when: "The grass is always greener on the other side" },
-  { pt: "Água mole em pedra dura tanto bate até que fura", en: "Soft water on hard stone hits until it drills a hole", when: "Persistence overcomes resistance" },
-  { pt: "Alimentar um burro a pão de ló", en: "To feed a donkey sponge cake", when: "Wasting good things on someone who doesn't appreciate them" },
-  { pt: "Andar a apanhar bonés", en: "To go around catching caps", when: "Wandering aimlessly, especially after a setback" },
-  { pt: "Andar com a cabeça nas nuvens", en: "To walk with your head in the clouds", when: "Someone is distracted or daydreaming" },
-  { pt: "Andar com os pés no chão", en: "To keep your feet on the ground", when: "Staying realistic and grounded" },
-  { pt: "Andar com rodeios", en: "To walk with detours", when: "Beating around the bush instead of being direct" },
-  { pt: "Andar feito barata tonta", en: "To move like a dizzy cockroach", when: "Running around confused in chaos" },
-  { pt: "Apanhar uma seca", en: "To catch a drought", when: "Being extremely bored" },
-  { pt: "Aqui há gato", en: "There's a cat here", when: "Something seems suspicious or not right" },
-  { pt: "Armar-se em carapau de corrida", en: "To act like a racing mackerel", when: "Acting arrogantly or showing off" },
-  { pt: "Bater as botas", en: "To knock the boots", when: "To die (casual, humorous)" },
-  { pt: "Bater na mesma tecla", en: "To hit the same key", when: "Insisting on the same point over and over" },
-  { pt: "Bola para a frente", en: "Ball to the front", when: "Encouraging forward movement after something negative" },
-  { pt: "Chorar sobre o leite derramado", en: "To cry over spilled milk", when: "Regretting something that can't be undone" },
-  { pt: "Chover a cântaros", en: "To rain in jugs", when: "It's raining very heavily" },
-  { pt: "Comer e calar", en: "To eat and shut up", when: "Accepting something without complaining" },
-  { pt: "Comer gato", en: "To eat cat", when: "Eating something of bad or suspicious quality" },
-  { pt: "Comprar gato por lebre", en: "To buy a cat thinking it's a hare", when: "Being deceived or scammed" },
-  { pt: "Custar os olhos da cara", en: "Costing the eyes of the face", when: "Something is extremely expensive" },
-  { pt: "Dar à sola", en: "To give to the sole of your shoe", when: "To flee quickly" },
-  { pt: "Dar água pela barba", en: "To give water up to the beard", when: "Something is very difficult or troublesome" },
-  { pt: "Dar com a língua nos dentes", en: "To hit the teeth with the tongue", when: "Spilling a secret" },
-  { pt: "Dar uma mãozinha", en: "To give a little hand", when: "Offering to help out" },
-  { pt: "Deitar a toalha ao chão", en: "To throw the towel to the ground", when: "Giving up on something" },
-  { pt: "Engolir sapos", en: "To swallow frogs", when: "Accepting humiliation silently to keep the peace" },
-  { pt: "Entrar pelos olhos dentro", en: "To enter through the inside of the eyes", when: "Something immediately striking or obvious" },
-  { pt: "Estar a bater mal", en: "To be beating badly", when: "Acting emotionally unstable or going off the deep end" },
-  { pt: "Estar a bater mal da bola", en: "To be hitting the ball badly", when: "Not having one's head straight; feeling confused or off" },
-  { pt: "Estar a modos que", en: "To be in a sort of way", when: "Expressing hesitation or uncertainty" },
-  { pt: "Estar a treinar para burro", en: "To be training to be a donkey", when: "Working hard but not smartly" },
-  { pt: "Estar com os azeites", en: "To be with the olive oils", when: "Being annoyed or grumpy" },
-  { pt: "Estar com os cabelos em pé", en: "To have hair standing on end", when: "Being terrified or very nervous" },
-  { pt: "Estar com um grão na asa", en: "To have a grain on the wing", when: "Being tipsy or slightly drunk" },
-  { pt: "Estar de mãos a abanar", en: "To be with hands waving", when: "Returning empty-handed with nothing to show" },
-  { pt: "Estar entre a espada e a parede", en: "To be between the sword and the wall", when: "Stuck in a tough spot with no easy way out" },
-  { pt: "Estar nas sete quintas", en: "To be in the seven farms", when: "Being very happy or ecstatic" },
-  { pt: "Falar de boca cheia", en: "To speak with a full mouth", when: "Speaking without thinking or rudely" },
-  { pt: "Falar para o boneco", en: "To talk to the doll", when: "Talking to someone who isn't paying attention" },
-  { pt: "Falar pelos cotovelos", en: "To talk through the elbows", when: "Talking too much, non-stop" },
-  { pt: "Fazer das suas", en: "To do your own things", when: "Misbehaving or causing trouble" },
-  { pt: "Fazer das tripas coração", en: "To make a heart out of guts", when: "Summoning all your courage in a tough situation" },
-  { pt: "Fazer uma tempestade num copo de água", en: "To make a storm in a glass of water", when: "Exaggerating a minor issue" },
-  { pt: "Fazer uma vaquinha", en: "To make a little cow", when: "Chipping in together to pool resources" },
-  { pt: "Fazer vista grossa", en: "To make a thick view", when: "Pretending not to see something wrong" },
-  { pt: "Ficar a ver navios", en: "To stay watching ships", when: "Being left empty-handed or disappointed" },
-  { pt: "Ficar de molho", en: "To stay soaking", when: "Resting or being inactive, often when sick" },
-  { pt: "Ficar em águas de bacalhau", en: "To end up in codfish waters", when: "A plan comes to nothing and is abandoned" },
-  { pt: "Ir aos arames", en: "To go to the wires", when: "On the edge of losing patience or having a breakdown" },
-  { pt: "Ir com os porcos", en: "To go with the pigs", when: "An idea or plan went completely down the drain" },
-  { pt: "Ir pentear macacos", en: "To go comb monkeys", when: "Telling someone rudely to go away" },
-  { pt: "Levar com os pés", en: "To be hit with feet", when: "Being rejected, especially romantically" },
-  { pt: "Matar dois coelhos de uma cajadada só", en: "To kill two rabbits with one blow", when: "Solving two problems at once" },
-  { pt: "Meter os pés pelas mãos", en: "To put your feet through your hands", when: "Messing things up or getting confused" },
-  { pt: "Muitos anos a virar frangos", en: "Many years turning chickens", when: "Having a lot of experience doing something" },
-  { pt: "Não dar a bota com a perdigota", en: "Doesn't match the boot with the young quail", when: "Comparing two things that are not comparable" },
-  { pt: "Não há duas sem três", en: "There's no two without three", when: "When a third mishap follows two others" },
-  { pt: "Não perceber patavina", en: "Not to understand a patavina", when: "Not understanding anything at all" },
-  { pt: "Não ter papas na língua", en: "Not to have porridge on the tongue", when: "Being direct and frank; speaking one's mind" },
-  { pt: "Pagar o pato", en: "To pay the duck", when: "Taking the blame for something you didn't do" },
-  { pt: "Passar pelas brasas", en: "To go through hot coals", when: "Dozing off or taking a quick nap" },
-  { pt: "Pôr a mão na consciência", en: "Put your hand on your conscience", when: "Reflecting on your actions before doing something wrong" },
-  { pt: "Pôr-se fino", en: "Put yourself thin", when: "Warning someone to start behaving properly" },
-  { pt: "Pôr-se na alheta", en: "Put yourself in Alheta", when: "Leaving quickly to avoid a difficult situation" },
-  { pt: "Queimar as pestanas", en: "To burn the eyelashes", when: "Studying or working very hard late into the night" },
-  { pt: "Quem feio ama, bonito lhe parece", en: "Whoever loves one who's ugly finds beauty in them", when: "Beauty is in the eye of the beholder" },
-  { pt: "Quem não arrisca, não petisca", en: "Who doesn't risk, doesn't snack", when: "Encouraging someone to take a chance" },
-  { pt: "Quem tem boca vai a Roma", en: "He who has a mouth goes to Rome", when: "Asking questions helps you get where you want" },
-  { pt: "Quem vê cara, não vê coração", en: "Those who see faces don't see hearts", when: "Don't judge a book by its cover" },
-  { pt: "Quem espera sempre alcança", en: "Who waits always reaches", when: "Patience pays off in the end" },
-  { pt: "Sair a correr como alma penada", en: "To run like a tormented soul", when: "Running away in panic" },
-  { pt: "Sem pés nem cabeça", en: "Without feet or head", when: "Something makes no sense at all" },
-  { pt: "Ser uma pessoa de poucas palavras", en: "To be a person of few words", when: "Someone who doesn't talk much" },
-  { pt: "Só para Inglês ver", en: "Just for an English person to see", when: "Doing something purely for appearances or show" },
-  { pt: "Ter a pulga atrás da orelha", en: "To have a flea behind the ear", when: "Being suspicious about something" },
-  { pt: "Ter as costas quentes", en: "To have warm backs", when: "Having powerful protection or connections" },
-  { pt: "Ter cabeça fria", en: "To have a cool head", when: "Staying calm under pressure" },
-  { pt: "Ter debaixo da língua", en: "To have under the tongue", when: "Having something on the tip of your tongue" },
-  { pt: "Ter dor de cotovelo", en: "To have elbow pain", when: "Feeling envy or jealousy" },
-  { pt: "Ter macaquinhos na cabeça", en: "To have little monkeys in your head", when: "Having silly or paranoid ideas" },
-  { pt: "Ter muita lata", en: "To have a lot of tin", when: "Being very shameless or bold" },
-  { pt: "Ter o coração nas mãos", en: "To have the heart in the hands", when: "Being extremely worried or scared" },
-  { pt: "Ter o rei na barriga", en: "To have the king in the belly", when: "Acting arrogantly, like you're more important than others" },
-  { pt: "Ter os pés bem assentes na terra", en: "To have your feet firmly planted on the ground", when: "Being realistic and sensible" },
-  { pt: "Tirar o cavalinho da chuva", en: "Take your little horse away from the rain", when: "Giving up on an idea that won't work" },
-  { pt: "Uma pilha de nervos", en: "A battery of nerves", when: "Being so stressed others can visibly tell" },
-  { pt: "Viajar na maionese", en: "To travel in the mayonnaise", when: "Talking nonsense or drifting into irrelevant thoughts" },
+  { pt: "A galinha do vizinho sempre é mais gorda", en: "The neighbor's chicken is always fatter", when: "The grass is always greener on the other side", register: "neutral", freq: "common" },
+  { pt: "Água mole em pedra dura tanto bate até que fura", en: "Soft water on hard stone hits until it drills a hole", when: "Persistence overcomes resistance", register: "neutral", freq: "common" },
+  { pt: "Alimentar um burro a pão de ló", en: "To feed a donkey sponge cake", when: "Wasting good things on someone who doesn't appreciate them", register: "colloquial", freq: "occasional" },
+  { pt: "Andar a apanhar bonés", en: "To go around catching caps", when: "Wandering aimlessly, especially after a setback", register: "colloquial", freq: "occasional" },
+  { pt: "Andar com a cabeça nas nuvens", en: "To walk with your head in the clouds", when: "Someone is distracted or daydreaming", register: "neutral", freq: "common" },
+  { pt: "Andar com os pés no chão", en: "To keep your feet on the ground", when: "Staying realistic and grounded", register: "neutral", freq: "common" },
+  { pt: "Andar com rodeios", en: "To walk with detours", when: "Beating around the bush instead of being direct", register: "neutral", freq: "common" },
+  { pt: "Andar feito barata tonta", en: "To move like a dizzy cockroach", when: "Running around confused in chaos", register: "colloquial", freq: "common" },
+  { pt: "Apanhar uma seca", en: "To catch a drought", when: "Being extremely bored", register: "colloquial", freq: "common" },
+  { pt: "Aqui há gato", en: "There's a cat here", when: "Something seems suspicious or not right", register: "colloquial", freq: "common" },
+  { pt: "Armar-se em carapau de corrida", en: "To act like a racing mackerel", when: "Acting arrogantly or showing off", register: "colloquial", freq: "occasional" },
+  { pt: "Bater as botas", en: "To knock the boots", when: "To die (casual, humorous)", register: "informal", freq: "common" },
+  { pt: "Bater na mesma tecla", en: "To hit the same key", when: "Insisting on the same point over and over", register: "neutral", freq: "common" },
+  { pt: "Bola para a frente", en: "Ball to the front", when: "Encouraging forward movement after something negative", register: "colloquial", freq: "common" },
+  { pt: "Chorar sobre o leite derramado", en: "To cry over spilled milk", when: "Regretting something that can't be undone", register: "neutral", freq: "common" },
+  { pt: "Chover a cântaros", en: "To rain in jugs", when: "It's raining very heavily", register: "neutral", freq: "common" },
+  { pt: "Comer e calar", en: "To eat and shut up", when: "Accepting something without complaining", register: "informal", freq: "common" },
+  { pt: "Comer gato", en: "To eat cat", when: "Eating something of bad or suspicious quality", register: "colloquial", freq: "occasional" },
+  { pt: "Comprar gato por lebre", en: "To buy a cat thinking it's a hare", when: "Being deceived or scammed", register: "neutral", freq: "common" },
+  { pt: "Custar os olhos da cara", en: "Costing the eyes of the face", when: "Something is extremely expensive", register: "neutral", freq: "common" },
+  { pt: "Dar à sola", en: "To give to the sole of your shoe", when: "To flee quickly", register: "colloquial", freq: "occasional" },
+  { pt: "Dar água pela barba", en: "To give water up to the beard", when: "Something is very difficult or troublesome", register: "colloquial", freq: "common" },
+  { pt: "Dar com a língua nos dentes", en: "To hit the teeth with the tongue", when: "Spilling a secret", register: "colloquial", freq: "common" },
+  { pt: "Dar uma mãozinha", en: "To give a little hand", when: "Offering to help out", register: "neutral", freq: "common" },
+  { pt: "Deitar a toalha ao chão", en: "To throw the towel to the ground", when: "Giving up on something", register: "neutral", freq: "common" },
+  { pt: "Engolir sapos", en: "To swallow frogs", when: "Accepting humiliation silently to keep the peace", register: "neutral", freq: "common" },
+  { pt: "Entrar pelos olhos dentro", en: "To enter through the inside of the eyes", when: "Something immediately striking or obvious", register: "colloquial", freq: "common" },
+  { pt: "Estar a bater mal", en: "To be beating badly", when: "Acting emotionally unstable or going off the deep end", register: "colloquial", freq: "common" },
+  { pt: "Estar a bater mal da bola", en: "To be hitting the ball badly", when: "Not having one's head straight; feeling confused or off", register: "colloquial", freq: "common" },
+  { pt: "Estar a modos que", en: "To be in a sort of way", when: "Expressing hesitation or uncertainty", register: "colloquial", freq: "occasional" },
+  { pt: "Estar a treinar para burro", en: "To be training to be a donkey", when: "Working hard but not smartly", register: "colloquial", freq: "occasional" },
+  { pt: "Estar com os azeites", en: "To be with the olive oils", when: "Being annoyed or grumpy", register: "colloquial", freq: "common" },
+  { pt: "Estar com os cabelos em pé", en: "To have hair standing on end", when: "Being terrified or very nervous", register: "informal", freq: "common" },
+  { pt: "Estar com um grão na asa", en: "To have a grain on the wing", when: "Being tipsy or slightly drunk", register: "colloquial", freq: "common" },
+  { pt: "Estar de mãos a abanar", en: "To be with hands waving", when: "Returning empty-handed with nothing to show", register: "colloquial", freq: "common" },
+  { pt: "Estar entre a espada e a parede", en: "To be between the sword and the wall", when: "Stuck in a tough spot with no easy way out", register: "neutral", freq: "common" },
+  { pt: "Estar nas sete quintas", en: "To be in the seven farms", when: "Being very happy or ecstatic", register: "colloquial", freq: "occasional" },
+  { pt: "Falar de boca cheia", en: "To speak with a full mouth", when: "Speaking without thinking or rudely", register: "informal", freq: "common" },
+  { pt: "Falar para o boneco", en: "To talk to the doll", when: "Talking to someone who isn't paying attention", register: "colloquial", freq: "common" },
+  { pt: "Falar pelos cotovelos", en: "To talk through the elbows", when: "Talking too much, non-stop", register: "neutral", freq: "common" },
+  { pt: "Fazer das suas", en: "To do your own things", when: "Misbehaving or causing trouble", register: "informal", freq: "common" },
+  { pt: "Fazer das tripas coração", en: "To make a heart out of guts", when: "Summoning all your courage in a tough situation", register: "neutral", freq: "common" },
+  { pt: "Fazer uma tempestade num copo de água", en: "To make a storm in a glass of water", when: "Exaggerating a minor issue", register: "neutral", freq: "common" },
+  { pt: "Fazer uma vaquinha", en: "To make a little cow", when: "Chipping in together to pool resources", register: "colloquial", freq: "common" },
+  { pt: "Fazer vista grossa", en: "To make a thick view", when: "Pretending not to see something wrong", register: "neutral", freq: "common" },
+  { pt: "Ficar a ver navios", en: "To stay watching ships", when: "Being left empty-handed or disappointed", register: "neutral", freq: "common" },
+  { pt: "Ficar de molho", en: "To stay soaking", when: "Resting or being inactive, often when sick", register: "colloquial", freq: "common" },
+  { pt: "Ficar em águas de bacalhau", en: "To end up in codfish waters", when: "A plan comes to nothing and is abandoned", register: "colloquial", freq: "common" },
+  { pt: "Ir aos arames", en: "To go to the wires", when: "On the edge of losing patience or having a breakdown", register: "colloquial", freq: "common" },
+  { pt: "Ir com os porcos", en: "To go with the pigs", when: "An idea or plan went completely down the drain", register: "colloquial", freq: "occasional" },
+  { pt: "Ir pentear macacos", en: "To go comb monkeys", when: "Telling someone rudely to go away", register: "rude", freq: "common" },
+  { pt: "Levar com os pés", en: "To be hit with feet", when: "Being rejected, especially romantically", register: "colloquial", freq: "occasional" },
+  { pt: "Matar dois coelhos de uma cajadada só", en: "To kill two rabbits with one blow", when: "Solving two problems at once", register: "neutral", freq: "common" },
+  { pt: "Meter os pés pelas mãos", en: "To put your feet through your hands", when: "Messing things up or getting confused", register: "colloquial", freq: "common" },
+  { pt: "Muitos anos a virar frangos", en: "Many years turning chickens", when: "Having a lot of experience doing something", register: "colloquial", freq: "occasional" },
+  { pt: "Não dar a bota com a perdigota", en: "Doesn't match the boot with the young quail", when: "Comparing two things that are not comparable", register: "colloquial", freq: "rare" },
+  { pt: "Não há duas sem três", en: "There's no two without three", when: "When a third mishap follows two others", register: "neutral", freq: "common" },
+  { pt: "Não perceber patavina", en: "Not to understand a patavina", when: "Not understanding anything at all", register: "colloquial", freq: "common" },
+  { pt: "Não ter papas na língua", en: "Not to have porridge on the tongue", when: "Being direct and frank; speaking one's mind", register: "neutral", freq: "common" },
+  { pt: "Pagar o pato", en: "To pay the duck", when: "Taking the blame for something you didn't do", register: "neutral", freq: "common" },
+  { pt: "Passar pelas brasas", en: "To go through hot coals", when: "Dozing off or taking a quick nap", register: "colloquial", freq: "common" },
+  { pt: "Pôr a mão na consciência", en: "Put your hand on your conscience", when: "Reflecting on your actions before doing something wrong", register: "neutral", freq: "common" },
+  { pt: "Pôr-se fino", en: "Put yourself thin", when: "Warning someone to start behaving properly", register: "colloquial", freq: "common" },
+  { pt: "Pôr-se na alheta", en: "Put yourself in Alheta", when: "Leaving quickly to avoid a difficult situation", register: "colloquial", freq: "occasional" },
+  { pt: "Queimar as pestanas", en: "To burn the eyelashes", when: "Studying or working very hard late into the night", register: "neutral", freq: "common" },
+  { pt: "Quem feio ama, bonito lhe parece", en: "Whoever loves one who's ugly finds beauty in them", when: "Beauty is in the eye of the beholder", register: "neutral", freq: "common" },
+  { pt: "Quem não arrisca, não petisca", en: "Who doesn't risk, doesn't snack", when: "Encouraging someone to take a chance", register: "neutral", freq: "common" },
+  { pt: "Quem tem boca vai a Roma", en: "He who has a mouth goes to Rome", when: "Asking questions helps you get where you want", register: "neutral", freq: "common" },
+  { pt: "Quem vê cara, não vê coração", en: "Those who see faces don't see hearts", when: "Don't judge a book by its cover", register: "neutral", freq: "common" },
+  { pt: "Quem espera sempre alcança", en: "Who waits always reaches", when: "Patience pays off in the end", register: "neutral", freq: "common" },
+  { pt: "Sair a correr como alma penada", en: "To run like a tormented soul", when: "Running away in panic", register: "colloquial", freq: "occasional" },
+  { pt: "Sem pés nem cabeça", en: "Without feet or head", when: "Something makes no sense at all", register: "neutral", freq: "common" },
+  { pt: "Ser uma pessoa de poucas palavras", en: "To be a person of few words", when: "Someone who doesn't talk much", register: "neutral", freq: "common" },
+  { pt: "Só para Inglês ver", en: "Just for an English person to see", when: "Doing something purely for appearances or show", register: "neutral", freq: "common" },
+  { pt: "Ter a pulga atrás da orelha", en: "To have a flea behind the ear", when: "Being suspicious about something", register: "colloquial", freq: "common" },
+  { pt: "Ter as costas quentes", en: "To have warm backs", when: "Having powerful protection or connections", register: "colloquial", freq: "common" },
+  { pt: "Ter cabeça fria", en: "To have a cool head", when: "Staying calm under pressure", register: "neutral", freq: "common" },
+  { pt: "Ter debaixo da língua", en: "To have under the tongue", when: "Having something on the tip of your tongue", register: "colloquial", freq: "occasional" },
+  { pt: "Ter dor de cotovelo", en: "To have elbow pain", when: "Feeling envy or jealousy", register: "colloquial", freq: "common" },
+  { pt: "Ter macaquinhos na cabeça", en: "To have little monkeys in your head", when: "Having silly or paranoid ideas", register: "colloquial", freq: "common" },
+  { pt: "Ter muita lata", en: "To have a lot of tin", when: "Being very shameless or bold", register: "colloquial", freq: "common" },
+  { pt: "Ter o coração nas mãos", en: "To have the heart in the hands", when: "Being extremely worried or scared", register: "informal", freq: "common" },
+  { pt: "Ter o rei na barriga", en: "To have the king in the belly", when: "Acting arrogantly, like you're more important than others", register: "colloquial", freq: "common" },
+  { pt: "Ter os pés bem assentes na terra", en: "To have your feet firmly planted on the ground", when: "Being realistic and sensible", register: "neutral", freq: "common" },
+  { pt: "Tirar o cavalinho da chuva", en: "Take your little horse away from the rain", when: "Giving up on an idea that won't work", register: "colloquial", freq: "common" },
+  { pt: "Uma pilha de nervos", en: "A battery of nerves", when: "Being so stressed others can visibly tell", register: "colloquial", freq: "common" },
+  { pt: "Viajar na maionese", en: "To travel in the mayonnaise", when: "Talking nonsense or drifting into irrelevant thoughts", register: "colloquial", freq: "common" },
 ];
 
 const NUMBERS = [
@@ -2605,6 +2605,18 @@ const HoverDiv = React.memo(function HoverDiv({ baseBg, hoverBg, style, onClick,
   );
 });
 
+const CONTRAST_LABELS = {
+  "nasal-diphthong":  "Nasal diphthong",
+  "vowel-quality":    "Vowel quality",
+  "consonant-double": "Double consonant",
+  "consonant-onset":  "Consonant onset",
+  "stress-accent":    "Stress / accent",
+  "nasal-oral":       "Nasal vs oral",
+  "consonant-voiced": "Voiced consonant",
+  "cluster":          "Consonant cluster",
+  "orthographic":     "Orthographic",
+};
+
 const MinimalPairs = React.memo(function MinimalPairs({
   pairIndex, setPairIndex,
   pairsOrder, setPairsOrder,
@@ -2614,10 +2626,33 @@ const MinimalPairs = React.memo(function MinimalPairs({
   pairsScore, setPairsScore,
   fontSize, speakListPT,
 }) {
-  const pair = MINIMAL_PAIRS[pairsOrder[pairIndex]];
+  const [contrastFilter, setContrastFilter] = useState("all");
+
+  // Filtered pool: indices of MINIMAL_PAIRS entries matching the current contrast filter
+  const filteredPool = useMemo(() => {
+    if (contrastFilter === "all") return MINIMAL_PAIRS.map((_, i) => i);
+    return MINIMAL_PAIRS.reduce((acc, p, i) => { if (p.contrast === contrastFilter) acc.push(i); return acc; }, []);
+  }, [contrastFilter]);
+
+  // When filter changes, rebuild pairsOrder from filtered pool and reset position
+  useEffect(() => {
+    const arr = [...filteredPool];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    setPairsOrder(arr);
+    setPairIndex(0);
+    setQuizTarget(null);
+    setQuizResult(null);
+  }, [filteredPool]);
+
+  const currentPool = pairsOrder.length > 0 ? pairsOrder : filteredPool;
+  const pair = MINIMAL_PAIRS[currentPool[pairIndex] ?? 0];
+  const poolSize = currentPool.length;
 
   const shuffle = () => {
-    const arr = MINIMAL_PAIRS.map((_, i) => i);
+    const arr = [...filteredPool];
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -2641,13 +2676,13 @@ const MinimalPairs = React.memo(function MinimalPairs({
     setPairsScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
   };
   const next = () => {
-    const nextIdx = (pairIndex + 1) % MINIMAL_PAIRS.length;
+    const nextIdx = (pairIndex + 1) % poolSize;
     setPairIndex(nextIdx);
     setQuizResult(null);
     if (pairsQuizMode) setQuizTarget(Math.random() < 0.5 ? "a" : "b");
   };
   const prev = () => {
-    const prevIdx = (pairIndex - 1 + MINIMAL_PAIRS.length) % MINIMAL_PAIRS.length;
+    const prevIdx = (pairIndex - 1 + poolSize) % poolSize;
     setPairIndex(prevIdx);
     setQuizResult(null);
     if (pairsQuizMode) setQuizTarget(Math.random() < 0.5 ? "a" : "b");
@@ -2662,14 +2697,34 @@ const MinimalPairs = React.memo(function MinimalPairs({
     <button onClick={onClick} style={{ fontSize: fontSize, padding: "5px 14px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", ...style }}>{label}</button>
   );
 
+  if (!pair) return null;
+
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 10 }}>
+      {/* contrast filter row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, paddingBottom: 8, borderBottom: "1px solid var(--color-border-tertiary)" }}>
+        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}>Contrast:</span>
+        <select
+          value={contrastFilter}
+          onChange={e => setContrastFilter(e.target.value)}
+          style={{ fontSize: 11, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", cursor: "pointer", fontFamily: "var(--font-sans)", flex: 1, maxWidth: 200 }}>
+          <option value="all">All pairs ({MINIMAL_PAIRS.length})</option>
+          {Object.entries(CONTRAST_LABELS).map(([val, label]) => {
+            const count = MINIMAL_PAIRS.filter(p => p.contrast === val).length;
+            return <option key={val} value={val}>{label} ({count})</option>;
+          })}
+        </select>
+        {contrastFilter !== "all" && (
+          <button onClick={() => setContrastFilter("all")} style={{ fontSize: 11, padding: "2px 7px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-tertiary)", cursor: "pointer" }}>✕</button>
+        )}
+      </div>
+
       {/* toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "var(--color-background-info)" : "var(--color-background-green)", color: pairsQuizMode ? "var(--color-accent-blue)" : "var(--color-accent-green)", borderColor: pairsQuizMode ? "var(--color-border-info)" : "var(--color-border-green)" })}
         {cardBtn("🔀 Shuffle", shuffle)}
         <span style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginLeft: "auto" }}>
-          {pairIndex + 1} / {MINIMAL_PAIRS.length}
+          {pairIndex + 1} / {poolSize}
           {pairsScore.total > 0 && (
             <span style={{ marginLeft: 10, color: pairsScore.correct / pairsScore.total >= 0.7 ? "var(--color-accent-green)" : "var(--color-accent-red-deep)" }}>
               Score: {pairsScore.correct}/{pairsScore.total}
@@ -2691,6 +2746,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
                 <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Ouvir</button>
               </div>
             ))}
+            {pair.contrast && <div style={{ width: "100%", textAlign: "center", fontSize: 11, color: "var(--color-text-tertiary)", marginTop: -8 }}>{CONTRAST_LABELS[pair.contrast] || pair.contrast}</div>}
           </div>
         ) : (
           /* Quiz mode */
@@ -2835,29 +2891,79 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
   );
 });
 
+const IDIOM_REGISTER_COLORS = {
+  neutral:    { bg: "#f3f4f6", color: "#6b7280", border: "#d1d5db" },
+  informal:   { bg: "#eff6ff", color: "#2563eb", border: "#bfdbfe" },
+  colloquial: { bg: "#fffbeb", color: "#b45309", border: "#fde68a" },
+  rude:       { bg: "#fef2f2", color: "#dc2626", border: "#fecaca" },
+};
+
 const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFilter }) {
+  const [freqFilter, setFreqFilter] = useState("all");
+  const [regFilter, setRegFilter]   = useState("all");
+
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
   const needle = (listFilter || "").toLowerCase();
-  const visible = useMemo(() => needle ? IDIOMS.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle) || (it.when && it.when.toLowerCase().includes(needle))) : IDIOMS, [needle]);
+
+  const visible = useMemo(() => {
+    let list = IDIOMS;
+    if (needle) list = list.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle) || (it.when && it.when.toLowerCase().includes(needle)));
+    if (freqFilter === "common") list = list.filter(it => it.freq === "common");
+    if (regFilter !== "all") list = list.filter(it => it.register === regFilter);
+    return list;
+  }, [needle, freqFilter, regFilter]);
+
+  const btnBase = { fontSize: 11, padding: "3px 9px", borderRadius: 4, cursor: "pointer", border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" };
+  const btnActive = { ...btnBase, background: "var(--color-background-info)", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)", fontWeight: 600 };
+
   return (
     <div style={listPanelStyle}>
+      {/* filter row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 10, paddingBottom: 8, borderBottom: "1px solid var(--color-border-tertiary)" }}>
+        <button style={freqFilter === "all" && regFilter === "all" ? btnActive : btnBase}
+          onClick={() => { setFreqFilter("all"); setRegFilter("all"); }}>All</button>
+        <button style={freqFilter === "common" ? btnActive : btnBase}
+          onClick={() => setFreqFilter(f => f === "common" ? "all" : "common")}>Common only</button>
+        <select
+          value={regFilter}
+          onChange={e => setRegFilter(e.target.value)}
+          style={{ fontSize: 11, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-primary)", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
+          <option value="all">All registers</option>
+          <option value="neutral">Neutral</option>
+          <option value="informal">Informal</option>
+          <option value="colloquial">Colloquial</option>
+          <option value="rude">Rude</option>
+        </select>
+        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginLeft: "auto" }}>{visible.length} idiom{visible.length !== 1 ? "s" : ""}</span>
+      </div>
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{visible.length} match{visible.length !== 1 ? "es" : ""}</p>}
-      {visible.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
+      {visible.length === 0 && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
       <table style={tbl}><tbody>
-        {visible.map((item, i) => (
-          <tr key={i} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-            <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-              <button onClick={() => speakListPT(item.pt)}
-                aria-label={`Hear: ${item.pt}`}
-                style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-            </td>
-            <td style={{ ...tdL, width: "34%", paddingBottom: 8, paddingTop: 6 }}>{item.pt}</td>
-            <td style={{ ...tdR, width: "32%", paddingBottom: 8, paddingTop: 6 }}>{item.en}</td>
-            <td style={{ ...tdR, paddingBottom: 8, paddingTop: 6, fontStyle: "italic" }}>{item.when}</td>
-          </tr>
-        ))}
+        {visible.map((item, i) => {
+          const rc = IDIOM_REGISTER_COLORS[item.register] || IDIOM_REGISTER_COLORS.neutral;
+          return (
+            <tr key={i} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+              <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                <button onClick={() => speakListPT(item.pt)}
+                  aria-label={`Hear: ${item.pt}`}
+                  style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+              </td>
+              <td style={{ ...tdL, width: "34%", paddingBottom: 8, paddingTop: 6 }}>
+                {item.pt}
+                {item.register && (
+                  <div style={{ marginTop: 3, display: "flex", alignItems: "center", gap: 5 }}>
+                    <span style={{ fontSize: 11, padding: "1px 5px", borderRadius: 3, background: rc.bg, color: rc.color, border: `1px solid ${rc.border}`, fontFamily: "var(--font-sans)" }}>{item.register}</span>
+                    <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", fontFamily: "var(--font-sans)" }}>{item.freq}</span>
+                  </div>
+                )}
+              </td>
+              <td style={{ ...tdR, width: "32%", paddingBottom: 8, paddingTop: 6 }}>{item.en}</td>
+              <td style={{ ...tdR, paddingBottom: 8, paddingTop: 6, fontStyle: "italic" }}>{item.when}</td>
+            </tr>
+          );
+        })}
       </tbody></table>
     </div>
   );
