@@ -20,8 +20,8 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.3.8",
-  date: "2026-05-21",
+  version: "2.4.5",
+  date: "2026-05-23",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
   file: "portugues_europeu.html",
@@ -39,6 +39,8 @@ const LIST_TABS = [
   { id: "slang", label: "Slang" },
   { id: "verbref", label: "Verb List" },
 ];
+
+const VERB_REF_TABS = ["irregular", "ar", "erir"];
 
 const MINIMAL_PAIRS = [
   { a: { word: "pão", meaning: "bread" }, b: { word: "pau", meaning: "stick" } },
@@ -64,7 +66,7 @@ const MINIMAL_PAIRS = [
   { a: { word: "sono", meaning: "sleep" }, b: { word: "sonho", meaning: "dream" } },
   { a: { word: "caro", meaning: "expensive" }, b: { word: "carro", meaning: "car" } },
   { a: { word: "coro", meaning: "choir" }, b: { word: "corro", meaning: "I run" } },
-  { a: { word: "terra", meaning: "earth" }, b: { word: "tera", meaning: "will have" } },
+  { a: { word: "terra", meaning: "earth" }, b: { word: "terá", meaning: "will have" } },
   { a: { word: "pato", meaning: "duck" }, b: { word: "bato", meaning: "I hit" } },
   { a: { word: "tela", meaning: "screen" }, b: { word: "dela", meaning: "of her" } },
   { a: { word: "cama", meaning: "bed" }, b: { word: "gama", meaning: "range" } },
@@ -126,7 +128,7 @@ const IRREGULAR_VERBS = [
     ["fazia","fazias","fazia","fazíamos","faziam","faziam"],
     ["farei","farás","fará","faremos","farão","farão"],
     ["feito"]]},
-  { inf:"haver", en:"to have/exist", tenses:[
+  { inf:"haver", en:"to have/exist (modern EP: only 'há' is common — other forms are archaic)", tenses:[
     ["hei","hás","há","havemos","hão","hão"],
     ["houve","houveste","houve","houvemos","houveram","houveram"],
     ["havia","havias","havia","havíamos","haviam","haviam"],
@@ -198,7 +200,7 @@ const REGULAR_AR_VERBS = [
 const REGULAR_ER_IR_VERBS = [
   { inf:"abrir", en:"to open" }, { inf:"admitir", en:"to admit" }, { inf:"agir", en:"to act" },
   { inf:"aprender", en:"to learn" }, { inf:"assistir", en:"to watch/attend" }, { inf:"atender", en:"to attend/answer" },
-  { inf:"atribuir", en:"to attribute" }, { inf:"beber", en:"to drink" }, { inf:"caber", en:"to fit" },
+  { inf:"atribuir", en:"to attribute" }, { inf:"beber", en:"to drink" },
   { inf:"cobrir", en:"to cover" }, { inf:"comer", en:"to eat" }, { inf:"competir", en:"to compete" },
   { inf:"compreender", en:"to understand" }, { inf:"conhecer", en:"to know/meet" }, { inf:"consentir", en:"to consent" },
   { inf:"consistir", en:"to consist" }, { inf:"construir", en:"to build" }, { inf:"consumir", en:"to consume" },
@@ -206,14 +208,14 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"corrigir", en:"to correct" }, { inf:"crescer", en:"to grow" }, { inf:"decidir", en:"to decide" },
   { inf:"definir", en:"to define" }, { inf:"depender", en:"to depend" }, { inf:"descer", en:"to descend" },
   { inf:"destruir", en:"to destroy" }, { inf:"devolver", en:"to return" }, { inf:"discutir", en:"to discuss" },
-  { inf:"dividir", en:"to divide" }, { inf:"doer", en:"to hurt" }, { inf:"emitir", en:"to emit" },
+  { inf:"dividir", en:"to divide" }, { inf:"emitir", en:"to emit" },
   { inf:"engolir", en:"to swallow" }, { inf:"entender", en:"to understand" }, { inf:"escolher", en:"to choose" },
   { inf:"esconder", en:"to hide" }, { inf:"escrever", en:"to write" }, { inf:"esculpir", en:"to sculpt" },
   { inf:"esquecer", en:"to forget" }, { inf:"estabelecer", en:"to establish" }, { inf:"excluir", en:"to exclude" },
   { inf:"exibir", en:"to exhibit" }, { inf:"expandir", en:"to expand" }, { inf:"extinguir", en:"to extinguish" },
   { inf:"fornecer", en:"to provide" }, { inf:"fugir", en:"to flee" }, { inf:"garantir", en:"to guarantee" },
   { inf:"incluir", en:"to include" }, { inf:"inserir", en:"to insert" }, { inf:"insistir", en:"to insist" },
-  { inf:"investir", en:"to invest" }, { inf:"ler", en:"to read" }, { inf:"manter", en:"to maintain" },
+  { inf:"investir", en:"to invest" },
   { inf:"medir", en:"to measure" }, { inf:"mentir", en:"to lie" }, { inf:"merecer", en:"to deserve" },
   { inf:"morrer", en:"to die" }, { inf:"nascer", en:"to be born" }, { inf:"nutrir", en:"to nourish" },
   { inf:"obedecer", en:"to obey" }, { inf:"oferecer", en:"to offer" }, { inf:"omitir", en:"to omit" },
@@ -225,10 +227,17 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"residir", en:"to reside" }, { inf:"resolver", en:"to resolve" }, { inf:"responder", en:"to respond" },
   { inf:"reunir", en:"to gather" }, { inf:"sofrer", en:"to suffer" },
   { inf:"sugerir", en:"to suggest" }, { inf:"surpreender", en:"to surprise" }, { inf:"temer", en:"to fear" },
-  { inf:"tender", en:"to tend" }, { inf:"traduzir", en:"to translate" }, { inf:"valer", en:"to be worth" },
+  { inf:"tender", en:"to tend" }, { inf:"traduzir", en:"to translate" },
   { inf:"vender", en:"to sell" }, { inf:"ver", en:"to see" }, { inf:"vestir", en:"to dress" },
   { inf:"viver", en:"to live" },
 ];
+const SEMI_IRREGULAR_ER_IR_VERBS = [
+  { inf:"caber", en:"to fit" },
+  { inf:"manter", en:"to maintain" },
+  { inf:"doer", en:"to hurt" },
+  { inf:"valer", en:"to be worth" },
+];
+
 
 // Slim projection used by ALL_VERBS_DATA and verbRefList; avoids re-mapping on every render.
 const IRREGULAR_VERBS_SLIM = IRREGULAR_VERBS.map(v => ({ inf: v.inf, en: v.en }));
@@ -237,6 +246,7 @@ const ALL_VERBS_DATA = [
   ...IRREGULAR_VERBS_SLIM,
   ...REGULAR_AR_VERBS,
   ...REGULAR_ER_IR_VERBS,
+  ...SEMI_IRREGULAR_ER_IR_VERBS,
 ];
 
 // Pre-sorted once at module load; used by filteredVerbDropdown to avoid re-sorting on every keystroke.
@@ -248,7 +258,7 @@ const ALL_VERBS_MAP = new Map(ALL_VERBS_DATA.map(x => [x.inf, x.en]));
 // O(1) irregularity check; replaces IRREGULAR_VERBS.some() at all call sites.
 const IRREGULAR_VERBS_SET = new Set(IRREGULAR_VERBS.map(v => v.inf));
 
-function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function pickRandom(arr) { if (!arr || !arr.length) return null; return arr[Math.floor(Math.random() * arr.length)]; }
 
 const PRONUNCIATION_GUIDE = [
   { section: "Vowels", items: [
@@ -675,7 +685,22 @@ const NUMBERS = [
     { pt: "mil",                               en: "1,000" },
     { pt: "dois mil",                          en: "2,000" },
     { pt: "cem mil",                           en: "100,000" },
-    { pt: "duzentos mil",                      en: "200,000" },
+    { pt: "duzentos mil",                      en: "200,000",   gender: "m" },
+    { pt: "duzentas mil",                      en: "200,000",   gender: "f" },
+    { pt: "trezentos mil",                     en: "300,000",   gender: "m" },
+    { pt: "trezentas mil",                     en: "300,000",   gender: "f" },
+    { pt: "quatrocentos mil",                  en: "400,000",   gender: "m" },
+    { pt: "quatrocentas mil",                  en: "400,000",   gender: "f" },
+    { pt: "quinhentos mil",                    en: "500,000",   gender: "m" },
+    { pt: "quinhentas mil",                    en: "500,000",   gender: "f" },
+    { pt: "seiscentos mil",                    en: "600,000",   gender: "m" },
+    { pt: "seiscentas mil",                    en: "600,000",   gender: "f" },
+    { pt: "setecentos mil",                    en: "700,000",   gender: "m" },
+    { pt: "setecentas mil",                    en: "700,000",   gender: "f" },
+    { pt: "oitocentos mil",                    en: "800,000",   gender: "m" },
+    { pt: "oitocentas mil",                    en: "800,000",   gender: "f" },
+    { pt: "novecentos mil",                    en: "900,000",   gender: "m" },
+    { pt: "novecentas mil",                    en: "900,000",   gender: "f" },
     { pt: "um milhão",                         en: "1,000,000" },
     { pt: "dois milhões",                      en: "2,000,000" },
     { pt: "um bilião",                         en: "1,000,000,000 (EP)" },
@@ -785,7 +810,7 @@ const COGNATES = [
     { pt: "adorável", en: "adorable" }, { pt: "audível", en: "audible" }, { pt: "possível", en: "possible" }, { pt: "responsável", en: "responsible" },
   ], exceptions: [] },
   { section: "-CY → -CIA", rule: "", items: [
-    { pt: "a democracia", en: "democracy" }, { pt: "a agência", en: "agency" }, { pt: "a farmácia", en: "pharmacy" },
+    { pt: "a democracia", en: "democracy" }, { pt: "a farmácia", en: "pharmacy" },
   ], exceptions: [] },
   { section: "-ENCE → -ÊNCIA (f)", rule: "", items: [
     { pt: "a coexistência", en: "coexistence" }, { pt: "a experiência", en: "experience" }, { pt: "a violência", en: "violence" },
@@ -827,7 +852,7 @@ const COGNATES = [
     { pt: "anualmente", en: "annually" }, { pt: "rapidamente", en: "rapidly" }, { pt: "normalmente", en: "normally" },
   ], exceptions: [] },
   { section: "-ON → -ÃO (m)", rule: "Masculine nouns.", items: [
-    { pt: "o bilhão", en: "billion" }, { pt: "o cânon", en: "canon" },
+    { pt: "o bilião", en: "billion" }, { pt: "o cânon", en: "canon" },
   ], exceptions: [] },
   { section: "-OR → -OR/A", rule: "Masculine -or, feminine -ora.", items: [
     { pt: "o criador / a criadora", en: "creator" }, { pt: "o ditador / a ditadora", en: "dictator" }, { pt: "o professor / a professora", en: "professor" },
@@ -1489,7 +1514,7 @@ function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusId
     : correctionBlockPossible
       ? "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only (plus any correction block if applicable)."
       : "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only.";
-  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. Keep responses concise — 2 to 4 sentences unless the learner asks for more detail.\n\nDo not use any emoji in your responses under any circumstances.${translationInstruction}`;
+  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. ${level === "A1" ? "Keep responses very short — 1 to 2 sentences. Simple vocabulary only." : level === "A2" ? "Keep responses short — 2 to 3 sentences." : level === "B1" ? "Keep responses natural — 3 to 5 sentences." : "Respond at natural length — no artificial brevity. Longer texts help the learner practice reading."}\n\nDo not use any emoji in your responses under any circumstances.${translationInstruction}`;
 }
 
 // Tense-to-level mapping used by the conjugator display
@@ -1638,6 +1663,7 @@ const TOOLS_MODEL = "claude-haiku-4-5-20251001";
 const CHAT_MODEL_CTX = 200000;
 
 function ls(key, fallback) { try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; } }
+let _peStorageWarnShown = false;
 function lsSet(key, val) {
   try {
     localStorage.setItem(key, JSON.stringify(val));
@@ -1645,8 +1671,9 @@ function lsSet(key, val) {
     console.warn(`[pe] localStorage write failed for "${key}":`, e);
     // Surface a non-intrusive banner so the user knows settings aren't persisting.
     // Deduplicated: only shown once per page session.
-    if (!window._peStorageWarnShown) {
-      window._peStorageWarnShown = true;
+    // TODO C-12: move banner to React state (storageFull) rendered by App component.
+    if (!_peStorageWarnShown) {
+      _peStorageWarnShown = true;
       const banner = document.createElement("div");
       banner.textContent = "\u26a0 Settings could not be saved \u2014 storage is full or unavailable (e.g. private browsing). Changes will be lost on reload.";
       Object.assign(banner.style, { position: "fixed", bottom: "12px", left: "50%", transform: "translateX(-50%)", zIndex: "99999", background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", borderRadius: "8px", padding: "10px 18px", fontSize: "13px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)", maxWidth: "90vw", textAlign: "center", cursor: "pointer" });
@@ -1692,20 +1719,20 @@ const PE_SCHEMA_RESET_KEYS = ["pe_topics", "pe_vocab_review", "pe_conj_cache"];
 
 const chip = (active) => ({
   display: "inline-block", fontSize: 12, padding: "4px 14px", borderRadius: 999,
-  border: active ? "2px solid #2563eb" : "2px solid transparent",
+  border: active ? "2px solid var(--color-accent-blue)" : "2px solid transparent",
   background: active ? "var(--color-accent-blue)" : "var(--color-background-secondary)",
   color: active ? "#fff" : "var(--color-text-tertiary)",
   cursor: "pointer", margin: "2px", fontFamily: "var(--font-sans)", outline: "none",
   fontWeight: active ? 600 : 400, textTransform: "uppercase", transition: "all 0.15s",
 });
-const segCtrl = { display: "inline-flex", borderRadius: 999, overflow: "hidden", border: "1.5px solid #2563eb", background: "transparent" };
+const segCtrl = { display: "inline-flex", borderRadius: 999, overflow: "hidden", border: "1.5px solid var(--color-accent-blue)", background: "transparent" };
 const segBtn = (active, pos) => ({
   fontSize: 12, fontWeight: active ? 700 : 400,
   padding: "4px 14px",
   background: active ? "var(--color-accent-blue)" : "transparent",
   color: active ? "#fff" : "var(--color-accent-blue)",
   border: "none",
-  borderLeft: pos === "mid" || pos === "last" ? "1px solid #2563eb" : "none",
+  borderLeft: pos === "mid" || pos === "last" ? "1px solid var(--color-accent-blue)" : "none",
   cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none",
   textTransform: "uppercase", transition: "all 0.15s",
 });
@@ -2052,7 +2079,8 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
   const linkStyle = useMemo(() => ({
     color: "var(--color-accent-blue-chat)", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block",
   }), [fontSize]);
-  
+
+
   return (
     <div style={listPanelStyle}>
       {MEDIA_SECTIONS_SORTED.map(sec => {
@@ -2217,9 +2245,9 @@ function pickDistractors(pool, correctItem) {
   return unique;
 }
 
-const GENDER_BADGE = (gender) => gender
+const GenderBadge = React.memo(function GenderBadge({ gender }) { return gender
   ? <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: gender === "m" ? "#eff6ff" : "var(--color-background-gender-f)", color: gender === "m" ? "var(--color-accent-blue-deep)" : "var(--color-accent-violet)", border: `1px solid ${gender === "m" ? "var(--color-border-info)" : "var(--color-border-gender-f)"}`, verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>{gender === "m" ? "m" : "f"}</span>
-  : null;
+  : null; });
 
 const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speechSupported, listFilter }) {
   const { useState: S, useRef: R, useEffect: E, useMemo: M } = React;
@@ -2252,6 +2280,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   const micLang = direction === "pt-en" ? "en-US" : "pt-PT";
 
   // Auto-play PT audio in pt-en mode — cancel any in-flight TTS first.
+  // speakListPT is stable (useCallback); add it here if that ever changes.
   E(() => {
     if (!quizMode || direction !== "pt-en" || !item) return;
     window.speechSynthesis?.cancel();
@@ -2259,6 +2288,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   }, [quizMode, direction, qIdx, order]);
 
   // Auto-speak EN in en-pt mode — cancel any in-flight TTS first.
+  // speakListPT is stable (useCallback); add it here if that ever changes.
   E(() => {
     if (!quizMode || direction !== "en-pt" || !item) return;
     window.speechSynthesis?.cancel();
@@ -2438,7 +2468,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
                     <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
                       style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                   </td>
-                  <td style={tdL}>{it.pt}{GENDER_BADGE(it.gender)}</td>
+                  <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} /></td>
                   <td style={tdR}>{it.en}</td>
                 </tr>
               ))}
@@ -2576,7 +2606,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
             {result === "wrong" && <p style={{ fontSize, color: "var(--color-text-secondary)", margin: 0 }}>You said: <em>"{wrongAnswer}"</em></p>}
             <div style={{ fontSize, color: "var(--color-text-secondary)", margin: "4px 0 0", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
               <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-info)", fontSize: fontSize * 1.1 }}>{item.pt}</span>
-              {GENDER_BADGE(item.gender)}
+              <GenderBadge gender={item.gender} />
               <span>—</span>
               <span>{item.en}</span>
               <button onClick={() => speakListPT(item.pt)} style={{ fontSize: 13, padding: "1px 6px", borderRadius: 4, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶</button>
@@ -2817,6 +2847,7 @@ const nextMsgId = () => ++_msgId;
 
 // Find a real browser SpeechSynthesisVoice for fallback — never pass the fake __azure__ sentinel object
 function findBrowserVoice(lang) {
+  if (!window.speechSynthesis) return null;
   const vs = window.speechSynthesis.getVoices();
   if (lang === "en-US") return vs.find(x => x.lang === "en-US") || vs.find(x => x.lang.startsWith("en")) || null;
   return vs.find(x => x.lang === "pt-PT") || vs.find(x => x.lang.startsWith("pt")) || null;
@@ -2857,7 +2888,7 @@ function App() {
   const [conjLoading, setConjLoading] = useState(false);
   const [conjError, setConjError] = useState("");
   const [conjOpenGroups, setConjOpenGroups] = useState(() => new Set(CONJ_LEVEL_GROUPS.map(g => g.level)));   // Set of open group ids
-  const [conjUsageOpen, setConjUsageOpen] = useState(false);    // false = all usage sections closed
+  const [conjUsageOpen, setConjUsageOpen] = useState(() => new Set());    // Set of open usage group levels
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [focusIdiom, setFocusIdiom] = useState(null);
   const [idiomDropdownOpen, setIdiomDropdownOpen] = useState(false);
@@ -2904,6 +2935,7 @@ function App() {
   const nextVocabWord = useRef(null);   // pre-picked word for the next draw
   const prefetchAbortRef = useRef(null); // AbortController for in-flight prefetch
   const sendMessageRef = useRef(null);
+  const chatAbortRef = useRef(null);
   const recognitionRef = useRef(null);
   const selectedVoiceRef = useRef(null);
   const intentionalStopRef = useRef(false);
@@ -2947,8 +2979,9 @@ function App() {
   // Keep ref in sync so speak() always sees the current voice without stale closure issues
   useEffect(() => { selectedVoiceRef.current = selectedVoice; }, [selectedVoice]);
 
-  // Fetch last commit date for this file from GitHub API (runs once on mount)
+  // Fetch last commit date for this file from GitHub API (runs when About opens)
   useEffect(() => {
+    if (!aboutOpen) return;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
     fetch(`https://api.github.com/repos/${APP_META.repo}/commits?path=${APP_META.file}&per_page=1`, { signal: controller.signal })
@@ -2961,7 +2994,7 @@ function App() {
       })
       .catch(() => {})
       .finally(() => clearTimeout(timer));
-  }, []);
+  }, [aboutOpen]);
 
   const createRecognition = (SR, lang) => {
     const r = new SR();
@@ -3031,7 +3064,7 @@ function App() {
     if (azureBlobUrlRef.current) { URL.revokeObjectURL(azureBlobUrlRef.current); azureBlobUrlRef.current = null; }
     try {
       const ratePercent = Math.round((ttsRateRef.current - 1) * 100) + "%";
-      const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;");
       const azureVoiceName = lang.startsWith("en") ? "en-US-JennyNeural" : (selectedVoiceRef.current?.azureVoice || "pt-PT-RaquelNeural");
       const ssml = `<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='${lang}'><voice name='${azureVoiceName}'><prosody rate='${ratePercent}'>${escaped}</prosody></voice></speak>`;
       const resp = await fetch(`https://${azureRegion}.tts.speech.microsoft.com/cognitiveservices/v1`, {
@@ -3090,7 +3123,7 @@ function App() {
   const speak = useCallback(async (text) => {
     // Strip correction block (--- or Correction:/Correção: on its own line) and translation block (=== on its own line).
     const clean = text
-      .replace(/(^|\n)(---|===|Correction:|Corre[cç][aã]o:)[\s\S]*$/, "")
+      .replace(/(^|\n)(---\s*$|===\s*$|Correction:\s*$|Corre[cç][aã]o:\s*$)[\s\S]*/m, "")
       .replace(/\*[^*]+\*/g, "")
       .replace(/\[.*?\]/g, "")
       .replace(/[#_`]/g, "")
@@ -3228,6 +3261,9 @@ function App() {
     setLoading(true);
 
     try {
+      chatAbortRef.current?.abort();
+      const chatController = new AbortController();
+      chatAbortRef.current = chatController;
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -3236,6 +3272,7 @@ function App() {
           "anthropic-dangerous-direct-browser-access": "true",
           ...(apiKey ? { "x-api-key": apiKey } : {})
         },
+        signal: chatController.signal,
         body: JSON.stringify({
           model: CHAT_MODEL, max_tokens: 1000,
           system: buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation),
@@ -3246,6 +3283,14 @@ function App() {
           })),
         }),
       });
+      if (!resp.ok) {
+        const errText = await resp.text().catch(() => "");
+        const msg = resp.status === 429
+          ? "*(Rate limit reached — wait a moment and try again.)*"
+          : `*(HTTP ${resp.status} error${errText ? ": " + errText.slice(0, 120) : ""})*`;
+        setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: msg, _retryable: true, _retryText: text }]);
+        return;
+      }
       const data = await resp.json();
       if (data.error) {
         setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(API error: ${data.error.message})*` }]);
@@ -3255,6 +3300,7 @@ function App() {
         if (data.usage) setLastUsage({ input_tokens: data.usage.input_tokens ?? 0, output_tokens: data.usage.output_tokens ?? 0 });
       }
     } catch (err) {
+      if (err?.name === "AbortError") { setLoading(false); return; }
       const errMsg = err?.message || String(err);
       setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(Error: ${errMsg})*`, _retryable: true, _retryText: text }]);
     } finally {
@@ -3273,13 +3319,16 @@ function App() {
     setVocabLoading(true); setVocabCard(null); setVocabError("");
     const bookQuote = SH_QUOTES[pos]?.[word] || "";
     try {
+      const vocabController = new AbortController();
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        signal: vocabController.signal,
         body: JSON.stringify({
           model: TOOLS_MODEL, max_tokens: 600,
           messages: [{ role: "user", content: buildVocabPrompt(word, pos, level, bookQuote) }],
         }),
       });
+      if (!resp.ok) { setVocabError(resp.status === 429 ? "Rate limit reached — wait a moment and try again." : `HTTP ${resp.status} error — try again.`); setVocabLoading(false); return; }
       const data = await resp.json();
       if (data.error) { setVocabError(`API error: ${data.error.message}`); setVocabLoading(false); return; }
       const raw = data.content?.find(b => b.type === "text")?.text || "";
@@ -3288,7 +3337,7 @@ function App() {
         vocabCache.current[cacheKey] = card;
         setVocabCard(card);
       } catch { setVocabError("Could not parse response. Try again."); }
-    } catch (err) { setVocabError(`Connection error: ${err.message}`); }
+    } catch (err) { if (err?.name === "AbortError") { setVocabLoading(false); return; } setVocabError(`Connection error: ${err.message}`); }
     setVocabLoading(false);
   };
 
@@ -3368,13 +3417,16 @@ function App() {
     }
     setConjLoading(true); setConjugation(null); setConjError("");
     try {
+      const conjController = new AbortController();
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        signal: conjController.signal,
         body: JSON.stringify({
           model: TOOLS_MODEL, max_tokens: 3500,
           messages: [{ role: "user", content: buildConjugationPrompt(v) }],
         }),
       });
+      if (!resp.ok) { setConjError(resp.status === 429 ? "Rate limit reached — wait a moment and try again." : `HTTP ${resp.status} — try again.`); setConjLoading(false); return; }
       const data = await resp.json();
       if (data.error) { setConjError(`API error: ${data.error.message}`); setConjLoading(false); return; }
       const raw = data.content?.find(b => b.type === "text")?.text || "";
@@ -3382,7 +3434,7 @@ function App() {
       try {
         const parsed = extractJSON(raw);
         conjCache.current[v] = parsed;
-        // LRU cap: evict oldest entry when cache exceeds 100 verbs.
+        // FIFO cap: evict first-inserted entry when cache exceeds 100 verbs.
         if (Object.keys(conjCache.current).length > 100) {
           delete conjCache.current[Object.keys(conjCache.current)[0]];
         }
@@ -3392,7 +3444,7 @@ function App() {
       } catch (parseErr) {
         setConjError(`Could not parse conjugation data. Try again. (${parseErr.message})`);
       }
-    } catch (err) { setConjError(`Connection error: ${err.message}`); }
+    } catch (err) { if (err?.name === "AbortError") { setConjLoading(false); return; } setConjError(`Connection error: ${err.message}`); }
     setConjLoading(false);
   };
 
@@ -3404,9 +3456,20 @@ function App() {
 
   // Apply theme CSS variables to :root once per theme change instead of spreading into inline style every render.
   useEffect(() => {
-    const vars = theme === "dark" ? DARK_VARS : LIGHT_VARS;
-    const el = document.documentElement;
-    Object.entries(vars).forEach(([k, v]) => el.style.setProperty(k, v));
+    const apply = (isDark) => {
+      const vars = isDark ? DARK_VARS : LIGHT_VARS;
+      const el = document.documentElement;
+      Object.entries(vars).forEach(([k, v]) => el.style.setProperty(k, v));
+    };
+    if (theme === "system") {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      apply(mq.matches);
+      const handler = (e) => apply(e.matches);
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    } else {
+      apply(theme === "dark");
+    }
   }, [theme]);
 
   const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
@@ -3415,7 +3478,9 @@ function App() {
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
 
   const verbRefList = verbRefTab === "irregular" ? IRREGULAR_VERBS_SLIM
-    : verbRefTab === "ar" ? REGULAR_AR_VERBS : REGULAR_ER_IR_VERBS;
+    : verbRefTab === "ar" ? REGULAR_AR_VERBS
+    : verbRefTab === "semi" ? SEMI_IRREGULAR_ER_IR_VERBS
+    : REGULAR_ER_IR_VERBS;
 
   const filteredVerbDropdown = useMemo(() => {
     const q = verbDropdownSearch.toLowerCase();
@@ -3458,7 +3523,7 @@ function App() {
               return <button key={l} style={segBtn(level === l, pos)} onClick={() => applyLevel(l)}>{l}</button>;
             })}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: "1cm", background: "var(--color-background-secondary)", borderRadius: 999, padding: "2px 4px", position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: 16, background: "var(--color-background-secondary)", borderRadius: 999, padding: "2px 4px", position: "relative" }}>
             <button style={{ ...toolBtn(false), padding: "3px 10px" }} onClick={() => adjustFontOffset(-1)}>A−</button>
             <button style={{ ...toolBtn(false), padding: "3px 10px" }} onClick={() => adjustFontOffset(1)}>A+</button>
             {fontOffset !== 0 && (
@@ -3466,7 +3531,7 @@ function App() {
                 style={{ position: "absolute", top: 1, right: 1, width: 6, height: 6, borderRadius: "50%", background: "var(--color-accent-amber-indicator)", pointerEvents: "none" }} />
             )}
           </div>
-          <button style={{ ...toolBtn(false), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)" }} onClick={() => { setMessages([]); setLastUsage(null); }}>↺ Clear</button>
+          <button style={{ ...toolBtn(false), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)" }} onClick={() => { chatAbortRef.current?.abort(); setMessages([]); setLastUsage(null); }}>↺ Clear</button>
           {lastUsage && (() => {
             const used = lastUsage.input_tokens;
             const pct  = Math.min(100, (used / CHAT_MODEL_CTX) * 100);
@@ -3657,7 +3722,7 @@ function App() {
                   onChange={e => setApiKeyInput(e.target.value)}
                   style={{ flex: 1, fontSize, padding: "5px 10px", border: "1.5px solid var(--color-accent-blue)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
                 <button style={{ ...toolBtn(true), background: "var(--color-accent-blue)", color: "#fff", padding: "5px 14px" }}
-                  onClick={() => { const k = apiKeyInput.trim().replace(/[^\x20-\x7E\xA0-\xFF]/g, ""); if (k) { setApiKey(k); lsSet("pe_api_key", k); setApiKeyInput(""); } }}>Save</button>
+                  onClick={() => { const k = apiKeyInput.trim().replace(/[^A-Za-z0-9\-_]/g, ""); if (k) { setApiKey(k); lsSet("pe_api_key", k); setApiKeyInput(""); } }}>Save</button>
               </div>
             )}
             <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-warning)", margin: "5px 0 0", fontStyle: "italic", background: "var(--color-background-warning)", padding: "4px 8px", borderRadius: "var(--border-radius-sm)" }}>
@@ -4042,7 +4107,7 @@ function App() {
           {listTab === "verbref" && (
             <div style={listPanelStyle}>
               <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
-                {[["irregular","Irregular"],["ar","Regular -AR"],["erir","Regular -ER/-IR"]].map(([id,label]) => (
+                {[["irregular","Irregular"],["ar","Regular -AR"],["erir","Regular -ER/-IR"],["semi","Semi-irregular"]].map(([id,label]) => (
                   <button key={id} style={toolBtn(verbRefTab === id)} onClick={() => { setVerbRefTab(id); setSelectedVerb(null); }}>{label}</button>
                 ))}
               </div>
@@ -4181,7 +4246,7 @@ function App() {
                 const groupTenses = (conjugation.tenses || []).filter(t => group.tenses.includes(t.name));
                 if (groupTenses.length === 0) return null;
                 const isOpen = conjOpenGroups.has(group.level);
-                const isUsageOpen = conjUsageOpen;
+                const isUsageOpen = conjUsageOpen.has(group.level);
                 return (
                   <div key={group.level} style={{ marginBottom: 12, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
                     <button onClick={() => setConjOpenGroups(prev => {
@@ -4214,7 +4279,7 @@ function App() {
                           ))}
                         </div>
                         <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)" }}>
-                          <button onClick={() => setConjUsageOpen(prev => !prev)}
+                          <button onClick={() => setConjUsageOpen(prev => { const next = new Set(prev); next.has(group.level) ? next.delete(group.level) : next.add(group.level); return next; })}
                             style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "5px 10px", background: "var(--color-background-teal)", border: "none", cursor: "pointer", fontFamily: "var(--font-sans)" }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: "var(--color-accent-teal)" }}>WHEN TO USE THESE TENSES</span>
                             <span style={{ fontSize: 12, color: "var(--color-accent-teal)" }}>{isUsageOpen ? "▲" : "▼"}</span>
@@ -4541,7 +4606,7 @@ function App() {
       {/* About modal */}
       {aboutOpen && (
         <div
-          onClick={() => setAboutOpen(false)}
+          onClick={closeAbout}
           style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div
             ref={aboutModalRef}
