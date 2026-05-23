@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.4.5 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <!-- version: 2.4.16 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body, #root { height: 100%; width: 100%; }
@@ -64,7 +64,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.4.5",
+  version: "2.4.16",
   date: "2026-05-23",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -84,7 +84,8 @@ const LIST_TABS = [
   { id: "verbref", label: "Verb List" },
 ];
 
-const VERB_REF_TABS = ["irregular", "ar", "erir"];
+const VERB_REF_TABS = ["irregular", "ar", "erir", "semi"];
+const VERB_REF_LABELS = { irregular: "Irregular", ar: "Regular -AR", erir: "Regular -ER/-IR", semi: "Semi-irregular" };
 
 const MINIMAL_PAIRS = [
   { a: { word: "pão", meaning: "bread" }, b: { word: "pau", meaning: "stick" } },
@@ -220,6 +221,12 @@ const IRREGULAR_VERBS = [
     ["vinha","vinhas","vinha","vínhamos","vinham","vinham"],
     ["virei","virás","virá","viremos","virão","virão"],
     ["vindo"]]},
+  { inf:"ver", en:"to see", tenses:[
+    ["vejo","vês","vê","vemos","veem","veem"],
+    ["vi","viste","viu","vimos","viram","viram"],
+    ["via","vias","via","víamos","viam","viam"],
+    ["verei","verás","verá","veremos","verão","verão"],
+    ["visto"]]},
 ];
 
 const REGULAR_AR_VERBS = [
@@ -272,7 +279,7 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"reunir", en:"to gather" }, { inf:"sofrer", en:"to suffer" },
   { inf:"sugerir", en:"to suggest" }, { inf:"surpreender", en:"to surprise" }, { inf:"temer", en:"to fear" },
   { inf:"tender", en:"to tend" }, { inf:"traduzir", en:"to translate" },
-  { inf:"vender", en:"to sell" }, { inf:"ver", en:"to see" }, { inf:"vestir", en:"to dress" },
+  { inf:"vender", en:"to sell" }, { inf:"vestir", en:"to dress" },
   { inf:"viver", en:"to live" },
 ];
 const SEMI_IRREGULAR_ER_IR_VERBS = [
@@ -923,7 +930,7 @@ const COGNATES = [
     { pt: "a cidade", en: "city" }, { pt: "a liberdade", en: "liberty" }, { pt: "a qualidade", en: "quality" }, { pt: "a universidade", en: "university" },
   ], exceptions: [] },
   { section: "False cognates (watch out!)", rule: "These look like English words but mean something different.", items: [
-    { pt: "actually → actualmente", en: "actualmente = currently (not 'actually' — na verdade)" },
+    { pt: "actually → atualmente", en: "atualmente = currently (not 'actually' — na verdade)" },
     { pt: "agenda", en: "diary/planner (not a meeting agenda — ordem do dia)" },
     { pt: "assistir", en: "to watch/attend (not to assist — ajudar)" },
     { pt: "borracha", en: "rubber/eraser (not drunk — bêbado)" },
@@ -975,9 +982,7 @@ const MEDIA_SECTIONS = [
     { label: "Pôr do Sol", url: "https://www.rtp.pt/play/p9165/por-do-sol" },
     { label: "Crónica dos Bons Malandros", url: "https://www.rtp.pt/play/p8013/cronica-dos-bons-malandros" },
     { label: "Conta-me Como Foi", url: "https://www.rtp.pt/play/p6487/conta-me-como-foi" },
-    { label: "República", url: "https://www.rtp.pt/play/p9328/republica" },
     { label: "Sara", url: "https://www.rtp.pt/play/p4996/e696433/sara" },
-    { label: "Terra Nova", url: "https://www.rtp.pt/play/p7334/terra-nova" },
     { label: "Esta Língua Que Nos Une", url: "https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une" },
     { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias" },
     { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames" },
@@ -1523,6 +1528,7 @@ const GRAMMAR_FOCUS_TOPICS = [
 ].map(ft => ({ ...ft, label: GRAMMAR_TOPICS.find(gt => gt.id === ft.id).label }));
 
 
+// ── System prompt builder ──
 function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation) {
   const topicList = topics.filter(t => t.selected).map(t => t.label).join(", ");
   const levelDesc = {
@@ -1569,6 +1575,7 @@ const CONJ_LEVEL_GROUPS = [
   { level: "B2+", tenses: ["Pretérito Mais-que-Perfeito", "Pretérito Imperfeito do Conjuntivo", "Futuro do Conjuntivo"] },
 ];
 
+// ── Tense usage descriptions ──
 const TENSE_USAGE = {
   "Presente do Indicativo": {
     when: "Actions happening now, habitual actions, general truths, and — very commonly in EP — the near future with a time marker.",
@@ -1660,6 +1667,7 @@ const TENSE_USAGE = {
   },
 };
 
+// ── Spoken shortcuts (common EP spoken patterns) ──
 const SPOKEN_SHORTCUTS = [
   {
     title: "Expressing the future in spoken EP",
@@ -1691,6 +1699,7 @@ const SPOKEN_SHORTCUTS = [
   },
 ];
 
+// ── Conjugation prompt builder ──
 function buildConjugationPrompt(verb) {
   return `You are a European Portuguese grammar reference. The user wants conjugation tables for the verb "${verb}".\n\nRespond ONLY with a JSON object and nothing else — no markdown, no backticks, no explanation.\n\nFormat:\n{\n  "infinitive": "falar",\n  "meaning": "to speak",\n  "tenses": [\n    {\n      "name": "Presente do Indicativo",\n      "rows": [\n        ["eu", "falo"],["tu", "falas"],["ele/ela", "fala"],["nós", "falamos"],["vocês", "falam"],["eles/elas", "falam"]\n      ],\n      "example_pt": "Ela fala português muito bem.",\n      "example_en": "She speaks Portuguese very well."\n    }\n  ]\n}\n\nInclude exactly these 11 tenses in this order:\n1. Presente do Indicativo\n2. Imperativo\n3. Pretérito Perfeito Simples\n4. Pretérito Imperfeito do Indicativo\n5. Futuro do Indicativo\n6. Condicional\n7. Presente do Conjuntivo\n8. Infinitivo Pessoal\n9. Pretérito Mais-que-Perfeito\n10. Pretérito Imperfeito do Conjuntivo\n11. Futuro do Conjuntivo\n\nFor each tense, include one natural example sentence using a randomly chosen pronoun. The example must use the correct conjugated form of "${verb}" for that tense. Use European Portuguese naturally — contractions, clitic placement, and vocabulary appropriate for Portugal (not Brazil).\n\nFor Imperativo rows use: tu, você/ele/ela, nós, vocês/eles/elas (affirmative).\nFor Infinitivo Pessoal rows use all six persons: eu, tu, ele/ela, nós, vocês, eles/elas.\nUse European Portuguese forms throughout. Return only valid JSON.`;
 }
@@ -1962,7 +1971,8 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
       )}
       {m._retryable && onRetry && (
         <button onClick={() => onRetry(m._retryText)}
-          style={{ alignSelf: "flex-start", background: "none", border: "1px solid #dc2626", borderRadius: "var(--border-radius-md)", cursor: "pointer", fontSize: 12, color: "var(--color-text-danger)", padding: "2px 8px", marginTop: 2 }}
+          style={{ alignSelf: "flex-start", background: "none", border: "1px solid var(--color-accent-red-deep)", borderRadius: "var(--border-radius-md)", cursor: "pointer", fontSize: 12, color: "var(--color-text-danger)", padding: "2px 8px", marginTop: 2 }}
+          aria-label="Retry this message"
           title="Resend the last message">&#8629; Retry</button>
       )}
     </div>
@@ -2044,7 +2054,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 10 }}>
       {/* toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "#eff6ff" : "var(--color-background-green)", color: pairsQuizMode ? "var(--color-accent-blue)" : "var(--color-accent-green)", borderColor: pairsQuizMode ? "var(--color-border-info)" : "var(--color-border-green)" })}
+        {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "var(--color-background-info)" : "var(--color-background-green)", color: pairsQuizMode ? "var(--color-accent-blue)" : "var(--color-accent-green)", borderColor: pairsQuizMode ? "var(--color-border-info)" : "var(--color-border-green)" })}
         {cardBtn("🔀 Shuffle", shuffle)}
         <span style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginLeft: "auto" }}>
           {pairIndex + 1} / {MINIMAL_PAIRS.length}
@@ -2066,7 +2076,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
               <div key={side} style={{ textAlign: "center", background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: 12, padding: "18px 28px", minWidth: 140 }}>
                 <div style={{ fontSize: fontSize * 2, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 6 }}>{pair[side].word}</div>
                 <div style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 12, fontStyle: "italic" }}>{pair[side].meaning}</div>
-                <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Ouvir</button>
+                <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Ouvir</button>
               </div>
             ))}
           </div>
@@ -2076,11 +2086,11 @@ const MinimalPairs = React.memo(function MinimalPairs({
             {!quizTarget ? (
               <div>
                 <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>Press Play to hear a word, then identify which it is.</p>
-                {cardBtn("▶ Play", startQuiz, { fontSize: fontSize, padding: "10px 32px", background: "#eff6ff", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
+                {cardBtn("▶ Play", startQuiz, { fontSize: fontSize, padding: "10px 32px", background: "var(--color-background-info)", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-                <button onClick={playQuizWord} style={{ fontSize: 16, padding: "10px 32px", borderRadius: 6, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Play again</button>
+                <button onClick={playQuizWord} style={{ fontSize: 16, padding: "10px 32px", borderRadius: 6, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Play again</button>
                 {quizResult === null ? (
                   <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
                     {["a", "b"].map(side => (
@@ -2196,11 +2206,11 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
           {!needle && <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
           <table style={tbl}><tbody>
             {sec.items.map((item, ii) => (
-              <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+              <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
                 <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
                   <button onClick={() => speakListPT(item.pt)}
                     aria-label={`Hear: ${item.pt}`}
-                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                 </td>
                 <td style={tdL}>{item.pt}</td>
                 <td style={tdR}>{item.en}</td>
@@ -2225,11 +2235,11 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFil
       {visible.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
       <table style={tbl}><tbody>
         {visible.map((item, i) => (
-          <tr key={i} style={{ borderBottom: "1px solid #d1d5db" }}>
+          <tr key={i} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
             <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
               <button onClick={() => speakListPT(item.pt)}
                 aria-label={`Hear: ${item.pt}`}
-                style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
             </td>
             <td style={{ ...tdL, width: "34%", paddingBottom: 8, paddingTop: 6 }}>{item.pt}</td>
             <td style={{ ...tdR, width: "32%", paddingBottom: 8, paddingTop: 6 }}>{item.en}</td>
@@ -2290,7 +2300,7 @@ function pickDistractors(pool, correctItem) {
 }
 
 const GenderBadge = React.memo(function GenderBadge({ gender }) { return gender
-  ? <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: gender === "m" ? "#eff6ff" : "var(--color-background-gender-f)", color: gender === "m" ? "var(--color-accent-blue-deep)" : "var(--color-accent-violet)", border: `1px solid ${gender === "m" ? "var(--color-border-info)" : "var(--color-border-gender-f)"}`, verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>{gender === "m" ? "m" : "f"}</span>
+  ? <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: gender === "m" ? "var(--color-background-info)" : "var(--color-background-gender-f)", color: gender === "m" ? "var(--color-accent-blue-deep)" : "var(--color-accent-violet)", border: `1px solid ${gender === "m" ? "var(--color-border-info)" : "var(--color-border-gender-f)"}`, verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>{gender === "m" ? "m" : "f"}</span>
   : null; });
 
 const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speechSupported, listFilter }) {
@@ -2300,17 +2310,16 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   const [quizMode, setQuizMode]       = S(false);
   const [direction, setDirection]     = S("pt-en"); // "pt-en" | "en-pt"
   const [inputMethod, setInputMethod] = S("choice"); // "choice" | "mic"
-  const [category, setCategory]       = S("all");   // "all" | "cardinals" | "other"
+  const [category, setCategory]       = S("cardinals");   // "cardinals" | "other"
 
   // Active pool derived from category selection.
   const activePool = M(() => {
-    if (category === "cardinals") return NUMBERS_QUIZ_POOLS.cardinals;
-    if (category === "other")     return NUMBERS_QUIZ_POOLS.other;
-    return [...NUMBERS_QUIZ_POOLS.cardinals, ...NUMBERS_QUIZ_POOLS.other];
+    if (category === "other") return NUMBERS_QUIZ_POOLS.other;
+    return NUMBERS_QUIZ_POOLS.cardinals;
   }, [category]);
 
   // ── Quiz state ──
-  const [order, setOrder]             = S(() => makeOrder(NUMBERS_QUIZ_POOLS.cardinals.length + NUMBERS_QUIZ_POOLS.other.length));
+  const [order, setOrder]             = S(() => makeOrder(NUMBERS_QUIZ_POOLS.cardinals.length));
   const [qIdx, setQIdx]               = S(0);
   const [options, setOptions]         = S([]);
   const [result, setResult]           = S(null);
@@ -2325,19 +2334,22 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
 
   // Auto-play PT audio in pt-en mode — cancel any in-flight TTS first.
   // speakListPT is stable (useCallback); add it here if that ever changes.
+  // order is intentionally excluded: when order resets, qIdx resets to 0 simultaneously,
+  // which fires this effect via qIdx. Including order would double-fire on category change.
   E(() => {
     if (!quizMode || direction !== "pt-en" || !item) return;
     window.speechSynthesis?.cancel();
     speakListPT(item.pt);
-  }, [quizMode, direction, qIdx, order]);
+  }, [quizMode, direction, qIdx]);
 
   // Auto-speak EN in en-pt mode — cancel any in-flight TTS first.
   // speakListPT is stable (useCallback); add it here if that ever changes.
+  // order excluded for same reason as PT effect above.
   E(() => {
     if (!quizMode || direction !== "en-pt" || !item) return;
     window.speechSynthesis?.cancel();
     speakListPT(item.en, "en-US");
-  }, [quizMode, direction, qIdx, order]);
+  }, [quizMode, direction, qIdx]);
 
   // Build choice options whenever the question changes in pt-en/choice mode.
   E(() => {
@@ -2361,6 +2373,15 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
 
   // Stop mic on mode/direction change.
   E(() => { return () => stopMic(); }, [quizMode, direction, inputMethod, category]);
+
+  // Reset quiz order when category changes — runs after activePool has updated via useMemo.
+  E(() => {
+    if (!quizMode) return;
+    setOrder(makeOrder(activePool.length));
+    setQIdx(0);
+    setResult(null);
+    setTranscript("");
+  }, [category, quizMode]);
 
   function stopMic() {
     if (micRef.current) { try { micRef.current.stop(); } catch (_) {} micRef.current = null; }
@@ -2507,10 +2528,10 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
             {!needle && <p style={{ ...secTit, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
             <table style={tbl}><tbody>
               {sec.items.map((it, ii) => (
-                <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
                   <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
                     <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
-                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                   </td>
                   <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} /></td>
                   <td style={tdR}>{it.en}</td>
@@ -2532,7 +2553,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
 
       {/* Toolbar row 1: mode + shuffle + score */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        {cardBtn("📋 Browse", toggleQuizMode, { background: "#eff6ff", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
+        {cardBtn("📋 Browse", toggleQuizMode, { background: "var(--color-background-info)", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
         {cardBtn("🔀 Shuffle", shuffle)}
         <span style={{ fontSize, color: "var(--color-text-secondary)", marginLeft: "auto", whiteSpace: "nowrap" }}>
           {qIdx + 1} / {activePool.length}
@@ -2552,8 +2573,8 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         {/* Category */}
         <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
-          {[["all","All"],["cardinals","Cardinals"],["other","Other"]].map(([id, label]) => (
-            <button key={id} onClick={() => { setCategory(id); resetQuiz(); }} style={segBtnStyle(category === id, "var(--color-accent-purple)")}>{label}</button>
+          {[["cardinals","Cardinals"],["other","Other"]].map(([id, label]) => (
+            <button key={id} onClick={() => setCategory(id)} style={segBtnStyle(category === id, "var(--color-accent-purple)")}>{label}</button>
           ))}
         </div>
         {/* Direction */}
@@ -2590,7 +2611,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
                 </p>
               )}
               <button onClick={() => speakListPT(item.pt)}
-                style={{ fontSize, padding: "10px 28px", borderRadius: 8, border: "1.5px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer", fontWeight: 700 }}>
+                style={{ fontSize, padding: "10px 28px", borderRadius: 8, border: "1.5px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", fontWeight: 700 }}>
                 ▶ Play Portuguese
               </button>
             </div>
@@ -2607,7 +2628,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
                   </span>
                 )}
                 <button onClick={() => speakListPT(item.en, "en-US")}
-                  style={{ fontSize: Math.max(12, fontSize - 2), padding: "4px 14px", borderRadius: 6, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer" }}>▶ Hear English</button>
+                  style={{ fontSize: Math.max(12, fontSize - 2), padding: "4px 14px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer" }}>▶ Hear English</button>
               </div>
             </div>
           )}
@@ -2629,7 +2650,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
             {(direction === "en-pt" || (direction === "pt-en" && inputMethod === "mic")) && speechSupported && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <button onClick={micActive ? stopMic : () => startMic(micLang)}
-                  style={{ fontSize, padding: "10px 28px", borderRadius: 8, border: micActive ? "2px solid #dc2626" : "1.5px solid var(--color-border-tertiary)", background: micActive ? "var(--color-background-danger)" : "var(--color-background-secondary)", color: micActive ? "var(--color-text-danger)" : "var(--color-text-secondary)", cursor: "pointer", fontWeight: 700 }}>
+                  style={{ fontSize, padding: "10px 28px", borderRadius: 8, border: micActive ? "2px solid var(--color-accent-red-deep)" : "1.5px solid var(--color-border-tertiary)", background: micActive ? "var(--color-background-danger)" : "var(--color-background-secondary)", color: micActive ? "var(--color-text-danger)" : "var(--color-text-secondary)", cursor: "pointer", fontWeight: 700 }}>
                   {micActive ? "⏹ Stop" : `🎤 Speak ${direction === "pt-en" ? "English" : "Portuguese"}`}
                 </button>
                 {transcript && <p style={{ fontSize, color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic" }}>"{transcript}"</p>}
@@ -2641,6 +2662,10 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
                 Speech recognition is not supported in this browser.
               </p>
             )}
+            <button onClick={next} aria-label="Skip this question"
+              style={{ marginTop: 4, fontSize: Math.max(11, fontSize - 2), padding: "3px 12px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-tertiary)", cursor: "pointer" }}>
+              Skip →
+            </button>
           </div>
         ) : (
           <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
@@ -2653,7 +2678,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
               <GenderBadge gender={item.gender} />
               <span>—</span>
               <span>{item.en}</span>
-              <button onClick={() => speakListPT(item.pt)} style={{ fontSize: 13, padding: "1px 6px", borderRadius: 4, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶</button>
+              <button onClick={() => speakListPT(item.pt)} style={{ fontSize: 13, padding: "1px 6px", borderRadius: 4, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶</button>
             </div>
             {cardBtn("Próximo →", next, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)", marginTop: 6 })}
           </div>
@@ -2695,11 +2720,11 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
                 ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
                 : item.pt;
               return (
-                <tr key={ii} style={{ borderBottom: "1px solid #d1d5db" }}>
+                <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
                   <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
                     <button onClick={() => speakListPT(speakText)}
                       aria-label={`Hear: ${item.pt}`}
-                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d1d5db", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                   </td>
                   <td style={tdL}>{item.pt}</td>
                   <td style={tdR}>{item.en}</td>
@@ -2766,7 +2791,7 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT, listFilte
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
                     <button onClick={() => speakListPT(item.example_pt)}
                       aria-label={`Hear example: ${item.example_pt}`}
-                      style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid #bfdbfe", background: "#eff6ff", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
+                      style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
                     <div>
                       <p style={{ fontSize, fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
                       <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>
@@ -2889,6 +2914,10 @@ const DARK_VARS = {
 let _msgId = 0;
 const nextMsgId = () => ++_msgId;
 
+// Pure helper — produces a setter that updates React state and persists to localStorage.
+// Defined at module scope (uses only lsSet) so it is stable across renders.
+const makeSetting = (setter, key) => (val) => { setter(val); lsSet(key, val); };
+
 // Find a real browser SpeechSynthesisVoice for fallback — never pass the fake __azure__ sentinel object
 function findBrowserVoice(lang) {
   if (!window.speechSynthesis) return null;
@@ -2907,7 +2936,7 @@ function App() {
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [azureKey, setAzureKey] = useState(() => ls("pe_azure_key", ""));
   const [azureKeyInput, setAzureKeyInput] = useState("");
-  const [azureRegion, setAzureRegion] = useState(() => ls("pe_azure_region", ""));
+  const [azureRegion, setAzureRegion] = useState(() => (ls("pe_azure_region", "") || "").replace(/[^A-Za-z0-9-]/g, ""));
   const [topics, setTopics] = useState(() => {
     const saved = ls("pe_topics", null);
     if (saved && Array.isArray(saved)) return saved;
@@ -2956,11 +2985,12 @@ function App() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [commitDate, setCommitDate] = useState(APP_META.date);
   const aboutModalRef = useRef(null);
-  const closeAbout = useCallback(() => setAboutOpen(false), []);
+  const aboutTriggerRef = useRef(null);
+  const closeAbout = useCallback(() => { setAboutOpen(false); setTimeout(() => aboutTriggerRef.current?.focus(), 0); }, []);
   useFocusTrap(aboutModalRef, aboutOpen, closeAbout);
 
   // Minimal pairs state
-  const [pairsOrder, setPairsOrder] = useState(() => MINIMAL_PAIRS.map((_, i) => i));
+  const [pairsOrder, setPairsOrder] = useState(() => makeOrder(MINIMAL_PAIRS.length));
   const [pairIndex, setPairIndex] = useState(0);
   const [pairsQuizMode, setPairsQuizMode] = useState(false);
   const [quizTarget, setQuizTarget] = useState(null);   // "a" or "b"
@@ -3169,7 +3199,7 @@ function App() {
     const clean = text
       .replace(/(^|\n)(---\s*$|===\s*$|Correction:\s*$|Corre[cç][aã]o:\s*$)[\s\S]*/m, "")
       .replace(/\*[^*]+\*/g, "")
-      .replace(/\[.*?\]/g, "")
+      .replace(/\[.*?\]/g, "") // Strips [bracket]-enclosed content from TTS — intentional. Phonetic annotations in brackets will not be spoken.
       .replace(/[#_`]/g, "")
       .trim();
     if (!clean) return;
@@ -3224,7 +3254,7 @@ function App() {
         speak(last.content);
       }
     }
-  }, [loading, ttsEnabled, speak]);
+  }, [loading, messages, ttsEnabled, speak]);
   // Reset filter whenever active list tab changes
   useEffect(() => { setListFilter(""); }, [listTab]);
 
@@ -3238,7 +3268,6 @@ function App() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const makeSetting = (setter, key) => (val) => { setter(val); lsSet(key, val); };
   const applyTheme      = useCallback(makeSetting(setTheme,          "pe_theme"),      []);
   const applyLevel      = useCallback(makeSetting(setLevel,          "pe_level"),      []);
   const applyCorrection = useCallback(makeSetting(setCorrectionMode, "pe_correction"), []);
@@ -3496,6 +3525,7 @@ function App() {
 
   // Keep sendMessageRef pointing at the current sendMessage so speech recognition's
   // onEnd handler never holds a stale closure over it.
+  // No dep array intentional — keeps sendMessageRef synchronized with the latest sendMessage closure on every render.
   useEffect(() => { sendMessageRef.current = sendMessage; });
 
   // Apply theme CSS variables to :root once per theme change instead of spreading into inline style every render.
@@ -3564,12 +3594,12 @@ function App() {
           <div style={segCtrl}>
             {LEVELS.map((l, i) => {
               const pos = i === 0 ? "first" : i === LEVELS.length - 1 ? "last" : "mid";
-              return <button key={l} style={segBtn(level === l, pos)} onClick={() => applyLevel(l)}>{l}</button>;
+              return <button key={l} style={segBtn(level === l, pos)} aria-label={`Level ${l}`} onClick={() => applyLevel(l)}>{l}</button>;
             })}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: 16, background: "var(--color-background-secondary)", borderRadius: 999, padding: "2px 4px", position: "relative" }}>
-            <button style={{ ...toolBtn(false), padding: "3px 10px" }} onClick={() => adjustFontOffset(-1)}>A−</button>
-            <button style={{ ...toolBtn(false), padding: "3px 10px" }} onClick={() => adjustFontOffset(1)}>A+</button>
+            <button style={{ ...toolBtn(false), padding: "3px 10px" }} aria-label="Decrease font size" onClick={() => adjustFontOffset(-1)}>A−</button>
+            <button style={{ ...toolBtn(false), padding: "3px 10px" }} aria-label="Increase font size" onClick={() => adjustFontOffset(1)}>A+</button>
             {fontOffset !== 0 && (
               <span title={`Session override: ${fontOffset > 0 ? "+" : ""}${fontOffset}px (base: ${baseFontSize}px)`}
                 style={{ position: "absolute", top: 1, right: 1, width: 6, height: 6, borderRadius: "50%", background: "var(--color-accent-amber-indicator)", pointerEvents: "none" }} />
@@ -3741,6 +3771,7 @@ function App() {
           return <button key={p.id} style={style} onClick={() => setActivePanel(ap => ap === p.id ? null : p.id)}>{label}</button>;
         })}
         <button
+          ref={aboutTriggerRef}
           style={{ ...toolBtn(false), fontSize: 15, fontWeight: 700, background: "var(--color-surface-raised)", color: "var(--color-text-secondary)", marginLeft: 4 }}
           onClick={() => setAboutOpen(true)}>ℹ About</button>
       </div>
@@ -3766,7 +3797,7 @@ function App() {
                   onChange={e => setApiKeyInput(e.target.value)}
                   style={{ flex: 1, fontSize, padding: "5px 10px", border: "1.5px solid var(--color-accent-blue)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
                 <button style={{ ...toolBtn(true), background: "var(--color-accent-blue)", color: "#fff", padding: "5px 14px" }}
-                  onClick={() => { const k = apiKeyInput.trim().replace(/[^A-Za-z0-9\-_]/g, ""); if (k) { setApiKey(k); lsSet("pe_api_key", k); setApiKeyInput(""); } }}>Save</button>
+                  onClick={() => { const k = apiKeyInput.trim().replace(/[^A-Za-z0-9\-_]/g, ""); if (k) { setApiKey(k); lsSet("pe_api_key", k); setApiKeyInput(""); if (location.protocol !== "https:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") { console.warn("[pe] API key saved over non-HTTPS origin"); } } }}>Save</button>
               </div>
             )}
             <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-warning)", margin: "5px 0 0", fontStyle: "italic", background: "var(--color-background-warning)", padding: "4px 8px", borderRadius: "var(--border-radius-sm)" }}>
@@ -3795,7 +3826,7 @@ function App() {
                   type="text"
                   placeholder="Region (e.g. eastus)"
                   value={azureRegion}
-                  onChange={e => { setAzureRegion(e.target.value.trim()); lsSet("pe_azure_region", e.target.value.trim()); }}
+                  onChange={e => { const r = e.target.value.trim().replace(/[^A-Za-z0-9-]/g, ""); setAzureRegion(r); lsSet("pe_azure_region", r); }}
                   style={{ flex: 1, minWidth: 100, fontSize, padding: "5px 10px", border: "1.5px solid var(--color-accent-violet)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", fontFamily: "var(--font-mono)" }} />
                 <button style={{ ...toolBtn(true), background: "var(--color-accent-violet)", color: "#fff", padding: "5px 14px" }}
                   onClick={() => { const k = azureKeyInput.trim(); if (k && azureRegion) { setAzureKey(k); lsSet("pe_azure_key", k); setAzureKeyInput(""); setSelectedVoice({ name: "__azure_raquel__", lang: "pt-PT", azureVoice: "pt-PT-RaquelNeural" }); } }}>Save</button>
@@ -3833,7 +3864,7 @@ function App() {
             <div style={segCtrl}>
               {LEVELS.map((l, i) => {
                 const pos = i === 0 ? "first" : i === LEVELS.length - 1 ? "last" : "mid";
-                return <button key={l} style={segBtn(level === l, pos)} onClick={() => applyLevel(l)}>{l}</button>;
+                return <button key={l} style={segBtn(level === l, pos)} aria-label={`Level ${l}`} onClick={() => applyLevel(l)}>{l}</button>;
               })}
             </div>
           </div>
@@ -4151,8 +4182,8 @@ function App() {
           {listTab === "verbref" && (
             <div style={listPanelStyle}>
               <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
-                {[["irregular","Irregular"],["ar","Regular -AR"],["erir","Regular -ER/-IR"],["semi","Semi-irregular"]].map(([id,label]) => (
-                  <button key={id} style={toolBtn(verbRefTab === id)} onClick={() => { setVerbRefTab(id); setSelectedVerb(null); }}>{label}</button>
+                {VERB_REF_TABS.map((id, i) => (
+                  <button key={id} style={toolBtn(verbRefTab === id)} onClick={() => { setVerbRefTab(id); setSelectedVerb(null); }}>{VERB_REF_LABELS[id]}</button>
                 ))}
               </div>
               {!selectedVerb ? (
@@ -4171,6 +4202,9 @@ function App() {
                     <span style={{ fontSize: 14, fontWeight: 500, color: "var(--color-text-primary)", fontFamily: "var(--font-mono)" }}>{selectedVerb}</span>
                     <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>{verbRefList.find(v => v.inf === selectedVerb)?.en || ""}</span>
                   </div>
+                  {selectedVerb === "haver" && (
+                    <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Modern EP note: only 'há' (3rd person singular present) is in common use. All other forms are archaic or literary.</p>
+                  )}
                   {irreg ? (
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 8 }}>
                       {TENSE_LABELS.map((tname, ti) => (
@@ -4536,7 +4570,7 @@ function App() {
         {messages.map((m, i) => (
           <MessageBubble key={m.id} m={m} fontSize={fontSize} ttsSupported={ttsSupported} speak={speak} showTranslation={showTranslation} onRetry={sendMessage} />
         ))}
-        {loading && <div style={{ alignSelf: "flex-start", background: "var(--color-background-secondary)", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", fontSize: 13, color: "var(--color-text-tertiary)" }}>A escrever…</div>}
+        {loading && <div style={{ alignSelf: "flex-start", background: "var(--color-background-secondary)", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", fontSize: 13, color: "var(--color-text-tertiary)" }}>A escrever… {/* Intentional Portuguese — reinforces immersion for the learner */}</div>}
         <div ref={bottomRef} />
       </div>
 
@@ -4581,6 +4615,7 @@ function App() {
           {ttsSupported && speaking && (
             <button onClick={stopSpeaking}
               title="Stop playback"
+              aria-label="Stop speaking"
               style={{ padding: "6px 10px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-text-secondary)", cursor: "pointer", flexShrink: 0 }}>⏹</button>
           )}
           {/* Speed control */}
@@ -4642,6 +4677,7 @@ function App() {
             }}
             onKeyDown={handleKey} />
           <button style={{ padding: "8px 16px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "none", background: loading || !input.trim() ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || !input.trim() ? "var(--color-text-tertiary)" : "#fff", cursor: loading || !input.trim() ? "default" : "pointer", fontWeight: 500 }}
+            aria-label="Send message"
             onClick={() => sendMessage()} disabled={loading || !input.trim()}> ENVIAR</button>
         </div>
       </div>
