@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.5.2",
+  version: "2.5.3",
   date: "2026-05-24",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -1585,6 +1585,218 @@ const GRAMMAR_FOCUS_TOPICS = [
 ].map(ft => ({ ...ft, label: GRAMMAR_TOPICS.find(gt => gt.id === ft.id).label }));
 
 
+// ── Grammar sections (accordion content for Lists → Grammar tab) ──
+const GRAMMAR_SECTIONS = [
+  {
+    title: "Clitic Pronouns: Placement Rules",
+    intro: "European Portuguese places clitic pronouns (me, te, se, nos, o, a, os, as, lhe, lhes) after the verb in most affirmative main clauses — joined by a hyphen. This is the opposite of Brazilian Portuguese, which places them before the verb. Mastering this rule is one of the most important EP-specific grammar points.",
+    rules: [
+      {
+        label: "Affirmative main clause — clitic after verb (enclisis)",
+        explanation: "In a simple affirmative sentence, the clitic follows the verb with a hyphen.",
+        examples: [
+          { pt: "Ela deu-me o livro.", en: "She gave me the book.", note: "" },
+          { pt: "Ele viu-o ontem.", en: "He saw him yesterday.", note: "" },
+          { pt: "Chama-se João.", en: "His name is João.", note: "" },
+        ],
+      },
+      {
+        label: "After a negation — clitic before verb (proclisis)",
+        explanation: "Any negation (não, nunca, jamais, ninguém) forces the clitic before the verb.",
+        examples: [
+          { pt: "Não me disse nada.", en: "He didn't tell me anything.", note: "" },
+          { pt: "Nunca o vi.", en: "I never saw him.", note: "" },
+        ],
+      },
+      {
+        label: "After a subordinating conjunction — clitic before verb",
+        explanation: "Subordinate clauses introduced by que, quando, se, porque, etc. use proclisis.",
+        examples: [
+          { pt: "Espero que se sinta melhor.", en: "I hope you feel better.", note: "" },
+          { pt: "Disse que me ligava.", en: "He said he would call me.", note: "" },
+        ],
+      },
+      {
+        label: "After adverbs and quantifiers — clitic before verb",
+        explanation: "Adverbs like sempre, ainda, já, também, só, tudo force proclisis.",
+        examples: [
+          { pt: "Ela sempre me ajuda.", en: "She always helps me.", note: "" },
+          { pt: "Já te disse.", en: "I already told you.", note: "" },
+        ],
+      },
+      {
+        label: "Mesoclisis — formal/literary only",
+        explanation: "In the future or conditional tense in formal written Portuguese, the clitic can appear inside the verb form. This is literary/archaic and is not required in everyday speech or writing.",
+        examples: [
+          { pt: "Dir-te-ei amanhã.", en: "I will tell you tomorrow.", note: "Formal written EP only. In spoken EP: Digo-te amanhã." },
+        ],
+      },
+    ],
+  },
+  {
+    title: "The 'estar a + infinitive' Progressive",
+    intro: "European Portuguese expresses ongoing actions with 'estar + a + infinitive'. Brazilian Portuguese uses the gerund (estou falando). Using the gerund in EP is a clear marker of Brazilian Portuguese and should be avoided.",
+    rules: [
+      {
+        label: "Formation",
+        explanation: "Conjugate estar for the correct person/tense + a + infinitive of the main verb.",
+        examples: [
+          { pt: "Estou a trabalhar.", en: "I am working.", note: "" },
+          { pt: "Estava a chover.", en: "It was raining.", note: "" },
+          { pt: "Vais estar a esperar muito tempo.", en: "You are going to be waiting a long time.", note: "" },
+        ],
+      },
+      {
+        label: "Never use the gerund for ongoing actions in EP",
+        explanation: "",
+        examples: [
+          { pt: "Estou a falar. (EP correct)", en: "I am speaking.", note: "" },
+          { pt: "Estou falando. (BP — avoid in EP)", en: "I am speaking (Brazilian).", note: "The gerund form is understood but marks the speaker as non-Portuguese." },
+        ],
+      },
+    ],
+  },
+  {
+    title: "The Personal Infinitive",
+    intro: "Portuguese has a unique feature almost absent from other languages: an infinitive that inflects for person. This is used far more in EP than in BP, and frequently puzzles English speakers who expect infinitives to be invariable.",
+    rules: [
+      {
+        label: "Formation",
+        explanation: "Add person endings to the infinitive: -es (tu), -mos (nós), -em (vocês/eles/elas). Eu and ele/ela forms are identical to the plain infinitive.",
+        examples: [
+          { pt: "falar, falares, falar, falarmos, falarem, falarem", en: "to speak (eu/tu/ele/nós/vocês/eles)", note: "" },
+        ],
+      },
+      {
+        label: "When to use it",
+        explanation: "Use the personal infinitive when the infinitive has a subject different from the main clause subject, especially after prepositions (para, por, antes de, depois de, ao, sem).",
+        examples: [
+          { pt: "Saí sem eles saberem.", en: "I left without them knowing.", note: "" },
+          { pt: "É importante vocês estarem presentes.", en: "It is important for you to be present.", note: "" },
+          { pt: "Antes de tu chegares, ele foi embora.", en: "Before you arrived, he left.", note: "" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Ser vs Estar",
+    intro: "Both translate as 'to be' in English. The distinction is not simply permanent vs temporary — that rule has many exceptions. The practical rule is based on what kind of predicate follows.",
+    rules: [
+      {
+        label: "Ser — for identity, classification, origin, material, time, and passive",
+        explanation: "",
+        examples: [
+          { pt: "Sou americano.", en: "I am American. (identity/origin)", note: "" },
+          { pt: "É uma mesa de madeira.", en: "It is a wooden table. (material)", note: "" },
+          { pt: "São três horas.", en: "It is three o'clock. (time)", note: "" },
+          { pt: "O livro foi escrito por ela.", en: "The book was written by her. (passive)", note: "" },
+        ],
+      },
+      {
+        label: "Estar — for states, conditions, locations, and ongoing actions",
+        explanation: "",
+        examples: [
+          { pt: "Estou cansado.", en: "I am tired. (state)", note: "" },
+          { pt: "Está em Lisboa.", en: "He is in Lisbon. (location)", note: "" },
+          { pt: "Está frio hoje.", en: "It is cold today. (condition)", note: "" },
+        ],
+      },
+      {
+        label: "Adjectives that change meaning with ser/estar",
+        explanation: "",
+        examples: [
+          { pt: "É chato. / Está chato.", en: "He is boring (personality) / He is bored (right now).", note: "" },
+          { pt: "É livre. / Está livre.", en: "He is free (in nature) / He is free (available now).", note: "" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Key Preposition Contractions",
+    intro: "Portuguese mandatory contractions must be learned — they are not optional and omitting them is a grammatical error.",
+    rules: [
+      {
+        label: "de + articles and demonstratives",
+        explanation: "",
+        examples: [
+          { pt: "de + o = do / de + a = da", en: "of the (m) / of the (f)", note: "" },
+          { pt: "de + os = dos / de + as = das", en: "of the (m pl) / of the (f pl)", note: "" },
+          { pt: "de + este = deste / de + esse = desse", en: "of this / of that", note: "" },
+          { pt: "de + aquele = daquele", en: "of that (over there)", note: "" },
+          { pt: "de + um = dum / de + uma = duma", en: "of a (m/f) — common in EP speech", note: "" },
+        ],
+      },
+      {
+        label: "em + articles and demonstratives",
+        explanation: "",
+        examples: [
+          { pt: "em + o = no / em + a = na", en: "in the (m) / in the (f)", note: "" },
+          { pt: "em + os = nos / em + as = nas", en: "in the (m pl) / in the (f pl)", note: "" },
+          { pt: "em + este = neste / em + esse = nesse", en: "in this / in that", note: "" },
+          { pt: "em + um = num / em + uma = numa", en: "in a (m/f)", note: "" },
+        ],
+      },
+      {
+        label: "a + article (feminine only — crase)",
+        explanation: "",
+        examples: [
+          { pt: "a + a = à / a + as = às", en: "to the (f) / to the (f pl)", note: "The grave accent marks the contraction. Sound is the same as plain 'a'." },
+          { pt: "Vou à praia.", en: "I'm going to the beach.", note: "" },
+        ],
+      },
+      {
+        label: "por + articles",
+        explanation: "",
+        examples: [
+          { pt: "por + o = pelo / por + a = pela", en: "by/through the (m/f)", note: "" },
+          { pt: "por + os = pelos / por + as = pelas", en: "by/through the (m/f pl)", note: "" },
+        ],
+      },
+    ],
+  },
+];
+
+// ── Culture notes (accordion content for Lists → Media tab) ──
+const CULTURE_NOTES = [
+  {
+    section: "Daily life in Portugal",
+    items: [
+      {
+        title: "Pharmacy duty system (farmácia de serviço)",
+        body: "Pharmacies in Portugal rotate 24-hour duty. The duty pharmacy (farmácia de serviço) for your area is posted on the door of any closed pharmacy and on the website of the local health authority (ARS). You cannot assume your nearest pharmacy is open — always check before a weekend.",
+      },
+      {
+        title: "Shops and lunch closing",
+        body: "Many smaller shops and some services close for lunch (typically 13h00–15h00). This includes some government offices, local services, and independent shops. Large supermarkets and shopping centres do not close for lunch.",
+      },
+      {
+        title: "The NIF (Número de Identificação Fiscal)",
+        body: "Your NIF is your Portuguese tax identification number. You will be asked for it constantly — at supermarkets, pharmacies, restaurants, and all services. Providing your NIF registers the purchase in your name for tax purposes and contributes to your annual IRS invoice deduction total. Always carry it or have it in your phone.",
+      },
+      {
+        title: "Tipping",
+        body: "Tipping is not obligatory in Portugal and is less embedded in the culture than in the US. In restaurants, rounding up or leaving small change is common. 10% is generous and appreciated. In taxis, rounding up is normal. Tipping at cafés for a coffee is uncommon.",
+      },
+      {
+        title: "Coffee culture and ordering correctly",
+        body: "Order coffee correctly to avoid tourist markers. A bica is an espresso (in Lisbon and the south). In Porto, ask for um café. A galão is a large milky coffee in a glass. Uma meia de leite is a medium milky coffee in a cup. Um abatanado is a lungo-style espresso. Um garoto is a small coffee with a little milk.",
+      },
+      {
+        title: "Public transport cards",
+        body: "In Porto, the transit card is Andante. In Lisbon, it is Viva Viagem. These are rechargeable contactless cards available at metro stations. You can load specific zones or time-based passes. Andante covers metro, bus, and some suburban trains in Porto.",
+      },
+      {
+        title: "Healthcare: Centro de Saúde vs hospital",
+        body: "For non-emergency healthcare, go to your assigned Centro de Saúde (primary care health centre) rather than a hospital emergency room. You must be registered with a Centro de Saúde to have a médico de família (family doctor) assigned. Without registration, you can still attend but will wait longer. Hospital emergency rooms (urgências) are for genuine emergencies — using them for minor issues is discouraged and results in long waits.",
+      },
+      {
+        title: "The Câmara Municipal and Junta de Freguesia",
+        body: "The Câmara Municipal is the city council — handles major administrative matters (building permits, large services). The Junta de Freguesia is the local parish council — handles local certificates, residence declarations (atestado de residência), and minor administrative tasks. For everyday bureaucratic needs, the Junta de Freguesia is usually the right first stop.",
+      },
+    ],
+  },
+];
+
 // ── System prompt builder ──
 function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation) {
   const topicList = topics.filter(t => t.selected).map(t => t.label).join(", ");
@@ -2752,6 +2964,129 @@ const MinimalPairs = React.memo(function MinimalPairs({
   );
 });
 
+// ── Culture Notes Accordion ────────────────────────────────────────────────────────────────────────────
+const CultureNotesAccordion = React.memo(function CultureNotesAccordion({ fontSize }) {
+  const [openSection, setOpenSection] = useState(null);
+  const [openItem, setOpenItem] = useState({});
+
+  const toggleSection = (i) => setOpenSection(prev => prev === i ? null : i);
+  const toggleItem = (si, ii) => setOpenItem(prev => {
+    const key = `${si}-${ii}`;
+    return { ...prev, [key]: !prev[key] };
+  });
+
+  return (
+    <div>
+      {CULTURE_NOTES.map((cn, si) => (
+        <div key={si} style={{ marginBottom: 8, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+          <button onClick={() => toggleSection(si)}
+            style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{cn.section}</span>
+            <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openSection === si ? "▲" : "▼"}</span>
+          </button>
+          {openSection === si && (
+            <div style={{ padding: "8px 12px 12px" }}>
+              {cn.items.map((item, ii) => (
+                <div key={ii} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-sm)", overflow: "hidden" }}>
+                  <button onClick={() => toggleItem(si, ii)}
+                    style={{ width: "100%", textAlign: "left", background: "var(--color-background-tertiary)", border: "none", cursor: "pointer", padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{item.title}</span>
+                    <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openItem[`${si}-${ii}`] ? "▲" : "▼"}</span>
+                  </button>
+                  {openItem[`${si}-${ii}`] && (
+                    <div style={{ padding: "8px 10px 10px", background: "var(--color-background-primary)" }}>
+                      <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.65 }}>{item.body}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+});
+
+// ── Grammar Sections Accordion ──────────────────────────────────────────────
+const GrammarSectionsAccordion = React.memo(function GrammarSectionsAccordion({ fontSize, speakListPT }) {
+  const [openSection, setOpenSection] = useState(null);
+  const [openRule, setOpenRule] = useState({});
+
+  const toggleSection = (i) => setOpenSection(prev => prev === i ? null : i);
+  const toggleRule = (si, ri) => setOpenRule(prev => {
+    const key = `${si}-${ri}`;
+    return { ...prev, [key]: !prev[key] };
+  });
+
+  const sectionHeaderStyle = {
+    width: "100%", textAlign: "left", background: "var(--color-background-secondary)",
+    border: "none", cursor: "pointer", padding: "8px 12px",
+    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+  };
+  const ruleHeaderStyle = {
+    width: "100%", textAlign: "left", background: "var(--color-background-tertiary)",
+    border: "none", cursor: "pointer", padding: "6px 10px",
+    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+  };
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 700, color: "var(--color-accent-teal)", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 8px" }}>
+        EP Grammar Reference
+      </p>
+      {GRAMMAR_SECTIONS.map((sec, si) => (
+        <div key={si} style={{ marginBottom: 8, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+          <button onClick={() => toggleSection(si)} style={sectionHeaderStyle}>
+            <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.title}</span>
+            <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openSection === si ? "▲" : "▼"}</span>
+          </button>
+          {openSection === si && (
+            <div style={{ padding: "8px 12px 12px" }}>
+              {sec.intro && (
+                <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: "0 0 10px", lineHeight: 1.6 }}>{sec.intro}</p>
+              )}
+              {sec.rules.map((rule, ri) => (
+                <div key={ri} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-sm)", overflow: "hidden" }}>
+                  <button onClick={() => toggleRule(si, ri)} style={ruleHeaderStyle}>
+                    <span style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{rule.label}</span>
+                    <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openRule[`${si}-${ri}`] ? "▲" : "▼"}</span>
+                  </button>
+                  {openRule[`${si}-${ri}`] && (
+                    <div style={{ padding: "6px 10px 10px", background: "var(--color-background-primary)" }}>
+                      {rule.explanation && (
+                        <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: "0 0 8px", lineHeight: 1.55 }}>{rule.explanation}</p>
+                      )}
+                      {rule.examples.map((ex, ei) => (
+                        <div key={ei} style={{ marginBottom: 8, paddingBottom: 8, borderBottom: ei < rule.examples.length - 1 ? "0.5px solid var(--color-border-tertiary)" : "none" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <p style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(13, fontSize), fontWeight: 700, color: "var(--color-text-info)", margin: 0 }}>{ex.pt}</p>
+                            {speakListPT && (
+                              <button
+                                onClick={() => speakListPT(ex.pt.replace(/ \(.*?\)$/, ""))}
+                                aria-label={`Speak: ${ex.pt}`}
+                                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, padding: "0 2px", color: "var(--color-text-tertiary)", flexShrink: 0 }}
+                              >🔊</button>
+                            )}
+                          </div>
+                          <p style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", margin: "2px 0 0" }}>{ex.en}</p>
+                          {ex.note ? (
+                            <p style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", margin: "2px 0 0", fontStyle: "italic" }}>{ex.note}</p>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+});
+
 const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs }) {
   const { useMemo } = React;
   const linkStyle = useMemo(() => ({
@@ -2803,6 +3138,11 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
           </div>
         );
       })}
+      {/* ── Culture Notes ── */}
+      <div style={{ marginTop: 16 }}>
+        <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 700, color: "var(--color-accent-teal)", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 8px" }}>Notas Culturais — Culture Notes</p>
+        <CultureNotesAccordion fontSize={fontSize} />
+      </div>
     </div>
   );
 });
@@ -5008,6 +5348,7 @@ function App() {
                   ))}
                 </div>
               ))}
+              <GrammarSectionsAccordion fontSize={fontSize} speakListPT={speakListPT} />
             </div>
           )}
           {listTab === "numbers" && (
