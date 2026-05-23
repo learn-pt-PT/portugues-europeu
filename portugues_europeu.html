@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.5.0 -->
+  <!-- version: 2.5.1 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
@@ -64,7 +64,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.5.0",
+  version: "2.5.1",
   date: "2026-05-23",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -642,6 +642,28 @@ const PHRASES = [
     { pt: "Perdi a minha carteira", en: "I lost my wallet" }, { pt: "Não me sinto bem", en: "I don't feel well" },
     { pt: "Fala inglês?", en: "Do you speak English?" }, { pt: "Não percebo / Não entendo", en: "I don't understand" },
   ]},
+  { section: "Healthcare & pharmacy", items: [
+    { pt: "Onde fica a farmácia de serviço?", en: "Where is the duty pharmacy?" },
+    { pt: "Preciso de um médico", en: "I need a doctor" },
+    { pt: "Tenho uma marcação", en: "I have an appointment" },
+    { pt: "Dói-me aqui", en: "It hurts here" },
+    { pt: "Sou alérgico/a a...", en: "I'm allergic to..." },
+    { pt: "Tem alguma coisa para a tosse?", en: "Do you have anything for a cough?" },
+    { pt: "Preciso de uma receita?", en: "Do I need a prescription?" },
+    { pt: "Pode repetir mais devagar, por favor?", en: "Can you repeat more slowly, please?" },
+  ]},
+  { section: "Administrative & daily life", items: [
+    { pt: "Preciso de uma fatura com NIF", en: "I need a receipt with my tax number" },
+    { pt: "Qual é o NIF daqui?", en: "What is the NIF here?" },
+    { pt: "Onde posso pagar?", en: "Where can I pay?" },
+    { pt: "Precisava de falar com alguém", en: "I need to speak with someone" },
+    { pt: "Tenho uma questão sobre...", en: "I have a question about..." },
+    { pt: "Pode ajudar-me com isto?", en: "Can you help me with this?" },
+    { pt: "Onde fica a junta de freguesia?", en: "Where is the local council office?" },
+    { pt: "A que horas abre / fecha?", en: "What time does it open / close?" },
+    { pt: "Está fechado para almoço?", en: "Is it closed for lunch?" },
+    { pt: "Posso deixar uma mensagem?", en: "Can I leave a message?" },
+  ]},
 ];
 
 const IDIOMS = [
@@ -881,9 +903,14 @@ const NUMBERS = [
 const COGNATES = [
   { section: "-AGE → -AGEM (f)", rule: "", items: [
     { pt: "a coragem", en: "courage" }, { pt: "a imagem", en: "image" }, { pt: "a viagem", en: "voyage/trip" }, { pt: "a linguagem", en: "language" },
+    { pt: "a bagagem", en: "baggage" }, { pt: "a mensagem", en: "message" }, { pt: "a passagem", en: "passage/crossing" },
+    { pt: "a homenagem", en: "homage" }, { pt: "a sondagem", en: "survey/poll" }, { pt: "a montagem", en: "assembly/montage" },
   ], exceptions: [] },
   { section: "-AL → -AL", rule: "Identical ending — very large group.", items: [
     { pt: "adicional", en: "additional" }, { pt: "cultural", en: "cultural" }, { pt: "nacional", en: "national" },
+    { pt: "social", en: "social" }, { pt: "digital", en: "digital" }, { pt: "formal", en: "formal" }, { pt: "legal", en: "legal" },
+    { pt: "natural", en: "natural" }, { pt: "total", en: "total" }, { pt: "central", en: "central" }, { pt: "global", en: "global" },
+    { pt: "local", en: "local" }, { pt: "musical", en: "musical" }, { pt: "final", en: "final" }, { pt: "original", en: "original" },
   ], exceptions: [] },
   { section: "-AN → -ANO/A", rule: "Agrees with gender.", items: [
     { pt: "americano/a", en: "American" }, { pt: "italiano/a", en: "Italian" }, { pt: "humano/a", en: "human" },
@@ -914,6 +941,8 @@ const COGNATES = [
   ], exceptions: [] },
   { section: "-CY → -CIA", rule: "", items: [
     { pt: "a democracia", en: "democracy" }, { pt: "a farmácia", en: "pharmacy" },
+    { pt: "a eficácia", en: "efficacy" }, { pt: "a diplomacia", en: "diplomacy" }, { pt: "a burocracia", en: "bureaucracy" },
+    { pt: "a supremacia", en: "supremacy" }, { pt: "a falácia", en: "fallacy" }, { pt: "a pirataria", en: "piracy" },
   ], exceptions: [] },
   { section: "-ENCE → -ÊNCIA (f)", rule: "", items: [
     { pt: "a coexistência", en: "coexistence" }, { pt: "a experiência", en: "experience" }, { pt: "a violência", en: "violence" },
@@ -929,6 +958,10 @@ const COGNATES = [
   ], exceptions: [] },
   { section: "-FY → -FICAR (verb)", rule: "", items: [
     { pt: "classificar", en: "to classify" }, { pt: "simplificar", en: "to simplify" }, { pt: "notificar", en: "to notify" },
+  ], exceptions: [] },
+  { section: "-GRAPH → -GRAFO / -GRAFIA", rule: "Masculine nouns in -grafo; feminine in -grafia.", items: [
+    { pt: "o fotógrafo", en: "photographer" }, { pt: "o parágrafo", en: "paragraph" }, { pt: "o autógrafo", en: "autograph" },
+    { pt: "a fotografia", en: "photography" }, { pt: "a cartografia", en: "cartography" },
   ], exceptions: [] },
   { section: "-IC → -ICO/A", rule: "Adjective agrees with gender.", items: [
     { pt: "lógico/a", en: "logical" }, { pt: "histórico/a", en: "historic" }, { pt: "público/a", en: "public" },
@@ -951,11 +984,22 @@ const COGNATES = [
   { section: "-IZE → -IZAR (verb)", rule: "", items: [
     { pt: "finalizar", en: "to finalize" }, { pt: "organizar", en: "to organize" }, { pt: "utilizar", en: "to utilize" },
   ], exceptions: [] },
+  { section: "-LOGY → -LOGIA (f)", rule: "Always feminine. Extremely productive — hundreds of academic and scientific words.", items: [
+    { pt: "a biologia", en: "biology" }, { pt: "a psicologia", en: "psychology" }, { pt: "a tecnologia", en: "technology" },
+    { pt: "a geologia", en: "geology" }, { pt: "a sociologia", en: "sociology" }, { pt: "a ecologia", en: "ecology" },
+    { pt: "a arqueologia", en: "archaeology" }, { pt: "a meteorologia", en: "meteorology" },
+  ], exceptions: [] },
   { section: "-LY → -MENTE (adverb)", rule: "Add -mente to the feminine adjective form.", items: [
     { pt: "anualmente", en: "annually" }, { pt: "rapidamente", en: "rapidly" }, { pt: "normalmente", en: "normally" },
   ], exceptions: [] },
+  { section: "-MENT → -MENTO (m)", rule: "Masculine nouns. Distinct from -ENT → -ENTO — this maps English process/result nouns.", items: [
+    { pt: "o tratamento", en: "treatment" }, { pt: "o comportamento", en: "behaviour" }, { pt: "o conhecimento", en: "knowledge" },
+    { pt: "o crescimento", en: "growth" }, { pt: "o melhoramento", en: "improvement" }, { pt: "o desenvolvimento", en: "development" },
+    { pt: "o investimento", en: "investment" }, { pt: "o argumento", en: "argument" },
+  ], exceptions: [] },
   { section: "-ON → -ÃO (m)", rule: "Masculine nouns.", items: [
     { pt: "o bilião", en: "billion" }, { pt: "o cânon", en: "canon" },
+    { pt: "o campeão", en: "champion" }, { pt: "o ladrão", en: "thief/robber" }, { pt: "o leão", en: "lion" }, { pt: "o patrão", en: "boss/patron" },
   ], exceptions: [] },
   { section: "-OR → -OR/A", rule: "Masculine -or, feminine -ora.", items: [
     { pt: "o criador / a criadora", en: "creator" }, { pt: "o ditador / a ditadora", en: "dictator" }, { pt: "o professor / a professora", en: "professor" },
@@ -974,6 +1018,10 @@ const COGNATES = [
   ], exceptions: [] },
   { section: "-TION → -ÇÃO (f)", rule: "Extremely reliable — thousands of words. Always feminine.", items: [
     { pt: "a ação", en: "action" }, { pt: "a nação", en: "nation" }, { pt: "a situação", en: "situation" }, { pt: "a informação", en: "information" },
+    { pt: "a educação", en: "education" }, { pt: "a produção", en: "production" }, { pt: "a comunicação", en: "communication" },
+    { pt: "a organização", en: "organisation" }, { pt: "a administração", en: "administration" }, { pt: "a construção", en: "construction" },
+    { pt: "a distribuição", en: "distribution" }, { pt: "a celebração", en: "celebration" }, { pt: "a decoração", en: "decoration" },
+    { pt: "a aplicação", en: "application" },
   ], exceptions: [] },
   { section: "-TUDE → -TUDE (f)", rule: "Identical ending.", items: [
     { pt: "a atitude", en: "attitude" }, { pt: "a altitude", en: "altitude" }, { pt: "a gratitude", en: "gratitude" },
@@ -999,7 +1047,8 @@ const COGNATES = [
     { pt: "livraria", en: "bookshop (not library — biblioteca)" },
     { pt: "novela", en: "TV soap opera (not a novel — romance)" },
     { pt: "parente", en: "relative/family member (not parent — pai/mãe)" },
-    { pt: "policia", en: "police/officer (not policy — política/apólice)" },
+    { pt: "policia (f) / polícia (m)", en: "a polícia (f) = the police force; o polícia (m) = a police officer. The gender changes the meaning." },
+    { pt: "tapete", en: "carpet/rug (not tape — fita adesiva)" },
     { pt: "polvo", en: "octopus (not powder — pó)" },
     { pt: "preservativo", en: "condom (not food preservative — conservante)" },
     { pt: "pretender", en: "to intend/plan (not to pretend — fingir)" },
