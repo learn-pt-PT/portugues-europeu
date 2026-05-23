@@ -2208,7 +2208,8 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
   }
 
   function handleSubmit() {
-    if (!session || sessionDone || feedback !== null) return;
+    if (!session || sessionDone) return;
+    if (feedback !== null && feedback.status !== "wrong_first") return;
     const item = session[itemIdx];
     const trimmed = userAnswer.trim();
     if (!trimmed) return;
