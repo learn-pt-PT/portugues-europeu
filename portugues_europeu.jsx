@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.5.4",
+  version: "2.6.0",
   date: "2026-05-24",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -29,6 +29,7 @@ const APP_META = {
 
 const LIST_TABS = [
   { id: "cognates", label: "Cognates" },
+  { id: "dictation", label: "Dictation" },
   { id: "grammar", label: "Grammar" },
   { id: "idioms", label: "Idioms" },
   { id: "media", label: "Media" },
@@ -570,11 +571,11 @@ const PHRASES = [
   { section: "Greetings & farewells", items: [
     { pt: "Bom dia", en: "Good morning" }, { pt: "Boa tarde", en: "Good afternoon" },
     { pt: "Boa noite", en: "Good evening / Good night" }, { pt: "Olá, tudo bem?", en: "Hello, all good?" },
-    { pt: "Tudo bem, obrigado/a", en: "All good, thank you" }, { pt: "Até logo / Até já", en: "See you soon" },
+    { pt: "Tudo bem, obrigado/a", en: "All good, thank you" }, { pt: "Até logo", en: "See you soon" }, { pt: "Até já", en: "See you in a bit" },
     { pt: "Adeus", en: "Goodbye (final)" }, { pt: "Com licença", en: "Excuse me (to pass)" }, { pt: "Desculpe", en: "Sorry / Excuse me" },
   ]},
   { section: "Politeness", items: [
-    { pt: "Por favor", en: "Please" }, { pt: "Obrigado / Obrigada", en: "Thank you (m/f speaker)" },
+    { pt: "Por favor", en: "Please" }, { pt: "Obrigado", en: "Thank you (male speaker)" }, { pt: "Obrigada", en: "Thank you (female speaker)" },
     { pt: "De nada", en: "You're welcome" }, { pt: "Com muito prazer", en: "With great pleasure" },
     { pt: "Faz favor", en: "Please / Excuse me (to get attention)" }, { pt: "Não faz mal", en: "It doesn't matter / No worries" },
   ]},
@@ -586,17 +587,17 @@ const PHRASES = [
   { section: "Food & restaurants", items: [
     { pt: "Uma mesa para dois, faz favor", en: "A table for two, please" }, { pt: "A ementa, faz favor", en: "The menu, please" },
     { pt: "O que recomenda?", en: "What do you recommend?" }, { pt: "Está delicioso", en: "It's delicious" },
-    { pt: "A conta, faz favor", en: "The bill, please" }, { pt: "Sem glúten / Sou vegetariano/a", en: "Gluten-free / I'm vegetarian" },
+    { pt: "A conta, faz favor", en: "The bill, please" }, { pt: "Sem glúten, por favor", en: "Gluten-free, please" }, { pt: "Sou vegetariano/a", en: "I'm vegetarian" },
   ]},
   { section: "Getting around", items: [
     { pt: "Onde fica...?", en: "Where is...?" }, { pt: "Como chego a...?", en: "How do I get to...?" },
-    { pt: "Vire à direita / esquerda", en: "Turn right / left" }, { pt: "Sempre em frente", en: "Straight ahead" },
+    { pt: "Vire à direita", en: "Turn right" }, { pt: "Vire à esquerda", en: "Turn left" }, { pt: "Sempre em frente", en: "Straight ahead" },
     { pt: "Um bilhete para..., faz favor", en: "A ticket to..., please" }, { pt: "A que horas parte o autocarro?", en: "What time does the bus leave?" },
   ]},
   { section: "Emergencies & help", items: [
     { pt: "Preciso de ajuda", en: "I need help" }, { pt: "Chame uma ambulância", en: "Call an ambulance" },
     { pt: "Perdi a minha carteira", en: "I lost my wallet" }, { pt: "Não me sinto bem", en: "I don't feel well" },
-    { pt: "Fala inglês?", en: "Do you speak English?" }, { pt: "Não percebo / Não entendo", en: "I don't understand" },
+    { pt: "Fala inglês?", en: "Do you speak English?" }, { pt: "Não percebo", en: "I don't understand" }, { pt: "Não entendo", en: "I don't understand" },
   ]},
   { section: "Healthcare & pharmacy", items: [
     { pt: "Onde fica a farmácia de serviço?", en: "Where is the duty pharmacy?" },
@@ -616,7 +617,7 @@ const PHRASES = [
     { pt: "Tenho uma questão sobre...", en: "I have a question about..." },
     { pt: "Pode ajudar-me com isto?", en: "Can you help me with this?" },
     { pt: "Onde fica a junta de freguesia?", en: "Where is the local council office?" },
-    { pt: "A que horas abre / fecha?", en: "What time does it open / close?" },
+    { pt: "A que horas abre?", en: "What time does it open?" }, { pt: "A que horas fecha?", en: "What time does it close?" },
     { pt: "Está fechado para almoço?", en: "Is it closed for lunch?" },
     { pt: "Posso deixar uma mensagem?", en: "Can I leave a message?" },
   ]},
@@ -2118,6 +2119,406 @@ function useFocusTrap(containerRef, active, onEscape) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [active, containerRef, onEscape]);
 }
+
+// ── DICTATION QUIZ ──────────────────────────────────────────────────────────
+// Builds source pools from PHRASES, IDIOMS, and NUMBERS (Cardinals).
+// Level gating:
+//   A1  → Phrases: Greetings & farewells + Politeness only
+//   A2  → All PHRASES sections
+//   B1  → All PHRASES + IDIOMS
+//   B2+ → All PHRASES + IDIOMS + optional NUMBERS
+//
+// Scoring:
+//   exact (after normalisation)         → green / correct
+//   diacritic-stripped match            → amber / partial (accents wrong)
+//   no match                            → red / missed
+//
+// Session: 10 items, or early-exit via "End session" button.
+// ──────────────────────────────────────────────────────────────────────────────
+
+function normDictation(s) {
+  // lowercase, trim, strip all punctuation anywhere in the string
+  return s.toLowerCase().trim().replace(/[.,!?;:¿¡'"«»\-–—()[\]{}]+/g, "").replace(/\s+/g, " ").trim();
+}
+
+const DICTATION_PHRASES_A1_SECTIONS = ["Greetings & farewells", "Politeness"];
+
+function buildDictationPool(level, sources) {
+  const pool = [];
+  // Phrases
+  if (sources.includes("phrases")) {
+    PHRASES.forEach(section => {
+      const inA1 = DICTATION_PHRASES_A1_SECTIONS.includes(section.section);
+      if (level === "A1" && !inA1) return;
+      section.items.forEach(item => {
+        pool.push({ pt: item.pt, en: item.en, _src: "phrase" });
+      });
+    });
+  }
+  // Idioms
+  if (sources.includes("idioms") && (level === "B1" || level === "B2+")) {
+    IDIOMS.forEach(item => {
+      pool.push({ pt: item.pt, en: item.en, _src: "idiom" });
+    });
+  }
+  // Numbers (Cardinals only, B2+ when enabled)
+  if (sources.includes("numbers") && level === "B2+") {
+    const cardinalSection = NUMBERS.find(s => s.section === "Cardinal numbers");
+    if (cardinalSection) {
+      cardinalSection.items.forEach(item => {
+        pool.push({ pt: item.pt, en: item.en, _src: "number" });
+      });
+    }
+  }
+  return pool;
+}
+
+const SESSION_LENGTH = 10;
+
+const DictationQuizTab = React.memo(function DictationQuizTab({ level, speakListPT, azureKey, azureRegion, fontSize }) {
+  // Session state
+  const [phase, setPhase] = useState("setup"); // "setup" | "question" | "result" | "summary"
+  const [sources, setSources] = useState(["phrases"]);
+  const [pool, setPool] = useState([]);
+  const [sessionItems, setSessionItems] = useState([]);
+  const [idx, setIdx] = useState(0);
+  const [userInput, setUserInput] = useState("");
+  const [scoreResult, setScoreResult] = useState(null); // null | "correct" | "partial" | "missed"
+  const [diffHighlight, setDiffHighlight] = useState(null); // array of {char, wrong} for partial
+  const [sessionStats, setSessionStats] = useState({ correct: 0, partial: 0, missed: 0 });
+  const [ttsError, setTtsError] = useState(false);
+  const [usingBrowserTTS, setUsingBrowserTTS] = useState(false);
+  const inputRef = useRef(null);
+  const justSubmittedRef = useRef(false); // blocks the result-phase Enter from firing on the same keypress as Submit
+
+  // Recompute available sources for current level
+  const availableSources = useMemo(() => {
+    const s = ["phrases"];
+    if (level === "B1" || level === "B2+") s.push("idioms");
+    if (level === "B2+") s.push("numbers");
+    return s;
+  }, [level]);
+
+  // Reset sources when level changes (drop any now-unavailable sources)
+  useEffect(() => {
+    setSources(prev => prev.filter(s => availableSources.includes(s)));
+  }, [availableSources]);
+
+  // Enter key advances to next item when in result phase.
+  // justSubmittedRef guards against the same Enter keypress that triggered
+  // submitAnswer() also immediately firing nextItem().
+  useEffect(() => {
+    if (phase !== "result") return;
+    const handler = (e) => {
+      if (e.key !== "Enter") return;
+      if (justSubmittedRef.current) { justSubmittedRef.current = false; return; }
+      nextItem();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [phase, idx, sessionItems.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const currentItem = phase !== "setup" && phase !== "summary" ? sessionItems[idx] : null;
+
+  // Speak helper — tries Azure/browser via speakListPT; detects failure
+  const speakItem = useCallback(async (text) => {
+    if (!text) return;
+    setTtsError(false);
+    // Detect browser-only TTS (no Azure key)
+    const hasAzure = !!(azureKey && azureRegion);
+    setUsingBrowserTTS(!hasAzure);
+    try {
+      await speakListPT(text, "pt-PT");
+    } catch (e) {
+      setTtsError(true);
+    }
+    // If speechSynthesis isn't available at all, flag it
+    if (!("speechSynthesis" in window) && !hasAzure) {
+      setTtsError(true);
+    }
+  }, [speakListPT, azureKey, azureRegion]);
+
+  function startSession() {
+    const effectiveSources = sources.length > 0 ? sources : ["phrases"];
+    const newPool = buildDictationPool(level, effectiveSources);
+    if (!newPool.length) return;
+    // Shuffle and take SESSION_LENGTH items
+    const shuffled = [...newPool].sort(() => Math.random() - 0.5);
+    const items = shuffled.slice(0, SESSION_LENGTH);
+    setPool(newPool);
+    setSessionItems(items);
+    setIdx(0);
+    setUserInput("");
+    setScoreResult(null);
+    setDiffHighlight(null);
+    setSessionStats({ correct: 0, partial: 0, missed: 0 });
+    setPhase("question");
+    setTtsError(false);
+    setUsingBrowserTTS(false);
+  }
+
+  // Speak item when we enter a new question
+  useEffect(() => {
+    if (phase === "question" && sessionItems[idx]) {
+      speakItem(sessionItems[idx].pt);
+      setTimeout(() => inputRef.current?.focus(), 150);
+    }
+  }, [phase, idx, sessionItems]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function submitAnswer() {
+    if (!currentItem) return;
+    const answer = normDictation(userInput);
+    const correct = normDictation(currentItem.pt);
+    let result;
+    let diff = null;
+
+    if (answer === correct) {
+      result = "correct";
+    } else if (stripDiacritics(answer) === stripDiacritics(correct)) {
+      result = "partial";
+      // Build diff: align characters of correct answer, flag those where diacritics differ
+      diff = correct.split("").map((ch, i) => {
+        const userCh = answer[i] || "";
+        const wrong = ch !== userCh && stripDiacritics(ch) === stripDiacritics(userCh);
+        return { char: ch, wrong };
+      });
+    } else {
+      result = "missed";
+    }
+
+    setScoreResult(result);
+    setDiffHighlight(diff);
+    setSessionStats(prev => ({
+      ...prev,
+      correct: prev.correct + (result === "correct" ? 1 : 0),
+      partial: prev.partial + (result === "partial" ? 1 : 0),
+      missed: prev.missed + (result === "missed" ? 1 : 0),
+    }));
+    justSubmittedRef.current = true;
+    setPhase("result");
+  }
+
+  function nextItem() {
+    const nextIdx = idx + 1;
+    if (nextIdx >= sessionItems.length) {
+      setPhase("summary");
+    } else {
+      setIdx(nextIdx);
+      setUserInput("");
+      setScoreResult(null);
+      setDiffHighlight(null);
+      setPhase("question");
+    }
+  }
+
+  function endSession() {
+    setPhase("summary");
+  }
+
+  function restartSession() {
+    setPhase("setup");
+    setUserInput("");
+    setScoreResult(null);
+    setDiffHighlight(null);
+    setSources(["phrases"]);
+  }
+
+  // ── STYLES (match existing quiz tabs) ──
+  const btn = (active, danger) => ({
+    fontSize: 13, fontWeight: 700, padding: "5px 14px", borderRadius: 999, border: "none",
+    background: danger ? "var(--color-background-danger)" : active ? "var(--color-accent-blue)" : "var(--color-background-secondary)",
+    color: danger ? "var(--color-text-danger)" : active ? "#fff" : "var(--color-text-secondary)",
+    cursor: "pointer", fontFamily: "var(--font-sans)",
+  });
+  const inputStyle = {
+    fontSize, width: "100%", padding: "8px 12px",
+    border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)",
+    background: "var(--color-background-primary)", color: "var(--color-text-primary)",
+    fontFamily: "var(--font-sans)", outline: "none", boxSizing: "border-box",
+  };
+  const resultColor = scoreResult === "correct" ? "var(--color-text-success)" : scoreResult === "partial" ? "#b45309" : "var(--color-text-danger)";
+  const resultBg   = scoreResult === "correct" ? "var(--color-background-success)" : scoreResult === "partial" ? "#fef3c7" : "var(--color-background-danger)";
+
+  // ── SETUP PHASE ──
+  if (phase === "setup") {
+    return (
+      <div style={{ padding: 16, maxWidth: 560, display: "flex", flexDirection: "column", gap: 16 }}>
+        <div>
+          <p style={{ fontSize: 14, fontWeight: 600, color: "var(--color-text-primary)", margin: "0 0 4px" }}>Listening Dictation</p>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.5 }}>
+            TTS speaks a phrase in Portuguese. Type what you hear. Scored on exact match, then diacritic match. Targets listening comprehension and orthographic production — the hardest combined skill for EP learners.
+          </p>
+        </div>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-secondary)", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Source pool</p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {availableSources.map(src => {
+              const labels = { phrases: "Phrases", idioms: "Idioms", numbers: "Numbers" };
+              const active = sources.includes(src);
+              return (
+                <button key={src} style={btn(active)} onClick={() => {
+                  setSources(prev => active
+                    ? prev.filter(s => s !== src).length > 0 ? prev.filter(s => s !== src) : prev
+                    : [...prev, src]
+                  );
+                }}>{labels[src]}</button>
+              );
+            })}
+          </div>
+          {level === "A1" && (
+            <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "6px 0 0", fontStyle: "italic" }}>A1: draws from Greetings & farewells and Politeness sections only.</p>
+          )}
+          {level === "A2" && (
+            <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "6px 0 0", fontStyle: "italic" }}>A2: draws from all Phrases sections.</p>
+          )}
+          {level === "B1" && (
+            <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "6px 0 0", fontStyle: "italic" }}>B1: Phrases and Idioms available.</p>
+          )}
+          {level === "B2+" && (
+            <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "6px 0 0", fontStyle: "italic" }}>B2+: Phrases, Idioms, and Numbers available.</p>
+          )}
+        </div>
+        <button style={{ ...btn(true), alignSelf: "flex-start", fontSize: 15, padding: "7px 20px" }} onClick={startSession}>
+          ▶ Start session
+        </button>
+      </div>
+    );
+  }
+
+  // ── SUMMARY PHASE ──
+  if (phase === "summary") {
+    const total = sessionStats.correct + sessionStats.partial + sessionStats.missed;
+    return (
+      <div style={{ padding: 16, maxWidth: 480, display: "flex", flexDirection: "column", gap: 14 }}>
+        <p style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text-primary)", margin: 0 }}>Session complete</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
+          {[
+            { label: "Correct", val: sessionStats.correct, color: "var(--color-text-success)", bg: "var(--color-background-success)" },
+            { label: "Accents", val: sessionStats.partial, color: "#b45309", bg: "#fef3c7" },
+            { label: "Missed", val: sessionStats.missed, color: "var(--color-text-danger)", bg: "var(--color-background-danger)" },
+          ].map(({ label, val, color, bg }) => (
+            <div key={label} style={{ background: bg, borderRadius: "var(--border-radius-md)", padding: "10px 8px", textAlign: "center" }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color, margin: 0 }}>{val}</p>
+              <p style={{ fontSize: 12, color, margin: "2px 0 0", fontWeight: 600 }}>{label}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: 0 }}>
+          {total} items — {Math.round((sessionStats.correct / total) * 100) || 0}% exact, {Math.round(((sessionStats.correct + sessionStats.partial) / total) * 100) || 0}% correct meaning
+        </p>
+        <button style={{ ...btn(true), alignSelf: "flex-start", fontSize: 14, padding: "6px 18px" }} onClick={restartSession}>
+          ↺ New session
+        </button>
+      </div>
+    );
+  }
+
+  // ── QUESTION / RESULT PHASE ──
+  const progressLabel = `${idx + 1} / ${sessionItems.length}`;
+
+  return (
+    <div style={{ padding: 16, maxWidth: 560, display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* TTS error states */}
+      {ttsError && (
+        <p style={{ fontSize: 12, padding: "6px 10px", borderRadius: "var(--border-radius-sm)", background: "var(--color-background-danger)", color: "var(--color-text-danger)", margin: 0 }}>
+          Audio unavailable. Check your connection and try again.
+        </p>
+      )}
+      {!ttsError && usingBrowserTTS && (
+        <p style={{ fontSize: 12, padding: "6px 10px", borderRadius: "var(--border-radius-sm)", background: "var(--color-background-warning)", color: "var(--color-text-warning)", margin: 0 }}>
+          Using browser voice — EP accuracy may be reduced.
+        </p>
+      )}
+
+      {/* Progress + controls */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+        <span style={{ fontSize: 13, color: "var(--color-text-tertiary)", fontVariantNumeric: "tabular-nums" }}>{progressLabel}</span>
+        <div style={{ display: "flex", gap: 6 }}>
+          <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 999, background: "var(--color-background-success)", color: "var(--color-text-success)", fontWeight: 700 }}>{sessionStats.correct}</span>
+          <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 999, background: "#fef3c7", color: "#b45309", fontWeight: 700 }}>{sessionStats.partial}</span>
+          <span style={{ fontSize: 12, padding: "2px 8px", borderRadius: 999, background: "var(--color-background-danger)", color: "var(--color-text-danger)", fontWeight: 700 }}>{sessionStats.missed}</span>
+          <button style={{ ...btn(false, true), fontSize: 12, padding: "2px 8px" }} onClick={endSession}>End session</button>
+        </div>
+      </div>
+
+      {/* Audio prompt area — shown only when phase === "question" (no Portuguese text revealed) */}
+      {phase === "question" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: 0 }}>
+            Listen, then type what you heard in Portuguese:
+          </p>
+          <button
+            style={{ ...btn(true), alignSelf: "flex-start", fontSize: 14, padding: "6px 18px" }}
+            onClick={() => speakItem(currentItem.pt)}
+          >
+            ▶ Play again
+          </button>
+          <input
+            ref={inputRef}
+            type="text"
+            value={userInput}
+            onChange={e => setUserInput(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter" && userInput.trim()) submitAnswer(); }}
+            placeholder="Type what you heard…"
+            style={inputStyle}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+          />
+          <button
+            style={{ ...btn(true), alignSelf: "flex-start", fontSize: 14, padding: "6px 18px" }}
+            disabled={!userInput.trim()}
+            onClick={submitAnswer}
+          >
+            Submit
+          </button>
+        </div>
+      )}
+
+      {/* Result area */}
+      {phase === "result" && currentItem && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Score badge */}
+          <div style={{ padding: "8px 12px", borderRadius: "var(--border-radius-md)", background: resultBg }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: resultColor, margin: "0 0 2px" }}>
+              {scoreResult === "correct" ? "✓ Correct" : scoreResult === "partial" ? "△ Correct meaning — check your accents" : "✗ Incorrect"}
+            </p>
+            {/* Show user's answer */}
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "4px 0 0" }}>
+              You wrote: <span style={{ fontFamily: "var(--font-mono)", color: resultColor }}>{userInput || "—"}</span>
+            </p>
+          </div>
+
+          {/* Correct answer */}
+          <div style={{ padding: "8px 12px", borderRadius: "var(--border-radius-md)", background: "var(--color-background-secondary)" }}>
+            <p style={{ fontSize: 12, color: "var(--color-text-tertiary)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 }}>Correct</p>
+            <p style={{ fontSize, fontFamily: "var(--font-mono)", color: "var(--color-text-primary)", margin: "0 0 4px" }}>
+              {/* For partial, highlight chars that differ by diacritics */}
+              {scoreResult === "partial" && diffHighlight
+                ? diffHighlight.map((ch, i) => (
+                    <span key={i} style={ch.wrong ? { color: "#b45309", fontWeight: 700, textDecoration: "underline dotted" } : {}}>
+                      {ch.char}
+                    </span>
+                  ))
+                : currentItem.pt
+              }
+            </p>
+            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic" }}>{currentItem.en}</p>
+          </div>
+
+          {/* Play again + next */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button style={{ ...btn(false), fontSize: 13 }} onClick={() => speakItem(currentItem.pt)}>▶ Play again</button>
+            <button style={{ ...btn(true), fontSize: 14, padding: "6px 18px" }} onClick={nextItem}>
+              {idx + 1 >= sessionItems.length ? "See summary →" : "Next →"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
 
 const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSupported, speak, showTranslation, onRetry }) {
   if (m._grammarCard && m._grammar) {
@@ -5745,6 +6146,15 @@ function App() {
           )}
           {listTab === "cognates" && (
             <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
+          )}
+          {listTab === "dictation" && (
+            <DictationQuizTab
+              level={level}
+              speakListPT={speakListPT}
+              azureKey={azureKey}
+              azureRegion={azureRegion}
+              fontSize={fontSize}
+            />
           )}
           {listTab === "media" && (
             <MediaTab
