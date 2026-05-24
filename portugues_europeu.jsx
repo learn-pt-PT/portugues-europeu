@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.6.0",
+  version: "2.7.0",
   date: "2026-05-24",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -40,6 +40,7 @@ const LIST_TABS = [
   { id: "slang", label: "Slang" },
   { id: "verbquiz", label: "Verb Quiz" },
   { id: "verbref", label: "Verb List" },
+  { id: "wordorder", label: "Word Order" },
 ];
 
 const VERB_REF_TABS = ["irregular", "ar", "erir", "semi"];
@@ -2175,6 +2176,363 @@ function buildDictationPool(level, sources) {
 
 const SESSION_LENGTH = 10;
 
+
+// ── WORD ORDER DRILL DATA ─────────────────────────────────────────────────────
+// Each item: { tokens, correct, en, focus, level }
+// tokens: scrambled word chips shown to the learner
+// correct: exact expected sentence (string match after trim)
+// en: English gloss
+// focus: "clitic" | "progressive" | "question" | "general"
+// level: "A1" | "A2" | "B1" | "B2+"
+// Drag-and-drop: not implemented — HTML5 drag API adds fragile cross-browser
+// complexity in a single-file Babel/React constraint. Click-to-place mechanic
+// used instead. Future enhancement: onDragStart/onDrop chip reordering.
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const WORD_ORDER_ITEMS = [
+  // ── CLITIC PLACEMENT (focus: "clitic") — 18 items ──────────────────────────
+  { tokens:["deu","me","ela","o","livro"], correct:"Ela deu-me o livro.", en:"She gave me the book.", focus:"clitic", level:"A2" },
+  { tokens:["disse","te","ele","isso"], correct:"Ele disse-te isso.", en:"He told you that.", focus:"clitic", level:"A2" },
+  { tokens:["chama","se","João","ele"], correct:"Ele chama-se João.", en:"His name is João.", focus:"clitic", level:"A1" },
+  { tokens:["não","me","nada","disse","ela"], correct:"Ela não me disse nada.", en:"She didn't tell me anything.", focus:"clitic", level:"A2" },
+  { tokens:["nunca","o","vi","eu"], correct:"Eu nunca o vi.", en:"I never saw him.", focus:"clitic", level:"A2" },
+  { tokens:["sempre","me","ela","ajuda"], correct:"Ela sempre me ajuda.", en:"She always helps me.", focus:"clitic", level:"B1" },
+  { tokens:["já","te","disse","eu","isso"], correct:"Eu já te disse isso.", en:"I already told you that.", focus:"clitic", level:"B1" },
+  { tokens:["viu","nos","ele","ontem"], correct:"Ele viu-nos ontem.", en:"He saw us yesterday.", focus:"clitic", level:"A2" },
+  { tokens:["que","espero","te","melhor","sintas"], correct:"Espero que te sintas melhor.", en:"I hope you feel better.", focus:"clitic", level:"B1" },
+  { tokens:["lembras","te","disso","tu"], correct:"Tu lembras-te disso.", en:"You remember that.", focus:"clitic", level:"A2" },
+  { tokens:["não","nos","viu","ele","ainda"], correct:"Ele não nos viu ainda.", en:"He hasn't seen us yet.", focus:"clitic", level:"A2" },
+  { tokens:["disse","lhe","eu","a","verdade"], correct:"Eu disse-lhe a verdade.", en:"I told him the truth.", focus:"clitic", level:"A2" },
+  { tokens:["quando","chegar","ele","ligará","me"], correct:"Quando ele chegar, ligará-me.", en:"When he arrives, he will call me.", focus:"clitic", level:"B1" },
+  { tokens:["não","te","preocupes","isso","com"], correct:"Não te preocupes com isso.", en:"Don't worry about that.", focus:"clitic", level:"A2" },
+  { tokens:["ela","levantou","se","cedo"], correct:"Ela levantou-se cedo.", en:"She got up early.", focus:"clitic", level:"A2" },
+  { tokens:["porque","te","estás","a","rir"], correct:"Porque te estás a rir?", en:"Why are you laughing?", focus:"clitic", level:"B1" },
+  { tokens:["entregou","lhe","o","pacote","ela"], correct:"Ela entregou-lhe o pacote.", en:"She handed him the package.", focus:"clitic", level:"A2" },
+  { tokens:["não","me","parece","bem","isso"], correct:"Isso não me parece bem.", en:"That doesn't seem right to me.", focus:"clitic", level:"B1" },
+
+  // ── PROGRESSIVE CONSTRUCTION (focus: "progressive") — 17 items ──────────────
+  { tokens:["a","estou","trabalhar"], correct:"Estou a trabalhar.", en:"I am working.", focus:"progressive", level:"A1" },
+  { tokens:["a","estava","chover"], correct:"Estava a chover.", en:"It was raining.", focus:"progressive", level:"A2" },
+  { tokens:["a","o","está","que","ele","fazer"], correct:"O que é que ele está a fazer?", en:"What is he doing?", focus:"progressive", level:"A2" },
+  { tokens:["a","eles","estão","jantar"], correct:"Eles estão a jantar.", en:"They are having dinner.", focus:"progressive", level:"A1" },
+  { tokens:["a","estavas","ler","o","livro"], correct:"Estavas a ler o livro.", en:"You were reading the book.", focus:"progressive", level:"A2" },
+  { tokens:["a","estamos","aprender","português"], correct:"Estamos a aprender português.", en:"We are learning Portuguese.", focus:"progressive", level:"A1" },
+  { tokens:["a","ela","está","esperar","o","autocarro"], correct:"Ela está a esperar o autocarro.", en:"She is waiting for the bus.", focus:"progressive", level:"A1" },
+  { tokens:["a","estavam","dormir","os","meninos"], correct:"Os meninos estavam a dormir.", en:"The children were sleeping.", focus:"progressive", level:"A2" },
+  { tokens:["a","estou","pensar","nisso"], correct:"Estou a pensar nisso.", en:"I am thinking about that.", focus:"progressive", level:"A2" },
+  { tokens:["a","estão","discutir","eles"], correct:"Eles estão a discutir.", en:"They are arguing.", focus:"progressive", level:"A2" },
+  { tokens:["a","o","João","está","estudar","medicina"], correct:"O João está a estudar medicina.", en:"João is studying medicine.", focus:"progressive", level:"A2" },
+  { tokens:["a","estarei","trabalhar","amanhã"], correct:"Estarei a trabalhar amanhã.", en:"I will be working tomorrow.", focus:"progressive", level:"B1" },
+  { tokens:["a","escrever","ela","estava","uma","carta"], correct:"Ela estava a escrever uma carta.", en:"She was writing a letter.", focus:"progressive", level:"A2" },
+  { tokens:["a","está","a","chuva","cair"], correct:"A chuva está a cair.", en:"The rain is falling.", focus:"progressive", level:"A2" },
+  { tokens:["a","o","preço","está","subir","sempre"], correct:"O preço está sempre a subir.", en:"The price keeps going up.", focus:"progressive", level:"B1" },
+  { tokens:["a","estávamos","treinar","a","correr"], correct:"Estávamos a treinar a correr.", en:"We were training by running.", focus:"progressive", level:"B1" },
+  { tokens:["a","estava","pensar","em","ti"], correct:"Estava a pensar em ti.", en:"I was thinking about you.", focus:"progressive", level:"A2" },
+
+  // ── QUESTION FORMATION (focus: "question") — 17 items ───────────────────────
+  { tokens:["é","hoje","que","dia"], correct:"Que dia é hoje?", en:"What day is today?", focus:"question", level:"A1" },
+  { tokens:["fica","onde","a","farmácia"], correct:"Onde fica a farmácia?", en:"Where is the pharmacy?", focus:"question", level:"A1" },
+  { tokens:["são","horas","que"], correct:"Que horas são?", en:"What time is it?", focus:"question", level:"A1" },
+  { tokens:["custa","quanto","isto"], correct:"Quanto custa isto?", en:"How much does this cost?", focus:"question", level:"A1" },
+  { tokens:["chego","como","a","Lisboa"], correct:"Como chego a Lisboa?", en:"How do I get to Lisbon?", focus:"question", level:"A2" },
+  { tokens:["parte","a","horas","que","o","autocarro"], correct:"A que horas parte o autocarro?", en:"What time does the bus leave?", focus:"question", level:"A2" },
+  { tokens:["recomenda","o","que"], correct:"O que recomenda?", en:"What do you recommend?", focus:"question", level:"A2" },
+  { tokens:["falas","inglês","tu"], correct:"Tu falas inglês?", en:"Do you speak English?", focus:"question", level:"A1" },
+  { tokens:["é","o","teu","nome","qual"], correct:"Qual é o teu nome?", en:"What is your name?", focus:"question", level:"A1" },
+  { tokens:["vais","onde","tu"], correct:"Onde vais tu?", en:"Where are you going?", focus:"question", level:"A1" },
+  { tokens:["aberta","está","a","loja","ainda"], correct:"A loja ainda está aberta?", en:"Is the shop still open?", focus:"question", level:"A2" },
+  { tokens:["é","este","de","quem","livro"], correct:"De quem é este livro?", en:"Whose book is this?", focus:"question", level:"A2" },
+  { tokens:["chegou","quando","o","comboio"], correct:"Quando chegou o comboio?", en:"When did the train arrive?", focus:"question", level:"A2" },
+  { tokens:["é","português","fácil","aprender","de"], correct:"É fácil de aprender português?", en:"Is Portuguese easy to learn?", focus:"question", level:"A2" },
+  { tokens:["preferes","o","que"], correct:"O que preferes?", en:"What do you prefer?", focus:"question", level:"A2" },
+  { tokens:["tens","quantos","anos","tu"], correct:"Tu tens quantos anos?", en:"How old are you?", focus:"question", level:"A1" },
+  { tokens:["é","a","capital","Portugal","qual","de"], correct:"Qual é a capital de Portugal?", en:"What is the capital of Portugal?", focus:"question", level:"A1" },
+
+  // ── GENERAL (focus: "general") — 18 items ────────────────────────────────────
+  // Sourced from PHRASES and IDIOMS arrays — 4–7 tokens, unambiguous word order
+  { tokens:["favor","por","sentar","se","pode"], correct:"Pode sentar-se, por favor.", en:"Please sit down.", focus:"general", level:"A1" },
+  { tokens:["obrigado","de","nada"], correct:"De nada, obrigado.", en:"You're welcome, thank you.", focus:"general", level:"A1" },
+  { tokens:["mesa","dois","para","uma","faz","favor"], correct:"Uma mesa para dois, faz favor.", en:"A table for two, please.", focus:"general", level:"A1" },
+  { tokens:["caixa","fica","onde","a"], correct:"Onde fica a caixa?", en:"Where is the checkout?", focus:"general", level:"A1" },
+  { tokens:["bem","não","sinto","me"], correct:"Não me sinto bem.", en:"I don't feel well.", focus:"general", level:"A2" },
+  { tokens:["cartão","pagar","posso","com"], correct:"Posso pagar com cartão?", en:"Can I pay by card?", focus:"general", level:"A2" },
+  { tokens:["delicioso","está"], correct:"Está delicioso.", en:"It's delicious.", focus:"general", level:"A1" },
+  { tokens:["ajuda","preciso","de"], correct:"Preciso de ajuda.", en:"I need help.", focus:"general", level:"A1" },
+  { tokens:["frente","sempre","em"], correct:"Sempre em frente.", en:"Straight ahead.", focus:"general", level:"A1" },
+  { tokens:["mal","não","faz"], correct:"Não faz mal.", en:"It doesn't matter.", focus:"general", level:"A1" },
+  { tokens:["inglês","fala","não","percebo"], correct:"Não percebo, fala inglês?", en:"I don't understand, do you speak English?", focus:"general", level:"A2" },
+  { tokens:["minha","carteira","a","perdi"], correct:"Perdi a minha carteira.", en:"I lost my wallet.", focus:"general", level:"A2" },
+  { tokens:["marcação","tenho","uma"], correct:"Tenho uma marcação.", en:"I have an appointment.", focus:"general", level:"A2" },
+  { tokens:["caro","muito","é"], correct:"É muito caro.", en:"It's very expensive.", focus:"general", level:"A1" },
+  { tokens:["só","estou","a","ver"], correct:"Estou só a ver.", en:"I'm just looking.", focus:"general", level:"A1" },
+  { tokens:["ambulância","chame","uma"], correct:"Chame uma ambulância.", en:"Call an ambulance.", focus:"general", level:"A2" },
+  { tokens:["conta","favor","a","faz"], correct:"A conta, faz favor.", en:"The bill, please.", focus:"general", level:"A1" },
+  { tokens:["devagar","repetir","mais","pode","por","favor"], correct:"Pode repetir mais devagar, por favor?", en:"Can you repeat more slowly, please?", focus:"general", level:"A2" },
+];
+
+// ── WORD ORDER QUIZ COMPONENT ────────────────────────────────────────────────
+const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT }) {
+  const FOCUS_FILTERS = ["all", "clitic", "progressive", "question", "general"];
+  const FOCUS_LABELS = { all: "All", clitic: "Clitic", progressive: "Progressive", question: "Questions", general: "General" };
+  const SESSION_SIZE = 10;
+
+  const [focusFilter, setFocusFilter] = useState("all");
+  const [session, setSession] = useState(null);       // array of item indices
+  const [sessionIdx, setSessionIdx] = useState(0);    // current position in session
+  const [pool, setPool] = useState([]);               // scrambled tokens in pool
+  const [built, setBuilt] = useState([]);             // tokens placed by learner (each: {token, poolIdx})
+  const [checked, setChecked] = useState(false);
+  const [correct, setCorrect] = useState(false);
+  const [triedOnce, setTriedOnce] = useState(false);
+  // score: { firstTry, retry, missed } — final state only updated on Next
+  const [score, setScore] = useState({ firstTry: 0, retry: 0, missed: 0 });
+  const [sessionDone, setSessionDone] = useState(false);
+
+  const LEVEL_ORDER = { "A1": 0, "A2": 1, "B1": 2, "B2+": 3 };
+  const userLevelIdx = LEVEL_ORDER[level] ?? 3;
+
+  // Filtered item pool respecting level and focus
+  const eligibleIndices = useMemo(() => {
+    return WORD_ORDER_ITEMS.reduce((acc, item, i) => {
+      const itemLevelIdx = LEVEL_ORDER[item.level] ?? 3;
+      if (itemLevelIdx > userLevelIdx) return acc;
+      if (focusFilter !== "all" && item.focus !== focusFilter) return acc;
+      acc.push(i);
+      return acc;
+    }, []);
+  }, [focusFilter, userLevelIdx]);
+
+  // Start or restart a session
+  const startSession = useCallback(() => {
+    if (eligibleIndices.length === 0) return;
+    const shuffled = shuffleArray(eligibleIndices);
+    const picks = shuffled.slice(0, Math.min(SESSION_SIZE, shuffled.length));
+    setSession(picks);
+    setSessionIdx(0);
+    setScore({ firstTry: 0, retry: 0, missed: 0 });
+    setSessionDone(false);
+    loadItem(picks, 0);
+  }, [eligibleIndices]);
+
+  const loadItem = (sess, idx) => {
+    const item = WORD_ORDER_ITEMS[sess[idx]];
+    setPool(shuffleArray(item.tokens).map((t, i) => ({ token: t, id: i })));
+    setBuilt([]);
+    setChecked(false);
+    setCorrect(false);
+    setTriedOnce(false);
+  };
+
+  // Auto-start session when eligibleIndices changes (filter/level change)
+  useEffect(() => {
+    if (eligibleIndices.length > 0) startSession();
+  }, [focusFilter, level]);
+
+  const currentItem = session ? WORD_ORDER_ITEMS[session[sessionIdx]] : null;
+
+  const moveToBuilt = (poolId) => {
+    if (checked) return;
+    setPool(prev => {
+      const tok = prev.find(p => p.id === poolId);
+      if (!tok) return prev;
+      setBuilt(b => [...b, { token: tok.token, poolId }]);
+      return prev.filter(p => p.id !== poolId);
+    });
+  };
+
+  const moveToPool = (poolId) => {
+    if (checked) return;
+    setBuilt(prev => {
+      const tok = prev.find(p => p.poolId === poolId);
+      if (!tok) return prev;
+      setPool(p => [...p, { token: tok.token, id: poolId }]);
+      return prev.filter(p => p.poolId !== poolId);
+    });
+  };
+
+  const handleCheck = () => {
+    if (built.length !== currentItem.tokens.length) return;
+    const attempt = built.map(b => b.token).join(" ") + (currentItem.correct.endsWith("?") || currentItem.correct.endsWith(".") || currentItem.correct.endsWith("!") ? "" : "");
+    // Build the attempt sentence; correct has terminal punctuation baked in
+    // Compare by joining built tokens + appending last char of correct if it's punctuation
+    const lastChar = currentItem.correct.slice(-1);
+    const builtStr = built.map(b => b.token).join(" ");
+    // The correct string may have punctuation as part of a token (e.g. "faz?") or separate
+    // Normalise: strip terminal punctuation from both sides for comparison
+    const normalise = s => s.trim().replace(/[.?!]$/, "").replace(/-/g, " ").replace(/\s+/g, " ").toLowerCase();
+    const isCorrect = normalise(builtStr) === normalise(currentItem.correct);
+    setCorrect(isCorrect);
+    setChecked(true);
+    if (isCorrect && speakListPT) speakListPT(currentItem.correct);
+    if (!isCorrect && speakListPT) speakListPT(currentItem.correct);
+  };
+
+  const handleTryAgain = () => {
+    setTriedOnce(true);
+    const item = currentItem;
+    setPool(shuffleArray(item.tokens).map((t, i) => ({ token: t, id: i })));
+    setBuilt([]);
+    setChecked(false);
+    setCorrect(false);
+  };
+
+  const handleNext = () => {
+    // Record score for current item
+    setScore(prev => {
+      if (correct && !triedOnce) return { ...prev, firstTry: prev.firstTry + 1 };
+      if (correct && triedOnce) return { ...prev, retry: prev.retry + 1 };
+      return { ...prev, missed: prev.missed + 1 };
+    });
+    const nextIdx = sessionIdx + 1;
+    if (nextIdx >= session.length) {
+      setSessionDone(true);
+    } else {
+      setSessionIdx(nextIdx);
+      loadItem(session, nextIdx);
+    }
+  };
+
+  const chipStyle = (bg, col) => ({
+    display: "inline-block", padding: "6px 12px", borderRadius: 20,
+    background: bg, color: col, fontSize: 15, fontWeight: 500,
+    cursor: "pointer", border: "1.5px solid rgba(0,0,0,0.08)",
+    fontFamily: "var(--font-sans)", margin: 3, userSelect: "none",
+    transition: "background 0.15s",
+  });
+
+  const poolChipBg = "var(--color-background-secondary)";
+  const poolChipCol = "var(--color-text-primary)";
+
+  if (sessionDone) {
+    // Final score — update state after next fires for last item
+    const finalScore = { ...score };
+    if (correct && !triedOnce) finalScore.firstTry++;
+    else if (correct && triedOnce) finalScore.retry++;
+    else finalScore.missed++;
+    const total = session.length;
+    return (
+      <div style={{ padding: 16 }}>
+        <p style={{ fontWeight: 700, fontSize: 17, marginBottom: 12, color: "var(--color-text-primary)" }}>Session complete</p>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
+          <div style={{ padding: "10px 18px", borderRadius: 10, background: "#d1fae5", color: "#065f46", fontWeight: 600 }}>
+            ✓ First try: {finalScore.firstTry} / {total}
+          </div>
+          <div style={{ padding: "10px 18px", borderRadius: 10, background: "#fef3c7", color: "#92400e", fontWeight: 600 }}>
+            ↻ After retry: {finalScore.retry} / {total}
+          </div>
+          <div style={{ padding: "10px 18px", borderRadius: 10, background: "#fee2e2", color: "#991b1b", fontWeight: 600 }}>
+            ✗ Missed: {finalScore.missed} / {total}
+          </div>
+        </div>
+        <button style={{ padding: "8px 20px", borderRadius: 8, background: "var(--color-accent-blue)", color: "#fff", border: "none", fontWeight: 600, fontSize: 15, cursor: "pointer" }} onClick={startSession}>
+          New session
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: "12px 16px" }}>
+      {/* Focus filter */}
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+        {FOCUS_FILTERS.map(f => (
+          <button key={f}
+            style={{ padding: "4px 12px", borderRadius: 999, border: "1.5px solid", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-sans)",
+              borderColor: focusFilter === f ? "var(--color-accent-blue)" : "var(--color-border-tertiary)",
+              background: focusFilter === f ? "var(--color-accent-blue)" : "var(--color-background-secondary)",
+              color: focusFilter === f ? "#fff" : "var(--color-text-secondary)",
+            }}
+            onClick={() => setFocusFilter(f)}>{FOCUS_LABELS[f]}</button>
+        ))}
+        {eligibleIndices.length === 0 && (
+          <span style={{ fontSize: 13, color: "var(--color-text-secondary)", alignSelf: "center", marginLeft: 6 }}>
+            No items match this filter at your level.
+          </span>
+        )}
+      </div>
+
+      {/* Progress */}
+      {session && (
+        <p style={{ fontSize: 13, color: "var(--color-text-secondary)", marginBottom: 10 }}>
+          Item {sessionIdx + 1} of {session.length}
+          {currentItem && <span style={{ marginLeft: 8, padding: "2px 8px", borderRadius: 999, background: "var(--color-background-secondary)", fontSize: 12, fontWeight: 600 }}>{currentItem.level}</span>}
+          {currentItem && <span style={{ marginLeft: 4, padding: "2px 8px", borderRadius: 999, background: "var(--color-background-secondary)", fontSize: 12 }}>{FOCUS_LABELS[currentItem.focus]}</span>}
+          <button title={checked ? "Hear correct sentence" : "Available after checking"} style={{ marginLeft: 8, background: "none", border: "none", fontSize: 15, padding: "0 2px", cursor: checked ? "pointer" : "not-allowed", opacity: checked ? 1 : 0.3 }}
+            onClick={() => checked && currentItem && speakListPT && speakListPT(currentItem.correct)}>🔊</button>
+        </p>
+      )}
+
+      {currentItem && (
+        <>
+          {/* Token pool */}
+          <div style={{ minHeight: 54, padding: 8, borderRadius: 10, border: "1.5px dashed var(--color-border-tertiary)", background: "var(--color-background-primary)", marginBottom: 10, display: "flex", flexWrap: "wrap", alignItems: "flex-start" }}>
+            {pool.map(p => (
+              <span key={p.id} style={chipStyle(poolChipBg, poolChipCol)} onClick={() => moveToBuilt(p.id)}>{p.token}</span>
+            ))}
+            {pool.length === 0 && <span style={{ fontSize: 13, color: "var(--color-border-tertiary)", alignSelf: "center", paddingLeft: 4 }}>pool empty</span>}
+          </div>
+
+          {/* Built sentence area */}
+          <div style={{ minHeight: 54, padding: 8, borderRadius: 10, border: "1.5px solid",
+            borderColor: checked ? (correct ? "#10b981" : "#ef4444") : "var(--color-border-tertiary)",
+            background: checked ? (correct ? "#f0fdf4" : "#fef2f2") : "var(--color-background-secondary)",
+            marginBottom: 10, display: "flex", flexWrap: "wrap", alignItems: "flex-start" }}>
+            {built.map(b => (
+              <span key={b.poolId} style={chipStyle(
+                checked ? (correct ? "#10b981" : "#ef4444") : "var(--color-accent-blue)",
+                checked ? "#fff" : "#fff"
+              )} onClick={() => moveToPool(b.poolId)}>{b.token}</span>
+            ))}
+            {built.length === 0 && <span style={{ fontSize: 13, color: "var(--color-border-tertiary)", alignSelf: "center", paddingLeft: 4 }}>click words above to build the sentence</span>}
+          </div>
+
+          {/* Feedback */}
+          {checked && (
+            <div style={{ marginBottom: 10 }}>
+              <p style={{ fontWeight: 700, color: correct ? "#065f46" : "#991b1b", margin: "0 0 4px" }}>
+                {correct ? "✓ Correto!" : "✗ Incorreto"}
+              </p>
+              {!correct && (
+                <p style={{ fontSize: 14, color: "var(--color-text-secondary)", margin: "0 0 4px" }}>
+                  Correct: <strong style={{ color: "var(--color-text-primary)" }}>{currentItem.correct}</strong>
+                </p>
+              )}
+              <p style={{ fontSize: 14, color: "var(--color-text-secondary)", margin: 0 }}>{currentItem.en}</p>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {!checked && built.length === currentItem.tokens.length && (
+              <button style={{ padding: "7px 18px", borderRadius: 8, background: "var(--color-accent-blue)", color: "#fff", border: "none", fontWeight: 600, fontSize: 14, cursor: "pointer" }} onClick={handleCheck}>
+                Check
+              </button>
+            )}
+            {checked && !correct && (
+              <button style={{ padding: "7px 18px", borderRadius: 8, background: "var(--color-background-secondary)", color: "var(--color-text-primary)", border: "1.5px solid var(--color-border-tertiary)", fontWeight: 600, fontSize: 14, cursor: "pointer" }} onClick={handleTryAgain}>
+                Try again
+              </button>
+            )}
+            {checked && (
+              <button style={{ padding: "7px 18px", borderRadius: 8, background: correct ? "#10b981" : "#ef4444", color: "#fff", border: "none", fontWeight: 600, fontSize: 14, cursor: "pointer" }} onClick={handleNext}>
+                Next →
+              </button>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+});
+
 const DictationQuizTab = React.memo(function DictationQuizTab({ level, speakListPT, azureKey, azureRegion, fontSize }) {
   // Session state
   const [phase, setPhase] = useState("setup"); // "setup" | "question" | "result" | "summary"
@@ -2667,16 +3025,6 @@ const QUIZ_PRONOUNS = ["eu", "tu", "ele/ela", "nós", "vocês", "eles/elas"];
 // Strip diacritics for lenient retry matching
 function stripDiacritics(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-// Shuffle an array in place (Fisher-Yates)
-function shuffleArray(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 // Extract the correct form for a given pronoun (by index 0-5) from a conjugation tense object.
@@ -6166,6 +6514,9 @@ function App() {
           )}
           {listTab === "slang" && (
             <SlangTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
+          )}
+          {listTab === "wordorder" && (
+            <WordOrderTab level={level} speakListPT={speakListPT} />
           )}
         </div>
       )}
