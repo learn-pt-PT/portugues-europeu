@@ -2344,6 +2344,24 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
     }
   }, [itemIdx, session, sessionDone, feedback]);
 
+  // Keyboard Enter advances to the next item when the Next/Finish button is visible.
+  // This covers the case where the learner clicked Check with a mouse (losing input focus)
+  // and then wants to press Enter to continue without touching the mouse again.
+  useEffect(() => {
+    // Active only when feedback is in its final state (post-answer, not mid-retry prompt).
+    const advancePhase = session && !sessionDone &&
+      feedback !== null && feedback.status !== "wrong_first";
+    if (!advancePhase) return;
+    const handler = (e) => {
+      if (e.key === "Enter" && document.activeElement?.tagName !== "BUTTON") {
+        e.preventDefault();
+        advanceItem();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [session, sessionDone, feedback, itemIdx]);
+
   const activeTenses = QUIZ_TENSES_BY_LEVEL[level] || QUIZ_TENSES_BY_LEVEL["A2"];
 
   // Build session items from conjugation data
@@ -2573,7 +2591,7 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
             <span style={{ fontSize, color: "var(--color-text-secondary)" }}>{results.length} total</span>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button style={btnPrimary} onClick={startSession}>Retry session</button>
+            <button style={btnPrimary} onClick={startSession} autoFocus>Retry session</button>
             <button style={btnSecondary} onClick={() => { setSession(null); setSessionDone(false); setResults([]); setFetchError(""); firstPassLenRef.current = 0; requeuedSetRef.current = new Set(); }}>Change verb</button>
           </div>
         </div>
@@ -2672,7 +2690,8 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
                   <p style={{ fontSize: Math.max(11, fontSize - 2), color: feedbackColor, margin: 0, fontStyle: "italic" }}>Correct: {feedback.correct}</p>
                 )}
               </div>
-              <button style={btnPrimary} onClick={advanceItem}>
+              <button style={btnPrimary} onClick={advanceItem}
+                onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); advanceItem(); } }}>
                 {itemIdx + 1 < session.length ? "Next →" : "Finish"}
               </button>
             </div>
