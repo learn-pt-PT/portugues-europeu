@@ -3597,6 +3597,8 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   }, [category, cardinalRange]);
 
   // ── Quiz state ──
+  // order is always built from activePool.length (reset whenever activePool changes).
+  // Do NOT use modulo indexing — order and activePool must always be the same length.
   const [order, setOrder]             = S(() => makeOrder(NUMBERS_QUIZ_POOLS.cardinals.length));
   const [qIdx, setQIdx]               = S(0);
   const [options, setOptions]         = S([]);
@@ -3607,8 +3609,9 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   const [transcript, setTranscript]   = S("");
   const micRef                        = R(null);
 
-  // Change 1 & 5: derive the effective item (potentially gendered-wrapped)
-  const baseItem = activePool[order[qIdx] % activePool.length];
+  // Change 1 & 5: derive the effective item (potentially gendered-wrapped).
+  // order is always sized to activePool; direct indexing — no modulo.
+  const baseItem = (order.length === activePool.length) ? activePool[order[qIdx]] : null;
   // In genderedMode, use genderedItem (set by effect below); otherwise use baseItem directly.
   const item = (genderedMode && genderedItem) ? genderedItem : baseItem;
 
@@ -3622,23 +3625,28 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   }, [quizMode, genderedMode, qIdx, order]);
 
   // Auto-play PT audio in pt-en mode.
+  // Depends on order so it re-fires when order is rebuilt (new pool/shuffle),
+  // ensuring TTS and options always refer to the same item.
   E(() => {
     if (!quizMode || direction !== "pt-en" || !item) return;
+    if (order.length !== activePool.length) return; // wait for pool/order to sync
     window.speechSynthesis?.cancel();
     speakListPT(item.pt);
-  }, [quizMode, direction, qIdx]);
+  }, [quizMode, direction, qIdx, order]);
 
   // Auto-speak EN in en-pt mode.
   E(() => {
     if (!quizMode || direction !== "en-pt" || !item) return;
+    if (order.length !== activePool.length) return;
     window.speechSynthesis?.cancel();
-    // In genderedMode show the noun prompt; speak only the numeric EN word
     speakListPT(item.en, "en-US");
-  }, [quizMode, direction, qIdx]);
+  }, [quizMode, direction, qIdx, order]);
 
   // Build choice options whenever the question changes in pt-en/choice mode.
+  // Guard: order.length must equal activePool.length to ensure item and pool are in sync.
   E(() => {
     if (!quizMode || direction !== "pt-en" || inputMethod !== "choice" || !item) return;
+    if (order.length !== activePool.length) return; // pool/order mismatch — wait for reset effect
     const distractors = pickDistractors(activePool, item);
     const opts = [item.en, ...distractors];
     for (let i = opts.length - 1; i > 0; i--) {
@@ -3646,7 +3654,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
       [opts[i], opts[j]] = [opts[j], opts[i]];
     }
     setOptions(opts);
-  }, [quizMode, direction, inputMethod, qIdx, order]);
+  }, [quizMode, direction, inputMethod, qIdx, order, activePool]);
 
   // Reset result/transcript on question or mode change.
   E(() => {
@@ -3759,8 +3767,8 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
     setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
   }
 
-  function next() { stopMic(); setQIdx(i => (i + 1) % activePool.length); }
-  function prev() { stopMic(); setQIdx(i => (i - 1 + activePool.length) % activePool.length); }
+  function next() { stopMic(); setQIdx(i => (i + 1) % order.length); }
+  function prev() { stopMic(); setQIdx(i => (i - 1 + order.length) % order.length); }
 
   function shuffle() {
     stopMic();
