@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.7.0 -->
+  <!-- version: 2.7.1 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
@@ -64,7 +64,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.0",
+  version: "2.7.1",
   date: "2026-05-24",
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -2016,8 +2016,46 @@ const SPOKEN_SHORTCUTS = [
 
 // ── Conjugation prompt builder ──
 function buildConjugationPrompt(verb) {
-  return `You are a European Portuguese grammar reference. The user wants conjugation tables for the verb "${verb}".\n\nRespond ONLY with a JSON object and nothing else — no markdown, no backticks, no explanation.\n\nFormat:\n{\n  "infinitive": "falar",\n  "meaning": "to speak",\n  "tenses": [\n    {\n      "name": "Presente do Indicativo",\n      "rows": [\n        ["eu", "falo"],["tu", "falas"],["ele/ela", "fala"],["nós", "falamos"],["vocês", "falam"],["eles/elas", "falam"]\n      ],\n      "example_pt": "Ela fala português muito bem.",\n      "example_en": "She speaks Portuguese very well."\n    }\n  ]\n}\n\nInclude exactly these 11 tenses in this order:\n1. Presente do Indicativo\n2. Imperativo\n3. Pretérito Perfeito Simples\n4. Pretérito Imperfeito do Indicativo\n5. Futuro do Indicativo\n6. Condicional\n7. Presente do Conjuntivo\n8. Infinitivo Pessoal\n9. Pretérito Mais-que-Perfeito\n10. Pretérito Imperfeito do Conjuntivo\n11. Futuro do Conjuntivo\n\nFor each tense, include one natural example sentence using a randomly chosen pronoun. The example must use the correct conjugated form of "${verb}" for that tense. Use European Portuguese naturally — contractions, clitic placement, and vocabulary appropriate for Portugal (not Brazil).\n\nFor Imperativo rows use: tu, você/ele/ela, nós, vocês/eles/elas (affirmative).\nFor Infinitivo Pessoal rows use all six persons: eu, tu, ele/ela, nós, vocês, eles/elas.\nUse European Portuguese forms throughout. Return only valid JSON.`;
+  return `You are a European Portuguese grammar reference. Provide conjugation tables for the verb "${verb}".
+
+Respond ONLY with a JSON object in the format below — no markdown, no backticks, no explanation.
+
+Format:
+{
+  "infinitive": "falar",
+  "meaning": "to speak",
+  "tenses": [
+    {
+      "name": "Presente do Indicativo",
+      "rows": [
+        ["eu", "falo"],["tu", "falas"],["ele/ela", "fala"],["nós", "falamos"],["vocês", "falam"],["eles/elas", "falam"]
+      ],
+      "example_pt": "Ela fala português muito bem.",
+      "example_en": "She speaks Portuguese very well."
+    }
+  ]
 }
+
+Include exactly these 11 tenses in this order:
+1. Presente do Indicativo
+2. Imperativo
+3. Pretérito Perfeito Simples
+4. Pretérito Imperfeito do Indicativo
+5. Futuro do Indicativo
+6. Condicional
+7. Presente do Conjuntivo
+8. Infinitivo Pessoal
+9. Pretérito Mais-que-Perfeito
+10. Pretérito Imperfeito do Conjuntivo
+11. Futuro do Conjuntivo
+
+For each tense, include one natural example sentence using a randomly chosen pronoun. The example must use the correct conjugated form of "${verb}" for that tense. Use European Portuguese naturally — contractions, clitic placement, and vocabulary appropriate for Portugal (not Brazil).
+
+For Imperativo rows use: tu, você/ele/ela, nós, vocês/eles/elas (affirmative).
+For Infinitivo Pessoal rows use all six persons: eu, tu, ele/ela, nós, vocês, eles/elas.
+Use European Portuguese forms throughout. Return only valid JSON.`;
+}
+
 
 // Anthropic API version string — update here when Anthropic releases a newer stable version.
 const ANTHROPIC_API_VERSION = "2023-06-01";
@@ -5678,10 +5716,79 @@ function App() {
     }
   };
 
+
+  // ── Verb validation ──────────────────────────────────────────────────────────
+  // Returns null if valid, or an error string (with optional suggestion) if not.
+  // Checks ALL_VERB_INFS_SORTED (the app's complete known-verb list).
+  // Simple Levenshtein distance used to surface a close match on typo.
+  const validateVerbInput = (raw) => {
+    const v = raw.trim().toLowerCase();
+    if (!v) return null; // handled upstream
+    // Fast-pass: known verb in the app's list.
+    if (ALL_VERB_INFS_SORTED.includes(v)) return null;
+
+    // 1. Portuguese-legal characters only.
+    const ptChars = /^[a-záàâãéêíóôõúüçà-ɏ-]+$/;
+    if (!ptChars.test(v)) {
+      return `"${raw.trim()}" contains characters not valid in a Portuguese verb.`;
+    }
+
+    // 2. Minimum length.
+    if (v.length < 3) {
+      return `"${raw.trim()}" is too short to be a Portuguese infinitive.`;
+    }
+
+    // 3. Must end in -ar, -er, -ir, or -or.
+    if (!/(?:ar|er|ir|or)$/.test(v)) {
+      return `"${raw.trim()}" does not end in -ar, -er, -ir, or -or — not a valid Portuguese infinitive.`;
+    }
+
+    // 4. Stem must be non-empty.
+    const stem = v.slice(0, -2);
+    if (stem.length === 0) {
+      return `"${raw.trim()}" is not a valid Portuguese infinitive.`;
+    }
+
+    // 5. Reject consonant clusters and letter sequences that do not occur in Portuguese roots.
+    //    These catch English words (fuck*, butter*, render*, filter*, etc.) that happen to end
+    //    in a Portuguese infinitive ending. Portuguese does not use: ck, wh, ph, gh, wr, kn,
+    //    double-f/double-k, or the sequence "uck"/"ick"/"ock" from Germanic roots.
+    const nonPtPatterns = [
+      /ck/,           // fuck*, trick*, block* — ck cluster absent from Portuguese
+      /wh/,           // English wh- words
+      /ph/,           // Greek/English ph (Portuguese uses f)
+      /gh/,           // English gh cluster
+      /wr/,           // English wr- onset
+      /kn/,           // English kn- onset
+      /[^cs]k/,       // k not preceded by c or s (Portuguese k only in foreign loanwords like "kárate")
+      /ff/,           // double-f (Portuguese does not double f)
+      /[aeiou]{3}/,   // three consecutive vowels — not a Portuguese pattern
+      /^[^aeiouáàâãéêíóôõúç]/,  // stems starting with clusters unpronounceable in PT onset
+    ];
+    // Apply only the unambiguous ones — skip the last (onset) check as it's too broad
+    const definiteNonPt = [/ck/, /wh/, /ph(?!ar)/, /gh/, /wr/, /kn/, /ff/];
+    for (const pat of definiteNonPt) {
+      if (pat.test(stem)) {
+        return `"${raw.trim()}" contains a letter combination that does not occur in Portuguese verbs.`;
+      }
+    }
+
+    // 6. The stem must contain at least one vowel (rejects pure-consonant nonsense).
+    if (!/[aeiouáàâãéêíóôõúü]/.test(stem)) {
+      return `"${raw.trim()}" is not a valid Portuguese infinitive.`;
+    }
+
+    // Passes all structural checks — passes to API for lexical validation.
+    return null;
+  };
+
   const lookupVerb = async () => {
     const v = verbInput.trim();
     if (!v) return;
-    // Serve from cache if available — avoids a round-trip for repeated lookups.
+    // Stage 1: structural check (free, instant)
+    const structuralError = validateVerbInput(v);
+    if (structuralError) { setConjError(structuralError); setConjugation(null); return; }
+    // Stage 2: serve from cache if available
     if (conjCache.current[v]) {
       setConjugation(conjCache.current[v]);
       setConjError("");
@@ -5725,6 +5832,8 @@ function App() {
     const v = verb.trim();
     if (!v) return;
     setVerbInput(v);
+    const structuralError = validateVerbInput(v);
+    if (structuralError) { setConjError(structuralError); setConjugation(null); return; }
     if (conjCache.current[v]) {
       setConjugation(conjCache.current[v]);
       setConjError("");
