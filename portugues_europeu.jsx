@@ -2328,6 +2328,44 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
     }
   }, [externalLaunch]);
 
+  // Silent background prefetch: as soon as a verb is selected, fetch its conjugation
+  // data into cache so Start Quiz is instant. Does not touch fetchLoading/fetchError.
+  useEffect(() => {
+    if (!quizVerb) return;
+    if (conjCache.current[quizVerb]) return; // already cached
+    let cancelled = false;
+    (async () => {
+      try {
+        const resp = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "anthropic-version": ANTHROPIC_API_VERSION,
+            "anthropic-dangerous-direct-browser-access": "true",
+            ...(apiKey ? { "x-api-key": apiKey } : {}),
+          },
+          body: JSON.stringify({
+            model: TOOLS_MODEL, max_tokens: 3500,
+            messages: [{ role: "user", content: buildConjugationPrompt(quizVerb) }],
+          }),
+        });
+        if (cancelled || !resp.ok) return;
+        const data = await resp.json();
+        if (cancelled) return;
+        const raw = data.content?.find(b => b.type === "text")?.text || "";
+        if (!raw) return;
+        const parsed = extractJSON(raw);
+        if (conjCache.current[quizVerb]) return; // filled by a concurrent startSession call
+        conjCache.current[quizVerb] = parsed;
+        if (Object.keys(conjCache.current).length > 100) {
+          delete conjCache.current[Object.keys(conjCache.current)[0]];
+        }
+        lsSet("pe_conj_cache", conjCache.current);
+      } catch { /* silent — prefetch failure is non-fatal */ }
+    })();
+    return () => { cancelled = true; };
+  }, [quizVerb]);
+
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
@@ -2893,39 +2931,51 @@ const MinimalPairs = React.memo(function MinimalPairs({
     if (!SR || !pair || !quizTarget) return;
     stopMic();
     const r = new SR();
-    r.lang = "pt-PT"; r.continuous = false; r.interimResults = false; r.maxAlternatives = 5;
-    let bestText = "";
+    // continuous=true keeps the engine alive long enough to capture short words
+    // like "tem", "pão", "só" — which close too fast with continuous=false.
+    // We stop manually after the first final result.
+    r.lang = "pt-PT"; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
+    const allAlts = []; // all transcript alternatives across all final results
+    let displayText = "";
+    let gotFinal = false;
     r.onresult = (e) => {
-      // Collect all alternatives
-      const alts = [];
-      for (let i = 0; i < e.results.length; i++) {
-        for (let a = 0; a < e.results[i].length; a++) {
-          alts.push(e.results[i][a].transcript);
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          for (let a = 0; a < e.results[i].length; a++) {
+            allAlts.push(e.results[i][a].transcript);
+          }
+          displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
+          setHeardText(displayText);
+          if (!gotFinal) {
+            gotFinal = true;
+            try { r.stop(); } catch (_) {}
+          }
         }
       }
-      bestText = alts[0] || "";
-      setHeardText(bestText); // Change 6: store raw text for display
     };
     r.onerror = () => { setMicActive(false); micRef.current = null; };
     r.onend = () => {
       setMicActive(false); micRef.current = null;
-      if (!bestText) return;
-      // Change 7: normalize both sides before comparison
-      const heard    = normalizeMicText(bestText);
-      const targetA  = normalizeMicText(pair.a.word);
-      const targetB  = normalizeMicText(pair.b.word);
-      const correctWord = pair[quizTarget].word;
-      const correctNorm = normalizeMicText(correctWord);
-      // Check if heard matches either word and pick which side
+      if (!allAlts.length) return;
+      // Check all alternatives against both pair words
+      const targetA = normalizeMicText(pair.a.word);
+      const targetB = normalizeMicText(pair.b.word);
       let guessedSide = null;
-      if (heard === targetA || targetA.includes(heard) || heard.includes(targetA)) guessedSide = "a";
-      else if (heard === targetB || targetB.includes(heard) || heard.includes(targetB)) guessedSide = "b";
+      for (const transcript of allAlts) {
+        const heard = normalizeMicText(transcript);
+        if (!heard) continue;
+        if (heard === targetA || targetA.includes(heard) || heard.includes(targetA)) {
+          guessedSide = "a"; break;
+        }
+        if (heard === targetB || targetB.includes(heard) || heard.includes(targetB)) {
+          guessedSide = "b"; break;
+        }
+      }
       if (guessedSide !== null) {
         const correct = guessedSide === quizTarget;
         setQuizResult(correct ? "correct" : "wrong");
         setPairsScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
       } else {
-        // heard didn't match either word clearly — mark wrong
         setQuizResult("wrong");
         setPairsScore(s => ({ correct: s.correct, total: s.total + 1 }));
       }
@@ -3571,7 +3621,7 @@ function filterCardinalsByRange(pool, range) {
   });
 }
 
-const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speechSupported, listFilter }) {
+const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopSpeaking, speechSupported, listFilter }) {
   const { useState: S, useRef: R, useEffect: E, useMemo: M } = React;
 
   // ── Mode ──
@@ -3624,23 +3674,26 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
     setGenderedItem(gi); // null if item has no gender — will fall back to baseItem in render
   }, [quizMode, genderedMode, qIdx, order]);
 
-  // Auto-play PT audio in pt-en mode.
-  // Depends on order so it re-fires when order is rebuilt (new pool/shuffle),
-  // ensuring TTS and options always refer to the same item.
+  // Auto-play audio only when the question index actually advances or quiz starts.
+  // Deliberately excludes `order` from deps: changing category/shuffling resets
+  // qIdx to 0 but should NOT auto-play (avoids unwanted voice on category switch).
+  // When quizMode turns on, qIdx is 0 and quizMode flips true — effect fires once.
+  // When qIdx advances to a new value, effect fires.
+  // When direction changes mid-question, effect fires to speak the new mode's prompt.
+  const lastSpokenRef = R({ text: "", time: 0 });
   E(() => {
-    if (!quizMode || direction !== "pt-en" || !item) return;
-    if (order.length !== activePool.length) return; // wait for pool/order to sync
-    window.speechSynthesis?.cancel();
-    speakListPT(item.pt);
-  }, [quizMode, direction, qIdx, order]);
-
-  // Auto-speak EN in en-pt mode.
-  E(() => {
-    if (!quizMode || direction !== "en-pt" || !item) return;
+    if (!quizMode) return;
     if (order.length !== activePool.length) return;
-    window.speechSynthesis?.cancel();
-    speakListPT(item.en, "en-US");
-  }, [quizMode, direction, qIdx, order]);
+    if (!item) return;
+    const text = direction === "pt-en" ? item.pt : (direction === "en-pt" ? item.en : null);
+    const lang = direction === "en-pt" ? "en-US" : "pt-PT";
+    if (!text) return;
+    const now = Date.now();
+    if (text === lastSpokenRef.current.text && now - lastSpokenRef.current.time < 300) return;
+    lastSpokenRef.current = { text, time: now };
+    stopSpeaking();
+    speakListPT(text, lang);
+  }, [quizMode, direction, qIdx]); // intentionally excludes `order` — see comment above
 
   // Build choice options whenever the question changes in pt-en/choice mode.
   // Guard: order.length must equal activePool.length to ensure item and pool are in sync.
@@ -3667,24 +3720,20 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
   // Stop mic on mode/direction change.
   E(() => { return () => stopMic(); }, [quizMode, direction, inputMethod, category]);
 
-  // Reset quiz order when category or range changes.
+  // Reset quiz order when category or range changes (not on quiz launch).
+  // quizMode intentionally excluded from deps — we only want this to fire when
+  // category or cardinalRange changes while the quiz is already active.
+  // A ref mirrors quizMode synchronously so the guard still works.
+  const quizModeRef = R(false);
+  quizModeRef.current = quizMode;
   E(() => {
-    if (!quizMode) return;
+    if (!quizModeRef.current) return;
     setOrder(makeOrder(activePool.length));
     setQIdx(0);
     setResult(null);
     setTranscript("");
-  }, [category, cardinalRange, quizMode]);
+  }, [category, cardinalRange]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Change 1: auto-play TTS on incorrect answer after 500ms.
-  E(() => {
-    if (!quizMode || result !== "wrong" || !item) return;
-    const tid = setTimeout(() => {
-      window.speechSynthesis?.cancel();
-      speakListPT(item.pt);
-    }, 500);
-    return () => clearTimeout(tid);
-  }, [quizMode, result]);
 
   function stopMic() {
     if (micRef.current) { try { micRef.current.stop(); } catch (_) {} micRef.current = null; }
@@ -3696,9 +3745,13 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
     if (!SR) return;
     stopMic();
     const r = new SR();
-    r.lang = lang; r.continuous = false; r.interimResults = true; r.maxAlternatives = 5;
+    // continuous=true keeps the engine alive long enough to capture short words
+    // like "mil" that close too fast with continuous=false.
+    // We stop manually after the first final result arrives.
+    r.lang = lang; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
     const alts = [];
     let displayText = "";
+    let gotFinal = false;
     r.onresult = (e) => {
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -3707,6 +3760,12 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
           for (let a = 0; a < e.results[i].length; a++) seg.push(e.results[i][a].transcript);
           alts.push(seg);
           displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
+          if (!gotFinal) {
+            gotFinal = true;
+            // Stop after first final result — gives short words time to register
+            // without forcing the user to press Stop manually.
+            try { r.stop(); } catch (_) {}
+          }
         } else {
           interim = e.results[i][0].transcript;
         }
@@ -3735,8 +3794,12 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
     const targets = new Set();
     if (direction === "en-pt") {
       targets.add(normaliseAnswer(item.pt));
+      // Gender siblings: other pool items with the same en value
       activePool.forEach(it => { if (it.en === item.en) targets.add(normaliseAnswer(it.pt)); });
+      // Also accept the bare numeral spoken aloud (engine may return digits)
       targets.add(normaliseAnswer(item.en));
+      // Strip all punctuation/commas from the en value too (e.g. "1,000" → "1000")
+      targets.add(item.en.replace(/[^0-9a-zA-Z\s]/g, "").trim().toLowerCase());
     }
 
     function matchesTarget(c) {
@@ -3744,10 +3807,15 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
         const tgt = normaliseAnswer(item.en);
         return c === tgt || c.includes(tgt) || tgt.includes(c);
       } else {
+        // Strip punctuation from candidate too for numeric comparisons
+        const cStripped = c.replace(/[^0-9a-zA-Z\s]/g, "").trim();
         for (const t of targets) {
+          if (!t) continue;
+          const tStripped = t.replace(/[^0-9a-zA-Z\s]/g, "").trim();
           if (c === t) return true;
-          if (t && c.includes(t)) return true;
-          if (t && t.includes(c)) return true;
+          if (cStripped === tStripped) return true;
+          if (c.includes(t)) return true;
+          if (t.includes(c)) return true;
         }
         return false;
       }
@@ -3767,18 +3835,17 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
     setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
   }
 
-  function next() { stopMic(); setQIdx(i => (i + 1) % order.length); }
-  function prev() { stopMic(); setQIdx(i => (i - 1 + order.length) % order.length); }
+  function next() { stopMic(); stopSpeaking(); setQIdx(i => (i + 1) % order.length); }
+  function prev() { stopMic(); stopSpeaking(); setQIdx(i => (i - 1 + order.length) % order.length); }
 
   function shuffle() {
-    stopMic();
+    stopMic(); stopSpeaking();
     setOrder(makeOrder(activePool.length));
     setQIdx(0); setResult(null); setTranscript("");
   }
 
   function resetQuiz() {
-    stopMic();
-    window.speechSynthesis?.cancel();
+    stopMic(); stopSpeaking();
     setResult(null); setTranscript(""); setScore({ correct: 0, total: 0 });
     setOrder(makeOrder(activePool.length)); setQIdx(0);
   }
@@ -3850,20 +3917,65 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
     : effectiveItem.en;
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 10 }}>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "12px 16px", gap: 8 }}>
 
-      {/* Toolbar row 1: mode + shuffle + score */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      {/* Single toolbar — all controls in one flexWrap row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
         {cardBtn("📋 Browse", toggleQuizMode, { background: "var(--color-background-info)", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
         {cardBtn("🔀 Shuffle", shuffle)}
-
-        {/* Change 2: "Hear again" replay button — visible at all times during active quiz */}
         <button
-          onClick={() => { window.speechSynthesis?.cancel(); speakListPT(effectiveItem.pt); }}
-          aria-label="Replay Portuguese audio"
-          title="Replay Portuguese audio"
+          onClick={() => { stopSpeaking(); speakListPT(effectiveItem.pt); }}
+          aria-label="Replay Portuguese audio" title="Replay Portuguese audio"
           style={{ fontSize: 15, padding: "3px 9px", borderRadius: 5, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1 }}>🔊</button>
 
+        {/* Category */}
+        <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
+          {[["cardinals","Cardinals"],["other","Other"],["years","Years"]].map(([id, label]) => (
+            <button key={id} onClick={() => setCategory(id)} style={segBtnStyle(category === id, "var(--color-accent-purple)")}>{label}</button>
+          ))}
+        </div>
+
+        {/* Direction */}
+        <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
+          {[["pt-en","PT → EN"],["en-pt","EN → PT"]].map(([id, label]) => (
+            <button key={id} onClick={() => { stopMic(); setDirection(id); setResult(null); setTranscript(""); }}
+              style={segBtnStyle(direction === id)}>{label}</button>
+          ))}
+        </div>
+
+        {/* Input method — only for pt-en */}
+        {direction === "pt-en" && speechSupported && (
+          <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
+            {[["choice","Buttons"],["mic","Mic"]].map(([id, label]) => (
+              <button key={id} onClick={() => { stopMic(); setInputMethod(id); setResult(null); setTranscript(""); }}
+                style={segBtnStyle(inputMethod === id, "var(--color-accent-violet)")}>{label}</button>
+            ))}
+          </div>
+        )}
+
+        {/* Range selector — cardinals only */}
+        {category === "cardinals" && (<>
+          <span style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}>Range:</span>
+          <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
+            {[["all","All"],["1-20","1–20"],["1-100","1–100"],["100-1000","100–1,000"],["1000plus","1,000+"]].map(([id, label]) => (
+              <button key={id} onClick={() => setCardinalRange(id)} style={segBtnStyle(cardinalRange === id, "var(--color-accent-teal)")}>{label}</button>
+            ))}
+          </div>
+        </>)}
+
+        {/* Gendered toggle — cardinals and years */}
+        {(category === "cardinals" || category === "years") && (
+          <button onClick={() => setGenderedMode(m => !m)}
+            style={{ fontSize: Math.max(11, fontSize - 2), padding: "3px 10px", borderRadius: 5,
+              border: `1px solid ${genderedMode ? "var(--color-accent-violet)" : "var(--color-border-tertiary)"}`,
+              background: genderedMode ? "var(--color-background-violet)" : "var(--color-background-secondary)",
+              color: genderedMode ? "var(--color-accent-violet)" : "var(--color-text-secondary)",
+              cursor: "pointer", fontFamily: "var(--font-sans)" }}>
+            {genderedMode ? "⚧ Gendered: ON" : "⚧ Gendered: OFF"}
+          </button>
+        )}
+
+        {/* Score — pushed to end */}
         <span style={{ fontSize, color: "var(--color-text-secondary)", marginLeft: "auto", whiteSpace: "nowrap" }}>
           {qIdx + 1} / {activePool.length}
           {score.total > 0 && (
@@ -3878,62 +3990,8 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
         </span>
       </div>
 
-      {/* Toolbar row 2: category · direction · input method */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        {/* Category — now includes Years (change 4) */}
-        <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
-          {[["cardinals","Cardinals"],["other","Other"],["years","Years"]].map(([id, label]) => (
-            <button key={id} onClick={() => setCategory(id)} style={segBtnStyle(category === id, "var(--color-accent-purple)")}>{label}</button>
-          ))}
-        </div>
-        {/* Direction */}
-        <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
-          {[["pt-en","PT → EN"],["en-pt","EN → PT"]].map(([id, label]) => (
-            <button key={id} onClick={() => { stopMic(); setDirection(id); setResult(null); setTranscript(""); }}
-              style={segBtnStyle(direction === id)}>{label}</button>
-          ))}
-        </div>
-        {/* Input method — only for pt-en */}
-        {direction === "pt-en" && speechSupported && (
-          <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
-            {[["choice","Buttons"],["mic","Mic"]].map(([id, label]) => (
-              <button key={id} onClick={() => { stopMic(); setInputMethod(id); setResult(null); setTranscript(""); }}
-                style={segBtnStyle(inputMethod === id, "var(--color-accent-violet)")}>{label}</button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Change 3: Range selector (cardinals only) */}
-      {category === "cardinals" && (
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          <span style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}>Range:</span>
-          <div style={{ display: "flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)" }}>
-            {[["all","All"],["1-20","1–20"],["1-100","1–100"],["100-1000","100–1,000"],["1000plus","1,000+"]].map(([id, label]) => (
-              <button key={id} onClick={() => setCardinalRange(id)} style={segBtnStyle(cardinalRange === id, "var(--color-accent-teal)")}>{label}</button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Change 5: Gendered context toggle (cardinals and years only, where gender exists) */}
-      {(category === "cardinals" || category === "years") && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button
-            onClick={() => setGenderedMode(m => !m)}
-            style={{ fontSize: Math.max(11, fontSize - 2), padding: "3px 10px", borderRadius: 5,
-              border: `1px solid ${genderedMode ? "var(--color-accent-violet)" : "var(--color-border-tertiary)"}`,
-              background: genderedMode ? "var(--color-background-violet)" : "var(--color-background-secondary)",
-              color: genderedMode ? "var(--color-accent-violet)" : "var(--color-text-secondary)",
-              cursor: "pointer", fontFamily: "var(--font-sans)" }}>
-            {genderedMode ? "⚧ Gendered: ON" : "⚧ Gendered: OFF"}
-          </button>
-          {genderedMode && <span style={{ fontSize: Math.max(10, fontSize - 3), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>requires correct gender form with noun</span>}
-        </div>
-      )}
-
-      {/* Card */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14 }}>
+      {/* Card — no flex:1, scrollable if needed */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, paddingTop: 8 }}>
 
         {/* Prompt */}
         <div style={{ textAlign: "center" }}>
@@ -4002,10 +4060,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
                 Speech recognition is not supported in this browser.
               </p>
             )}
-            <button onClick={next} aria-label="Skip this question"
-              style={{ marginTop: 4, fontSize: Math.max(11, fontSize - 2), padding: "3px 12px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-tertiary)", cursor: "pointer" }}>
-              Skip →
-            </button>
+
           </div>
         ) : (
           <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
@@ -4023,14 +4078,19 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, speec
               <span>{enPrompt}</span>
               <button onClick={() => speakListPT(effectiveItem.pt)} style={{ fontSize: 13, padding: "1px 6px", borderRadius: 4, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶</button>
             </div>
-            {cardBtn("Próximo →", next, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)", marginTop: 6 })}
           </div>
         )}
       </div>
 
-      {/* Nav */}
-      <div style={{ display: "flex", justifyContent: "center", gap: 12, paddingBottom: 4 }}>
+      {/* Nav: always at the bottom, never pushed off screen */}
+      <div style={{ display: "flex", justifyContent: "center", gap: 12, paddingTop: 4, paddingBottom: 4 }}>
         {cardBtn("← Anterior", prev)}
+        {result === null && (
+          <button onClick={next} aria-label="Skip this question"
+            style={{ fontSize: Math.max(11, fontSize - 2), padding: "3px 12px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-tertiary)", cursor: "pointer" }}>
+            Skip →
+          </button>
+        )}
         {result !== null && cardBtn("Próximo →", next, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)" })}
       </div>
     </div>
@@ -5681,7 +5741,7 @@ function App() {
             </div>
           )}
           {listTab === "numbers" && (
-            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} listFilter={listFilter} />
+            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} />
           )}
           {listTab === "cognates" && (
             <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
