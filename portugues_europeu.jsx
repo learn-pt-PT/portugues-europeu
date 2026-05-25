@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.10", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.11", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",         // Left blank — live date is fetched from GitHub on About open
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -1800,8 +1800,29 @@ const CULTURE_NOTES = [
 ];
 
 // ── System prompt builder ──
+function buildChipCarvingVocabBlock() {
+  // Compact en→pt dump of CHIP_CARVING_VOCAB for system prompt injection.
+  // Verbs include their canonical object; phrases are listed as-is.
+  const lines = [];
+  for (const section of CHIP_CARVING_VOCAB) {
+    lines.push(`\n[${section.label}]`);
+    for (const item of section.items) {
+      if (item.pos === "verb") {
+        lines.push(`  ${item.en} → ${item.pt}${item.obj ? " (+ " + item.obj + ")" : ""}`);
+      } else {
+        lines.push(`  ${item.en} → ${item.pt}`);
+      }
+    }
+  }
+  return lines.join("\n");
+}
+
 function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation) {
   const topicList = topics.filter(t => t.selected).map(t => t.label).join(", ");
+  const chipCarvingActive = topics.some(t => t.label === "Chip carving" && t.selected);
+  const chipCarvingInstruction = chipCarvingActive
+    ? `\n\nChip carving vocabulary (pt-PT): the user is a chip carver who discusses their craft in Portuguese. You have been provided the following reference list of European Portuguese terms for chip carving concepts. When discussing chip carving, always use these specific PT-PT terms. If the user uses a different Portuguese term, a Brazilian variant, or an incorrect word for a chip carving concept, gently correct them and supply the term from this list.\n${buildChipCarvingVocabBlock()}`
+    : "";
   const levelDesc = {
     "A1": "complete beginner. Use very simple sentences, basic vocabulary, and present tense only.",
     "A2": "elementary learner. Use simple sentences, common vocabulary, and present and simple past tense.",
@@ -1835,7 +1856,7 @@ function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusId
     : correctionBlockPossible
       ? "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only (plus any correction block if applicable)."
       : "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only.";
-  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. ${level === "A1" ? "Keep responses very short — 1 to 2 sentences. Simple vocabulary only." : level === "A2" ? "Keep responses short — 2 to 3 sentences." : level === "B1" ? "Keep responses natural — 3 to 5 sentences." : "Respond at natural length — no artificial brevity. Longer texts help the learner practice reading."}\n\nDo not use any emoji in your responses under any circumstances.${translationInstruction}`;
+  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. ${level === "A1" ? "Keep responses very short — 1 to 2 sentences. Simple vocabulary only." : level === "A2" ? "Keep responses short — 2 to 3 sentences." : level === "B1" ? "Keep responses natural — 3 to 5 sentences." : "Respond at natural length — no artificial brevity. Longer texts help the learner practice reading."}\n\nDo not use any emoji in your responses under any circumstances.${translationInstruction}${chipCarvingInstruction}`;
 }
 
 // Tense-to-level mapping used by the conjugator display
@@ -5843,6 +5864,7 @@ function App() {
   const nextVocabWord = useRef(null);   // pre-picked word for the next draw
   const prefetchAbortRef = useRef(null); // AbortController for in-flight prefetch
   const sendMessageRef = useRef(null);
+  const speakRef = useRef(null);
   const chatAbortRef = useRef(null);
   const recognitionRef = useRef(null);
   const recognitionRestartCountRef = useRef(0);
@@ -5965,10 +5987,17 @@ function App() {
   };
 
   const stopListening = () => {
+    // Read text from DOM directly — always current, bypasses React render lag.
+    const capturedText = (inputRef.current?.value || "").trim() || finalTranscriptRef.current.trim();
     intentionalStopRef.current = true;
+    enviarStopRef.current = true;   // suppress onend from firing its own send
     recognitionRef.current?.stop();
     recognitionRef.current = null;
+    finalTranscriptRef.current = "";
     setListening(false);
+    if (capturedText) {
+      sendMessageRef.current?.(capturedText, true);  // true = calledFromStop, skip mic teardown
+    }
   };
 
   const azureBlobUrlRef = useRef(null);
@@ -6095,15 +6124,18 @@ function App() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
 
+  // Keep speakRef current so auto-speak effect never holds a stale speak closure.
+  useEffect(() => { speakRef.current = speak; });
+
   // Auto-speak last assistant message when TTS is on and loading just finished
   useEffect(() => {
     if (ttsEnabled && !loading && messages.length > 0) {
       const last = messages[messages.length - 1];
       if (last.role === "assistant" && !last._idiomCard && !last._grammarCard && last.content && last.content !== "__IDIOM_CARD__" && last.content !== "__GRAMMAR_CARD__") {
-        speak(last.content);
+        speakRef.current?.(last.content);
       }
     }
-  }, [loading, messages, ttsEnabled, speak]);
+  }, [loading, messages, ttsEnabled]);
   // Reset filter whenever active list tab changes
   useEffect(() => { setListFilter(""); }, [listTab]);
 
@@ -6149,8 +6181,10 @@ function App() {
     [level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation]
   );
 
-  const sendMessage = async (overrideText) => {
-    if (listening) {
+  const sendMessage = async (overrideText, calledFromStop = false) => {
+    // When called from ENVIAR while mic is active, do mic teardown here.
+    // When called from stopListening (calledFromStop=true), teardown already done — skip.
+    if (listening && !calledFromStop) {
       intentionalStopRef.current = true;
       enviarStopRef.current = true;
       recognitionRef.current?.stop();
@@ -6158,7 +6192,10 @@ function App() {
       setListening(false);
       finalTranscriptRef.current = "";
     }
-    const text = (overrideText || input).trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
+    // Use DOM value as authoritative text source — bypasses React state render lag.
+    const domText = (inputRef.current?.value || "").trim();
+    const rawText = overrideText || domText;
+    const text = rawText.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
     if (!text || loading) return;
     const userMsg = { id: nextMsgId(), role: "user", content: text };
 
@@ -6187,9 +6224,10 @@ function App() {
     if (inputRef.current) inputRef.current.style.height = "auto";
     setLoading(true);
 
+    let chatController = null;
     try {
       const prevController = chatAbortRef.current;
-      const chatController = new AbortController();
+      chatController = new AbortController();
       chatAbortRef.current = chatController;
       prevController?.abort();
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -6490,7 +6528,6 @@ function App() {
   // onEnd handler never holds a stale closure over it.
   // No dep array intentional — keeps sendMessageRef synchronized with the latest sendMessage closure on every render.
   useEffect(() => { sendMessageRef.current = sendMessage; });
-
   // Apply theme CSS variables to :root once per theme change instead of spreading into inline style every render.
   useEffect(() => {
     const apply = (isDark) => {
@@ -6912,6 +6949,11 @@ function App() {
               </button>
             ))}
           </div>
+          {topics.some(t => t.label === "Chip carving" && t.selected) && (
+            <div style={{ margin: "8px 0 10px", padding: "10px 12px", background: "var(--color-background-warning)", border: "1px solid var(--color-accent-amber)", borderRadius: "var(--border-radius-md)", fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-warning)", lineHeight: 1.5 }}>
+              <strong>Chip Carving is active.</strong> Each time you send a message in the chat, the app automatically includes your full chip carving vocabulary list as background reference for the AI — so it uses the correct Portuguese terms and can correct yours. This makes each message cost more to process than other topics (roughly the equivalent of a short paragraph of extra text sent with every message). There is no way to avoid this cost while the topic is active; it is the price of accurate terminology guidance.
+            </div>
+          )}
           <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
             <div style={{ flex: 1, position: "relative" }}>
               <input style={{ fontSize, width: "100%", padding: "4px 8px", border: "0.5px solid " + (customTopic.length > 60 ? "var(--color-text-danger)" : "var(--color-border-tertiary)"), borderRadius: 999, background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none", boxSizing: "border-box" }}
@@ -7689,9 +7731,9 @@ function App() {
               el.style.height = Math.min(el.scrollHeight, 120) + "px";
             }}
             onKeyDown={handleKey} />
-          <button style={{ padding: "8px 16px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "none", background: loading || !input.trim() ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || !input.trim() ? "var(--color-text-tertiary)" : "#fff", cursor: loading || !input.trim() ? "default" : "pointer", fontWeight: 500 }}
+          <button style={{ padding: "8px 16px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "none", background: loading || (!input.trim() && !listening) ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || (!input.trim() && !listening) ? "var(--color-text-tertiary)" : "#fff", cursor: loading || (!input.trim() && !listening) ? "default" : "pointer", fontWeight: 500 }}
             aria-label="Send message"
-            onClick={() => sendMessage()} disabled={loading || !input.trim()}> ENVIAR</button>
+            onClick={() => sendMessage()} disabled={loading || (!input.trim() && !listening)}> ENVIAR</button>
         </div>
       </div>
       )}
