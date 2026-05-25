@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.7.9 -->
+  <!-- version: 2.7.10 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
@@ -64,7 +64,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.9", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.10", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",         // Left blank — live date is fetched from GitHub on About open
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -2401,6 +2401,7 @@ const CHIP_CARVING_VOCAB = [
     { en: "workpiece",      pt: "a peça",              referent: "peça de madeira",               pos: "noun" },
     { en: "plate blank",    pt: "a base do prato",     referent: "base antes do entalhe",         pos: "noun" },
     { en: "carving knife",  pt: "a faca de entalhe",   referent: "main chip-carving knife",       pos: "noun" },
+    { en: "chip carving knife", pt: "a faca de entalhe", referent: "knife for geometric chip carving", pos: "noun" },
     { en: "tip",            pt: "a ponta",             referent: "very end of the blade",         pos: "noun" },
     { en: "handle",         pt: "o cabo",              referent: "part you hold",                 pos: "noun" },
     { en: "sharpening stone", pt: "a pedra de afiar",  referent: "stone for sharpening",         pos: "noun" },
@@ -2445,7 +2446,7 @@ const CHIP_CARVING_VOCAB = [
     { en: "to remove",   pt: "remover",     referent: "taking material away",        pos: "verb", obj: "a lasca / a madeira" },
     { en: "to follow",   pt: "seguir",      referent: "tracing a line or curve",     pos: "verb", obj: "a linha / a curva" },
     { en: "to stop",     pt: "parar",       referent: "halting the motion",          pos: "verb", obj: "o corte" },
-    { en: "to resume",   pt: "retomar",     referent: "continuing an action",        pos: "verb", obj: "o corte" },
+    { en: "to resume",   pt: "retomar",     referent: "continuing an action (also: to restart)",        pos: "verb", obj: "o corte" },
     { en: "to touch up", pt: "retocar",     referent: "making small corrections",    pos: "verb", obj: "a interseção / a área" },
     { en: "to polish",   pt: "alisar",      referent: "smoothing a surface",         pos: "verb", obj: "a superfície" },
     { en: "to round",    pt: "arredondar",  referent: "making something circular",   pos: "verb", obj: "a borda / o círculo" },
@@ -2455,6 +2456,7 @@ const CHIP_CARVING_VOCAB = [
     { en: "to hold",     pt: "segurar",     referent: "gripping the knife",          pos: "verb", obj: "a faca" },
     { en: "to angle",    pt: "inclinar",    referent: "setting the blade angle",     pos: "verb", obj: "a faca" },
     { en: "to lift",     pt: "levantar",    referent: "raising the knife",           pos: "verb", obj: "a faca" },
+    { en: "to lift (grain)", pt: "levantar", referent: "grain lifting — wood context", pos: "verb", obj: "o veio" },
     { en: "to sharpen",  pt: "afiar",       referent: "sharpening the blade",        pos: "verb", obj: "a faca / a lâmina" },
     { en: "to hone",     pt: "assentar",    referent: "honing the edge",             pos: "verb", obj: "o fio" },
     { en: "to strop",    pt: "polir",       referent: "stropping the edge",          pos: "verb", obj: "o fio" },
@@ -4458,15 +4460,189 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFil
 
 // ── CHIP CARVING TAB COMPONENT ───────────────────────────────────────────────
 const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListPT }) {
+  // ── Shared state ─────────────────────────────────────────────────────────
   const [activeSection, setActiveSection] = useState("all");
+  const [quizMode, setQuizMode]           = useState(false);
+
+  // ── Reference accordion state ─────────────────────────────────────────────
   const [openSection, setOpenSection]     = useState(null);
   const [revealedRows, setRevealedRows]   = useState({});
 
+  // ── Quiz state (minimal — spaced rep lives in refs) ───────────────────────
+  const [quizPhase, setQuizPhase]   = useState("idle");  // "idle"|"active"|"done"
+  const [cardFlipped, setCardFlipped] = useState(false);
+  const [cardKey, setCardKey]         = useState(0);  // increments on every advance to force re-render
+  const [cardIdx, setCardIdx]       = useState(0);       // position in queue
+  const [masteredCount, setMasteredCount] = useState(0);
+  const [roundCount, setRoundCount] = useState(0);
+  const [queueLen, setQueueLen]     = useState(0);       // mirrors queue ref length for display
+  const [poolSize, setPoolSize]     = useState(0);
+
+  // ── Spaced rep refs ───────────────────────────────────────────────────────
+  // queue: [{item, interval}]  — live working queue
+  // intervals: Map(itemKey -> interval) — per-item current interval
+  const queueRef     = useRef([]);
+  const intervalsRef = useRef(new Map());
+  const masteredRef  = useRef(new Set());  // keys of mastered items
+  const roundsRef    = useRef(0);
+
+  // ── Derived pool from section filter ─────────────────────────────────────
   const visibleSections = useMemo(() => {
     if (activeSection === "all") return CHIP_CARVING_VOCAB;
     return CHIP_CARVING_VOCAB.filter(s => s.id === activeSection);
   }, [activeSection]);
 
+  function flattenPool(sectionFilter) {
+    const sections = sectionFilter === "all"
+      ? CHIP_CARVING_VOCAB
+      : CHIP_CARVING_VOCAB.filter(s => s.id === sectionFilter);
+    return sections.flatMap(s => s.items);
+  }
+
+  // ── Quiz initialisation ───────────────────────────────────────────────────
+  function initQuiz(sectionFilter) {
+    const pool = shuffleArray(flattenPool(sectionFilter));
+    if (pool.length < 2) return false;
+    queueRef.current     = pool.map(item => ({ item, interval: 0 }));
+    intervalsRef.current = new Map(pool.map(item => [itemKey(item), 0]));
+    masteredRef.current  = new Set();
+    roundsRef.current    = 0;
+    setPoolSize(pool.length);
+    setQueueLen(pool.length);
+    setCardIdx(0);
+    setMasteredCount(0);
+    setRoundCount(0);
+    setCardKey(0);
+    setCardFlipped(false);
+    setQuizPhase("active");
+    return true;
+  }
+
+  function itemKey(item) {
+    return `${item.pt}|${item.en}`;
+  }
+
+  // ── Start/toggle quiz ─────────────────────────────────────────────────────
+  function handleToggleQuiz() {
+    if (quizMode) {
+      // Exit quiz
+      setQuizMode(false);
+      setQuizPhase("idle");
+    } else {
+      // Enter quiz
+      setQuizMode(true);
+      initQuiz(activeSection);
+    }
+  }
+
+  // ── Section pill change ───────────────────────────────────────────────────
+  function handleSectionChange(id) {
+    setActiveSection(id);
+    setOpenSection(null);
+    if (quizMode) {
+      initQuiz(id);
+    }
+  }
+
+  // ── Spaced rep: Got it ────────────────────────────────────────────────────
+  function handleGotIt() {
+    const queue = queueRef.current;
+    const current = queue[cardIdx];
+    const key = itemKey(current.item);
+    const ps = poolSize || 1;
+
+    // First got-it: push card ~25% of the pool away (min 3).
+    // Subsequent got-its: multiply by 1.5, clamped to poolSize.
+    const firstInterval = Math.max(3, Math.floor(ps * 0.25));
+    const newInterval = current.interval === 0
+      ? firstInterval
+      : Math.min(Math.round(current.interval * 1.5), ps);
+    intervalsRef.current.set(key, newInterval);
+
+    // Mark mastered
+    masteredRef.current.add(key);
+
+    // Remove current card, re-insert it newInterval slots ahead
+    const remaining = [...queue.slice(0, cardIdx), ...queue.slice(cardIdx + 1)];
+    const insertAt = Math.min(cardIdx + newInterval, remaining.length);
+    const newQueue = [
+      ...remaining.slice(0, insertAt),
+      { item: current.item, interval: newInterval },
+      ...remaining.slice(insertAt),
+    ];
+    queueRef.current = newQueue;
+
+    // Check completion
+    if (masteredRef.current.size >= ps) {
+      roundsRef.current += 1;
+      setRoundCount(roundsRef.current);
+      setMasteredCount(masteredRef.current.size);
+      setQuizPhase("done");
+      return;
+    }
+
+    // After removal, the card that was at cardIdx+1 is now at cardIdx.
+    // Clamp to last position if we removed the final card.
+    const nextIdx = Math.min(cardIdx, newQueue.length - 1);
+    setQueueLen(newQueue.length);
+    setMasteredCount(masteredRef.current.size);
+    setCardIdx(nextIdx);
+    setCardKey(k => k + 1);
+    setCardFlipped(false);
+  }
+
+  // ── Spaced rep: Again ─────────────────────────────────────────────────────
+  function handleAgain() {
+    const queue = queueRef.current;
+    const current = queue[cardIdx];
+    const key = itemKey(current.item);
+
+    // Reset interval to 0, revoke mastered credit
+    intervalsRef.current.set(key, 0);
+    masteredRef.current.delete(key);
+
+    // Remove current card, re-insert it 1 slot ahead
+    const remaining = [...queue.slice(0, cardIdx), ...queue.slice(cardIdx + 1)];
+    const insertAt = Math.min(cardIdx + 1, remaining.length);
+    const newQueue = [
+      ...remaining.slice(0, insertAt),
+      { item: current.item, interval: 0 },
+      ...remaining.slice(insertAt),
+    ];
+    queueRef.current = newQueue;
+
+    // After removal, next card is at cardIdx
+    const nextIdx = Math.min(cardIdx, newQueue.length - 1);
+    setQueueLen(newQueue.length);
+    setMasteredCount(masteredRef.current.size);
+    setCardIdx(nextIdx);
+    setCardKey(k => k + 1);
+    setCardFlipped(false);
+  }
+
+  function handleSkip() {
+    const queue = queueRef.current;
+    const current = queue[cardIdx];
+
+    // No credit, no penalty — re-insert 4 slots ahead
+    const remaining = [...queue.slice(0, cardIdx), ...queue.slice(cardIdx + 1)];
+    const insertAt = Math.min(cardIdx + 4, remaining.length);
+    const newQueue = [
+      ...remaining.slice(0, insertAt),
+      { item: current.item, interval: current.interval },
+      ...remaining.slice(insertAt),
+    ];
+    queueRef.current = newQueue;
+
+    // After removal, next card is at cardIdx
+    const nextIdx = Math.min(cardIdx, newQueue.length - 1);
+    setQueueLen(newQueue.length);
+    setCardIdx(nextIdx);
+    setCardKey(k => k + 1);
+    setCardFlipped(false);
+  }
+
+  // ── Reference accordion helpers ───────────────────────────────────────────
   const toggleSection = (id) => {
     setOpenSection(prev => prev === id ? null : id);
   };
@@ -4478,6 +4654,7 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
 
   const isRevealed = (sectionId, itemIdx) => !!revealedRows[`${sectionId}-${itemIdx}`];
 
+  // ── Shared style helpers ──────────────────────────────────────────────────
   const pillBase = {
     fontSize: 11, padding: "3px 10px", borderRadius: 999, border: "1px solid var(--color-border-tertiary)",
     background: "var(--color-background-secondary)", color: "var(--color-text-secondary)",
@@ -4488,31 +4665,193 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
     background: "var(--color-accent-blue)", color: "#fff", border: "1px solid var(--color-accent-blue)", fontWeight: 600,
   };
 
-  const ttsText = (item) => {
-    // verbs: speak infinitive only; phrases: full PT; nouns: PT term
-    return item.pt;
-  };
+  // ── Render: header row (pills + quiz toggle) ──────────────────────────────
+  const insufficientPool = flattenPool(activeSection).length < 2;
 
-  return (
-    <div style={listPanelStyle}>
-      {/* Section filter pills */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid var(--color-border-tertiary)" }}>
+  const headerRow = (
+    <div style={{ marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid var(--color-border-tertiary)" }}>
+      {/* Pills */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 8 }}>
         <button
           style={activeSection === "all" ? pillActive : pillBase}
-          onClick={() => { setActiveSection("all"); setOpenSection(null); }}>
+          onClick={() => handleSectionChange("all")}>
           All
         </button>
         {CHIP_CARVING_VOCAB.map(sec => (
           <button
             key={sec.id}
             style={activeSection === sec.id ? pillActive : pillBase}
-            onClick={() => { setActiveSection(sec.id); setOpenSection(null); }}>
+            onClick={() => handleSectionChange(sec.id)}>
             {sec.label}
           </button>
         ))}
       </div>
+      {/* Quiz toggle */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <button
+          onClick={handleToggleQuiz}
+          disabled={!quizMode && insufficientPool}
+          style={{
+            fontSize: 11, fontWeight: 700, padding: "4px 14px", borderRadius: 999,
+            border: "none", cursor: (!quizMode && insufficientPool) ? "not-allowed" : "pointer",
+            background: quizMode ? "#dc2626" : "var(--color-accent-blue)",
+            color: "#fff", fontFamily: "var(--font-sans)",
+            opacity: (!quizMode && insufficientPool) ? 0.5 : 1,
+          }}>
+          {quizMode ? "Exit Quiz" : "Start Quiz"}
+        </button>
+        {!quizMode && insufficientPool && (
+          <span style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>
+            Need at least 2 items in selected section.
+          </span>
+        )}
+        {quizMode && quizPhase === "active" && (
+          <span style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)" }}>
+            Mastered: {masteredCount} / {poolSize}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 
-      {/* Accordion */}
+  // ── Render: completion screen ─────────────────────────────────────────────
+  if (quizMode && quizPhase === "done") {
+    return (
+      <div style={listPanelStyle}>
+        {headerRow}
+        <div style={{ ..._vqCardStyle(), textAlign: "center", padding: "32px 24px" }}>
+          <p style={{ fontSize: Math.max(20, fontSize + 6), margin: "0 0 8px" }}>🎉</p>
+          <p style={{ fontSize: Math.max(15, fontSize + 1), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 6px" }}>
+            Parabéns! Dominaste todas as fichas.
+          </p>
+          <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 20px" }}>
+            {poolSize} {poolSize === 1 ? "card" : "cards"} — completed in {roundCount} {roundCount === 1 ? "round" : "rounds"}.
+          </p>
+          <button
+            style={_vqBtnPrimary(fontSize)}
+            onClick={() => initQuiz(activeSection)}>
+            Recomeçar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Render: active quiz ───────────────────────────────────────────────────
+  if (quizMode && quizPhase === "active") {
+    const queue = queueRef.current;
+    const currentEntry = queue[cardIdx];
+    if (!currentEntry) {
+      // Shouldn't happen but guard against it
+      return (
+        <div style={listPanelStyle}>
+          {headerRow}
+          <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No cards available.</p>
+        </div>
+      );
+    }
+    const currentItem = currentEntry.item;
+
+    return (
+      <div style={listPanelStyle}>
+        {headerRow}
+
+        {/* Progress */}
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+            <div style={{ flex: 1, height: 4, background: "var(--color-border-tertiary)", borderRadius: 2, overflow: "hidden" }}>
+              <div style={{
+                width: `${(masteredCount / Math.max(poolSize, 1)) * 100}%`,
+                height: "100%", background: "var(--color-accent-blue)", borderRadius: 2,
+                transition: "width 0.3s ease",
+              }} />
+            </div>
+            <span style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}>
+              Card {cardIdx + 1} of {queueLen}
+            </span>
+          </div>
+        </div>
+
+        {/* Card */}
+        <div key={cardKey} style={_vqCardStyle()}>
+          {/* Direction label */}
+          <p style={{ fontSize: Math.max(10, fontSize - 3), color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0 0 10px", fontFamily: "var(--font-sans)" }}>
+            English → Portuguese
+          </p>
+
+          {/* Front: English term */}
+          <p style={{ fontSize: Math.max(18, fontSize + 4), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 4px", fontFamily: "var(--font-mono)" }}>
+            {currentItem.en}
+          </p>
+          {currentItem.pos === "verb" && currentItem.obj && (
+            <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 14px", fontStyle: "italic", fontFamily: "var(--font-sans)" }}>
+              object: {currentItem.obj}
+            </p>
+          )}
+          {!(currentItem.pos === "verb" && currentItem.obj) && (
+            <div style={{ marginBottom: 14 }} />
+          )}
+
+          {/* Back: revealed on flip */}
+          {cardFlipped ? (
+            <div style={{ borderTop: "1px solid var(--color-border-tertiary)", paddingTop: 14, marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                {/* TTS button on back */}
+                <button
+                  onClick={() => speakListPT(currentItem.pt)}
+                  aria-label={`Hear: ${currentItem.pt}`}
+                  style={{
+                    fontSize: 13, padding: "2px 7px", borderRadius: 4,
+                    border: "1px solid var(--color-border-tertiary)",
+                    background: "var(--color-surface)", cursor: "pointer", lineHeight: 1, flexShrink: 0,
+                  }}>▶</button>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: Math.max(18, fontSize + 4), fontWeight: 700, color: "var(--color-text-info)", margin: "0 0 4px", fontFamily: "var(--font-mono)" }}>
+                    {currentItem.pt}
+                  </p>
+                  <p style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 2px", fontFamily: "var(--font-sans)" }}>
+                    {currentItem.referent}
+                  </p>
+                  {currentItem.pos === "verb" && currentItem.obj && (
+                    <p style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic", fontFamily: "var(--font-sans)" }}>
+                      {currentItem.obj}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginBottom: 16 }} />
+          )}
+
+          {/* Action buttons */}
+          {!cardFlipped ? (
+            <button style={_vqBtnPrimary(fontSize)} onClick={() => setCardFlipped(true)}>
+              Show Answer
+            </button>
+          ) : (
+            <div style={{ display: "flex", gap: 10 }}>
+              <button style={_vqBtnSecondary(fontSize)} onClick={handleAgain}>
+                Again
+              </button>
+              <button style={_vqBtnSecondary(fontSize)} onClick={handleSkip}>
+                Skip
+              </button>
+              <button style={_vqBtnPrimary(fontSize)} onClick={handleGotIt}>
+                Got it ✓
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Render: reference accordion (default) ─────────────────────────────────
+  return (
+    <div style={listPanelStyle}>
+      {headerRow}
+
       {visibleSections.map(sec => {
         const isOpen = openSection === sec.id;
         return (
