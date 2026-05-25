@@ -20,8 +20,8 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.1",
-  date: "2026-05-24",
+  version: "2.7.8", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  date: "",         // Left blank — live date is fetched from GitHub on About open
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
   file: "portugues_europeu.html",
@@ -491,8 +491,8 @@ const IPA_GUIDE = [
     { ipa: "/aw/",  fake: "AH-oo", anchor: "cow",    anchorFlag: false, anchorNote: "",
       example_pt: "mau",    example_fake: "MAH-oo",
       note: "" },
-    { ipa: "/ɐw/",  fake: "uh-oo", anchor: "",       anchorFlag: true,  anchorNote: "No clean EN anchor — mid-central vowel gliding to OO.",
-      example_pt: "mau",    example_fake: "MAH-oo",
+    { ipa: "/ɐw/",  fake: "uh-oo", anchor: "",        anchorFlag: true,  anchorNote: "No clean EN anchor — mid-central vowel gliding to OO. Reduced unstressed variant of /aw/.",
+      example_pt: "cavar",  example_fake: "kuh-VAR",
       note: "Reduced variant of /aw/; appears in unstressed syllables." },
     { ipa: "/ew/ · /ɛw/", fake: "EH-oo", anchor: "", anchorFlag: true, anchorNote: "No EN anchor for either. Phonemically distinct (seu /ew/ vs céu /ɛw/) but merge perceptually in casual speech — fake phonetics are identical.",
       example_pt: "seu · céu", example_fake: "SEH-oo · SEH-oo",
@@ -649,7 +649,7 @@ const IDIOMS = [
   { pt: "Dar água pela barba", en: "To give water up to the beard", when: "Something is very difficult or troublesome", register: "colloquial", freq: "common" },
   { pt: "Dar com a língua nos dentes", en: "To hit the teeth with the tongue", when: "Spilling a secret", register: "colloquial", freq: "common" },
   { pt: "Dar uma mãozinha", en: "To give a little hand", when: "Offering to help out", register: "neutral", freq: "common" },
-  { pt: "Deitar a toalha ao chão", en: "To throw the towel to the ground", when: "Giving up on something", register: "neutral", freq: "common" },
+  { pt: "Deitar a toalha ao chão", en: "To throw the towel to the ground", when: "Giving up on something. Also: atirar a toalha (more common in EP)", register: "neutral", freq: "common" },
   { pt: "Engolir sapos", en: "To swallow frogs", when: "Accepting humiliation silently to keep the peace", register: "neutral", freq: "common" },
   { pt: "Entrar pelos olhos dentro", en: "To enter through the inside of the eyes", when: "Something immediately striking or obvious", register: "colloquial", freq: "common" },
   { pt: "Estar a bater mal", en: "To be beating badly", when: "Acting emotionally unstable or going off the deep end", register: "colloquial", freq: "common" },
@@ -900,8 +900,7 @@ const COGNATES = [
   { section: "-CY → -CIA", rule: "", items: [
     { pt: "a democracia", en: "democracy" }, { pt: "a farmácia", en: "pharmacy" },
     { pt: "a eficácia", en: "efficacy" }, { pt: "a diplomacia", en: "diplomacy" }, { pt: "a burocracia", en: "bureaucracy" },
-    { pt: "a supremacia", en: "supremacy" }, { pt: "a falácia", en: "fallacy" }, { pt: "a pirataria", en: "piracy" },
-  ], exceptions: [] },
+    { pt: "a supremacia", en: "supremacy" }, { pt: "a falácia", en: "fallacy" },   ], exceptions: [] },
   { section: "-ENCE → -ÊNCIA (f)", rule: "", items: [
     { pt: "a coexistência", en: "coexistence" }, { pt: "a experiência", en: "experience" }, { pt: "a violência", en: "violence" },
   ], exceptions: ["difference → a diferença", "presence → a presença", "sentence → a sentença"] },
@@ -1005,7 +1004,7 @@ const COGNATES = [
     { pt: "livraria", en: "bookshop (not library — biblioteca)" },
     { pt: "novela", en: "TV soap opera (not a novel — romance)" },
     { pt: "parente", en: "relative/family member (not parent — pai/mãe)" },
-    { pt: "policia (f) / polícia (m)", en: "a polícia (f) = the police force; o polícia (m) = a police officer. The gender changes the meaning." },
+    { pt: "a polícia (f) / o polícia (m)", en: "a polícia (f) = the police force; o polícia (m) = a police officer. The gender changes the meaning." },
     { pt: "tapete", en: "carpet/rug (not tape — fita adesiva)" },
     { pt: "polvo", en: "octopus (not powder — pó)" },
     { pt: "preservativo", en: "condom (not food preservative — conservante)" },
@@ -1494,7 +1493,7 @@ const SLANG = [
     { pt: "bater mal da bola", en: "to be unhinged / not right in the head", example_pt: "Aquela gaja bate mesmo mal da bola.", example_en: "That woman is really not right in the head." },
     { pt: "tramou-me", en: "he screwed me over", example_pt: "O sócio tramou-me e ficou com tudo.", example_en: "The partner screwed me over and kept everything." },
     { pt: "estar fudido / fudida", en: "to be fucked / in deep trouble", example_pt: "Com essa dívida toda, está mesmo fudido.", example_en: "With all that debt, he's well and truly fucked.", context: true },
-    { pt: "mete-te onde cabes", en: "shove it where you fit / get lost", example_pt: "Se não gostas, mete-te onde cabes.", example_en: "If you don't like it, shove it.", context: true },
+    { pt: "mete-te onde cabes", en: "stuff it / take a hike", example_pt: "Se não gostas, mete-te onde cabes.", example_en: "If you don't like it, shove it.", context: true },
   ]},
 ];
 
@@ -2235,6 +2234,12 @@ function shuffleArray(arr) {
   return a;
 }
 
+const LEVEL_ORDER = { "A1": 0, "A2": 1, "B1": 2, "B2+": 3 };
+
+// Token chips are always lowercase. The normalise() comparison lowercases both sides
+// for matching, so capitalisation in 'correct' strings is display-only (shown to the
+// learner after a failed attempt). Do not "fix" this by lowercasing the correct strings —
+// the capitalised form is pedagogically correct for the learner to see.
 const WORD_ORDER_ITEMS = [
   // ── CLITIC PLACEMENT (focus: "clitic") — 18 items ──────────────────────────
   { tokens:["deu","me","ela","o","livro"], correct:"Ela deu-me o livro.", en:"She gave me the book.", focus:"clitic", level:"A2" },
@@ -2249,12 +2254,12 @@ const WORD_ORDER_ITEMS = [
   { tokens:["lembras","te","disso","tu"], correct:"Tu lembras-te disso.", en:"You remember that.", focus:"clitic", level:"A2" },
   { tokens:["não","nos","viu","ele","ainda"], correct:"Ele não nos viu ainda.", en:"He hasn't seen us yet.", focus:"clitic", level:"A2" },
   { tokens:["disse","lhe","eu","a","verdade"], correct:"Eu disse-lhe a verdade.", en:"I told him the truth.", focus:"clitic", level:"A2" },
-  { tokens:["quando","chegar","ele","ligará","me"], correct:"Quando ele chegar, ligará-me.", en:"When he arrives, he will call me.", focus:"clitic", level:"B1" },
+  { tokens:["quando","chegar","ele","me","ligará"], correct:"Quando ele chegar, me ligará.", en:"When he arrives, he will call me.", focus:"clitic", level:"B1" }, // EP proclisis after subordinating conjunction 'quando' — verified
   { tokens:["não","te","preocupes","isso","com"], correct:"Não te preocupes com isso.", en:"Don't worry about that.", focus:"clitic", level:"A2" },
   { tokens:["ela","levantou","se","cedo"], correct:"Ela levantou-se cedo.", en:"She got up early.", focus:"clitic", level:"A2" },
   { tokens:["porque","te","estás","a","rir"], correct:"Porque te estás a rir?", en:"Why are you laughing?", focus:"clitic", level:"B1" },
   { tokens:["entregou","lhe","o","pacote","ela"], correct:"Ela entregou-lhe o pacote.", en:"She handed him the package.", focus:"clitic", level:"A2" },
-  { tokens:["não","me","parece","bem","isso"], correct:"Isso não me parece bem.", en:"That doesn't seem right to me.", focus:"clitic", level:"B1" },
+  { tokens:["isso","não","me","parece","bem"], correct:"Isso não me parece bem.", en:"That doesn't seem right to me.", focus:"clitic", level:"B1" },
 
   // ── PROGRESSIVE CONSTRUCTION (focus: "progressive") — 17 items ──────────────
   { tokens:["a","estou","trabalhar"], correct:"Estou a trabalhar.", en:"I am working.", focus:"progressive", level:"A1" },
@@ -2297,7 +2302,7 @@ const WORD_ORDER_ITEMS = [
   // ── GENERAL (focus: "general") — 18 items ────────────────────────────────────
   // Sourced from PHRASES and IDIOMS arrays — 4–7 tokens, unambiguous word order
   { tokens:["favor","por","sentar","se","pode"], correct:"Pode sentar-se, por favor.", en:"Please sit down.", focus:"general", level:"A1" },
-  { tokens:["obrigado","de","nada"], correct:"De nada, obrigado.", en:"You're welcome, thank you.", focus:"general", level:"A1" },
+  { tokens:["De","nada"], correct:"De nada.", en:"You're welcome.", focus:"general", level:"A1" },
   { tokens:["mesa","dois","para","uma","faz","favor"], correct:"Uma mesa para dois, faz favor.", en:"A table for two, please.", focus:"general", level:"A1" },
   { tokens:["caixa","fica","onde","a"], correct:"Onde fica a caixa?", en:"Where is the checkout?", focus:"general", level:"A1" },
   { tokens:["bem","não","sinto","me"], correct:"Não me sinto bem.", en:"I don't feel well.", focus:"general", level:"A2" },
@@ -2334,7 +2339,6 @@ const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT }) {
   const [score, setScore] = useState({ firstTry: 0, retry: 0, missed: 0 });
   const [sessionDone, setSessionDone] = useState(false);
 
-  const LEVEL_ORDER = { "A1": 0, "A2": 1, "B1": 2, "B2+": 3 };
   const userLevelIdx = LEVEL_ORDER[level] ?? 3;
 
   // Filtered item pool respecting level and focus
@@ -2600,14 +2604,20 @@ const DictationQuizTab = React.memo(function DictationQuizTab({ level, speakList
     setSources(prev => prev.filter(s => availableSources.includes(s)));
   }, [availableSources]);
 
+  // Auto-clear justSubmittedRef when entering result phase so button-click
+  // submits (which never go through the Enter handler) don't swallow the next Enter.
+  useEffect(() => {
+    if (phase === 'result') {
+      const id = setTimeout(() => { justSubmittedRef.current = false; }, 50);
+      return () => clearTimeout(id);
+    }
+  }, [phase]);
+
   // Enter key advances to next item when in result phase.
-  // justSubmittedRef guards against the same Enter keypress that triggered
-  // submitAnswer() also immediately firing nextItem().
   useEffect(() => {
     if (phase !== "result") return;
     const handler = (e) => {
       if (e.key !== "Enter") return;
-      if (justSubmittedRef.current) { justSubmittedRef.current = false; return; }
       nextItem();
     };
     window.addEventListener("keydown", handler);
@@ -3072,6 +3082,27 @@ function getFormFromTense(tense, pronounIndex) {
   return tense.rows[pronounIndex][1] || null;
 }
 
+const _vqCardStyle = () => ({
+  border: "0.5px solid var(--color-border-tertiary)",
+  borderRadius: "var(--border-radius-md)",
+  padding: "16px",
+  background: "var(--color-background-primary)",
+  marginBottom: 12,
+});
+const _vqBtnPrimary = (fontSize) => ({
+  fontSize, fontWeight: 700, padding: "7px 18px",
+  borderRadius: "var(--border-radius-md)", border: "none",
+  background: "var(--color-accent-blue)", color: "#fff",
+  cursor: "pointer", fontFamily: "var(--font-sans)",
+});
+const _vqBtnSecondary = (fontSize) => ({
+  fontSize: Math.max(12, fontSize - 2), fontWeight: 600, padding: "5px 12px",
+  borderRadius: "var(--border-radius-md)",
+  border: "1px solid var(--color-border-tertiary)",
+  background: "var(--color-background-secondary)", color: "var(--color-text-secondary)",
+  cursor: "pointer", fontFamily: "var(--font-sans)",
+});
+
 const VerbQuizTab = React.memo(function VerbQuizTab({
   level, conjCache, apiKey, verbInput, setVerbInput,
   speakListPT, fontSize,
@@ -3110,6 +3141,8 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
       setQuizVerbEn(externalLaunch.en || ALL_VERBS_MAP.get(externalLaunch.verb) || "");
       setSession(null);
       setSessionDone(false);
+      firstPassLenRef.current = 0;
+      requeuedSetRef.current = new Set();
       setResults([]);
       clearExternalLaunch();
     }
@@ -3191,6 +3224,22 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
 
   // Build session items from conjugation data
   function buildItems(conjData) {
+    // haver: only 'há' (3rd person singular present) is in common modern EP use.
+    // All other persons and tenses are archaic or literary. Restrict quiz to ele/ela only.
+    if (conjData.infinitive === "haver") {
+      const haverItems = [];
+      for (const tenseName of activeTenses) {
+        const tenseObj = (conjData.tenses || []).find(t => t.name === tenseName);
+        if (!tenseObj) continue;
+        const form = getFormFromTense(tenseObj, 2); // index 2 = ele/ela
+        if (!form) continue;
+        haverItems.push({ tenseName, pronoun: "ele/ela", form, infinitive: conjData.infinitive, meaning: conjData.meaning });
+      }
+      return shuffleArray(haverItems);
+    }
+    // The static list check (left operand) handles known defective verbs like 'doer'.
+    // conjData.defective (right operand) is never set by the current API prompt but is
+    // checked here for forward-compatibility if the prompt is ever updated to include it.
     const isDefective = SEMI_IRREGULAR_ER_IR_VERBS.find(v => v.inf === conjData.infinitive)?.defective === true
       || conjData.defective === true;
     const items = [];
@@ -3374,29 +3423,6 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
     });
   }, [quizDropSearch]);
 
-  const cardStyle = {
-    border: "0.5px solid var(--color-border-tertiary)",
-    borderRadius: "var(--border-radius-md)",
-    padding: "16px",
-    background: "var(--color-background-primary)",
-    marginBottom: 12,
-  };
-
-  const btnPrimary = {
-    fontSize, fontWeight: 700, padding: "7px 18px",
-    borderRadius: "var(--border-radius-md)", border: "none",
-    background: "var(--color-accent-blue)", color: "#fff",
-    cursor: "pointer", fontFamily: "var(--font-sans)",
-  };
-
-  const btnSecondary = {
-    fontSize: Math.max(12, fontSize - 2), fontWeight: 600, padding: "5px 12px",
-    borderRadius: "var(--border-radius-md)",
-    border: "1px solid var(--color-border-tertiary)",
-    background: "var(--color-background-secondary)", color: "var(--color-text-secondary)",
-    cursor: "pointer", fontFamily: "var(--font-sans)",
-  };
-
   // ── SUMMARY SCREEN ───────────────────────────────────────────────────────
   if (sessionDone && session) {
     const known = results.filter(r => r.status === "correct").length;
@@ -3405,7 +3431,7 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
     const missedItems = results.filter(r => r.status === "missed");
     return (
       <div style={{ padding: "16px", overflowY: "auto", flex: 1 }}>
-        <div style={cardStyle}>
+        <div style={_vqCardStyle()}>
           <p style={{ fontSize: Math.max(14, fontSize), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 10px" }}>
             Session complete — {quizVerb} ({quizVerbEn})
           </p>
@@ -3416,12 +3442,12 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
             <span style={{ fontSize, color: "var(--color-text-secondary)" }}>{results.length} total</span>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button style={btnPrimary} onClick={startSession} autoFocus>Retry session</button>
-            <button style={btnSecondary} onClick={() => { setSession(null); setSessionDone(false); setResults([]); setFetchError(""); firstPassLenRef.current = 0; requeuedSetRef.current = new Set(); }}>Change verb</button>
+            <button style={_vqBtnPrimary(fontSize)} onClick={startSession} autoFocus>Retry session</button>
+            <button style={_vqBtnSecondary(fontSize)} onClick={() => { setSession(null); setSessionDone(false); setResults([]); setFetchError(""); firstPassLenRef.current = 0; requeuedSetRef.current = new Set(); }}>Change verb</button>
           </div>
         </div>
         {missedItems.length > 0 && (
-          <div style={cardStyle}>
+          <div style={_vqCardStyle()}>
             <p style={{ fontSize: Math.max(12, fontSize - 2), fontWeight: 700, color: "#dc2626", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 8px" }}>Missed — review</p>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize }}>
               <tbody>
@@ -3464,11 +3490,11 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
               <span style={{ marginLeft: 5, fontSize: Math.max(10, fontSize - 3), color: "#d97706", fontWeight: 600 }}>↩ retry</span>
             )}
           </span>
-          <button style={btnSecondary} onClick={() => { setSession(null); setSessionDone(false); setResults([]); firstPassLenRef.current = 0; requeuedSetRef.current = new Set(); }}>✕ End</button>
+          <button style={_vqBtnSecondary(fontSize)} onClick={() => { setSession(null); setSessionDone(false); setResults([]); firstPassLenRef.current = 0; requeuedSetRef.current = new Set(); }}>✕ End</button>
         </div>
 
         {/* Prompt card */}
-        <div style={cardStyle}>
+        <div style={_vqCardStyle()}>
           <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 6px" }}>{item.tenseName}</p>
           <p style={{ fontSize: Math.max(18, fontSize + 4), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 4px", fontFamily: "var(--font-mono)" }}>
             {item.infinitive}
@@ -3498,7 +3524,7 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
                   autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
                   style={{ flex: 1, fontSize, padding: "6px 10px", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-mono)", outline: "none" }}
                 />
-                <button style={btnPrimary} onClick={handleSubmit}>Check</button>
+                <button style={_vqBtnPrimary(fontSize)} onClick={handleSubmit}>Check</button>
               </div>
             </>
           ) : (
@@ -3515,7 +3541,7 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
                   <p style={{ fontSize: Math.max(11, fontSize - 2), color: feedbackColor, margin: 0, fontStyle: "italic" }}>Correct: {feedback.correct}</p>
                 )}
               </div>
-              <button style={btnPrimary} onClick={advanceItem}
+              <button style={_vqBtnPrimary(fontSize)} onClick={advanceItem}
                 onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); advanceItem(); } }}>
                 {itemIdx + 1 < session.length ? "Next →" : "Finish"}
               </button>
@@ -3540,7 +3566,7 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
 
   return (
     <div style={{ padding: "16px", overflowY: "auto", flex: 1 }}>
-      <div style={cardStyle}>
+      <div style={_vqCardStyle()}>
         <p style={{ fontSize: Math.max(14, fontSize), fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 12px" }}>Verb Tense Quiz</p>
 
         {/* Level indicator */}
@@ -3593,14 +3619,14 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
           </div>
 
           {/* Random verb */}
-          <button style={btnSecondary} onClick={() => {
+          <button style={_vqBtnSecondary(fontSize)} onClick={() => {
             const v = pickRandom(ALL_VERB_INFS_SORTED);
             setQuizVerb(v);
             setQuizVerbEn(ALL_VERBS_MAP.get(v) || "");
           }}>🎲 Random verb</button>
 
           {/* Random irregular verb */}
-          <button style={btnSecondary} onClick={() => {
+          <button style={_vqBtnSecondary(fontSize)} onClick={() => {
             const irregArr = [...IRREGULAR_VERBS_SET];
             const v = irregArr[Math.floor(Math.random() * irregArr.length)];
             setQuizVerb(v);
@@ -3621,7 +3647,7 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
         )}
 
         <button
-          style={{ ...btnPrimary, opacity: !quizVerb || fetchLoading ? 0.5 : 1 }}
+          style={{ ..._vqBtnPrimary(fontSize), opacity: !quizVerb || fetchLoading ? 0.5 : 1 }}
           disabled={!quizVerb || fetchLoading}
           onClick={startSession}>
           {fetchLoading ? "Loading conjugation…" : "Start Quiz →"}
@@ -3904,6 +3930,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, marginTop: 4 }}>
                         <button
                           onClick={micActive ? stopMic : startMicGuess}
+                          aria-label={micActive ? "Stop microphone" : "Speak the word aloud"}
                           style={{ fontSize: Math.max(12, fontSize - 1), padding: "6px 18px", borderRadius: 6,
                             border: micActive ? "2px solid var(--color-accent-red-deep)" : "1px solid var(--color-border-tertiary)",
                             background: micActive ? "var(--color-background-danger)" : "var(--color-background-secondary)",
@@ -4028,7 +4055,7 @@ const GrammarSectionsAccordion = React.memo(function GrammarSectionsAccordion({ 
       </p>
       {GRAMMAR_SECTIONS.map((sec, si) => (
         <div key={si} style={{ marginBottom: 8, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
-          <button onClick={() => toggleSection(si)} style={sectionHeaderStyle}>
+          <button onClick={() => toggleSection(si)} aria-expanded={openSection === si} style={sectionHeaderStyle}>
             <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.title}</span>
             <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openSection === si ? "▲" : "▼"}</span>
           </button>
@@ -4039,7 +4066,7 @@ const GrammarSectionsAccordion = React.memo(function GrammarSectionsAccordion({ 
               )}
               {sec.rules.map((rule, ri) => (
                 <div key={ri} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-sm)", overflow: "hidden" }}>
-                  <button onClick={() => toggleRule(si, ri)} style={ruleHeaderStyle}>
+                  <button onClick={() => toggleRule(si, ri)} aria-expanded={!!openRule[`${si}-${ri}`]} style={ruleHeaderStyle}>
                     <span style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{rule.label}</span>
                     <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openRule[`${si}-${ri}`] ? "▲" : "▼"}</span>
                   </button>
@@ -5047,6 +5074,8 @@ const LIGHT_VARS = {
   "--color-text-book-cite":       "#7a5c10",
   "--color-background-gender-f":  "#fdf4ff",
   "--color-border-gender-f":      "#e9d5ff",
+  "--color-text-success":       "#166534",
+  "--color-background-success": "#dcfce7",
 };
 const DARK_VARS = {
   "--color-background-primary": "#1f2937",
@@ -5098,6 +5127,8 @@ const DARK_VARS = {
   "--color-text-book-cite":       "#d4a54a",
   "--color-background-gender-f":  "#2e1065",
   "--color-border-gender-f":      "#4c1d95",
+  "--color-text-success":       "#4ade80",
+  "--color-background-success": "#052e16",
 };
 
 // Stable message ID counter — incremented each time a message object is created.
@@ -5173,7 +5204,7 @@ function App() {
   const verbDropdownRef = useRef(null);
 
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [commitDate, setCommitDate] = useState(APP_META.date);
+  const [commitDate, setCommitDate] = useState(APP_META.date || "Unknown");
   const aboutModalRef = useRef(null);
   const aboutTriggerRef = useRef(null);
   const closeAbout = useCallback(() => { setAboutOpen(false); setTimeout(() => aboutTriggerRef.current?.focus(), 0); }, []);
@@ -5204,6 +5235,7 @@ function App() {
   const sendMessageRef = useRef(null);
   const chatAbortRef = useRef(null);
   const recognitionRef = useRef(null);
+  const recognitionRestartCountRef = useRef(0);
   const selectedVoiceRef = useRef(null);
   const intentionalStopRef = useRef(false);
   const enviarStopRef = useRef(false);
@@ -5263,7 +5295,7 @@ function App() {
       .finally(() => clearTimeout(timer));
   }, [aboutOpen]);
 
-  const createRecognition = (SR, lang) => {
+  const createRecognition = (SR, lang, restartCountRef) => {
     const r = new SR();
     r.lang = lang;
     r.continuous = true;
@@ -5286,8 +5318,14 @@ function App() {
     };
     r.onend = () => {
       if (!intentionalStopRef.current) {
+        if (restartCountRef && restartCountRef.current >= 5) {
+          setListening(false);
+          console.warn("[pe] Speech recognition stopped after 5 consecutive restarts without a result.");
+          return;
+        }
+        if (restartCountRef) restartCountRef.current++;
         try {
-          const next = createRecognition(SR, lang);
+          const next = createRecognition(SR, lang, restartCountRef);
           recognitionRef.current = next;
           next.start();
           return;
@@ -5309,7 +5347,8 @@ function App() {
     if (!SR) return;
     intentionalStopRef.current = false;
     finalTranscriptRef.current = "";
-    const r = createRecognition(SR, speechLang);
+    recognitionRestartCountRef.current = 0;
+    const r = createRecognition(SR, speechLang, recognitionRestartCountRef);
     recognitionRef.current = r;
     r.start();
     setListening(true);
@@ -5328,7 +5367,14 @@ function App() {
   const speakViaAzure = useCallback(async (text, lang = "pt-PT") => {
     if (!azureKey || !azureRegion || !text) return false;
     // Revoke any previous blob URL that wasn't cleaned up (e.g. GC before onended).
-    if (azureBlobUrlRef.current) { URL.revokeObjectURL(azureBlobUrlRef.current); azureBlobUrlRef.current = null; }
+    if (!azureAudioRef.current && azureBlobUrlRef.current) {
+      URL.revokeObjectURL(azureBlobUrlRef.current);
+      azureBlobUrlRef.current = null;
+    }
+    if (azureAudioRef.current) {
+      azureAudioRef.current.pause();
+      azureAudioRef.current = null;
+    }
     try {
       const ratePercent = Math.round((ttsRateRef.current - 1) * 100) + "%";
       const escaped = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;");
@@ -5377,7 +5423,7 @@ function App() {
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(text);
     // Only assign a real SpeechSynthesisVoice — never the fake __azure__ sentinel
-    const realVoice = (voice && voice.name !== "__azure__") ? voice : findBrowserVoice(lang || "pt-PT");
+    const realVoice = (voice && !voice.name?.startsWith("__azure")) ? voice : findBrowserVoice(lang || "pt-PT");
     if (realVoice) { utt.voice = realVoice; utt.lang = realVoice.lang; } else { utt.lang = lang || "pt-PT"; }
     utt.rate = ttsRateRef.current;
     utt.pitch = 1;
@@ -5488,6 +5534,11 @@ function App() {
     setConjugation(null);
   }, []);
 
+  const systemPrompt = useMemo(() =>
+    buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation),
+    [level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation]
+  );
+
   const sendMessage = async (overrideText) => {
     if (listening) {
       intentionalStopRef.current = true;
@@ -5527,9 +5578,10 @@ function App() {
     setLoading(true);
 
     try {
-      chatAbortRef.current?.abort();
+      const prevController = chatAbortRef.current;
       const chatController = new AbortController();
       chatAbortRef.current = chatController;
+      prevController?.abort();
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -5541,7 +5593,7 @@ function App() {
         signal: chatController.signal,
         body: JSON.stringify({
           model: CHAT_MODEL, max_tokens: 1000,
-          system: buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation),
+          system: systemPrompt,
           messages: [...cleanHistory, userMsg].map(m => ({
             role: m.role,
             // Strip translation blocks from history to keep context clean and reduce tokens.
@@ -5570,8 +5622,10 @@ function App() {
       const errMsg = err?.message || String(err);
       setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(Error: ${errMsg})*`, _retryable: true, _retryText: text }]);
     } finally {
-      setLoading(false);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      if (!chatController.signal.aborted) {
+        setLoading(false);
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
     }
   };
 
@@ -5643,14 +5697,16 @@ function App() {
   const drawVocabCard = () => {
     const pos = vocabPos;
     // Use the pre-picked word if available and it matches the current pos; otherwise pick now.
-    const word = nextVocabWord.current || pickNextVocabWord(pos, vocabCard?.word_bp);
+    const word = (nextVocabWord.current?.pos === pos)
+      ? nextVocabWord.current.word
+      : pickNextVocabWord(pos, vocabCard?.word_bp);
     nextVocabWord.current = null;
     // Abort any in-flight speculative prefetch — it's now stale.
     prefetchAbortRef.current?.abort();
     fetchVocabCard(word, pos);
     // Pre-pick and prefetch the word after this one so the next draw can be instant.
     const upcoming = pickNextVocabWord(pos, word);
-    nextVocabWord.current = upcoming;
+    nextVocabWord.current = { word: upcoming, pos };
     const controller = new AbortController();
     prefetchAbortRef.current = controller;
     prefetchVocabCard(upcoming, pos, controller.signal);
@@ -6967,6 +7023,7 @@ function App() {
                 onClick={() => { const r = Math.max(0.25, Math.round((ttsRate - 0.05) * 100) / 100); setTtsRate(r); ttsRateRef.current = r; lsSet("pe_tts_rate", r); }}
                 disabled={ttsRate <= 0.25}
                 title="Slower"
+                aria-label="Decrease playback speed"
                 style={{ padding: "4px 7px", fontSize: 13, border: "none", background: "var(--color-background-secondary)", color: ttsRate <= 0.25 ? "var(--color-text-tertiary)" : "var(--color-text-secondary)", cursor: ttsRate <= 0.25 ? "default" : "pointer" }}>−</button>
               <span style={{ fontSize: 12, fontWeight: 600, color: ttsRate !== 1.0 ? "var(--color-accent-blue)" : "var(--color-text-secondary)", minWidth: 36, textAlign: "center", padding: "0 2px" }}>
                 {Math.round(ttsRate * 100)}%
@@ -6975,6 +7032,7 @@ function App() {
                 onClick={() => { const r = Math.min(2.0, Math.round((ttsRate + 0.05) * 100) / 100); setTtsRate(r); ttsRateRef.current = r; lsSet("pe_tts_rate", r); }}
                 disabled={ttsRate >= 2.0}
                 title="Faster"
+                aria-label="Increase playback speed"
                 style={{ padding: "4px 7px", fontSize: 13, border: "none", background: "var(--color-background-secondary)", color: ttsRate >= 2.0 ? "var(--color-text-tertiary)" : "var(--color-text-secondary)", cursor: ttsRate >= 2.0 ? "default" : "pointer" }}>+</button>
             </div>
           )}
@@ -7028,6 +7086,7 @@ function App() {
       {/* About modal */}
       {aboutOpen && (
         <div
+          role="presentation"
           onClick={closeAbout}
           style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div
