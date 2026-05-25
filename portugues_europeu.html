@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 2.7.8 -->
+  <!-- version: 2.7.9 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
@@ -64,7 +64,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.8", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.9", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",         // Left blank — live date is fetched from GitHub on About open
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -73,6 +73,7 @@ const APP_META = {
 
 const LIST_TABS = [
   { id: "cognates", label: "Cognates" },
+  { id: "chipcarving", label: "Chip Carving" },
   { id: "dictation", label: "Dictation" },
   { id: "grammar", label: "Grammar" },
   { id: "idioms", label: "Idioms" },
@@ -2365,6 +2366,134 @@ const WORD_ORDER_ITEMS = [
   { tokens:["devagar","repetir","mais","pode","por","favor"], correct:"Pode repetir mais devagar, por favor?", en:"Can you repeat more slowly, please?", focus:"general", level:"A2" },
 ];
 
+// ── CHIP CARVING VOCABULARY DATA ─────────────────────────────────────────────
+const CHIP_CARVING_VOCAB = [
+  { id: "cc-nouns", label: "Core Nouns", items: [
+    { en: "chip",         pt: "a lasca",         referent: "lasca de madeira removida",   pos: "noun" },
+    { en: "cut",          pt: "o corte",          referent: "corte na madeira",             pos: "noun" },
+    { en: "carving",      pt: "o entalhe",        referent: "entalhe decorativo",           pos: "noun" },
+    { en: "pattern",      pt: "o padrão",         referent: "padrão entalhado",             pos: "noun" },
+    { en: "design",       pt: "o desenho",        referent: "desenho do entalhe",           pos: "noun" },
+    { en: "border",       pt: "a borda",          referent: "borda do prato",               pos: "noun" },
+    { en: "plate",        pt: "o prato",          referent: "prato de madeira",             pos: "noun" },
+    { en: "curve",        pt: "a curva",          referent: "curva do entalhe",             pos: "noun" },
+    { en: "angle",        pt: "o ângulo",         referent: "ângulo da faca",               pos: "noun" },
+    { en: "intersection", pt: "a interseção",     referent: "encontro de cortes",           pos: "noun" },
+    { en: "circle",       pt: "o círculo",        referent: "círculo entalhado",            pos: "noun" },
+    { en: "triangle",     pt: "o triângulo",      referent: "área triangular",              pos: "noun" },
+    { en: "ridge",        pt: "a crista",         referent: "crista elevada",               pos: "noun" },
+    { en: "slope",        pt: "a inclinação",     referent: "superfície descendente",       pos: "noun" },
+    { en: "facet",        pt: "a faceta",         referent: "faceta formada por cortes",    pos: "noun" },
+    { en: "depth",        pt: "a profundidade",   referent: "profundidade do corte",        pos: "noun" },
+    { en: "grain",        pt: "o veio",           referent: "veio da madeira",              pos: "noun" },
+    { en: "surface",      pt: "a superfície",     referent: "superfície da madeira",        pos: "noun" },
+    { en: "edge",         pt: "a aresta",         referent: "aresta do entalhe",            pos: "noun" },
+    { en: "fragment",     pt: "o fragmento",      referent: "fragmento de madeira",         pos: "noun" },
+    { en: "dust",         pt: "o pó",             referent: "pó de madeira",                pos: "noun" },
+    { en: "chunk",        pt: "o pedaço",         referent: "pedaço de madeira",            pos: "noun" },
+    { en: "pass",         pt: "a passagem",       referent: "passagem da faca",             pos: "noun" },
+  ]},
+  { id: "cc-tools", label: "Tools & Materials", items: [
+    { en: "knife",          pt: "a faca",              referent: "faca de entalhe",               pos: "noun" },
+    { en: "blade",          pt: "a lâmina",            referent: "lâmina da faca",                pos: "noun" },
+    { en: "pencil",         pt: "o lápis",             referent: "lápis de marcação",             pos: "noun" },
+    { en: "wood",           pt: "a madeira",           referent: "material entalhado",            pos: "noun" },
+    { en: "workpiece",      pt: "a peça",              referent: "peça de madeira",               pos: "noun" },
+    { en: "plate blank",    pt: "a base do prato",     referent: "base antes do entalhe",         pos: "noun" },
+    { en: "carving knife",  pt: "a faca de entalhe",   referent: "main chip-carving knife",       pos: "noun" },
+    { en: "tip",            pt: "a ponta",             referent: "very end of the blade",         pos: "noun" },
+    { en: "handle",         pt: "o cabo",              referent: "part you hold",                 pos: "noun" },
+    { en: "sharpening stone", pt: "a pedra de afiar",  referent: "stone for sharpening",         pos: "noun" },
+    { en: "strop",          pt: "a tira de couro",     referent: "leather for polishing edge",    pos: "noun" },
+    { en: "ruler",          pt: "a régua",             referent: "straight lines",                pos: "noun" },
+    { en: "compass",        pt: "o compasso",          referent: "drawing circles",               pos: "noun" },
+    { en: "calipers",       pt: "o paquímetro",        referent: "measuring thickness",           pos: "noun" },
+    { en: "clamp",          pt: "o sargento",          referent: "holding the piece",             pos: "noun" },
+    { en: "bench",          pt: "a bancada",           referent: "work surface",                  pos: "noun" },
+    { en: "light",          pt: "a luz",               referent: "illumination",                  pos: "noun" },
+  ]},
+  { id: "cc-toolparts", label: "Tool Parts", items: [
+    { en: "cutting edge", pt: "o fio",          referent: "sharpened edge",      pos: "noun" },
+    { en: "bevel",        pt: "o bisel",        referent: "angled grind",        pos: "noun" },
+    { en: "spine",        pt: "o dorso",        referent: "back of blade",       pos: "noun" },
+    { en: "flat side",    pt: "o lado plano",   referent: "flat face of blade",  pos: "noun" },
+    { en: "knife angle",  pt: "o ângulo da faca", referent: "working angle",    pos: "noun" },
+  ]},
+  { id: "cc-geometry", label: "Geometry & Structure", items: [
+    { en: "line",       pt: "a linha",          referent: "linha do padrão",        pos: "noun" },
+    { en: "point",      pt: "o ponto",          referent: "ponto de encontro",      pos: "noun" },
+    { en: "center",     pt: "o centro",         referent: "centro do desenho",      pos: "noun" },
+    { en: "edge line",  pt: "a linha da aresta", referent: "limite do corte",       pos: "noun" },
+    { en: "transition", pt: "a transição",      referent: "mudança de direção",     pos: "noun" },
+    { en: "direction",  pt: "a direção",        referent: "direção do veio",        pos: "noun" },
+    { en: "geometry",   pt: "a geometria",      referent: "geometria do padrão",    pos: "noun" },
+  ]},
+  { id: "cc-grain", label: "Grain & Material", items: [
+    { en: "grain direction", pt: "a direção do veio", referent: "orientação da madeira",  pos: "noun" },
+    { en: "short grain",     pt: "o veio curto",       referent: "área frágil",            pos: "noun" },
+    { en: "tear-out",        pt: "o arranque",         referent: "fibra arrancada",         pos: "noun" },
+    { en: "resistance",      pt: "a resistência",      referent: "resistência da madeira",  pos: "noun" },
+    { en: "fragility",       pt: "a fragilidade",      referent: "fragilidade do veio",     pos: "noun" },
+    { en: "hardness",        pt: "a dureza",           referent: "resistance to cutting",   pos: "noun" },
+    { en: "density",         pt: "a densidade",        referent: "mass per volume",         pos: "noun" },
+    { en: "moisture",        pt: "a humidade",         referent: "water content",           pos: "noun" },
+    { en: "end grain",       pt: "o topo do veio",     referent: "end grain surface",       pos: "noun" },
+  ]},
+  { id: "cc-verbs", label: "Carving Verbs", items: [
+    { en: "to carve",    pt: "entalhar",    referent: "shaping wood with a knife",   pos: "verb", obj: "a madeira / o padrão" },
+    { en: "to cut",      pt: "cortar",      referent: "making an incision",          pos: "verb", obj: "a madeira / a lasca" },
+    { en: "to remove",   pt: "remover",     referent: "taking material away",        pos: "verb", obj: "a lasca / a madeira" },
+    { en: "to follow",   pt: "seguir",      referent: "tracing a line or curve",     pos: "verb", obj: "a linha / a curva" },
+    { en: "to stop",     pt: "parar",       referent: "halting the motion",          pos: "verb", obj: "o corte" },
+    { en: "to resume",   pt: "retomar",     referent: "continuing an action",        pos: "verb", obj: "o corte" },
+    { en: "to touch up", pt: "retocar",     referent: "making small corrections",    pos: "verb", obj: "a interseção / a área" },
+    { en: "to polish",   pt: "alisar",      referent: "smoothing a surface",         pos: "verb", obj: "a superfície" },
+    { en: "to round",    pt: "arredondar",  referent: "making something circular",   pos: "verb", obj: "a borda / o círculo" },
+    { en: "to align",    pt: "alinhar",     referent: "bringing into coincidence",   pos: "verb", obj: "os cortes" },
+    { en: "to pop out",  pt: "soltar",      referent: "freeing a chip",              pos: "verb", obj: "a lasca" },
+    { en: "to tear out", pt: "arrancar",    referent: "fiber failure",               pos: "verb", obj: "a fibra" },
+    { en: "to hold",     pt: "segurar",     referent: "gripping the knife",          pos: "verb", obj: "a faca" },
+    { en: "to angle",    pt: "inclinar",    referent: "setting the blade angle",     pos: "verb", obj: "a faca" },
+    { en: "to lift",     pt: "levantar",    referent: "raising the knife",           pos: "verb", obj: "a faca" },
+    { en: "to sharpen",  pt: "afiar",       referent: "sharpening the blade",        pos: "verb", obj: "a faca / a lâmina" },
+    { en: "to hone",     pt: "assentar",    referent: "honing the edge",             pos: "verb", obj: "o fio" },
+    { en: "to strop",    pt: "polir",       referent: "stropping the edge",          pos: "verb", obj: "o fio" },
+    { en: "to dull",     pt: "cegar",       referent: "dulling the edge",            pos: "verb", obj: "o fio" },
+    { en: "to maintain", pt: "manter",      referent: "maintaining the knife",       pos: "verb", obj: "a faca" },
+    { en: "to split",    pt: "fender",      referent: "splitting the wood",          pos: "verb", obj: "a madeira" },
+    { en: "to resist",   pt: "resistir",    referent: "resisting the cut",           pos: "verb", obj: "ao corte" },
+    { en: "to tear",     pt: "rasgar",      referent: "tearing the grain",           pos: "verb", obj: "o veio" },
+    { en: "to behave",   pt: "comportar",   referent: "how wood behaves",            pos: "verb", obj: "a madeira" },
+  ]},
+  { id: "cc-woods", label: "Wood Species", items: [
+    { en: "basswood",       pt: "a tília",      referent: "soft, fine-grained carving wood", pos: "noun" },
+    { en: "linden",         pt: "a tília",      referent: "same as basswood",                pos: "noun" },
+    { en: "limewood",       pt: "a tília",      referent: "same as basswood",                pos: "noun" },
+    { en: "maple",          pt: "o ácer",       referent: "harder, tight grain",             pos: "noun" },
+    { en: "birch",          pt: "o bétula",     referent: "even grain, light color",         pos: "noun" },
+    { en: "beech",          pt: "a faia",       referent: "common European hardwood",        pos: "noun" },
+    { en: "cherry",         pt: "a cerejeira",  referent: "fine furniture wood",             pos: "noun" },
+    { en: "walnut",         pt: "a nogueira",   referent: "dark, stable hardwood",           pos: "noun" },
+    { en: "oak",            pt: "o carvalho",   referent: "strong, coarse grain",            pos: "noun" },
+    { en: "alder",          pt: "o amieiro",    referent: "soft hardwood",                   pos: "noun" },
+    { en: "pear",           pt: "a pereira",    referent: "very fine grain",                 pos: "noun" },
+    { en: "apple",          pt: "a macieira",   referent: "dense fruitwood",                 pos: "noun" },
+    { en: "poplar",         pt: "o choupo",     referent: "soft, stringy grain",             pos: "noun" },
+    { en: "sycamore maple", pt: "o plátano",    referent: "pale, even grain",                pos: "noun" },
+  ]},
+  { id: "cc-phrases", label: "Workshop Phrases", items: [
+    { en: "this wood carves well",      pt: "esta madeira entalha bem",              referent: "general quality assessment",    pos: "phrase" },
+    { en: "the grain lifts",            pt: "o veio levanta",                        referent: "fiber lifting warning",          pos: "phrase" },
+    { en: "it tears out easily",        pt: "arranca com facilidade",                referent: "tear-out warning",               pos: "phrase" },
+    { en: "soft carving wood",          pt: "madeira macia para entalhe",            referent: "material description",          pos: "phrase" },
+    { en: "fine-grained wood",          pt: "madeira de veio fino",                  referent: "material description",          pos: "phrase" },
+    { en: "fragile grain",              pt: "veio frágil",                           referent: "grain warning",                  pos: "phrase" },
+    { en: "Basswood carves easily",     pt: "A tília entalha-se facilmente",         referent: "wood behavior example",          pos: "phrase" },
+    { en: "Oak resists the cut more",   pt: "O carvalho resiste mais ao corte",      referent: "wood behavior example",          pos: "phrase" },
+    { en: "Short grain tears easily",   pt: "O veio curto rasga facilmente",         referent: "grain behavior example",         pos: "phrase" },
+  ]},
+];
+
 // ── WORD ORDER QUIZ COMPONENT ────────────────────────────────────────────────
 const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT }) {
   const FOCUS_FILTERS = ["all", "clitic", "progressive", "question", "general"];
@@ -4323,6 +4452,148 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFil
           );
         })}
       </tbody></table>
+    </div>
+  );
+});
+
+// ── CHIP CARVING TAB COMPONENT ───────────────────────────────────────────────
+const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListPT }) {
+  const [activeSection, setActiveSection] = useState("all");
+  const [openSection, setOpenSection]     = useState(null);
+  const [revealedRows, setRevealedRows]   = useState({});
+
+  const visibleSections = useMemo(() => {
+    if (activeSection === "all") return CHIP_CARVING_VOCAB;
+    return CHIP_CARVING_VOCAB.filter(s => s.id === activeSection);
+  }, [activeSection]);
+
+  const toggleSection = (id) => {
+    setOpenSection(prev => prev === id ? null : id);
+  };
+
+  const toggleReveal = (sectionId, itemIdx) => {
+    const key = `${sectionId}-${itemIdx}`;
+    setRevealedRows(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const isRevealed = (sectionId, itemIdx) => !!revealedRows[`${sectionId}-${itemIdx}`];
+
+  const pillBase = {
+    fontSize: 11, padding: "3px 10px", borderRadius: 999, border: "1px solid var(--color-border-tertiary)",
+    background: "var(--color-background-secondary)", color: "var(--color-text-secondary)",
+    cursor: "pointer", fontFamily: "var(--font-sans)", whiteSpace: "nowrap",
+  };
+  const pillActive = {
+    ...pillBase,
+    background: "var(--color-accent-blue)", color: "#fff", border: "1px solid var(--color-accent-blue)", fontWeight: 600,
+  };
+
+  const ttsText = (item) => {
+    // verbs: speak infinitive only; phrases: full PT; nouns: PT term
+    return item.pt;
+  };
+
+  return (
+    <div style={listPanelStyle}>
+      {/* Section filter pills */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid var(--color-border-tertiary)" }}>
+        <button
+          style={activeSection === "all" ? pillActive : pillBase}
+          onClick={() => { setActiveSection("all"); setOpenSection(null); }}>
+          All
+        </button>
+        {CHIP_CARVING_VOCAB.map(sec => (
+          <button
+            key={sec.id}
+            style={activeSection === sec.id ? pillActive : pillBase}
+            onClick={() => { setActiveSection(sec.id); setOpenSection(null); }}>
+            {sec.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Accordion */}
+      {visibleSections.map(sec => {
+        const isOpen = openSection === sec.id;
+        return (
+          <div key={sec.id} style={{ marginBottom: 6, border: "1px solid var(--color-border-tertiary)", borderRadius: 6, overflow: "hidden" }}>
+            {/* Accordion header */}
+            <button
+              onClick={() => toggleSection(sec.id)}
+              style={{
+                width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "8px 12px", background: "var(--color-background-secondary)",
+                border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
+                color: "var(--color-text-primary)", fontWeight: 600, textAlign: "left",
+              }}>
+              <span>{sec.label}</span>
+              <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginLeft: 8 }}>
+                {isOpen ? "▲" : "▼"}
+              </span>
+            </button>
+
+            {/* Accordion body */}
+            {isOpen && (
+              <div style={{ borderTop: "1px solid var(--color-border-tertiary)" }}>
+                {sec.items.map((item, idx) => (
+                  <div
+                    key={idx}
+                    onClick={(e) => { if (e.target.closest("[data-tts]")) return; toggleReveal(sec.id, idx); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "6px 12px", borderBottom: "1px solid var(--color-border-tertiary)",
+                      cursor: "pointer", background: "transparent",
+                      transition: "background 0.1s",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "var(--color-background-tertiary, rgba(0,0,0,0.03))"}
+                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                  >
+                    {/* TTS button */}
+                    <div data-tts="1" style={{ flexShrink: 0 }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); speakListPT(item.pt); }}
+                        aria-label={`Hear: ${item.pt}`}
+                        style={{
+                          fontSize: 13, padding: "1px 5px", borderRadius: 4,
+                          border: "1px solid var(--color-border-tertiary)",
+                          background: "var(--color-surface)", cursor: "pointer", lineHeight: 1,
+                        }}>▶</button>
+                    </div>
+
+                    {/* PT term + referent */}
+                    <div style={{ flex: "0 0 38%", minWidth: 0 }}>
+                      <div style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize, color: "var(--color-text-info)", wordBreak: "break-word" }}>
+                        {item.pt}
+                      </div>
+                      <div style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", marginTop: 1 }}>
+                        {item.referent}
+                      </div>
+                    </div>
+
+                    {/* English gloss (tap to reveal) */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {isRevealed(sec.id, idx) ? (
+                        <div>
+                          <span style={{ fontSize, color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)" }}>
+                            {item.en}
+                          </span>
+                          {item.pos === "verb" && item.obj && (
+                            <div style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", fontFamily: "var(--font-mono)", marginTop: 1, fontStyle: "italic" }}>
+                              {item.obj}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span style={{ fontSize, color: "var(--color-text-tertiary)", letterSpacing: 2 }}>—</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 });
@@ -6703,6 +6974,9 @@ function App() {
           )}
           {listTab === "cognates" && (
             <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
+          )}
+          {listTab === "chipcarving" && (
+            <ChipCarvingTab fontSize={fontSize} speakListPT={speakListPT} />
           )}
           {listTab === "dictation" && (
             <DictationQuizTab
