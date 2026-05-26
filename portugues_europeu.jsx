@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.13", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.14", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",         // Left blank — live date is fetched from GitHub on About open
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -5842,6 +5842,7 @@ function App() {
   const [commitDate, setCommitDate] = useState(APP_META.date || "Unknown");
   const aboutModalRef = useRef(null);
   const aboutTriggerRef = useRef(null);
+  const panelTriggerRef = useRef(null); // P5-5: stores last-clicked panel button for focus return on close
   const closeAbout = useCallback(() => { setAboutOpen(false); setTimeout(() => aboutTriggerRef.current?.focus(), 0); }, []);
   useFocusTrap(aboutModalRef, aboutOpen, closeAbout);
 
@@ -6783,7 +6784,19 @@ function App() {
       </div>
 
       {/* Panel tabs */}
-      <div style={{ padding: "6px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 3, flexWrap: "wrap", flexShrink: 0 }}>
+      <div
+        role="tablist"
+        onKeyDown={e => {
+          // P5-1: ArrowRight/ArrowLeft move focus between tab buttons within this container
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          const tabs = Array.from(e.currentTarget.querySelectorAll("[role='tab']"));
+          const cur = tabs.indexOf(document.activeElement);
+          if (cur === -1) return;
+          const next = e.key === "ArrowRight" ? (cur + 1) % tabs.length : (cur - 1 + tabs.length) % tabs.length;
+          tabs[next].focus();
+          e.preventDefault();
+        }}
+        style={{ padding: "6px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 3, flexWrap: "wrap", flexShrink: 0 }}>
         {PANELS.filter(p => p.id !== "vocab" || showVocab).map(p => {
           const isSettings = p.id === "settings";
           const isActive = activePanel === p.id;
@@ -6791,7 +6804,22 @@ function App() {
             ? { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "var(--color-accent-green-mid)" : "var(--color-background-green)", color: isActive ? "#fff" : "var(--color-accent-green-mid)" }
             : { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "var(--color-accent-blue)" : "transparent", color: isActive ? "#fff" : "var(--color-text-secondary)" };
           const label = isSettings ? `⚙ ${p.label}` : p.id === "lists" ? `☰ ${p.label}` : p.label;
-          return <button key={p.id} style={style} onClick={() => setActivePanel(ap => ap === p.id ? null : p.id)}>{label}</button>;
+          return (
+            <button
+              key={p.id}
+              role="tab"
+              aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
+              style={style}
+              onClick={e => {
+                panelTriggerRef.current = e.currentTarget; // P5-5: store trigger for focus return
+                setActivePanel(ap => {
+                  const next = ap === p.id ? null : p.id;
+                  if (next === null) { setTimeout(() => panelTriggerRef.current?.focus(), 0); } // P5-5: return focus on close
+                  return next;
+                });
+              }}>{label}</button>
+          );
         })}
         <button
           ref={aboutTriggerRef}
@@ -7664,6 +7692,7 @@ function App() {
           {speechSupported && (
             <button
               onClick={listening ? stopListening : startListening}
+              aria-label={listening ? "Parar gravação" : "Iniciar gravação"}
               title={listening ? "Stop listening" : `Speak (${speechLang})`}
               style={{ padding: "6px 12px", fontSize: 18, borderRadius: "var(--border-radius-lg)", border: listening ? "2px solid var(--color-text-danger)" : "1px solid var(--color-border-tertiary)", background: listening ? "var(--color-background-danger)" : "var(--color-background-secondary)", color: listening ? "var(--color-text-danger)" : "var(--color-text-secondary)", cursor: "pointer", flexShrink: 0 }}>
               {listening ? "⏹" : "🎤"}
@@ -7743,6 +7772,7 @@ function App() {
         {/* Input row */}
         <div style={{ display: "flex", gap: 8 }}>
           <textarea ref={inputRef}
+            aria-label="Mensagem"
             style={{ flex: 1, fontSize, padding: "8px 12px", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-lg)", resize: "none", background: "var(--color-background-primary)", color: "var(--color-text-primary)", lineHeight: 1.5, minHeight: 38, maxHeight: 120, fontFamily: "var(--font-sans)", outline: "none", overflowY: "auto" }}
             rows={1} placeholder="Type or use 🎤 to speak…"
             value={input}
