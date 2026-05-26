@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.11", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.12", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",         // Left blank — live date is fetched from GitHub on About open
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -5863,6 +5863,8 @@ function App() {
   const [conjCacheCount, setConjCacheCount] = useState(() => Object.keys(ls("pe_conj_cache", {})).length);
   const nextVocabWord = useRef(null);   // pre-picked word for the next draw
   const prefetchAbortRef = useRef(null); // AbortController for in-flight prefetch
+  const vocabAbortRef = useRef(null);    // AbortController for in-flight vocab fetch
+  const conjAbortRef = useRef(null);     // AbortController for in-flight conjugation fetch
   const sendMessageRef = useRef(null);
   const speakRef = useRef(null);
   const chatAbortRef = useRef(null);
@@ -5946,6 +5948,11 @@ function App() {
     };
     r.onerror = (ev) => {
       if (!intentionalStopRef.current && ev.error === "no-speech") return;
+      // Clear all mic state on any non-recoverable SR error to prevent stale refs
+      // across sessions. Note: onend may not fire after certain error types.
+      finalTranscriptRef.current = "";
+      recognitionRef.current = null;
+      enviarStopRef.current = false;
       setListening(false);
     };
     r.onend = () => {
@@ -6267,10 +6274,12 @@ function App() {
       }
     } catch (err) {
       if (err?.name === "AbortError") { setLoading(false); return; }
+      // Safe to return here: finally checks chatController?.signal?.aborted,
+      // which is true after abort(), so setLoading(false) won't be called twice.
       const errMsg = err?.message || String(err);
       setMessages(prev => [...prev, { id: nextMsgId(), role: "assistant", content: `*(Error: ${errMsg})*`, _retryable: true, _retryText: text }]);
     } finally {
-      if (!chatController.signal.aborted) {
+      if (!chatController?.signal?.aborted) {
         setLoading(false);
         setTimeout(() => inputRef.current?.focus(), 50);
       }
@@ -6284,10 +6293,12 @@ function App() {
       setVocabCard(vocabCache.current[cacheKey]);
       return;
     }
+    vocabAbortRef.current?.abort();
+    const vocabController = new AbortController();
+    vocabAbortRef.current = vocabController;
     setVocabLoading(true); setVocabCard(null); setVocabError("");
     const bookQuote = SH_QUOTES[pos]?.[word] || "";
     try {
-      const vocabController = new AbortController();
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
         signal: vocabController.signal,
@@ -6455,11 +6466,13 @@ function App() {
       return;
     }
     setConjLoading(true); setConjugation(null); setConjError("");
+    conjAbortRef.current?.abort();
+    const conjController = new AbortController();
+    conjAbortRef.current = conjController;
     try {
-      const conjController = new AbortController();
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
-        signal: conjController.signal,
+        signal: conjAbortRef.current.signal,
         body: JSON.stringify({
           model: TOOLS_MODEL, max_tokens: 3500,
           messages: [{ role: "user", content: buildConjugationPrompt(v) }],
@@ -6499,10 +6512,14 @@ function App() {
       setConjError("");
       return;
     }
+    conjAbortRef.current?.abort();
+    const conjController = new AbortController();
+    conjAbortRef.current = conjController;
     setConjLoading(true); setConjugation(null); setConjError("");
     try {
       const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST", headers: { "Content-Type": "application/json", "anthropic-version": ANTHROPIC_API_VERSION, "anthropic-dangerous-direct-browser-access": "true", ...(apiKey ? { "x-api-key": apiKey } : {}) },
+        signal: conjAbortRef.current.signal,
         body: JSON.stringify({ model: TOOLS_MODEL, max_tokens: 3500, messages: [{ role: "user", content: buildConjugationPrompt(v) }] }),
       });
       if (!resp.ok) { setConjError(resp.status === 429 ? "Rate limit reached — wait a moment and try again." : `HTTP ${resp.status} — try again.`); setConjLoading(false); return; }
@@ -6518,7 +6535,7 @@ function App() {
         setConjCacheCount(Object.keys(conjCache.current).length);
         setConjugation(parsed);
       } catch (parseErr) { setConjError(`Could not parse conjugation data. Try again. (${parseErr.message})`); }
-    } catch (err) { setConjError(`Connection error: ${err.message}`); }
+    } catch (err) { if (err?.name === "AbortError") { setConjLoading(false); return; } setConjError(`Connection error: ${err.message}`); }
     setConjLoading(false);
   };
 
