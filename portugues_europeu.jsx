@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.16", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.23", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -81,7 +81,7 @@ const MINIMAL_PAIRS = [
   { a: { word: "mãe", meaning: "mother" }, b: { word: "mês", meaning: "month" }, contrast: "vowel-quality" },
   { a: { word: "dúvida", meaning: "doubt" }, b: { word: "duvida", meaning: "he doubts" }, contrast: "stress-accent" },
   { a: { word: "sábia", meaning: "wise" }, b: { word: "sabia", meaning: "knew" }, contrast: "stress-accent" },
-  { a: { word: "a", meaning: "to" }, b: { word: "há", meaning: "there is" }, contrast: "orthographic" },
+  { a: { word: "á", meaning: "ah / the letter A" }, b: { word: "há", meaning: "there is" }, contrast: "stress-accent" },
   { a: { word: "por", meaning: "by" }, b: { word: "pôr", meaning: "to put" }, contrast: "orthographic" },
   { a: { word: "casa", meaning: "house" }, b: { word: "caso", meaning: "case" }, contrast: "vowel-quality" },
   { a: { word: "pala", meaning: "visor" }, b: { word: "palha", meaning: "straw" }, contrast: "consonant-onset" },
@@ -122,6 +122,34 @@ const TENSE_LABELS = ["Presente","Pret. Perfeito","Pret. Imperfeito","Futuro","C
 const PRONOUNS = ["eu","tu","ele/ela","nós","vocês","eles/elas"];
 
 const IRREGULAR_VERBS = [
+  { inf:"cair", en:"to fall", tenses:[
+    ["caio","cais","cai","caímos","caem","caem"],
+    ["caí","caíste","caiu","caímos","caíram","caíram"],
+    ["caía","caías","caía","caíamos","caíam","caíam"],
+    ["cairei","cairás","cairá","cairemos","cairão","cairão"],
+    ["cairia","cairias","cairia","cairíamos","cairiam","cairiam"],
+    ["caído"]]},
+  { inf:"crer", en:"to believe", tenses:[
+    ["creio","crês","crê","cremos","creem","creem"],
+    ["cri","creste","creu","cremos","creram","creram"],
+    ["cria","crias","cria","críamos","criam","criam"],
+    ["crerei","crerás","crerá","creremos","crerão","crerão"],
+    ["creria","crerias","creria","creríamos","creriam","creriam"],
+    ["crido"]]},
+  { inf:"dar", en:"to give", tenses:[
+    ["dou","dás","dá","damos","dão","dão"],
+    ["dei","deste","deu","demos","deram","deram"],
+    ["dava","davas","dava","dávamos","davam","davam"],
+    ["darei","darás","dará","daremos","darão","darão"],
+    ["daria","darias","daria","daríamos","dariam","dariam"],
+    ["dado"]]},
+  { inf:"dizer", en:"to say", tenses:[
+    ["digo","dizes","diz","dizemos","dizem","dizem"],
+    ["disse","disseste","disse","dissemos","disseram","disseram"],
+    ["dizia","dizias","dizia","dizíamos","diziam","diziam"],
+    ["direi","dirás","dirá","diremos","dirão","dirão"],
+    ["diria","dirias","diria","diríamos","diriam","diriam"],
+    ["dito"]]},
   { inf:"estar", en:"to be (temp)", tenses:[
     ["estou","estás","está","estamos","estão","estão"],
     ["estive","estiveste","esteve","estivemos","estiveram","estiveram"],
@@ -150,13 +178,26 @@ const IRREGULAR_VERBS = [
     ["irei","irás","irá","iremos","irão","irão"],
     ["iria","irias","iria","iríamos","iriam","iriam"],
     ["ido"]]},
-  { inf:"poder", en:"to be able to", tenses:[
+  { inf:"ler", en:"to read", tenses:[
+    ["leio","lês","lê","lemos","leem","leem"],
+    ["li","leste","leu","lemos","leram","leram"],
+    ["lia","lias","lia","líamos","liam","liam"],
+    ["lerei","lerás","lerá","leremos","lerão","lerão"],
+    ["leria","lerias","leria","leríamos","leriam","leriam"],
+    ["lido"]]},  { inf:"poder", en:"to be able to", tenses:[
     ["posso","podes","pode","podemos","podem","podem"],
     ["pude","pudeste","pôde","pudemos","puderam","puderam"],
     ["podia","podias","podia","podíamos","podiam","podiam"],
     ["poderei","poderás","poderá","poderemos","poderão","poderão"],
     ["poderia","poderias","poderia","poderíamos","poderiam","poderiam"],
     ["podido"]]},
+  { inf:"pôr", en:"to put", tenses:[
+    ["ponho","pões","põe","pomos","põem","põem"],
+    ["pus","puseste","pôs","pusemos","puseram","puseram"],
+    ["punha","punhas","punha","púnhamos","punham","punham"],
+    ["porei","porás","porá","poremos","porão","porão"],
+    ["poria","porias","poria","poríamos","poriam","poriam"],
+    ["posto"]]},
   { inf:"querer", en:"to want", tenses:[
     ["quero","queres","quer","queremos","querem","querem"],
     ["quis","quiseste","quis","quisemos","quiseram","quiseram"],
@@ -185,41 +226,6 @@ const IRREGULAR_VERBS = [
     ["terei","terás","terá","teremos","terão","terão"],
     ["teria","terias","teria","teríamos","teriam","teriam"],
     ["tido"]]},
-  { inf:"vir", en:"to come", tenses:[
-    ["venho","vens","vem","vimos","vêm","vêm"],
-    ["vim","vieste","veio","viemos","vieram","vieram"],
-    ["vinha","vinhas","vinha","vínhamos","vinham","vinham"],
-    ["virei","virás","virá","viremos","virão","virão"],
-    ["viria","virias","viria","viríamos","viriam","viriam"],
-    ["vindo"]]},
-  { inf:"ver", en:"to see", tenses:[
-    ["vejo","vês","vê","vemos","veem","veem"],
-    ["vi","viste","viu","vimos","viram","viram"],
-    ["via","vias","via","víamos","viam","viam"],
-    ["verei","verás","verá","veremos","verão","verão"],
-    ["veria","verias","veria","veríamos","veriam","veriam"],
-    ["visto"]]},
-  { inf:"pôr", en:"to put", tenses:[
-    ["ponho","pões","põe","pomos","põem","põem"],
-    ["pus","puseste","pôs","pusemos","puseram","puseram"],
-    ["punha","punhas","punha","púnhamos","punham","punham"],
-    ["porei","porás","porá","poremos","porão","porão"],
-    ["poria","porias","poria","poríamos","poriam","poriam"],
-    ["posto"]]},
-  { inf:"dar", en:"to give", tenses:[
-    ["dou","dás","dá","damos","dão","dão"],
-    ["dei","deste","deu","demos","deram","deram"],
-    ["dava","davas","dava","dávamos","davam","davam"],
-    ["darei","darás","dará","daremos","darão","darão"],
-    ["daria","darias","daria","daríamos","dariam","dariam"],
-    ["dado"]]},
-  { inf:"dizer", en:"to say", tenses:[
-    ["digo","dizes","diz","dizemos","dizem","dizem"],
-    ["disse","disseste","disse","dissemos","disseram","disseram"],
-    ["dizia","dizias","dizia","dizíamos","diziam","diziam"],
-    ["direi","dirás","dirá","diremos","dirão","dirão"],
-    ["diria","dirias","diria","diríamos","diriam","diriam"],
-    ["dito"]]},
   { inf:"trazer", en:"to bring", tenses:[
     ["trago","trazes","traz","trazemos","trazem","trazem"],
     ["trouxe","trouxeste","trouxe","trouxemos","trouxeram","trouxeram"],
@@ -227,13 +233,21 @@ const IRREGULAR_VERBS = [
     ["trarei","trarás","trará","traremos","trarão","trarão"],
     ["traria","trarias","traria","traríamos","trariam","trariam"],
     ["trazido"]]},
-  { inf:"ler", en:"to read", tenses:[
-    ["leio","lês","lê","lemos","leem","leem"],
-    ["li","leste","leu","lemos","leram","leram"],
-    ["lia","lias","lia","líamos","liam","liam"],
-    ["lerei","lerás","lerá","leremos","lerão","lerão"],
-    ["leria","lerias","leria","leríamos","leriam","leriam"],
-    ["lido"]]},
+  { inf:"ver", en:"to see", tenses:[
+    ["vejo","vês","vê","vemos","veem","veem"],
+    ["vi","viste","viu","vimos","viram","viram"],
+    ["via","vias","via","víamos","viam","viam"],
+    ["verei","verás","verá","veremos","verão","verão"],
+    ["veria","verias","veria","veríamos","veriam","veriam"],
+    ["visto"]]},
+  { inf:"vir", en:"to come", tenses:[
+    ["venho","vens","vem","vimos","vêm","vêm"],
+    ["vim","vieste","veio","viemos","vieram","vieram"],
+    ["vinha","vinhas","vinha","vínhamos","vinham","vinham"],
+    ["virei","virás","virá","viremos","virão","virão"],
+    ["viria","virias","viria","viríamos","viriam","viriam"],
+    ["vindo"]]},
+
 ];
 
 const REGULAR_AR_VERBS = [
@@ -591,6 +605,15 @@ const PHRASES = [
     { pt: "Uma mesa para dois, faz favor", en: "A table for two, please" }, { pt: "A ementa, faz favor", en: "The menu, please" },
     { pt: "O que recomenda?", en: "What do you recommend?" }, { pt: "Está delicioso", en: "It's delicious" },
     { pt: "A conta, faz favor", en: "The bill, please" }, { pt: "Sem glúten, por favor", en: "Gluten-free, please" }, { pt: "Sou vegetariano/a", en: "I'm vegetarian" },
+    { pt: "Uma bica, por favor.", en: "An espresso, please." },
+    { pt: "Um galão, faz favor.", en: "A galão, please." },
+    { pt: "Uma meia de leite descafeinada, se faz favor.", en: "A decaf white coffee, please." },
+    { pt: "Um café, se faz favor.", en: "A coffee, please." },
+    { pt: "Tem pastel de nata?", en: "Do you have custard tarts?" },
+    { pt: "Queria uma bifana.", en: "I'd like a bifana." },
+    { pt: "Pode trazer a conta, faz favor?", en: "Can you bring the bill, please?" },
+    { pt: "Está incluído o serviço?", en: "Is service included?" },
+    { pt: "Queria uma imperial.", en: "I'd like a draft beer." },
   ]},
   { section: "Getting around", items: [
     { pt: "Onde fica...?", en: "Where is...?" }, { pt: "Como chego a...?", en: "How do I get to...?" },
@@ -1012,6 +1035,7 @@ const COGNATES = [
     { pt: "preservativo", en: "condom (not food preservative — conservante)" },
     { pt: "pretender", en: "to intend/plan (not to pretend — fingir)" },
     { pt: "realizar", en: "to carry out/achieve (not to realize mentally — perceber)" },
+    { pt: "o rádio (m) / a rádio (f)", en: "o rádio (m) = the radio device; a rádio (f) = the radio station. The gender changes the meaning." },
     { pt: "sopa", en: "soup (not soap — sabão)" },
     { pt: "tuna", en: "student music group (not the fish — atum)" },
   ], exceptions: [] },
@@ -7263,11 +7287,12 @@ function App() {
           )}
           {listTab === "verbref" && (
             <div style={listPanelStyle}>
-              <div style={{ display: "flex", gap: 4, marginBottom: 10 }}>
+              <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
                 {VERB_REF_TABS.map((id, i) => (
                   <button key={id} style={toolBtn(verbRefTab === id)} onClick={() => { setVerbRefTab(id); setSelectedVerb(null); }}>{VERB_REF_LABELS[id]}</button>
                 ))}
               </div>
+              <p style={{ margin: "0 0 10px 0", fontSize: 11, color: "var(--color-text-secondary)", fontStyle: "italic" }}>All lists are presented in alphabetical order.</p>
               {!selectedVerb ? (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                   {verbRefList.map((v, i) => (
