@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.12", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.13", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",         // Left blank — live date is fetched from GitHub on About open
   developer: "Steve Frederick",
   repo: "learn-pt-PT/portugues-europeu",
@@ -5782,7 +5782,11 @@ function App() {
 
   const [theme, setTheme] = useState(() => ls("pe_theme", "light"));
   const [level, setLevel] = useState(() => ls("pe_level", "A2"));
-  const [correctionMode, setCorrectionMode] = useState(() => { const v = ls("pe_correction", "end"); return v === "inline" ? "end" : v; });
+  const [correctionMode, setCorrectionMode] = useState(() => {
+    const v = ls("pe_correction", "end");
+    if (v === "inline") { lsSet("pe_correction", "end"); return "end"; }
+    return v;
+  });
   const [registerMode, setRegisterMode] = useState(() => ls("pe_register", "standard"));
   const [apiKey, setApiKey] = useState(() => ls("pe_api_key", ""));
   const [apiKeyInput, setApiKeyInput] = useState("");
@@ -6203,7 +6207,9 @@ function App() {
     const domText = (inputRef.current?.value || "").trim();
     const rawText = overrideText || domText;
     const text = rawText.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
-    if (!text || loading) return;
+    // If we exit early (no text, or already loading), ensure enviarStopRef
+    // is cleared so future onend events are not silently suppressed.
+    if (!rawText.trim() || loading) { enviarStopRef.current = false; return; }
     const userMsg = { id: nextMsgId(), role: "user", content: text };
 
     // Build clean strictly-alternating API history
@@ -6801,7 +6807,7 @@ function App() {
             {apiKey ? (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize, color: "var(--color-accent-green-mid)", fontWeight: 600 }}>✓ API key saved</span>
-                <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({apiKey.slice(0, 12)}…)</span>
+                <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontFamily: "var(--font-mono)" }}>({apiKey.slice(0, 8)}…)</span>
                 <button style={{ ...toolBtn(false), marginLeft: "auto", color: "var(--color-text-danger)" }}
                   onClick={() => { setApiKey(""); lsSet("pe_api_key", ""); setApiKeyInput(""); }}>Remove</button>
               </div>
