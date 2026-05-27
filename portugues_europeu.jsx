@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.39", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.0", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
