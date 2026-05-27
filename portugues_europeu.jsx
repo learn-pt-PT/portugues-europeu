@@ -10,7 +10,7 @@ const REGISTER_MODES = [
   { id: "standard", label: "Standard" },
   { id: "colloquial", label: "Colloquial" },
 ];
-const DEFAULT_TOPICS = ["Everyday small talk","Shopping & errands","Food & restaurants","Travel & directions","Chip carving","Christian Science","Banking & Finance","Current Events & News"];
+const DEFAULT_TOPICS = ["Banking & Finance","Car Repairs","Chip carving","Christian Science","Current Events & News","Everyday small talk","Food & restaurants","Shopping & errands","Travel & directions"];
 
 const PANELS = [
   { id: "lists", label: "Lists" },
@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "2.7.23", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "2.7.39", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -583,6 +583,8 @@ const IPA_GUIDE = [
       example_pt: "maior",  example_fake: "my-OR",    note: "" },
   ]},
 ];
+const PRONUNCIATION_GUIDE_SORTED = [...PRONUNCIATION_GUIDE].sort((a, b) => a.section.localeCompare(b.section, "en"));
+const IPA_GUIDE_SORTED = [...IPA_GUIDE].sort((a, b) => a.section.localeCompare(b.section, "en"));
 
 const PHRASES = [
   { section: "Greetings & farewells", items: [
@@ -648,6 +650,7 @@ const PHRASES = [
     { pt: "Posso deixar uma mensagem?", en: "Can I leave a message?" },
   ]},
 ];
+const PHRASES_SORTED = [...PHRASES].sort((a, b) => a.section.localeCompare(b.section, "en"));
 
 const IDIOMS = [
   { pt: "A galinha do vizinho sempre é mais gorda", en: "The neighbor's chicken is always fatter", when: "The grass is always greener on the other side", register: "neutral", freq: "common" },
@@ -1319,7 +1322,7 @@ const MEDIA_SECTIONS = [
     { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN" },
   ]},
 ];
-const MEDIA_SECTIONS_SORTED = [...MEDIA_SECTIONS].sort((a, b) => a.pt.localeCompare(b.pt, "pt"));
+const MEDIA_SECTIONS_SORTED = [...MEDIA_SECTIONS].sort((a, b) => a.en.localeCompare(b.en, "en"));
 
 // ── SCIENCE & HEALTH VOCABULARY ─────────────────────────────
 const SH_VOCAB = {
@@ -1527,15 +1530,18 @@ const SLANG = [
     { pt: "mete-te onde cabes", en: "stuff it / take a hike", example_pt: "Se não gostas, mete-te onde cabes.", example_en: "If you don't like it, shove it.", context: true },
   ]},
 ];
+const SLANG_SORTED = [...SLANG]
+  .sort((a, b) => a.en.localeCompare(b.en, "en"))
+  .map(sec => ({ ...sec, items: [...sec.items].sort((a, b) => a.pt.localeCompare(b.pt, "pt")) }));
 
 const GRAMMAR_TOPICS = [
   {
-    id: "word_order", label: "Word Order",
+    id: "articles", label: "Articles",
     sections: [
-      { title: "Basic SVO order", body: "EP follows Subject-Verb-Object order like English: 'O Pedro come a sopa.' (Pedro eats the soup). The subject is often dropped entirely since the verb ending identifies it: 'Como a sopa.' (I eat the soup.)" },
-      { title: "Adjective placement", body: "Most descriptive adjectives follow the noun: 'um carro vermelho' (a red car). Adjectives that precede the noun carry a more subjective or emphatic meaning: 'um grande homem' (a great man) vs 'um homem grande' (a big/tall man)." },
-      { title: "Question word order", body: "Yes/no questions use rising intonation with no word order change: 'Falas português?' Wh-questions move the question word to the front: 'Onde moras?' In formal EP, the subject may invert after the verb: 'Onde mora o Pedro?'" },
-      { title: "Negation", body: "Place 'não' directly before the verb: 'Não falo inglês.' Double negation is standard in EP: 'Não vi nada.' (I didn't see anything — literally 'I didn't see nothing.') This is grammatically correct, not a mistake." },
+      { title: "EP uses articles before names", body: "Unlike English and BP (in some contexts), EP places the definite article before first names and proper nouns in conversation: 'A Maria chegou.' (Maria arrived.) 'O João está aqui.' (João is here.) Omitting the article sounds formal or literary in EP." },
+      { title: "Definite articles", body: "Masculine: o (sing), os (pl). Feminine: a (sing), as (pl). Contract with prepositions: a+o=ao, a+a=à, de+o=do, de+a=da, em+o=no, em+a=na, por+o=pelo, por+a=pela." },
+      { title: "Indefinite articles", body: "Masculine: um (sing), uns (pl). Feminine: uma (sing), umas (pl). Contract with em: em+um=num, em+uma=numa. 'Num café' (in a café). No contraction with de or a." },
+      { title: "When to omit the article", body: "Omit before: unmodified professions after ser ('Sou professor.'), nationalities after ser ('É portuguesa.'), days of the week without preposition ('Chegou segunda-feira.'), and in many set expressions ('Tenho fome.', 'Tenho razão.')." },
     ],
   },
   {
@@ -1549,12 +1555,21 @@ const GRAMMAR_TOPICS = [
     ],
   },
   {
-    id: "ser_estar", label: "Ser vs. Estar",
+    id: "gender_agreement", label: "Gender & Agreement",
     sections: [
-      { title: "Ser — permanent or defining", body: "Use SER for: identity and origin ('Sou americano.'), permanent characteristics ('A neve é branca.'), profession ('É médico.'), time and dates ('São três horas.'), material ('A mesa é de madeira.'), and passive voice with past participle." },
-      { title: "Estar — temporary states", body: "Use ESTAR for: temporary conditions ('Estou cansado.' — I'm tired right now), location of people/things ('Estou em Lisboa.'), ongoing actions (estar a + infinitive: 'Estou a comer.'), and emotional states ('Estou feliz hoje.')." },
-      { title: "EP progressive: estar a + infinitive", body: "EP uses 'estar a + infinitive' for ongoing actions: 'Estou a falar.' (I am speaking.) BP uses 'estar + gerund': 'Estou falando.' Never use the gerund form for ongoing actions in EP — it sounds Brazilian." },
-      { title: "Tricky cases", body: "'Estar morto' (to be dead — a state) vs 'Ser morto' (to be killed — passive). Location: 'A cidade é bonita' (the city is beautiful — characteristic) vs 'A cidade está cheia' (the city is full — current state). 'Ser casado' (to be married — status) is common in EP even though marriage could be considered temporary." },
+      { title: "Noun gender", body: "All Portuguese nouns are masculine or feminine. Most nouns ending in -o are masculine (o livro), most ending in -a are feminine (a mesa). Exceptions: o dia, o mapa, o problema (masc despite -a); a mão, a tribo (fem despite not ending -a)." },
+      { title: "Adjective agreement", body: "Adjectives agree with the noun in gender and number: 'um carro rápido / uma mota rápida / dois carros rápidos / duas motas rápidas.' Adjectives ending in -e or a consonant often have the same form for m/f: 'um/uma estudante inteligente.'" },
+      { title: "Article and determiner agreement", body: "All articles, demonstratives, and quantifiers must agree: 'este livro / esta caneta / esses livros / essas canetas / algum tempo / alguma coisa / muito trabalho / muita gente.'" },
+      { title: "Past participle agreement in compound tenses", body: "With TER/HAVER (compound tenses), the participle does NOT agree: 'Ela tem comido.' With SER (passive), it DOES agree: 'A carta foi escrita.' With FICAR + participle, it agrees: 'A porta ficou aberta.'" },
+    ],
+  },
+  {
+    id: "personal_infinitive", label: "Personal Infinitive",
+    sections: [
+      { title: "What it is", body: "The personal infinitive is an inflected infinitive unique to Portuguese — it agrees with the subject just like a conjugated verb but has the form of an infinitive. It has no direct equivalent in English, Spanish, French, or Italian." },
+      { title: "Forms", body: "eu: falar · tu: falares · ele/ela: falar · nós: falarmos · vós: falardes · eles/elas: falarem. The 1st and 3rd person singular are identical to the uninflected infinitive." },
+      { title: "When to use it", body: "After prepositions when the subject of the infinitive differs from the main clause: 'É importante vocês fazerem isso.' (It's important for you to do that.) 'Depois de chegares, liga-me.' (After you arrive, call me.) 'Para eles saberem...' (For them to know...)" },
+      { title: "vs. the subjunctive", body: "Both can express subordinate clauses, but the personal infinitive follows prepositions while the subjunctive follows conjunctions. 'Para que fales' (conj. + subj.) vs 'Para falares' (prep. + pers. inf.) — same meaning, both correct, infinitive is more common in spoken EP." },
     ],
   },
   {
@@ -1567,21 +1582,12 @@ const GRAMMAR_TOPICS = [
     ],
   },
   {
-    id: "articles", label: "Articles",
+    id: "ser_estar", label: "Ser vs. Estar",
     sections: [
-      { title: "EP uses articles before names", body: "Unlike English and BP (in some contexts), EP places the definite article before first names and proper nouns in conversation: 'A Maria chegou.' (Maria arrived.) 'O João está aqui.' (João is here.) Omitting the article sounds formal or literary in EP." },
-      { title: "Definite articles", body: "Masculine: o (sing), os (pl). Feminine: a (sing), as (pl). Contract with prepositions: a+o=ao, a+a=à, de+o=do, de+a=da, em+o=no, em+a=na, por+o=pelo, por+a=pela." },
-      { title: "Indefinite articles", body: "Masculine: um (sing), uns (pl). Feminine: uma (sing), umas (pl). Contract with em: em+um=num, em+uma=numa. 'Num café' (in a café). No contraction with de or a." },
-      { title: "When to omit the article", body: "Omit before: unmodified professions after ser ('Sou professor.'), nationalities after ser ('É portuguesa.'), days of the week without preposition ('Chegou segunda-feira.'), and in many set expressions ('Tenho fome.', 'Tenho razão.')." },
-    ],
-  },
-  {
-    id: "gender_agreement", label: "Gender & Agreement",
-    sections: [
-      { title: "Noun gender", body: "All Portuguese nouns are masculine or feminine. Most nouns ending in -o are masculine (o livro), most ending in -a are feminine (a mesa). Exceptions: o dia, o mapa, o problema (masc despite -a); a mão, a tribo (fem despite not ending -a)." },
-      { title: "Adjective agreement", body: "Adjectives agree with the noun in gender and number: 'um carro rápido / uma mota rápida / dois carros rápidos / duas motas rápidas.' Adjectives ending in -e or a consonant often have the same form for m/f: 'um/uma estudante inteligente.'" },
-      { title: "Article and determiner agreement", body: "All articles, demonstratives, and quantifiers must agree: 'este livro / esta caneta / esses livros / essas canetas / algum tempo / alguma coisa / muito trabalho / muita gente.'" },
-      { title: "Past participle agreement in compound tenses", body: "With TER/HAVER (compound tenses), the participle does NOT agree: 'Ela tem comido.' With SER (passive), it DOES agree: 'A carta foi escrita.' With FICAR + participle, it agrees: 'A porta ficou aberta.'" },
+      { title: "Ser — permanent or defining", body: "Use SER for: identity and origin ('Sou americano.'), permanent characteristics ('A neve é branca.'), profession ('É médico.'), time and dates ('São três horas.'), material ('A mesa é de madeira.'), and passive voice with past participle." },
+      { title: "Estar — temporary states", body: "Use ESTAR for: temporary conditions ('Estou cansado.' — I'm tired right now), location of people/things ('Estou em Lisboa.'), ongoing actions (estar a + infinitive: 'Estou a comer.'), and emotional states ('Estou feliz hoje.')." },
+      { title: "EP progressive: estar a + infinitive", body: "EP uses 'estar a + infinitive' for ongoing actions: 'Estou a falar.' (I am speaking.) BP uses 'estar + gerund': 'Estou falando.' Never use the gerund form for ongoing actions in EP — it sounds Brazilian." },
+      { title: "Tricky cases", body: "'Estar morto' (to be dead — a state) vs 'Ser morto' (to be killed — passive). Location: 'A cidade é bonita' (the city is beautiful — characteristic) vs 'A cidade está cheia' (the city is full — current state). 'Ser casado' (to be married — status) is common in EP even though marriage could be considered temporary." },
     ],
   },
   {
@@ -1594,12 +1600,20 @@ const GRAMMAR_TOPICS = [
     ],
   },
   {
-    id: "personal_infinitive", label: "Personal Infinitive",
+    id: "spoken_tenses", label: "Tenses in Spoken EP",
     sections: [
-      { title: "What it is", body: "The personal infinitive is an inflected infinitive unique to Portuguese — it agrees with the subject just like a conjugated verb but has the form of an infinitive. It has no direct equivalent in English, Spanish, French, or Italian." },
-      { title: "Forms", body: "eu: falar · tu: falares · ele/ela: falar · nós: falarmos · vós: falardes · eles/elas: falarem. The 1st and 3rd person singular are identical to the uninflected infinitive." },
-      { title: "When to use it", body: "After prepositions when the subject of the infinitive differs from the main clause: 'É importante vocês fazerem isso.' (It's important for you to do that.) 'Depois de chegares, liga-me.' (After you arrive, call me.) 'Para eles saberem...' (For them to know...)" },
-      { title: "vs. the subjunctive", body: "Both can express subordinate clauses, but the personal infinitive follows prepositions while the subjunctive follows conjunctions. 'Para que fales' (conj. + subj.) vs 'Para falares' (prep. + pers. inf.) — same meaning, both correct, infinitive is more common in spoken EP." },
+      { title: "Future tense in spoken EP", body: "Formal written EP uses the simple future (falarei). In spoken EP, ir + infinitive is overwhelmingly preferred: 'Vou falar amanhã.' The simple future survives mainly in formal registers, proverbs, and the media." },
+      { title: "Past tense in spoken EP", body: "EP spoken past relies heavily on the pretérito perfeito composto (tenho falado) for repeated/ongoing past actions, and the simple pretérito perfeito (falei) for single completed actions. The imperfeito (falava) covers habitual or background past." },
+      { title: "Imperfeito as politeness", body: "A distinctive EP usage: the imperfeito softens requests and expresses polite intent. 'Queria um café.' (I'd like a coffee.) 'Vinha perguntar...' (I was coming to ask...) This is not a past tense usage but a pragmatic softening device, equivalent to the English conditional in polite registers." },
+    ],
+  },
+  {
+    id: "word_order", label: "Word Order",
+    sections: [
+      { title: "Basic SVO order", body: "EP follows Subject-Verb-Object order like English: 'O Pedro come a sopa.' (Pedro eats the soup). The subject is often dropped entirely since the verb ending identifies it: 'Como a sopa.' (I eat the soup.)" },
+      { title: "Adjective placement", body: "Most descriptive adjectives follow the noun: 'um carro vermelho' (a red car). Adjectives that precede the noun carry a more subjective or emphatic meaning: 'um grande homem' (a great man) vs 'um homem grande' (a big/tall man)." },
+      { title: "Question word order", body: "Yes/no questions use rising intonation with no word order change: 'Falas português?' Wh-questions move the question word to the front: 'Onde moras?' In formal EP, the subject may invert after the verb: 'Onde mora o Pedro?'" },
+      { title: "Negation", body: "Place 'não' directly before the verb: 'Não falo inglês.' Double negation is standard in EP: 'Não vi nada.' (I didn't see anything — literally 'I didn't see nothing.') This is grammatically correct, not a mistake." },
     ],
   },
 ];
@@ -1614,10 +1628,22 @@ const GRAMMAR_FOCUS_TOPICS = [
   { id: "gender_agreement",   instruction: "Focus on gender and agreement: ensure all your responses model perfect gender/number agreement. When the learner makes agreement errors (wrong article, adjective ending, or participle), correct them clearly." },
   { id: "subjunctive",        instruction: "Focus on the subjunctive: weave subjunctive constructions naturally into your responses using triggers like embora, espero que, é importante que, quando (+ futuro do conjuntivo). When the learner should use the subjunctive but doesn't, point it out." },
   { id: "personal_infinitive", instruction: "Focus on the personal infinitive: use personal infinitive constructions naturally in your responses. Demonstrate the contrast with the subjunctive where relevant. If the learner avoids it or uses a subjunctive where a personal infinitive fits better, note it." },
+  { id: "spoken_tenses", instruction: "Focus on tenses in spoken EP: prefer ir + infinitive for future, use the pretérito perfeito composto correctly for repeated past, and demonstrate the imperfeito as a politeness device where natural. Gently correct learner errors in these areas." },
 ].map(ft => ({ ...ft, label: GRAMMAR_TOPICS.find(gt => gt.id === ft.id).label }));
 
 
 // ── Grammar sections (accordion content for Lists → Grammar tab) ──
+const GRAMMAR_SECTIONS_PARENT_MAP = {
+  "Clitic Pronouns: Placement Rules": "clitics",
+  "The 'estar a + infinitive' Progressive": "ser_estar",
+  "Ser vs Estar": "ser_estar",
+  "The Personal Infinitive": "personal_infinitive",
+  "Key Preposition Contractions": "por_para",
+  "Expressing the future in spoken EP": "spoken_tenses",
+  "Expressing the past in spoken EP": "spoken_tenses",
+  "Imperfeito as politeness": "spoken_tenses",
+};
+
 const GRAMMAR_SECTIONS = [
   {
     title: "Clitic Pronouns: Placement Rules",
@@ -2382,131 +2408,127 @@ const WORD_ORDER_ITEMS = [
 
 // ── CHIP CARVING VOCABULARY DATA ─────────────────────────────────────────────
 const CHIP_CARVING_VOCAB = [
+  { id: "cc-verbs", label: "Carving Verbs", items: [
+    { en: "to sharpen",  pt: "afiar",       referent: "sharpening the blade",        pos: "verb", obj: "a faca / a lâmina"},
+    { en: "to align",    pt: "alinhar",     referent: "bringing into coincidence",   pos: "verb", obj: "os cortes"},
+    { en: "to polish",   pt: "alisar",      referent: "smoothing a surface",         pos: "verb", obj: "a superfície"},
+    { en: "to tear out", pt: "arrancar",    referent: "fiber failure",               pos: "verb", obj: "a fibra"},
+    { en: "to round",    pt: "arredondar",  referent: "making something circular",   pos: "verb", obj: "a borda / o círculo"},
+    { en: "to hone",     pt: "assentar",    referent: "honing the edge",             pos: "verb", obj: "o fio"},
+    { en: "to dull",     pt: "cegar",       referent: "dulling the edge",            pos: "verb", obj: "o fio"},
+    { en: "to behave",   pt: "comportar",   referent: "how wood behaves",            pos: "verb", obj: "a madeira"},
+    { en: "to cut",      pt: "cortar",      referent: "making an incision",          pos: "verb", obj: "a madeira / a lasca"},
+    { en: "to carve",    pt: "entalhar",    referent: "shaping wood with a knife",   pos: "verb", obj: "a madeira / o padrão"},
+    { en: "to split",    pt: "fender",      referent: "splitting the wood",          pos: "verb", obj: "a madeira"},
+    { en: "to angle",    pt: "inclinar",    referent: "setting the blade angle",     pos: "verb", obj: "a faca"},
+    { en: "to lift / to lift (grain)", pt: "levantar", referent: "raising the knife; grain lifting in wood context", pos: "verb", obj: "a faca / o veio"},
+    { en: "to maintain", pt: "manter",      referent: "maintaining the knife",       pos: "verb", obj: "a faca"},
+    { en: "to stop",     pt: "parar",       referent: "halting the motion",          pos: "verb", obj: "o corte"},
+    { en: "to strop",    pt: "polir",       referent: "stropping the edge",          pos: "verb", obj: "o fio"},
+    { en: "to tear",     pt: "rasgar",      referent: "tearing the grain",           pos: "verb", obj: "o veio"},
+    { en: "to remove",   pt: "remover",     referent: "taking material away",        pos: "verb", obj: "a lasca / a madeira"},
+    { en: "to resist",   pt: "resistir",    referent: "resisting the cut",           pos: "verb", obj: "ao corte"},
+    { en: "to touch up", pt: "retocar",     referent: "making small corrections",    pos: "verb", obj: "a interseção / a área"},
+    { en: "to resume",   pt: "retomar",     referent: "continuing an action (also: to restart)",        pos: "verb", obj: "o corte"},
+    { en: "to follow",   pt: "seguir",      referent: "tracing a line or curve",     pos: "verb", obj: "a linha / a curva"},
+    { en: "to hold",     pt: "segurar",     referent: "gripping the knife",          pos: "verb", obj: "a faca"},
+    { en: "to pop out",  pt: "soltar",      referent: "freeing a chip",              pos: "verb", obj: "a lasca"},
+  ]},
   { id: "cc-nouns", label: "Core Nouns", items: [
-    { en: "chip",         pt: "a lasca",         referent: "lasca de madeira removida",   pos: "noun" },
-    { en: "cut",          pt: "o corte",          referent: "corte na madeira",             pos: "noun" },
-    { en: "carving",      pt: "o entalhe",        referent: "entalhe decorativo",           pos: "noun" },
-    { en: "pattern",      pt: "o padrão",         referent: "padrão entalhado",             pos: "noun" },
-    { en: "design",       pt: "o desenho",        referent: "desenho do entalhe",           pos: "noun" },
-    { en: "border",       pt: "a borda",          referent: "borda do prato",               pos: "noun" },
-    { en: "plate",        pt: "o prato",          referent: "prato de madeira",             pos: "noun" },
-    { en: "curve",        pt: "a curva",          referent: "curva do entalhe",             pos: "noun" },
-    { en: "angle",        pt: "o ângulo",         referent: "ângulo da faca",               pos: "noun" },
-    { en: "intersection", pt: "a interseção",     referent: "encontro de cortes",           pos: "noun" },
-    { en: "circle",       pt: "o círculo",        referent: "círculo entalhado",            pos: "noun" },
-    { en: "triangle",     pt: "o triângulo",      referent: "área triangular",              pos: "noun" },
-    { en: "ridge",        pt: "a crista",         referent: "crista elevada",               pos: "noun" },
-    { en: "slope",        pt: "a inclinação",     referent: "superfície descendente",       pos: "noun" },
-    { en: "facet",        pt: "a faceta",         referent: "faceta formada por cortes",    pos: "noun" },
-    { en: "depth",        pt: "a profundidade",   referent: "profundidade do corte",        pos: "noun" },
-    { en: "grain",        pt: "o veio",           referent: "veio da madeira",              pos: "noun" },
-    { en: "surface",      pt: "a superfície",     referent: "superfície da madeira",        pos: "noun" },
-    { en: "edge",         pt: "a aresta",         referent: "aresta do entalhe",            pos: "noun" },
-    { en: "fragment",     pt: "o fragmento",      referent: "fragmento de madeira",         pos: "noun" },
-    { en: "dust",         pt: "o pó",             referent: "pó de madeira",                pos: "noun" },
-    { en: "chunk",        pt: "o pedaço",         referent: "pedaço de madeira",            pos: "noun" },
-    { en: "pass",         pt: "a passagem",       referent: "passagem da faca",             pos: "noun" },
-  ]},
-  { id: "cc-tools", label: "Tools & Materials", items: [
-    { en: "knife",          pt: "a faca",              referent: "faca de entalhe",               pos: "noun" },
-    { en: "blade",          pt: "a lâmina",            referent: "lâmina da faca",                pos: "noun" },
-    { en: "pencil",         pt: "o lápis",             referent: "lápis de marcação",             pos: "noun" },
-    { en: "wood",           pt: "a madeira",           referent: "material entalhado",            pos: "noun" },
-    { en: "workpiece",      pt: "a peça",              referent: "peça de madeira",               pos: "noun" },
-    { en: "plate blank",    pt: "a base do prato",     referent: "base antes do entalhe",         pos: "noun" },
-    { en: "carving knife",  pt: "a faca de entalhe",   referent: "main chip-carving knife",       pos: "noun" },
-    { en: "chip carving knife", pt: "a faca de entalhe", referent: "knife for geometric chip carving", pos: "noun" },
-    { en: "tip",            pt: "a ponta",             referent: "very end of the blade",         pos: "noun" },
-    { en: "handle",         pt: "o cabo",              referent: "part you hold",                 pos: "noun" },
-    { en: "sharpening stone", pt: "a pedra de afiar",  referent: "stone for sharpening",         pos: "noun" },
-    { en: "strop",          pt: "a tira de couro",     referent: "leather for polishing edge",    pos: "noun" },
-    { en: "ruler",          pt: "a régua",             referent: "straight lines",                pos: "noun" },
-    { en: "compass",        pt: "o compasso",          referent: "drawing circles",               pos: "noun" },
-    { en: "calipers",       pt: "o paquímetro",        referent: "measuring thickness",           pos: "noun" },
-    { en: "clamp",          pt: "o sargento",          referent: "holding the piece",             pos: "noun" },
-    { en: "bench",          pt: "a bancada",           referent: "work surface",                  pos: "noun" },
-    { en: "light",          pt: "a luz",               referent: "illumination",                  pos: "noun" },
-  ]},
-  { id: "cc-toolparts", label: "Tool Parts", items: [
-    { en: "cutting edge", pt: "o fio",          referent: "sharpened edge",      pos: "noun" },
-    { en: "bevel",        pt: "o bisel",        referent: "angled grind",        pos: "noun" },
-    { en: "spine",        pt: "o dorso",        referent: "back of blade",       pos: "noun" },
-    { en: "flat side",    pt: "o lado plano",   referent: "flat face of blade",  pos: "noun" },
-    { en: "knife angle",  pt: "o ângulo da faca", referent: "working angle",    pos: "noun" },
+    { en: "edge",         pt: "a aresta",         referent: "aresta do entalhe",            pos: "noun"},
+    { en: "border",       pt: "a borda",          referent: "borda do prato",               pos: "noun"},
+    { en: "cut",          pt: "o corte",          referent: "corte na madeira",             pos: "noun"},
+    { en: "ridge",        pt: "a crista",         referent: "crista elevada",               pos: "noun"},
+    { en: "curve",        pt: "a curva",          referent: "curva do entalhe",             pos: "noun"},
+    { en: "circle",       pt: "o círculo",        referent: "círculo entalhado",            pos: "noun"},
+    { en: "design",       pt: "o desenho",        referent: "desenho do entalhe",           pos: "noun"},
+    { en: "carving",      pt: "o entalhe",        referent: "entalhe decorativo",           pos: "noun"},
+    { en: "facet",        pt: "a faceta",         referent: "faceta formada por cortes",    pos: "noun"},
+    { en: "fragment",     pt: "o fragmento",      referent: "fragmento de madeira",         pos: "noun"},
+    { en: "slope",        pt: "a inclinação",     referent: "superfície descendente",       pos: "noun"},
+    { en: "intersection", pt: "a interseção",     referent: "encontro de cortes",           pos: "noun"},
+    { en: "chip",         pt: "a lasca",         referent: "lasca de madeira removida",   pos: "noun"},
+    { en: "pattern",      pt: "o padrão",         referent: "padrão entalhado",             pos: "noun"},
+    { en: "pass",         pt: "a passagem",       referent: "passagem da faca",             pos: "noun"},
+    { en: "chunk",        pt: "o pedaço",         referent: "pedaço de madeira",            pos: "noun"},
+    { en: "plate",        pt: "o prato",          referent: "prato de madeira",             pos: "noun"},
+    { en: "depth",        pt: "a profundidade",   referent: "profundidade do corte",        pos: "noun"},
+    { en: "dust",         pt: "o pó",             referent: "pó de madeira",                pos: "noun"},
+    { en: "surface",      pt: "a superfície",     referent: "superfície da madeira",        pos: "noun"},
+    { en: "triangle",     pt: "o triângulo",      referent: "área triangular",              pos: "noun"},
+    { en: "grain",        pt: "o veio",           referent: "veio da madeira",              pos: "noun"},
+    { en: "angle",        pt: "o ângulo",         referent: "ângulo da faca",               pos: "noun"},
   ]},
   { id: "cc-geometry", label: "Geometry & Structure", items: [
-    { en: "line",       pt: "a linha",          referent: "linha do padrão",        pos: "noun" },
-    { en: "point",      pt: "o ponto",          referent: "ponto de encontro",      pos: "noun" },
-    { en: "center",     pt: "o centro",         referent: "centro do desenho",      pos: "noun" },
-    { en: "edge line",  pt: "a linha da aresta", referent: "limite do corte",       pos: "noun" },
-    { en: "transition", pt: "a transição",      referent: "mudança de direção",     pos: "noun" },
-    { en: "direction",  pt: "a direção",        referent: "direção do veio",        pos: "noun" },
-    { en: "geometry",   pt: "a geometria",      referent: "geometria do padrão",    pos: "noun" },
+    { en: "center",     pt: "o centro",         referent: "centro do desenho",      pos: "noun"},
+    { en: "direction",  pt: "a direção",        referent: "direção do veio",        pos: "noun"},
+    { en: "geometry",   pt: "a geometria",      referent: "geometria do padrão",    pos: "noun"},
+    { en: "line",       pt: "a linha",          referent: "linha do padrão",        pos: "noun"},
+    { en: "edge line",  pt: "a linha da aresta", referent: "limite do corte",       pos: "noun"},
+    { en: "point",      pt: "o ponto",          referent: "ponto de encontro",      pos: "noun"},
+    { en: "transition", pt: "a transição",      referent: "mudança de direção",     pos: "noun"},
   ]},
   { id: "cc-grain", label: "Grain & Material", items: [
-    { en: "grain direction", pt: "a direção do veio", referent: "orientação da madeira",  pos: "noun" },
-    { en: "short grain",     pt: "o veio curto",       referent: "área frágil",            pos: "noun" },
-    { en: "tear-out",        pt: "o arranque",         referent: "fibra arrancada",         pos: "noun" },
-    { en: "resistance",      pt: "a resistência",      referent: "resistência da madeira",  pos: "noun" },
-    { en: "fragility",       pt: "a fragilidade",      referent: "fragilidade do veio",     pos: "noun" },
-    { en: "hardness",        pt: "a dureza",           referent: "resistance to cutting",   pos: "noun" },
-    { en: "density",         pt: "a densidade",        referent: "mass per volume",         pos: "noun" },
-    { en: "moisture",        pt: "a humidade",         referent: "water content",           pos: "noun" },
-    { en: "end grain",       pt: "o topo do veio",     referent: "end grain surface",       pos: "noun" },
+    { en: "tear-out",        pt: "o arranque",         referent: "fibra arrancada",         pos: "noun"},
+    { en: "density",         pt: "a densidade",        referent: "mass per volume",         pos: "noun"},
+    { en: "grain direction", pt: "a direção do veio", referent: "orientação da madeira",  pos: "noun"},
+    { en: "hardness",        pt: "a dureza",           referent: "resistance to cutting",   pos: "noun"},
+    { en: "fragility",       pt: "a fragilidade",      referent: "fragilidade do veio",     pos: "noun"},
+    { en: "moisture",        pt: "a humidade",         referent: "water content",           pos: "noun"},
+    { en: "resistance",      pt: "a resistência",      referent: "resistência da madeira",  pos: "noun"},
+    { en: "end grain",       pt: "o topo do veio",     referent: "end grain surface",       pos: "noun"},
+    { en: "short grain",     pt: "o veio curto",       referent: "área frágil",            pos: "noun"},
   ]},
-  { id: "cc-verbs", label: "Carving Verbs", items: [
-    { en: "to carve",    pt: "entalhar",    referent: "shaping wood with a knife",   pos: "verb", obj: "a madeira / o padrão" },
-    { en: "to cut",      pt: "cortar",      referent: "making an incision",          pos: "verb", obj: "a madeira / a lasca" },
-    { en: "to remove",   pt: "remover",     referent: "taking material away",        pos: "verb", obj: "a lasca / a madeira" },
-    { en: "to follow",   pt: "seguir",      referent: "tracing a line or curve",     pos: "verb", obj: "a linha / a curva" },
-    { en: "to stop",     pt: "parar",       referent: "halting the motion",          pos: "verb", obj: "o corte" },
-    { en: "to resume",   pt: "retomar",     referent: "continuing an action (also: to restart)",        pos: "verb", obj: "o corte" },
-    { en: "to touch up", pt: "retocar",     referent: "making small corrections",    pos: "verb", obj: "a interseção / a área" },
-    { en: "to polish",   pt: "alisar",      referent: "smoothing a surface",         pos: "verb", obj: "a superfície" },
-    { en: "to round",    pt: "arredondar",  referent: "making something circular",   pos: "verb", obj: "a borda / o círculo" },
-    { en: "to align",    pt: "alinhar",     referent: "bringing into coincidence",   pos: "verb", obj: "os cortes" },
-    { en: "to pop out",  pt: "soltar",      referent: "freeing a chip",              pos: "verb", obj: "a lasca" },
-    { en: "to tear out", pt: "arrancar",    referent: "fiber failure",               pos: "verb", obj: "a fibra" },
-    { en: "to hold",     pt: "segurar",     referent: "gripping the knife",          pos: "verb", obj: "a faca" },
-    { en: "to angle",    pt: "inclinar",    referent: "setting the blade angle",     pos: "verb", obj: "a faca" },
-    { en: "to lift",     pt: "levantar",    referent: "raising the knife",           pos: "verb", obj: "a faca" },
-    { en: "to lift (grain)", pt: "levantar", referent: "grain lifting — wood context", pos: "verb", obj: "o veio" },
-    { en: "to sharpen",  pt: "afiar",       referent: "sharpening the blade",        pos: "verb", obj: "a faca / a lâmina" },
-    { en: "to hone",     pt: "assentar",    referent: "honing the edge",             pos: "verb", obj: "o fio" },
-    { en: "to strop",    pt: "polir",       referent: "stropping the edge",          pos: "verb", obj: "o fio" },
-    { en: "to dull",     pt: "cegar",       referent: "dulling the edge",            pos: "verb", obj: "o fio" },
-    { en: "to maintain", pt: "manter",      referent: "maintaining the knife",       pos: "verb", obj: "a faca" },
-    { en: "to split",    pt: "fender",      referent: "splitting the wood",          pos: "verb", obj: "a madeira" },
-    { en: "to resist",   pt: "resistir",    referent: "resisting the cut",           pos: "verb", obj: "ao corte" },
-    { en: "to tear",     pt: "rasgar",      referent: "tearing the grain",           pos: "verb", obj: "o veio" },
-    { en: "to behave",   pt: "comportar",   referent: "how wood behaves",            pos: "verb", obj: "a madeira" },
+  { id: "cc-toolparts", label: "Tool Parts", items: [
+    { en: "bevel",        pt: "o bisel",        referent: "angled grind",        pos: "noun"},
+    { en: "spine",        pt: "o dorso",        referent: "back of blade",       pos: "noun"},
+    { en: "cutting edge", pt: "o fio",          referent: "sharpened edge",      pos: "noun"},
+    { en: "flat side",    pt: "o lado plano",   referent: "flat face of blade",  pos: "noun"},
+    { en: "knife angle",  pt: "o ângulo da faca", referent: "working angle",    pos: "noun"},
+  ]},
+  { id: "cc-tools", label: "Tools & Materials", items: [
+    { en: "bench",          pt: "a bancada",           referent: "work surface",                  pos: "noun"},
+    { en: "plate blank",    pt: "a base do prato",     referent: "base antes do entalhe",         pos: "noun"},
+    { en: "handle",         pt: "o cabo",              referent: "part you hold",                 pos: "noun"},
+    { en: "compass",        pt: "o compasso",          referent: "drawing circles",               pos: "noun"},
+    { en: "knife",          pt: "a faca",              referent: "faca de entalhe",               pos: "noun"},
+    { en: "carving knife / chip carving knife", pt: "a faca de entalhe", referent: "knife for chip carving; main tool", pos: "noun"},
+    { en: "light",          pt: "a luz",               referent: "illumination",                  pos: "noun"},
+    { en: "pencil",         pt: "o lápis",             referent: "lápis de marcação",             pos: "noun"},
+    { en: "blade",          pt: "a lâmina",            referent: "lâmina da faca",                pos: "noun"},
+    { en: "wood",           pt: "a madeira",           referent: "material entalhado",            pos: "noun"},
+    { en: "calipers",       pt: "o paquímetro",        referent: "measuring thickness",           pos: "noun"},
+    { en: "sharpening stone", pt: "a pedra de afiar",  referent: "stone for sharpening",         pos: "noun"},
+    { en: "workpiece",      pt: "a peça",              referent: "peça de madeira",               pos: "noun"},
+    { en: "tip",            pt: "a ponta",             referent: "very end of the blade",         pos: "noun"},
+    { en: "ruler",          pt: "a régua",             referent: "straight lines",                pos: "noun"},
+    { en: "clamp",          pt: "o sargento",          referent: "holding the piece",             pos: "noun"},
+    { en: "strop",          pt: "a tira de couro",     referent: "leather for polishing edge",    pos: "noun"},
   ]},
   { id: "cc-woods", label: "Wood Species", items: [
-    { en: "basswood",       pt: "a tília",      referent: "soft, fine-grained carving wood", pos: "noun" },
-    { en: "linden",         pt: "a tília",      referent: "same as basswood",                pos: "noun" },
-    { en: "limewood",       pt: "a tília",      referent: "same as basswood",                pos: "noun" },
-    { en: "maple",          pt: "o ácer",       referent: "harder, tight grain",             pos: "noun" },
-    { en: "birch",          pt: "o bétula",     referent: "even grain, light color",         pos: "noun" },
-    { en: "beech",          pt: "a faia",       referent: "common European hardwood",        pos: "noun" },
-    { en: "cherry",         pt: "a cerejeira",  referent: "fine furniture wood",             pos: "noun" },
-    { en: "walnut",         pt: "a nogueira",   referent: "dark, stable hardwood",           pos: "noun" },
-    { en: "oak",            pt: "o carvalho",   referent: "strong, coarse grain",            pos: "noun" },
-    { en: "alder",          pt: "o amieiro",    referent: "soft hardwood",                   pos: "noun" },
-    { en: "pear",           pt: "a pereira",    referent: "very fine grain",                 pos: "noun" },
-    { en: "apple",          pt: "a macieira",   referent: "dense fruitwood",                 pos: "noun" },
-    { en: "poplar",         pt: "o choupo",     referent: "soft, stringy grain",             pos: "noun" },
-    { en: "sycamore maple", pt: "o plátano",    referent: "pale, even grain",                pos: "noun" },
+    { en: "alder",          pt: "o amieiro",    referent: "soft hardwood",                   pos: "noun"},
+    { en: "birch",          pt: "o bétula",     referent: "even grain, light color",         pos: "noun"},
+    { en: "oak",            pt: "o carvalho",   referent: "strong, coarse grain",            pos: "noun"},
+    { en: "cherry",         pt: "a cerejeira",  referent: "fine furniture wood",             pos: "noun"},
+    { en: "poplar",         pt: "o choupo",     referent: "soft, stringy grain",             pos: "noun"},
+    { en: "beech",          pt: "a faia",       referent: "common European hardwood",        pos: "noun"},
+    { en: "apple",          pt: "a macieira",   referent: "dense fruitwood",                 pos: "noun"},
+    { en: "walnut",         pt: "a nogueira",   referent: "dark, stable hardwood",           pos: "noun"},
+    { en: "pear",           pt: "a pereira",    referent: "very fine grain",                 pos: "noun"},
+    { en: "sycamore maple", pt: "o plátano",    referent: "pale, even grain",                pos: "noun"},
+    { en: "basswood / linden / limewood", pt: "a tília", referent: "soft, fine-grained carving wood", pos: "noun"},
+    { en: "maple",          pt: "o ácer",       referent: "harder, tight grain",             pos: "noun"},
   ]},
   { id: "cc-phrases", label: "Workshop Phrases", items: [
-    { en: "this wood carves well",      pt: "esta madeira entalha bem",              referent: "general quality assessment",    pos: "phrase" },
-    { en: "the grain lifts",            pt: "o veio levanta",                        referent: "fiber lifting warning",          pos: "phrase" },
-    { en: "it tears out easily",        pt: "arranca com facilidade",                referent: "tear-out warning",               pos: "phrase" },
-    { en: "soft carving wood",          pt: "madeira macia para entalhe",            referent: "material description",          pos: "phrase" },
-    { en: "fine-grained wood",          pt: "madeira de veio fino",                  referent: "material description",          pos: "phrase" },
-    { en: "fragile grain",              pt: "veio frágil",                           referent: "grain warning",                  pos: "phrase" },
-    { en: "Basswood carves easily",     pt: "A tília entalha-se facilmente",         referent: "wood behavior example",          pos: "phrase" },
-    { en: "Oak resists the cut more",   pt: "O carvalho resiste mais ao corte",      referent: "wood behavior example",          pos: "phrase" },
-    { en: "Short grain tears easily",   pt: "O veio curto rasga facilmente",         referent: "grain behavior example",         pos: "phrase" },
+    { en: "it tears out easily",        pt: "arranca com facilidade",                referent: "tear-out warning",               pos: "phrase"},
+    { en: "Oak resists the cut more",   pt: "O carvalho resiste mais ao corte",      referent: "wood behavior example",          pos: "phrase"},
+    { en: "this wood carves well",      pt: "esta madeira entalha bem",              referent: "general quality assessment",    pos: "phrase"},
+    { en: "fine-grained wood",          pt: "madeira de veio fino",                  referent: "material description",          pos: "phrase"},
+    { en: "soft carving wood",          pt: "madeira macia para entalhe",            referent: "material description",          pos: "phrase"},
+    { en: "Basswood carves easily",     pt: "A tília entalha-se facilmente",         referent: "wood behavior example",          pos: "phrase"},
+    { en: "Short grain tears easily",   pt: "O veio curto rasga facilmente",         referent: "grain behavior example",         pos: "phrase"},
+    { en: "fragile grain",              pt: "veio frágil",                           referent: "grain warning",                  pos: "phrase"},
+    { en: "the grain lifts",            pt: "o veio levanta",                        referent: "fiber lifting warning",          pos: "phrase"},
   ]},
 ];
 
@@ -4067,7 +4089,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
 
       {/* toolbar */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        {cardBtn(pairsQuizMode ? "📋 Browse" : "🎯 Quiz", toggleMode, { background: pairsQuizMode ? "var(--color-background-info)" : "var(--color-background-green)", color: pairsQuizMode ? "var(--color-accent-blue)" : "var(--color-accent-green)", borderColor: pairsQuizMode ? "var(--color-border-info)" : "var(--color-border-green)" })}
+        <button onClick={toggleMode} style={pairsQuizMode ? { ..._vqBtnPrimary(fontSize), background: "#dc2626" } : _vqBtnPrimary(fontSize)}>{pairsQuizMode ? "📋 Browse" : "🎯 Take Quiz"}</button>
         {cardBtn("🔀 Shuffle", shuffle)}
         <span style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginLeft: "auto" }}>
           {pairIndex + 1} / {poolSize}
@@ -4100,7 +4122,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
             {!quizTarget ? (
               <div>
                 <p style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 14 }}>Press Play to hear a word, then identify which it is.</p>
-                {cardBtn("▶ Play", startQuiz, { fontSize: fontSize, padding: "10px 32px", background: "var(--color-background-info)", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
+                <button onClick={startQuiz} style={_vqBtnPrimary(fontSize)}>▶ Play</button>
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
@@ -4294,6 +4316,134 @@ const GrammarSectionsAccordion = React.memo(function GrammarSectionsAccordion({ 
   );
 });
 
+const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListPT }) {
+  const [openTopics, setOpenTopics] = useState(new Set());
+  const [openNestedSecs, setOpenNestedSecs] = useState(new Set());
+
+  const toggleTopic = (id) => setOpenTopics(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+  const toggleNestedSec = (title) => setOpenNestedSecs(prev => {
+    const next = new Set(prev);
+    next.has(title) ? next.delete(title) : next.add(title);
+    return next;
+  });
+
+  // Per-nested-section rule accordion state: key = "secTitle|ruleIdx"
+  const [openNestedRules, setOpenNestedRules] = useState(new Set());
+  const toggleNestedRule = (secTitle, ri) => {
+    const key = `${secTitle}|${ri}`;
+    setOpenNestedRules(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
+
+  return (
+    <div style={listPanelStyle}>
+      {GRAMMAR_TOPICS.map((topic) => {
+        const isTopicOpen = openTopics.has(topic.id);
+        // GRAMMAR_SECTIONS entries that belong to this topic
+        const nestedSections = GRAMMAR_SECTIONS.filter(sec => GRAMMAR_SECTIONS_PARENT_MAP[sec.title] === topic.id);
+        return (
+          <div key={topic.id} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button onClick={() => toggleTopic(topic.id)} style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "8px 10px", background: "var(--color-background-secondary)",
+              border: "none", cursor: "pointer", fontFamily: "var(--font-sans)", textAlign: "left",
+            }}>
+              <span style={{ fontSize, fontWeight: 700, color: "var(--color-accent-teal)", textTransform: "uppercase", letterSpacing: "0.04em" }}>{topic.label}</span>
+              <span style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>{isTopicOpen ? "▲" : "▼"}</span>
+            </button>
+            {isTopicOpen && (
+              <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "8px 10px 10px" }}>
+                {/* Body cards */}
+                {topic.sections.map((sec, si) => (
+                  <div key={si} style={{ marginBottom: 10 }}>
+                    <p style={{ fontSize, fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{sec.title}</p>
+                    <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.6 }}>{sec.body}</p>
+                  </div>
+                ))}
+                {/* Nested GRAMMAR_SECTIONS sub-accordion */}
+                {nestedSections.length > 0 && (
+                  <div style={{ marginTop: 6, paddingLeft: 10, borderLeft: "2px solid var(--color-border-tertiary)" }}>
+                    {nestedSections.map((sec, nsi) => {
+                      const isSecOpen = openNestedSecs.has(sec.title);
+                      return (
+                        <div key={nsi} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-sm)", overflow: "hidden" }}>
+                          <button onClick={() => toggleNestedSec(sec.title)} style={{
+                            width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+                            padding: "6px 10px", background: "var(--color-background-secondary)",
+                            border: "none", cursor: "pointer", fontFamily: "var(--font-sans)", textAlign: "left",
+                          }}>
+                            <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.title}</span>
+                            <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{isSecOpen ? "▲" : "▼"}</span>
+                          </button>
+                          {isSecOpen && (
+                            <div style={{ padding: "8px 12px 12px", background: "var(--color-background-primary)" }}>
+                              {sec.intro && (
+                                <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: "0 0 10px", lineHeight: 1.6 }}>{sec.intro}</p>
+                              )}
+                              {sec.rules.map((rule, ri) => {
+                                const ruleKey = `${sec.title}|${ri}`;
+                                const isRuleOpen = openNestedRules.has(ruleKey);
+                                return (
+                                  <div key={ri} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-sm)", overflow: "hidden" }}>
+                                    <button onClick={() => toggleNestedRule(sec.title, ri)} style={{
+                                      width: "100%", textAlign: "left", background: "var(--color-background-secondary)",
+                                      border: "none", cursor: "pointer", padding: "6px 10px",
+                                      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+                                    }}>
+                                      <span style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{rule.label}</span>
+                                      <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{isRuleOpen ? "▲" : "▼"}</span>
+                                    </button>
+                                    {isRuleOpen && (
+                                      <div style={{ padding: "6px 10px 10px", background: "var(--color-background-primary)" }}>
+                                        {rule.explanation && (
+                                          <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: "0 0 8px", lineHeight: 1.55 }}>{rule.explanation}</p>
+                                        )}
+                                        {rule.examples.map((ex, ei) => (
+                                          <div key={ei} style={{ marginBottom: 8, paddingBottom: 8, borderBottom: ei < rule.examples.length - 1 ? "0.5px solid var(--color-border-tertiary)" : "none" }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                              <p style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(13, fontSize), fontWeight: 700, color: "var(--color-text-info)", margin: 0 }}>{ex.pt}</p>
+                                              {speakListPT && (
+                                                <button
+                                                  onClick={() => speakListPT(ex.pt.replace(/ \(.*?\)$/, ""))}
+                                                  aria-label={`Speak: ${ex.pt}`}
+                                                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, padding: "0 2px", color: "var(--color-text-tertiary)", flexShrink: 0 }}
+                                                >🔊</button>
+                                              )}
+                                            </div>
+                                            <p style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", margin: "2px 0 0" }}>{ex.en}</p>
+                                            {ex.note ? (
+                                              <p style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", margin: "2px 0 0", fontStyle: "italic" }}>{ex.note}</p>
+                                            ) : null}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+});
+
 const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs }) {
   const { useMemo } = React;
   const linkStyle = useMemo(() => ({
@@ -4315,8 +4465,8 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
               }}
               style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <span>
-                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{sec.pt}</span>
-                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-info)", marginLeft: 6, fontStyle: "italic" }}>({sec.en})</span>
+                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 700, color: "var(--color-text-primary)", fontStyle: "normal" }}>{sec.en}</span>
+                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 700, color: "var(--color-accent-blue)", marginLeft: 6, fontStyle: "normal" }}>({sec.pt})</span>
               </span>
               <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{mediaOpenSection === sec.id ? "▲" : "▼"}</span>
             </button>
@@ -4361,35 +4511,72 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
-  const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
   const needle = (listFilter || "").toLowerCase();
+  const [openPhrSections, setOpenPhrSections] = useState(new Set());
+  const togglePhrSec = (name) => setOpenPhrSections(prev => {
+    const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
+  });
   const filteredSections = useMemo(() => {
-    if (!needle) return PHRASES;
-    return PHRASES.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
+    if (!needle) return PHRASES_SORTED;
+    return PHRASES_SORTED.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
   }, [needle]);
   const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
       {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
-      {filteredSections.map((sec, si) => (
-        <div key={si} style={secWrap}>
-          {!needle && <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
-          <table style={tbl}><tbody>
-            {sec.items.map((item, ii) => (
-              <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                  <button onClick={() => speakListPT(item.pt)}
-                    aria-label={`Hear: ${item.pt}`}
-                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                </td>
-                <td style={tdL}>{item.pt}</td>
-                <td style={tdR}>{item.en}</td>
-              </tr>
-            ))}
-          </tbody></table>
-        </div>
-      ))}
+      {filteredSections.map((sec, si) => {
+        if (needle) {
+          return (
+            <div key={si} style={secWrap}>
+              <table style={tbl}><tbody>
+                {sec.items.map((item, ii) => (
+                  <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                    <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                      <button onClick={() => speakListPT(item.pt)}
+                        aria-label={`Hear: ${item.pt}`}
+                        style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                    </td>
+                    <td style={tdL}>{item.pt}</td>
+                    <td style={tdR}>{item.en}</td>
+                  </tr>
+                ))}
+              </tbody></table>
+            </div>
+          );
+        }
+        const isOpen = openPhrSections.has(sec.section);
+        return (
+          <div key={si} style={{ marginBottom: 5, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button onClick={() => togglePhrSec(sec.section)} style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "7px 10px", background: "var(--color-background-secondary)",
+              border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
+              color: "var(--color-accent-purple)", fontWeight: 700, textAlign: "left",
+            }}>
+              <span style={{ textDecoration: "underline" }}>{sec.section}</span>
+              <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{openPhrSections.has(sec.section) ? "▲" : "▼"}</span>
+            </button>
+            {isOpen && (
+              <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "6px 0 8px" }}>
+                <table style={tbl}><tbody>
+                  {sec.items.map((item, ii) => (
+                    <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                      <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                        <button onClick={() => speakListPT(item.pt)}
+                          aria-label={`Hear: ${item.pt}`}
+                          style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      </td>
+                      <td style={tdL}>{item.pt}</td>
+                      <td style={tdR}>{item.en}</td>
+                    </tr>
+                  ))}
+                </tbody></table>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 });
@@ -5357,31 +5544,71 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
   }, [needle]);
   const numTotalMatches = needle ? filteredNumberSections.reduce((n, s) => n + s.items.length, 0) : null;
 
+  const [openNumSections, setOpenNumSections] = S(new Set());
+  const toggleNumSec = (name) => setOpenNumSections(prev => {
+    const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
+  });
+
   if (!quizMode) {
     return (
       <div style={listPanelStyle}>
         <div style={{ marginBottom: 10 }}>
-          {cardBtn("🎯 Quiz", toggleQuizMode, { background: "var(--color-background-green)", color: "var(--color-accent-green)", borderColor: "var(--color-border-green)" })}
+          <button onClick={toggleQuizMode} style={_vqBtnPrimary(fontSize)}>🎯 Take Quiz</button>
         </div>
         {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{numTotalMatches} match{numTotalMatches !== 1 ? "es" : ""}</p>}
         {filteredNumberSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
-        {filteredNumberSections.map((sec, si) => (
-          <div key={si} style={secWrap}>
-            {!needle && <p style={{ ...secTit, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
-            <table style={tbl}><tbody>
-              {sec.items.map((it, ii) => (
-                <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                  <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                    <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
-                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                  </td>
-                  <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} /></td>
-                  <td style={tdR}>{it.en}</td>
-                </tr>
-              ))}
-            </tbody></table>
-          </div>
-        ))}
+        {filteredNumberSections.map((sec, si) => {
+          if (needle) {
+            // Search active: flat render, no accordion
+            return (
+              <div key={si} style={secWrap}>
+                <table style={tbl}><tbody>
+                  {sec.items.map((it, ii) => (
+                    <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                      <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                        <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
+                          style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      </td>
+                      <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} /></td>
+                      <td style={tdR}>{it.en}</td>
+                    </tr>
+                  ))}
+                </tbody></table>
+              </div>
+            );
+          }
+          // Browse mode: accordion
+          const isOpen = openNumSections.has(sec.section);
+          return (
+            <div key={si} style={{ marginBottom: 5, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+              <button onClick={() => toggleNumSec(sec.section)} style={{
+                width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "7px 10px", background: "var(--color-background-secondary)",
+                border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
+                color: "var(--color-accent-purple)", fontWeight: 700, textAlign: "left",
+              }}>
+                <span style={{ textDecoration: "underline" }}>{sec.section}</span>
+                <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{openNumSections.has(sec.section) ? "▲" : "▼"}</span>
+              </button>
+              {isOpen && (
+                <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "6px 0 8px" }}>
+                  <table style={tbl}><tbody>
+                    {sec.items.map((it, ii) => (
+                      <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                        <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                          <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
+                            style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                        </td>
+                        <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} /></td>
+                        <td style={tdR}>{it.en}</td>
+                      </tr>
+                    ))}
+                  </tbody></table>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   }
@@ -5403,7 +5630,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
 
       {/* Single toolbar — all controls in one flexWrap row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-        {cardBtn("📋 Browse", toggleQuizMode, { background: "var(--color-background-info)", color: "var(--color-accent-blue)", borderColor: "var(--color-border-info)" })}
+        <button onClick={toggleQuizMode} style={{ ..._vqBtnPrimary(fontSize), background: "#dc2626" }}>📋 Browse</button>
         {cardBtn("🔀 Shuffle", shuffle)}
         <button
           onClick={() => { stopSpeaking(); speakListPT(effectiveItem.pt); }}
@@ -5583,8 +5810,13 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
-  const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
   const needle = (listFilter || "").toLowerCase();
+  const [openSections, setOpenSections] = React.useState(new Set());
+  const toggleSec = (idx) => setOpenSections(prev => {
+    const next = new Set(prev);
+    next.has(idx) ? next.delete(idx) : next.add(idx);
+    return next;
+  });
   const filteredSections = useMemo(() => {
     if (!needle) return COGNATES;
     return COGNATES.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
@@ -5592,49 +5824,108 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
   const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
+      {!needle && (
+        <div style={{ padding: "0 0 12px", marginBottom: 12, borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+          <p style={{ fontSize, color: "var(--color-text-primary)", margin: "0 0 6px", lineHeight: 1.6 }}>
+            Cognates are words that look and mean the same (or nearly the same) in both English and Portuguese. Learning the common suffix patterns below lets you convert thousands of English words into Portuguese instantly — a reliable shortcut to vocabulary.
+          </p>
+          <p style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic", lineHeight: 1.5 }}>
+            Each heading shows one English→Portuguese ending pattern. Applying the rule mechanically gives a correct or near-correct Portuguese word in most cases. This list is illustrative, not exhaustive — the productive patterns shown here apply to hundreds or thousands of words beyond those listed.
+          </p>
+        </div>
+      )}
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
       {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
-      {filteredSections.map((sec, si) => (
-        <div key={si} style={secWrap}>
-          {!needle && <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>}
-          {!needle && sec.rule ? <p style={{ fontSize, color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.rule}</p> : null}
-          <table style={tbl}><tbody>
-            {sec.items.map((item, ii) => {
-              const hasMF = item.pt.includes("/a") || item.pt.includes("/o");
-              const speakText = hasMF
-                ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
-                : item.pt;
-              return (
-                <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                  <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                    <button onClick={() => speakListPT(speakText)}
-                      aria-label={`Hear: ${item.pt}`}
-                      style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                  </td>
-                  <td style={tdL}>{item.pt}</td>
-                  <td style={tdR}>{item.en}</td>
-                </tr>
-              );
-            })}
-          </tbody></table>
-          {!needle && sec.exceptions.length > 0 && (
-            <div style={{ marginTop: 4, padding: "4px 8px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize, color: "var(--color-text-warning)" }}>
-              {sec.exceptions.map((e, ei) => <div key={ei}>⚠ {e}</div>)}
+      {filteredSections.map((sec, si) => {
+        const isFalseCognate = sec.section === "False cognates (watch out!)";
+        const tdLComputed = isFalseCognate ? { ...tdL, color: "var(--color-text-danger, #dc2626)" } : tdL;
+        if (needle) {
+          // Search mode: flat render, no accordion
+          return (
+            <div key={si} style={secWrap}>
+              <table style={tbl}><tbody>
+                {sec.items.map((item, ii) => {
+                  const hasMF = item.pt.includes("/a") || item.pt.includes("/o");
+                  const speakText = hasMF
+                    ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
+                    : item.pt;
+                  return (
+                    <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                      <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                        <button onClick={() => speakListPT(speakText)}
+                          aria-label={`Hear: ${item.pt}`}
+                          style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      </td>
+                      <td style={tdLComputed}>{item.pt}</td>
+                      <td style={tdR}>{item.en}</td>
+                    </tr>
+                  );
+                })}
+              </tbody></table>
             </div>
-          )}
-        </div>
-      ))}
+          );
+        }
+        // Browse mode: accordion
+        const isOpen = openSections.has(si);
+        return (
+          <div key={si} style={{ marginBottom: 5, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button onClick={() => toggleSec(si)} style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "7px 10px",
+              background: isFalseCognate ? "var(--color-background-danger, #fef2f2)" : "var(--color-background-secondary)",
+              border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
+              color: isFalseCognate ? "var(--color-text-danger, #dc2626)" : "var(--color-accent-purple)",
+              fontWeight: 700, textAlign: "left",
+            }}>
+              <span style={{ textDecoration: "underline" }}>{sec.section}</span>
+              {sec.rule && !isFalseCognate && <span style={{ fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "var(--color-text-tertiary)", marginLeft: 8, fontStyle: "italic", flexShrink: 0 }}>{sec.rule}</span>}
+              <span style={{ fontSize: 11, color: isFalseCognate ? "var(--color-text-danger, #dc2626)" : "var(--color-text-tertiary)", marginLeft: 8, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
+            </button>
+            {isOpen && (
+              <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "6px 0 8px" }}>
+                <table style={tbl}><tbody>
+                  {sec.items.map((item, ii) => {
+                    const hasMF = item.pt.includes("/a") || item.pt.includes("/o");
+                    const speakText = hasMF
+                      ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
+                      : item.pt;
+                    return (
+                      <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                        <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                          <button onClick={() => speakListPT(speakText)}
+                            aria-label={`Hear: ${item.pt}`}
+                            style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                        </td>
+                        <td style={tdLComputed}>{item.pt}</td>
+                        <td style={tdR}>{item.en}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody></table>
+                {sec.exceptions.length > 0 && (
+                  <div style={{ marginTop: 4, padding: "4px 8px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize, color: "var(--color-text-warning)" }}>
+                    {sec.exceptions.map((e, ei) => <div key={ei}>⚠ {e}</div>)}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 });
 
 const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT, listFilter }) {
-  const secTitle = useMemo(() => makeSecTitle(fontSize), [fontSize]);
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const needle = (listFilter || "").toLowerCase();
+  const [openSlangSections, setOpenSlangSections] = useState(new Set());
+  const toggleSlangSec = (name) => setOpenSlangSections(prev => {
+    const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
+  });
   const filteredSections = useMemo(() => {
-    if (!needle) return SLANG;
-    return SLANG.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle) || (it.example_pt && it.example_pt.toLowerCase().includes(needle)) || (it.example_en && it.example_en.toLowerCase().includes(needle))) })).filter(sec => sec.items.length > 0);
+    if (!needle) return SLANG_SORTED;
+    return SLANG_SORTED.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle) || (it.example_pt && it.example_pt.toLowerCase().includes(needle)) || (it.example_en && it.example_en.toLowerCase().includes(needle))) })).filter(sec => sec.items.length > 0);
   }, [needle]);
   const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
@@ -5647,47 +5938,97 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT, listFilte
       </div>
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
       {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
-      {filteredSections.map((sec, si) => (
-        <div key={si} style={{ marginBottom: 18 }}>
-          <p style={{ ...secTitle, color: "var(--color-accent-sienna)", fontWeight: 700, textDecoration: "underline", marginBottom: 2 }}>{sec.section}</p>
-          {!needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: "0 0 6px", fontStyle: "italic" }}>{sec.en}</p>}
-          <table style={tbl}><tbody>
-            {sec.items.map((item, ii) => (
-              <tr key={ii} style={{ borderBottom: "1px solid #f3e8d0", verticalAlign: "top" }}>
-                {/* Phrase play button */}
-                <td style={{ width: 32, paddingRight: 4, paddingTop: 8, paddingBottom: 8, verticalAlign: "top" }}>
-                  <button onClick={() => speakListPT(item.pt)}
-                    aria-label={`Hear: ${item.pt}`}
-                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d6c98a", background: "var(--color-background-sienna)", color: "var(--color-text-sienna)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                </td>
-                {/* PT phrase + context badge */}
-                <td style={{ width: "22%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-sienna)", fontWeight: 700, fontSize }}>{item.pt}</span>
-                  {item.context && (
-                    <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>context</span>
-                  )}
-                </td>
-                {/* EN meaning */}
-                <td style={{ width: "18%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
-                  <span style={{ color: "var(--color-text-secondary)", fontSize }}>{item.en}</span>
-                </td>
-                {/* Example with its own play button */}
-                <td style={{ paddingTop: 8, paddingBottom: 4, verticalAlign: "top" }}>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
-                    <button onClick={() => speakListPT(item.example_pt)}
-                      aria-label={`Hear example: ${item.example_pt}`}
-                      style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
-                    <div>
-                      <p style={{ fontSize, fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
-                      <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody></table>
-        </div>
-      ))}
+      {filteredSections.map((sec, si) => {
+        if (needle) {
+          return (
+            <div key={si} style={{ marginBottom: 18 }}>
+              <table style={tbl}><tbody>
+                {sec.items.map((item, ii) => (
+                  <tr key={ii} style={{ borderBottom: "1px solid #f3e8d0", verticalAlign: "top" }}>
+                    <td style={{ width: 32, paddingRight: 4, paddingTop: 8, paddingBottom: 8, verticalAlign: "top" }}>
+                      <button onClick={() => speakListPT(item.pt)}
+                        aria-label={`Hear: ${item.pt}`}
+                        style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d6c98a", background: "var(--color-background-sienna)", color: "var(--color-text-sienna)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                    </td>
+                    <td style={{ width: "22%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
+                      <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-sienna)", fontWeight: 700, fontSize }}>{item.pt}</span>
+                      {item.context && (
+                        <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>context</span>
+                      )}
+                    </td>
+                    <td style={{ width: "18%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
+                      <span style={{ color: "var(--color-text-secondary)", fontSize }}>{item.en}</span>
+                    </td>
+                    <td style={{ paddingTop: 8, paddingBottom: 4, verticalAlign: "top" }}>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
+                        <button onClick={() => speakListPT(item.example_pt)}
+                          aria-label={`Hear example: ${item.example_pt}`}
+                          style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
+                        <div>
+                          <p style={{ fontSize, fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
+                          <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody></table>
+            </div>
+          );
+        }
+        const isOpen = openSlangSections.has(sec.section);
+        return (
+          <div key={si} style={{ marginBottom: 5, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button onClick={() => toggleSlangSec(sec.section)} style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "7px 10px", background: "var(--color-background-secondary)",
+              border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
+              color: "var(--color-accent-sienna)", fontWeight: 700, textAlign: "left",
+            }}>
+              <span>
+                <span style={{ textDecoration: "underline" }}>{sec.en}</span>
+                <span style={{ fontWeight: 700, color: "var(--color-text-primary)", marginLeft: 8 }}>({sec.section})</span>
+              </span>
+              <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0, marginLeft: 8 }}>{openSlangSections.has(sec.section) ? "▲" : "▼"}</span>
+            </button>
+            {isOpen && (
+              <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "6px 0 8px" }}>
+                <table style={tbl}><tbody>
+                  {sec.items.map((item, ii) => (
+                    <tr key={ii} style={{ borderBottom: "1px solid #f3e8d0", verticalAlign: "top" }}>
+                      <td style={{ width: 32, paddingRight: 4, paddingTop: 8, paddingBottom: 8, verticalAlign: "top" }}>
+                        <button onClick={() => speakListPT(item.pt)}
+                          aria-label={`Hear: ${item.pt}`}
+                          style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #d6c98a", background: "var(--color-background-sienna)", color: "var(--color-text-sienna)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      </td>
+                      <td style={{ width: "22%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
+                        <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-sienna)", fontWeight: 700, fontSize }}>{item.pt}</span>
+                        {item.context && (
+                          <span style={{ display: "inline-block", marginLeft: 5, fontSize: 10, fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>context</span>
+                        )}
+                      </td>
+                      <td style={{ width: "18%", paddingTop: 8, paddingBottom: 4, paddingRight: 8, verticalAlign: "top" }}>
+                        <span style={{ color: "var(--color-text-secondary)", fontSize }}>{item.en}</span>
+                      </td>
+                      <td style={{ paddingTop: 8, paddingBottom: 4, verticalAlign: "top" }}>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
+                          <button onClick={() => speakListPT(item.example_pt)}
+                            aria-label={`Hear example: ${item.example_pt}`}
+                            style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1, flexShrink: 0, marginTop: 2 }}>▶</button>
+                          <div>
+                            <p style={{ fontSize, fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
+                            <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody></table>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 });
@@ -5894,6 +6235,10 @@ function App() {
   const [mediaOpenSection, setMediaOpenSection] = useState(null);
   const mediaSectionRefs = useRef({});
   const [soundsTab, setSoundsTab] = useState("letters"); // "letters" | "ipa"
+  const [openPronSections, setOpenPronSections] = useState(new Set());
+  const togglePronSec = (name) => setOpenPronSections(prev => {
+    const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
+  });
 
   // Verb Quiz external launch state (set when user clicks "Quiz this verb" in Conjugator)
   const [verbQuizLaunch, setVerbQuizLaunch] = useState(null); // {verb, en} | null
@@ -7109,73 +7454,88 @@ function App() {
               {/* Letters sub-tab — existing PRONUNCIATION_GUIDE */}
               {soundsTab === "letters" && (
                 <div style={listPanelStyle}>
-                  {PRONUNCIATION_GUIDE.map((sec, si) => (
-                    <div key={si} style={secWrap}>
-                      <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>{sec.section}</p>
-                      <table style={tbl}><tbody>
-                        {sec.items.map((item, ii) => {
-                          const renderSyllables = () => {
-                            if (!item.syllables || !item.highlight) return null;
-                            const syllables = item.syllables;
-                            const highlight = item.highlight;
-                            const idx = syllables.toLowerCase().indexOf(highlight.toLowerCase());
-                            if (idx === -1) return <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)" }}>{syllables}</span>;
-                            const before = syllables.slice(0, idx);
-                            const match = syllables.slice(idx, idx + highlight.length);
-                            const after = syllables.slice(idx + highlight.length);
-                            return (
-                              <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)", letterSpacing: "0.02em" }}>
-                                {before}
-                                <span style={{ textDecoration: "underline", textDecorationColor: "var(--color-accent-violet)", textDecorationThickness: 2, fontWeight: 700, color: "var(--color-accent-violet)" }}>{match}</span>
-                                {after}
-                              </span>
-                            );
-                          };
-                          if (!item.example && !item.example_en) {
-                            return (
-                              <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                                <td style={{ width: 32 }}></td>
-                                <td colSpan={3} style={{ ...tdL, fontWeight: 700, color: item.symbol.startsWith("—") ? "var(--color-accent-purple)" : "var(--color-text-primary)", fontStyle: item.symbol.startsWith("—") ? "normal" : "italic", paddingTop: 6, paddingBottom: 4 }}>{item.symbol}</td>
-                              </tr>
-                            );
-                          }
-                          if (item.example_en) {
-                            return (
-                              <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                                <td style={{ width: 72, paddingRight: 6, verticalAlign: "top", paddingTop: 6 }}>
-                                  <div style={{ display: "flex", flexDirection: "row", gap: 4 }}>
-                                    <button onClick={() => speakListPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
-                                      style={{ fontSize: 13, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
-                                    <button onClick={() => speakListPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
-                                      style={{ fontSize: 13, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-green)", color: "var(--color-accent-green)", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
-                                  </div>
-                                </td>
-                                <td style={tdL}>{item.symbol}</td>
-                                <td style={{ ...tdR, width: "18%", whiteSpace: "nowrap" }}>{renderSyllables()}</td>
-                                <td style={tdR}>{item.desc}</td>
-                              </tr>
-                            );
-                          }
-                          return (
-                            <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                              <td style={{ width: 32, paddingRight: 6, verticalAlign: "top", paddingTop: 6 }}>
-                                {item.example && (
-                                  <button onClick={() => speakListPT(item.example, "pt-PT")}
-                                    aria-label={`Hear: ${item.example}`} title={`Hear: ${item.example}`}
-                                    style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                                )}
-                              </td>
-                              <td style={tdL}>{item.symbol}</td>
-                              <td style={{ verticalAlign: "top", padding: "4px 12px 4px 0", width: "18%", whiteSpace: "nowrap" }}>
-                                {renderSyllables()}
-                              </td>
-                              <td style={tdR}>{item.desc}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody></table>
-                    </div>
-                  ))}
+                  {PRONUNCIATION_GUIDE_SORTED.map((sec, si) => {
+                    const isOpen = openPronSections.has(sec.section);
+                    return (
+                      <div key={si} style={{ marginBottom: 5, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+                        <button onClick={() => togglePronSec(sec.section)} style={{
+                          width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+                          padding: "7px 10px", background: "var(--color-background-secondary)",
+                          border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
+                          color: "var(--color-accent-purple)", fontWeight: 700, textAlign: "left",
+                        }}>
+                          <span style={{ textDecoration: "underline" }}>{sec.section}</span>
+                          <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{openPronSections.has(sec.section) ? "▲" : "▼"}</span>
+                        </button>
+                        {isOpen && (
+                          <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "6px 0 8px" }}>
+                            <table style={tbl}><tbody>
+                              {sec.items.map((item, ii) => {
+                                const renderSyllables = () => {
+                                  if (!item.syllables || !item.highlight) return null;
+                                  const syllables = item.syllables;
+                                  const highlight = item.highlight;
+                                  const idx = syllables.toLowerCase().indexOf(highlight.toLowerCase());
+                                  if (idx === -1) return <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)" }}>{syllables}</span>;
+                                  const before = syllables.slice(0, idx);
+                                  const match = syllables.slice(idx, idx + highlight.length);
+                                  const after = syllables.slice(idx + highlight.length);
+                                  return (
+                                    <span style={{ fontFamily: "var(--font-mono)", fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-info)", letterSpacing: "0.02em" }}>
+                                      {before}
+                                      <span style={{ textDecoration: "underline", textDecorationColor: "var(--color-accent-violet)", textDecorationThickness: 2, fontWeight: 700, color: "var(--color-accent-violet)" }}>{match}</span>
+                                      {after}
+                                    </span>
+                                  );
+                                };
+                                if (!item.example && !item.example_en) {
+                                  return (
+                                    <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                                      <td style={{ width: 32 }}></td>
+                                      <td colSpan={3} style={{ ...tdL, fontWeight: 700, color: item.symbol.startsWith("—") ? "var(--color-accent-purple)" : "var(--color-text-primary)", fontStyle: item.symbol.startsWith("—") ? "normal" : "italic", paddingTop: 6, paddingBottom: 4 }}>{item.symbol}</td>
+                                    </tr>
+                                  );
+                                }
+                                if (item.example_en) {
+                                  return (
+                                    <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                                      <td style={{ width: 72, paddingRight: 6, verticalAlign: "top", paddingTop: 6 }}>
+                                        <div style={{ display: "flex", flexDirection: "row", gap: 4 }}>
+                                          <button onClick={() => speakListPT(item.example, "pt-PT")} title={`PT: ${item.example}`}
+                                            style={{ fontSize: 13, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1 }}>▶PT</button>
+                                          <button onClick={() => speakListPT(item.example_en, "en-US")} title={`EN: ${item.example_en}`}
+                                            style={{ fontSize: 13, padding: "3px 6px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-green)", color: "var(--color-accent-green)", cursor: "pointer", lineHeight: 1 }}>▶EN</button>
+                                        </div>
+                                      </td>
+                                      <td style={tdL}>{item.symbol}</td>
+                                      <td style={{ ...tdR, width: "18%", whiteSpace: "nowrap" }}>{renderSyllables()}</td>
+                                      <td style={tdR}>{item.desc}</td>
+                                    </tr>
+                                  );
+                                }
+                                return (
+                                  <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                                    <td style={{ width: 32, paddingRight: 6, verticalAlign: "top", paddingTop: 6 }}>
+                                      {item.example && (
+                                        <button onClick={() => speakListPT(item.example, "pt-PT")}
+                                          aria-label={`Hear: ${item.example}`} title={`Hear: ${item.example}`}
+                                          style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                                      )}
+                                    </td>
+                                    <td style={tdL}>{item.symbol}</td>
+                                    <td style={{ verticalAlign: "top", padding: "4px 12px 4px 0", width: "18%", whiteSpace: "nowrap" }}>
+                                      {renderSyllables()}
+                                    </td>
+                                    <td style={tdR}>{item.desc}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody></table>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -7183,74 +7543,92 @@ function App() {
               {soundsTab === "ipa" && (
                 <div style={listPanelStyle}>
                   {/* Legend */}
-                  <div style={{ marginBottom: 14, padding: "8px 12px", background: "var(--color-background-violet)", border: "1px solid var(--color-border-violet)", borderRadius: "var(--border-radius-md)", fontSize: Math.max(11, fontSize - 2), color: "var(--color-accent-violet-deep)", lineHeight: 1.6 }}>
-                    <strong>Conventions:</strong> CAPS = stressed syllable · (n) = nasalized through the nose · ⚠ = approximation, no true English anchor · <span style={{ fontFamily: "var(--font-mono)" }}>IPA</span> in monospace
+                  <div style={{ marginBottom: 12, padding: "10px 12px", background: "var(--color-background-secondary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", lineHeight: 1.65 }}>
+                    <p style={{ fontSize, color: "var(--color-text-primary)", margin: "0 0 6px", fontWeight: 700 }}>What is the IPA?</p>
+                    <p style={{ fontSize, color: "var(--color-text-primary)", margin: "0 0 6px" }}>
+                      The International Phonetic Alphabet (IPA) is a standardised system of symbols — one symbol per sound — used by linguists and language learners to write pronunciation precisely. Unlike ordinary spelling, which is inconsistent across languages (and within Portuguese itself), each IPA symbol always represents exactly one sound.
+                    </p>
+                    <p style={{ fontSize, color: "var(--color-text-secondary)", margin: 0 }}>
+                      You don't need to memorise IPA to use this app — the "fake phonetic" column gives an English-speaker approximation alongside every symbol. But knowing the IPA symbols lets you read any dictionary pronunciation key, understand phonology notes, and eventually hear and produce sounds that English spelling can't capture.
+                    </p>
                   </div>
-                  {IPA_GUIDE.map((sec, si) => (
-                    <div key={si} style={secWrap}>
-                      <p style={{ ...secTitle, color: "var(--color-accent-violet)", fontWeight: 700, textDecoration: "underline" }}>
-                        {sec.section}
-                        {sec.nasal && <span style={{ marginLeft: 8, fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "var(--color-accent-violet-mid)", textTransform: "none", textDecoration: "none" }}>— all (n) = nasalized</span>}
-                      </p>
-                      {/* Column headers */}
-                      <table style={{ ...tbl, marginBottom: 4 }}><thead>
-                        <tr style={{ borderBottom: "2px solid var(--color-border-violet)" }}>
-                          <th style={{ width: 32 }}></th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "18%" }}>IPA</th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "14%" }}>Fake phonetic</th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "20%" }}>EN anchor</th>
-                          <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 0 4px 0" }}>PT example · fake phonetic</th>
-                        </tr>
-                      </thead><tbody>
-                        {sec.items.map((item, ii) => {
-                          // TTS: speak both words if separated by ' · ', with a short pause word between
-                          const speakText = item.example_pt.includes(" · ")
-                            ? item.example_pt.replace(" · ", " ... ")
-                            : item.example_pt;
-                          return (
-                            <React.Fragment key={ii}>
-                              <tr style={{ borderBottom: item.note ? "none" : "1px solid #ede9fe", verticalAlign: "top" }}>
-                                {/* TTS button */}
-                                <td style={{ width: 32, paddingRight: 4, paddingTop: 6, verticalAlign: "middle" }}>
-                                  <button onClick={() => speakListPT(speakText, "pt-PT")}
-                                    aria-label={`Hear: ${item.example_pt}`}
-                                    style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid var(--color-border-violet)", background: "var(--color-background-violet)", color: "var(--color-accent-violet)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                                </td>
-                                {/* IPA symbol */}
-                                <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "var(--color-accent-violet-deep)", fontWeight: 700, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.ipa}</td>
-                                {/* Fake phonetic */}
-                                <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "var(--color-text-primary)", fontWeight: 600, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.fake}</td>
-                                {/* EN anchor */}
-                                <td style={{ fontSize, padding: "5px 8px 5px 0", verticalAlign: "top" }}>
-                                  {item.anchorFlag
-                                    ? <span style={{ color: "var(--color-text-warning)" }}>⚠{item.anchor ? " " + item.anchor : ""}</span>
-                                    : <span style={{ color: "var(--color-text-secondary)", fontStyle: "italic" }}>{item.anchor}</span>
-                                  }
-                                </td>
-                                {/* PT example + fake phonetic */}
-                                <td style={{ fontSize, padding: "5px 0 5px 0", verticalAlign: "top" }}>
-                                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", fontWeight: 700 }}>{item.example_pt}</span>
-                                  <span style={{ color: "var(--color-text-tertiary)", margin: "0 4px" }}>→</span>
-                                  <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-green)" }}>{item.example_fake}</span>
-                                </td>
+                  <div style={{ marginBottom: 14, padding: "8px 12px", background: "var(--color-background-violet)", border: "1px solid var(--color-border-violet)", borderRadius: "var(--border-radius-md)", fontSize: Math.max(11, fontSize - 2), color: "var(--color-accent-violet-deep)", lineHeight: 1.6 }}>
+                    <strong>Conventions:</strong> CAPS = stressed syllable · (n) = nasalized through the nose · ⚠ = approximation, no true English anchor
+                  </div>
+                  {IPA_GUIDE_SORTED.map((sec, si) => {
+                    const isOpen = openPronSections.has(sec.section);
+                    return (
+                      <div key={si} style={{ marginBottom: 5, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+                        <button onClick={() => togglePronSec(sec.section)} style={{
+                          width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+                          padding: "7px 10px", background: "var(--color-background-secondary)",
+                          border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
+                          color: "var(--color-accent-violet)", fontWeight: 700, textAlign: "left",
+                        }}>
+                          <span style={{ textDecoration: "underline" }}>
+                            {sec.section}
+                            {sec.nasal && <span style={{ marginLeft: 8, fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "var(--color-accent-violet-mid)", textTransform: "none", textDecoration: "none" }}>— all (n) = nasalized</span>}
+                          </span>
+                          <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{openPronSections.has(sec.section) ? "▲" : "▼"}</span>
+                        </button>
+                        {isOpen && (
+                          <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "6px 0 8px" }}>
+                            {/* Column headers */}
+                            <table style={{ ...tbl, marginBottom: 4 }}><thead>
+                              <tr style={{ borderBottom: "2px solid var(--color-border-violet)" }}>
+                                <th style={{ width: 32 }}></th>
+                                <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "18%" }}>IPA</th>
+                                <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "14%" }}>Fake phonetic</th>
+                                <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 8px 4px 0", width: "20%" }}>EN anchor</th>
+                                <th style={{ textAlign: "left", fontSize: Math.max(10, fontSize - 3), fontWeight: 700, color: "var(--color-accent-violet)", textTransform: "uppercase", letterSpacing: "0.07em", padding: "2px 0 4px 0" }}>PT example · fake phonetic</th>
                               </tr>
-                              {/* Note row — anchor note and/or production note, italic, below main row */}
-                              {(item.anchorFlag && item.anchorNote) || item.note ? (
-                                <tr style={{ borderBottom: "1px solid #ede9fe" }}>
-                                  <td></td>
-                                  <td colSpan={4} style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", paddingBottom: 5, paddingRight: 8, lineHeight: 1.5 }}>
-                                    {item.anchorFlag && item.anchorNote && <span>{item.anchorNote}</span>}
-                                    {item.anchorFlag && item.anchorNote && item.note && <span> · </span>}
-                                    {item.note && <span style={{ color: "var(--color-text-warning)" }}>{item.note}</span>}
-                                  </td>
-                                </tr>
-                              ) : null}
-                            </React.Fragment>
-                          );
-                        })}
-                      </tbody></table>
-                    </div>
-                  ))}
+                            </thead><tbody>
+                              {sec.items.map((item, ii) => {
+                                const speakText = item.example_pt.includes(" · ")
+                                  ? item.example_pt.replace(" · ", " ... ")
+                                  : item.example_pt;
+                                return (
+                                  <React.Fragment key={ii}>
+                                    <tr style={{ borderBottom: item.note ? "none" : "1px solid #ede9fe", verticalAlign: "top" }}>
+                                      <td style={{ width: 32, paddingRight: 4, paddingTop: 6, verticalAlign: "middle" }}>
+                                        <button onClick={() => speakListPT(speakText, "pt-PT")}
+                                          aria-label={`Hear: ${item.example_pt}`}
+                                          style={{ fontSize: 11, padding: "1px 4px", borderRadius: 3, border: "1px solid var(--color-border-violet)", background: "var(--color-background-violet)", color: "var(--color-accent-violet)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                                      </td>
+                                      <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "var(--color-accent-violet-deep)", fontWeight: 700, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.ipa}</td>
+                                      <td style={{ fontFamily: "var(--font-mono)", fontSize, color: "var(--color-text-primary)", fontWeight: 600, padding: "5px 8px 5px 0", verticalAlign: "top" }}>{item.fake}</td>
+                                      <td style={{ fontSize, padding: "5px 8px 5px 0", verticalAlign: "top" }}>
+                                        {item.anchorFlag
+                                          ? <span style={{ color: "var(--color-text-warning)" }}>⚠{item.anchor ? " " + item.anchor : ""}</span>
+                                          : <span style={{ color: "var(--color-text-secondary)", fontStyle: "italic" }}>{item.anchor}</span>
+                                        }
+                                      </td>
+                                      <td style={{ fontSize, padding: "5px 0 5px 0", verticalAlign: "top" }}>
+                                        <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", fontWeight: 700 }}>{item.example_pt}</span>
+                                        <span style={{ color: "var(--color-text-tertiary)", margin: "0 4px" }}>→</span>
+                                        <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent-green)" }}>{item.example_fake}</span>
+                                      </td>
+                                    </tr>
+                                    {/* Note row */}
+                                    {(item.anchorFlag && item.anchorNote) || item.note ? (
+                                      <tr style={{ borderBottom: "1px solid #ede9fe" }}>
+                                        <td></td>
+                                        <td colSpan={4} style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", paddingBottom: 5, paddingRight: 8, lineHeight: 1.5 }}>
+                                          {item.anchorFlag && item.anchorNote && <span>{item.anchorNote}</span>}
+                                          {item.anchorFlag && item.anchorNote && item.note && <span> · </span>}
+                                          {item.note && <span style={{ color: "var(--color-text-warning)" }}>{item.note}</span>}
+                                        </td>
+                                      </tr>
+                                    ) : null}
+                                  </React.Fragment>
+                                );
+                              })}
+                            </tbody></table>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -7380,20 +7758,7 @@ function App() {
             </div>
           )}
           {listTab === "grammar" && (
-            <div style={listPanelStyle}>
-              {GRAMMAR_TOPICS.map((topic, ti) => (
-                <div key={ti} style={secWrap}>
-                  <p style={{ ...secTitle, color: "var(--color-accent-teal)", fontWeight: 700, textDecoration: "underline" }}>{topic.label}</p>
-                  {topic.sections.map((sec, si) => (
-                    <div key={si} style={{ marginBottom: 10 }}>
-                      <p style={{ fontSize, fontWeight: 700, color: "var(--color-text-primary)", margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{sec.title}</p>
-                      <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.6 }}>{sec.body}</p>
-                    </div>
-                  ))}
-                </div>
-              ))}
-              <GrammarSectionsAccordion fontSize={fontSize} speakListPT={speakListPT} />
-            </div>
+            <GrammarListTab fontSize={fontSize} speakListPT={speakListPT} />
           )}
           {listTab === "numbers" && (
             <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} />
