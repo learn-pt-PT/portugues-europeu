@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
-  <!-- version: 3.0.12 -->
+  <!-- version: 3.0.13 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" defer></script>
@@ -64,7 +64,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.12", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.13", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -4421,7 +4421,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
 });
 
 // ── Culture Notes Accordion ────────────────────────────────────────────────────────────────────────────
-const CultureNotesAccordion = React.memo(function CultureNotesAccordion({ fontSize }) {
+const CultureNotesAccordion = React.memo(function CultureNotesAccordion({ fontSize, listFilter }) {
   const [openSection, setOpenSection] = useState(null);
   const [openItem, setOpenItem] = useState({});
 
@@ -4431,35 +4431,55 @@ const CultureNotesAccordion = React.memo(function CultureNotesAccordion({ fontSi
     return { ...prev, [key]: !prev[key] };
   });
 
+  const needle = (listFilter || "").toLowerCase();
+
+  const visibleNotes = CULTURE_NOTES.reduce((acc, cn, si) => {
+    if (!needle) { acc.push({ cn, si, matchedItems: cn.items.map((item, ii) => ({ item, ii })) }); return acc; }
+    const sectionMatch = cn.section.toLowerCase().includes(needle);
+    const matchedItems = cn.items.map((item, ii) => ({ item, ii })).filter(({ item }) =>
+      item.title.toLowerCase().includes(needle) || item.body.toLowerCase().includes(needle)
+    );
+    if (sectionMatch || matchedItems.length > 0) {
+      acc.push({ cn, si, matchedItems: sectionMatch ? cn.items.map((item, ii) => ({ item, ii })) : matchedItems });
+    }
+    return acc;
+  }, []);
+
   return (
     <div>
-      {CULTURE_NOTES.map((cn, si) => (
-        <div key={si} style={{ marginBottom: 8, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
-          <button onClick={() => toggleSection(si)} aria-expanded={openSection === si}
-            style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{cn.section}</span>
-            <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openSection === si ? "▲" : "▼"}</span>
-          </button>
-          {openSection === si && (
-            <div style={{ padding: "8px 12px 12px" }}>
-              {cn.items.map((item, ii) => (
-                <div key={ii} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-sm)", overflow: "hidden" }}>
-                  <button onClick={() => toggleItem(si, ii)} aria-expanded={!!openItem[`${si}-${ii}`]}
-                    style={{ width: "100%", textAlign: "left", background: "var(--color-background-tertiary)", border: "none", cursor: "pointer", padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                    <span style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{item.title}</span>
-                    <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{openItem[`${si}-${ii}`] ? "▲" : "▼"}</span>
-                  </button>
-                  {openItem[`${si}-${ii}`] && (
-                    <div style={{ padding: "8px 10px 10px", background: "var(--color-background-primary)" }}>
-                      <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.65 }}>{item.body}</p>
+      {visibleNotes.map(({ cn, si, matchedItems }) => {
+        const isSecOpen = needle ? true : openSection === si;
+        return (
+          <div key={si} style={{ marginBottom: 8, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button onClick={() => toggleSection(si)} aria-expanded={isSecOpen}
+              style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+              <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{cn.section}</span>
+              <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{isSecOpen ? "▲" : "▼"}</span>
+            </button>
+            {isSecOpen && (
+              <div style={{ padding: "8px 12px 12px" }}>
+                {matchedItems.map(({ item, ii }) => {
+                  const isItemOpen = needle ? true : !!openItem[`${si}-${ii}`];
+                  return (
+                    <div key={ii} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-sm)", overflow: "hidden" }}>
+                      <button onClick={() => toggleItem(si, ii)} aria-expanded={isItemOpen}
+                        style={{ width: "100%", textAlign: "left", background: "var(--color-background-tertiary)", border: "none", cursor: "pointer", padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                        <span style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)" }}>{item.title}</span>
+                        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{isItemOpen ? "▲" : "▼"}</span>
+                      </button>
+                      {isItemOpen && (
+                        <div style={{ padding: "8px 10px 10px", background: "var(--color-background-primary)" }}>
+                          <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-secondary)", margin: 0, lineHeight: 1.65 }}>{item.body}</p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 });
@@ -4543,7 +4563,7 @@ const GrammarSectionsAccordion = React.memo(function GrammarSectionsAccordion({ 
   );
 });
 
-const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListPT }) {
+const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListPT, onPractice }) {
   const [openTopics, setOpenTopics] = useState(new Set());
   const [openNestedSecs, setOpenNestedSecs] = useState(new Set());
 
@@ -4577,14 +4597,23 @@ const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListP
         const nestedSections = GRAMMAR_SECTIONS.filter(sec => GRAMMAR_SECTIONS_PARENT_MAP[sec.title] === topic.id);
         return (
           <div key={topic.id} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
-            <button onClick={() => toggleTopic(topic.id)} aria-expanded={isTopicOpen} style={{
-              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "8px 10px", background: "var(--color-background-secondary)",
-              border: "none", cursor: "pointer", fontFamily: "var(--font-sans)", textAlign: "left",
-            }}>
-              <span style={{ fontSize, fontWeight: 700, color: "var(--color-accent-teal)", textTransform: "uppercase", letterSpacing: "0.04em" }}>{topic.label}</span>
-              <span style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>{isTopicOpen ? "▲" : "▼"}</span>
-            </button>
+            <div style={{ display: "flex", alignItems: "center", background: "var(--color-background-secondary)" }}>
+              <button onClick={() => toggleTopic(topic.id)} aria-expanded={isTopicOpen} style={{
+                flex: 1, display: "flex", justifyContent: "space-between", alignItems: "center",
+                padding: "8px 10px", background: "transparent",
+                border: "none", cursor: "pointer", fontFamily: "var(--font-sans)", textAlign: "left",
+              }}>
+                <span style={{ fontSize, fontWeight: 700, color: "var(--color-accent-teal)", textTransform: "uppercase", letterSpacing: "0.04em" }}>{topic.label}</span>
+                <span style={{ fontSize: 12, color: "var(--color-text-tertiary)" }}>{isTopicOpen ? "▲" : "▼"}</span>
+              </button>
+              {onPractice && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPractice(topic.label); }}
+                  style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", marginRight: 8, borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: "transparent", color: "var(--color-accent-blue)", cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0 }}>
+                  Practice in chat
+                </button>
+              )}
+            </div>
             {isTopicOpen && (
               <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "8px 10px 10px" }}>
                 {/* Body cards */}
@@ -4671,18 +4700,30 @@ const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListP
   );
 });
 
-const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs }) {
+const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs, listFilter }) {
   const { useMemo } = React;
   const linkStyle = useMemo(() => ({
     color: "var(--color-accent-blue-chat)", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block",
   }), [fontSize]);
 
+  const needle = (listFilter || "").toLowerCase();
+  const visibleSections = MEDIA_SECTIONS_SORTED.reduce((acc, sec) => {
+    if (!needle) { acc.push({ sec, sortedLinks: sec.links ? [...sec.links].sort((a, b) => a.label.localeCompare(b.label)) : null, sortedSubgroups: sec.subgroups ? sec.subgroups.map(sg => ({ ...sg, links: [...sg.links].sort((a, b) => a.label.localeCompare(b.label)) })) : null }); return acc; }
+    const filteredLinks = sec.links ? sec.links.filter(lk => lk.label.toLowerCase().includes(needle)).sort((a, b) => a.label.localeCompare(b.label)) : null;
+    const filteredSubgroups = sec.subgroups ? sec.subgroups.map(sg => ({ ...sg, links: sg.links.filter(lk => lk.label.toLowerCase().includes(needle)).sort((a, b) => a.label.localeCompare(b.label)) })).filter(sg => sg.links.length > 0) : null;
+    const headerMatch = sec.en.toLowerCase().includes(needle) || (sec.pt && sec.pt.toLowerCase().includes(needle));
+    if (headerMatch) {
+      acc.push({ sec, sortedLinks: sec.links ? [...sec.links].sort((a, b) => a.label.localeCompare(b.label)) : null, sortedSubgroups: sec.subgroups ? sec.subgroups.map(sg => ({ ...sg, links: [...sg.links].sort((a, b) => a.label.localeCompare(b.label)) })) : null });
+    } else if ((filteredLinks && filteredLinks.length > 0) || (filteredSubgroups && filteredSubgroups.length > 0)) {
+      acc.push({ sec, sortedLinks: filteredLinks, sortedSubgroups: filteredSubgroups });
+    }
+    return acc;
+  }, []);
 
   return (
     <div style={listPanelStyle}>
-      {MEDIA_SECTIONS_SORTED.map(sec => {
-        const sortedLinks = sec.links ? [...sec.links].sort((a, b) => a.label.localeCompare(b.label)) : null;
-        const sortedSubgroups = sec.subgroups ? sec.subgroups.map(sg => ({ ...sg, links: [...sg.links].sort((a, b) => a.label.localeCompare(b.label)) })) : null;
+      {visibleSections.map(({ sec, sortedLinks, sortedSubgroups }) => {
+        const isOpen = needle ? true : mediaOpenSection === sec.id;
         return (
           <div key={sec.id} ref={el => mediaSectionRefs.current[sec.id] = el} style={{ marginBottom: 10, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
             <button onClick={() => {
@@ -4695,9 +4736,9 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
                 <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 700, color: "var(--color-text-primary)", fontStyle: "normal" }}>{sec.en}</span>
                 <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 700, color: "var(--color-accent-blue)", marginLeft: 6, fontStyle: "normal" }}>({sec.pt})</span>
               </span>
-              <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{mediaOpenSection === sec.id ? "▲" : "▼"}</span>
+              <span style={{ fontSize: 12, color: "var(--color-text-tertiary)", flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
             </button>
-            {mediaOpenSection === sec.id && (
+            {isOpen && (
               <div style={{ padding: "8px 12px 12px" }}>
                 {sortedSubgroups ? sortedSubgroups.map((sg, sgi) => (
                   <div key={sgi}>
@@ -4725,7 +4766,7 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
       {/* ── Culture Notes ── */}
       <div style={{ marginTop: 16 }}>
         <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 700, color: "var(--color-accent-teal)", letterSpacing: "0.12em", textTransform: "uppercase", margin: "0 0 8px" }}>Notas Culturais — Culture Notes</p>
-        <CultureNotesAccordion fontSize={fontSize} />
+        <CultureNotesAccordion fontSize={fontSize} listFilter={listFilter} />
       </div>
     </div>
   );
@@ -7705,7 +7746,7 @@ function App() {
             ))}
           </div>
           {/* Filter bar — shown for searchable list tabs */}
-          {["phrases","idioms","slang","cognates","numbers"].includes(listTab) && (
+          {["phrases","idioms","slang","cognates","numbers","media"].includes(listTab) && (
             <div style={{ padding: "5px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 8, background: "var(--color-background-primary)", flexShrink: 0 }}>
               <span style={{ fontSize: 13, color: "var(--color-text-tertiary)", flexShrink: 0 }}>🔍</span>
               <input
@@ -7967,6 +8008,13 @@ function App() {
                     <button onClick={() => setSelectedVerb(null)} style={{ textDecoration: "underline", cursor: "pointer", background: "transparent", border: "none", fontSize: 11, color: "var(--color-text-secondary)", padding: "3px 8px" }}>← BACK</button>
                     <span style={{ fontSize: 14, fontWeight: 500, color: "var(--color-text-primary)", fontFamily: "var(--font-mono)" }}>{selectedVerb}</span>
                     <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>{verbRefList.find(v => v.inf === selectedVerb)?.en || ""}</span>
+                    <button
+                      style={{ marginLeft: "auto", fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: "transparent", color: "var(--color-accent-blue)", cursor: "pointer", whiteSpace: "nowrap" }}
+                      onClick={() => {
+                        const prompt = `Give me 5 European Portuguese sentences using "${selectedVerb}". List the 5 Portuguese sentences separated by blank lines, with no numbering or bullet points. Then output the separator === on its own line. Then list the English translations in the same order, separated by blank lines, with no numbering or bullet points. Do not add any other text after the ===.`;
+                        setActivePanel(null);
+                        setTimeout(() => { sendMessageRef.current?.(prompt); }, 100);
+                      }}>Practice in chat</button>
                   </div>
                   {selectedVerb === "haver" && (
                     <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Modern EP note: only 'há' (3rd person singular present) is in common use. All other forms are archaic or literary.</p>
@@ -8039,7 +8087,11 @@ function App() {
             </div>
           )}
           {listTab === "grammar" && (
-            <GrammarListTab fontSize={fontSize} speakListPT={speakListPT} />
+            <GrammarListTab fontSize={fontSize} speakListPT={speakListPT} onPractice={(label) => {
+                const prompt = `Give me 5 European Portuguese sentences that illustrate ${label}. List the 5 Portuguese sentences separated by blank lines, with no numbering or bullet points. Then output the separator === on its own line. Then list the English translations in the same order, separated by blank lines, with no numbering or bullet points. Do not add any other text after the ===.`;
+                setActivePanel(null);
+                setTimeout(() => { sendMessageRef.current?.(prompt); }, 100);
+              }} />
           )}
           {listTab === "numbers" && (
             <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} />
@@ -8065,6 +8117,7 @@ function App() {
               mediaOpenSection={mediaOpenSection}
               setMediaOpenSection={setMediaOpenSection}
               mediaSectionRefs={mediaSectionRefs}
+              listFilter={listFilter}
             />
           )}
           {listTab === "slang" && (
@@ -8106,6 +8159,15 @@ function App() {
                     lookupVerbFor(v);
                   }}>
                   🎲 Random verb
+                </button>
+                <button
+                  style={{ fontSize: 13, fontWeight: 600, padding: "3px 12px", borderRadius: 999, border: "1px solid var(--color-accent-blue)", background: "transparent", color: "var(--color-accent-blue)", cursor: "pointer", fontFamily: "var(--font-sans)", flexShrink: 0 }}
+                  onClick={() => {
+                    const prompt = `Give me 5 European Portuguese sentences using "${conjugation.infinitive}". List the 5 Portuguese sentences separated by blank lines, with no numbering or bullet points. Then output the separator === on its own line. Then list the English translations in the same order, separated by blank lines, with no numbering or bullet points. Do not add any other text after the ===.`;
+                    setActivePanel(null);
+                    setTimeout(() => { sendMessageRef.current?.(prompt); }, 100);
+                  }}>
+                  Practice in chat
                 </button>
               </div>
               {CONJ_LEVEL_GROUPS.map(group => {
