@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.19", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.27", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7033,6 +7033,7 @@ function App() {
   const [listening, setListening] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(() => ls("pe_tts_enabled", false));
+  const [companionOpen, setCompanionOpen] = useState(true);
   const [ttsRate, setTtsRate] = useState(() => ls("pe_tts_rate", 1.0));
   const ttsRateRef = useRef(ttsRate);
   const [voices, setVoices] = useState([]);
@@ -7760,8 +7761,104 @@ function App() {
   const irreg = IRREGULAR_VERBS.find(v => v.inf === selectedVerb);
 
 
+  const companionIsMale = selectedVoice?.name === "__azure_duarte__";
+
+  // ── Companion photo face ──────────────────────────────────────────────
+  const MAN_B64   = window.__PE_MAN_IMG__;
+  const WOMAN_B64 = window.__PE_WOMAN_IMG__;
+
+  // Man photo: 320x352  Woman photo: 320x462
+  const CompanionFace = ({ isMale }) => {
+    const src   = isMale ? MAN_B64   : WOMAN_B64;
+    const viewW = 320;
+    const viewH = isMale ? 448 : 462;
+    return (
+      <svg
+        viewBox={`0 0 ${viewW} ${viewH}`}
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ width: "100%", height: "100%", display: "block" }}
+        aria-hidden="true"
+      >
+        <image href={src} x="0" y="0" width={viewW} height={viewH} />
+      </svg>
+    );
+  };
+
   return (
-    <div style={{ colorScheme: theme === "system" ? "light dark" : theme, fontFamily: "var(--font-sans)", display: "flex", flexDirection: "column", height: "100vh", minHeight: 500, background: "var(--color-background-primary)" }}>
+    <div style={{ display: "flex", flexDirection: "row", height: "100vh", minHeight: 500, background: "var(--color-background-primary)", colorScheme: theme === "system" ? "light dark" : theme }}>
+
+      {/* ── Companion sidebar ── */}
+      {companionOpen && (
+        <div style={{
+          width: 170,
+          minWidth: 170,
+          flexShrink: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          borderRight: "0.5px solid var(--color-border-tertiary)",
+          background: "var(--color-background-primary)",
+          padding: "12px 8px 8px",
+          gap: 8,
+          position: "relative",
+        }}>
+          {/* Close toggle */}
+          <button
+            onClick={() => setCompanionOpen(false)}
+            title="Hide companion"
+            aria-label="Hide companion panel"
+            style={{ position: "absolute", top: 6, right: 6, background: "none", border: "none", cursor: "pointer", fontSize: 14, color: "var(--color-text-tertiary)", lineHeight: 1, padding: 2 }}>
+            ✕
+          </button>
+
+          {/* Face area */}
+          <div style={{ width: "100%", flex: 1, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 0 }}>
+            <CompanionFace isMale={companionIsMale} />
+          </div>
+
+          {/* Label */}
+          <p style={{ fontSize: 11, color: "var(--color-text-tertiary)", margin: 0, textAlign: "center", fontStyle: "italic", letterSpacing: "0.03em" }}>
+            {companionIsMale ? "Duarte" : speaking ? "A falar…" : "Pronta"}
+          </p>
+
+          {/* Speaking indicator dot */}
+          <div style={{
+            width: 8, height: 8, borderRadius: "50%",
+            background: speaking ? "var(--color-accent-blue)" : "var(--color-border-tertiary)",
+            transition: "background 0.3s",
+            boxShadow: speaking ? "0 0 6px var(--color-accent-blue)" : "none",
+            marginBottom: 4,
+          }} />
+        </div>
+      )}
+
+      {/* Companion re-open button (shown when sidebar closed) */}
+      {!companionOpen && (
+        <button
+          onClick={() => setCompanionOpen(true)}
+          title="Show companion"
+          aria-label="Show companion panel"
+          style={{
+            position: "fixed", left: 0, top: "50%", transform: "translateY(-50%)",
+            zIndex: 100,
+            background: "var(--color-background-secondary)",
+            border: "0.5px solid var(--color-border-tertiary)",
+            borderLeft: "none",
+            borderRadius: "0 var(--border-radius-md) var(--border-radius-md) 0",
+            cursor: "pointer",
+            padding: "10px 5px",
+            fontSize: 16,
+            color: "var(--color-text-secondary)",
+            writingMode: "vertical-rl",
+            letterSpacing: "0.05em",
+            lineHeight: 1.2,
+          }}>
+          👤
+        </button>
+      )}
+
+      {/* ── Main app column ── */}
+    <div style={{ colorScheme: theme === "system" ? "light dark" : theme, fontFamily: "var(--font-sans)", display: "flex", flexDirection: "column", flex: 1, minWidth: 0, height: "100vh", minHeight: 500, background: "var(--color-background-primary)" }}>
 
       {/* Accessibility: polite live region for API errors and status messages.
           Screen readers announce content changes here without interrupting flow. */}
@@ -9073,6 +9170,7 @@ finalTranscriptRef.current = e.target.value;
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }
