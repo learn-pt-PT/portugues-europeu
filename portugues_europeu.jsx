@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.0", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.5", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -6261,6 +6261,7 @@ function App() {
   const intentionalStopRef = useRef(false);
   const enviarStopRef = useRef(false);
   const finalTranscriptRef = useRef("");
+  const sendingRef = useRef(false);  // true from send start until input cleared; suppresses late onresult writes
 
   // Speech state
   const [listening, setListening] = useState(false);
@@ -6323,6 +6324,7 @@ function App() {
     r.interimResults = true;
     r.maxAlternatives = 1;
     r.onresult = (e) => {
+      if (sendingRef.current) return;  // send already fired — discard late speech results
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         if (e.results[i].isFinal) {
@@ -6385,9 +6387,10 @@ function App() {
     const capturedText = (inputRef.current?.value || "").trim() || finalTranscriptRef.current.trim();
     intentionalStopRef.current = true;
     enviarStopRef.current = true;   // suppress onend from firing its own send
-    recognitionRef.current?.stop();
+    const r = recognitionRef.current;
     recognitionRef.current = null;
     finalTranscriptRef.current = "";
+    r?.stop();
     setListening(false);
     if (capturedText) {
       sendMessageRef.current?.(capturedText, true);  // true = calledFromStop, skip mic teardown
@@ -6581,10 +6584,11 @@ function App() {
     if (listening && !calledFromStop) {
       intentionalStopRef.current = true;
       enviarStopRef.current = true;
-      recognitionRef.current?.stop();
+      const r2 = recognitionRef.current;
       recognitionRef.current = null;
-      setListening(false);
       finalTranscriptRef.current = "";
+      setListening(false);
+      r2?.stop();
     }
     // Use DOM value as authoritative text source — bypasses React state render lag.
     const domText = (inputRef.current?.value || "").trim();
@@ -6615,9 +6619,18 @@ function App() {
       ...prev.filter(m => m._idiomCard || m._grammarCard || m.content.trim() !== ""),
       userMsg,
     ]);
+    // Only block onresult writes when speech was involved in this send.
+    // For typed input, sendingRef stays false — no late events to worry about.
+    const wasSpeech = listening || calledFromStop;
+    if (wasSpeech) sendingRef.current = true;
     setInput("");
-    // Reset textarea height to single-line after sending.
-    if (inputRef.current) inputRef.current.style.height = "auto";
+    finalTranscriptRef.current = "";
+    // Clear DOM value immediately — prevents a late onresult event from
+    // overwriting the cleared React state before the next render cycle.
+    if (inputRef.current) { inputRef.current.value = ""; inputRef.current.style.height = "auto"; }
+    // Reset the guard after two ticks — long enough for any final onresult
+    // from the stopped recognition to have fired and been discarded.
+    if (wasSpeech) setTimeout(() => { sendingRef.current = false; }, 300);
     setLoading(true);
 
     let chatController = null;
@@ -8181,6 +8194,7 @@ function App() {
             value={input}
             onChange={e => {
               setInput(e.target.value);
+finalTranscriptRef.current = e.target.value;
               // Auto-grow: reset to auto so scrollHeight reflects the content, then clamp to maxHeight.
               const el = e.target;
               el.style.height = "auto";
