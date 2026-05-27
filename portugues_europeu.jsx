@@ -20,7 +20,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.13", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.14", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -36,6 +36,7 @@ const LIST_TABS = [
   { id: "idioms", label: "Idioms" },
   { id: "media", label: "Media" },
   { id: "numbers", label: "Numbers" },
+  { id: "opposites", label: "Opposites" },
   { id: "pairs", label: "Min. Pairs" },
   { id: "phrases", label: "Phrases" },
   { id: "sounds", label: "Pronunciation" },
@@ -1665,6 +1666,126 @@ const GRAMMAR_SECTIONS_PARENT_MAP = {
   "Expressing the past in spoken EP": "spoken_tenses",
   "Imperfeito as politeness": "spoken_tenses",
 };
+
+const OPPOSITES = [
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a vida", en: "life" }, b: { pt: "a morte", en: "death" }, sentence: "A vida é um dom precioso, mas a morte é inevitável." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a saúde", en: "health" }, b: { pt: "a doença", en: "illness" }, sentence: "A saúde é mais valiosa do que a riqueza, pois a doença pode destruir tudo." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a vigília", en: "wakefulness" }, b: { pt: "o sono", en: "sleep" }, sentence: "Durante a vigília pensamos claramente, mas o sono restaura as nossas forças." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a fome", en: "hunger" }, b: { pt: "a saciedade", en: "satiety" }, disambig: "(hunger vs. fullness)", sentence: "A fome torna qualquer refeição deliciosa, mas a saciedade faz-nos ser exigentes." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a sede", en: "thirst" }, b: { pt: "a saciedade", en: "satiation" }, disambig: "(thirst vs. satiation)", sentence: "A sede intensa desaparece com a saciedade que uma boa água fresca proporciona." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a fertilidade", en: "fertility" }, b: { pt: "a esterilidade", en: "sterility" }, sentence: "A fertilidade do solo contrasta com a esterilidade do deserto." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "o crescimento", en: "growth" }, b: { pt: "o declínio", en: "decline" }, sentence: "O crescimento rápido da empresa foi seguido de um declínio inesperado." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a cura", en: "cure" }, b: { pt: "a doença", en: "illness" }, disambig: "(healing vs. sickness)", sentence: "A cura parecia impossível, mas a doença acabou por ceder ao tratamento." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a força", en: "strength" }, b: { pt: "a fraqueza", en: "weakness" }, disambig: "(physical)", sentence: "A força muscular diminui com a idade, mas a fraqueza pode ser combatida com exercício." },
+  { category: "ECONÓMICO / MATERIAL", a: { pt: "a riqueza", en: "wealth" }, b: { pt: "a pobreza", en: "poverty" }, sentence: "A riqueza traz conforto, mas a pobreza ensina a valorizar o essencial." },
+  { category: "ECONÓMICO / MATERIAL", a: { pt: "o lucro", en: "profit" }, b: { pt: "o prejuízo", en: "loss" }, disambig: "(financial)", sentence: "O lucro do primeiro trimestre foi apagado pelo prejuízo do segundo." },
+  { category: "ECONÓMICO / MATERIAL", a: { pt: "o ganho", en: "gain" }, b: { pt: "a perda", en: "loss" }, disambig: "(general)", sentence: "O ganho de experiência compensa sempre a perda de tempo." },
+  { category: "ECONÓMICO / MATERIAL", a: { pt: "a abundância", en: "abundance" }, b: { pt: "a escassez", en: "scarcity" }, disambig: "(material)", sentence: "A abundância de alimentos no verão contrasta com a escassez do inverno." },
+  { category: "ECONÓMICO / MATERIAL", a: { pt: "o trabalho", en: "work" }, b: { pt: "o descanso", en: "rest" }, sentence: "O trabalho árduo merece um descanso bem ganho." },
+  { category: "ECONÓMICO / MATERIAL", a: { pt: "o trabalho", en: "work" }, b: { pt: "o ócio", en: "idleness" }, disambig: "(industry vs. idleness)", sentence: "O trabalho constrói o carácter, enquanto o ócio o corrói." },
+  { category: "ECONÓMICO / MATERIAL", a: { pt: "a poupança", en: "saving" }, b: { pt: "o desperdício", en: "waste" }, sentence: "A poupança de recursos naturais é o oposto do desperdício irresponsável." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a esquerda", en: "left" }, b: { pt: "a direita", en: "right" }, disambig: "(direction)", sentence: "Vira à esquerda no semáforo e depois à direita na rotunda." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o cimo", en: "top" }, b: { pt: "o fundo", en: "bottom" }, sentence: "O cimo da montanha estava coberto de neve, mas o fundo do vale estava verde." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a frente", en: "front" }, b: { pt: "a costa", en: "back" }, disambig: "(colloquial)", sentence: "Sentou-se na frente do autocarro porque não aguentava andar de costa para a frente." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a frente", en: "front" }, b: { pt: "a retaguarda", en: "rear" }, disambig: "(formal/military)", sentence: "As tropas avançaram pela frente enquanto a retaguarda protegia a retirada." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o interior", en: "inside" }, b: { pt: "o exterior", en: "outside" }, sentence: "O interior da casa estava quente enquanto o exterior estava gelado." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o centro", en: "center" }, b: { pt: "a periferia", en: "periphery" }, sentence: "Os serviços concentram-se no centro da cidade, deixando a periferia mal servida." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o norte", en: "north" }, b: { pt: "o sul", en: "south" }, sentence: "O norte do país é mais chuvoso do que o sul." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o este", en: "east" }, b: { pt: "o oeste", en: "west" }, sentence: "O sol nasce a este e põe-se a oeste." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o oriente", en: "east" }, b: { pt: "o ocidente", en: "west" }, disambig: "(cultural/formal)", sentence: "O oriente e o ocidente têm tradições filosóficas muito distintas." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a proximidade", en: "nearness" }, b: { pt: "a distância", en: "distance" }, sentence: "A proximidade entre vizinhos pode ser reconfortante, mas a distância também tem o seu valor." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a subida", en: "ascent" }, b: { pt: "a descida", en: "descent" }, disambig: "(slope/terrain)", sentence: "A subida até ao miradouro foi difícil, mas a descida foi tranquila." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a entrada", en: "entrance" }, b: { pt: "a saída", en: "exit" }, sentence: "A entrada do museu é gratuita, mas a saída é pela loja." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o começo", en: "beginning" }, b: { pt: "o fim", en: "end" }, sentence: "O começo da história é animado, mas o fim é melancólico." },
+  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o início", en: "start" }, b: { pt: "o final", en: "finish" }, disambig: "(events/formal)", sentence: "O início da corrida foi caótico, mas o final foi emocionante." },
+  { category: "ESTADO / MOVIMENTO", a: { pt: "o movimento", en: "movement" }, b: { pt: "a imobilidade", en: "stillness" }, sentence: "O movimento constante da cidade contrasta com a imobilidade da madrugada." },
+  { category: "ESTADO / MOVIMENTO", a: { pt: "o movimento", en: "movement" }, b: { pt: "o repouso", en: "rest" }, disambig: "(colloquial)", sentence: "O médico recomendou alternar o movimento suave com o repouso total." },
+  { category: "ESTADO / MOVIMENTO", a: { pt: "a chegada", en: "arrival" }, b: { pt: "a partida", en: "departure" }, sentence: "A chegada foi festejada com abraços, e a partida com lágrimas." },
+  { category: "ESTADO / MOVIMENTO", a: { pt: "o avanço", en: "advance" }, b: { pt: "o recuo", en: "retreat" }, sentence: "O avanço das negociações foi interrompido por um recuo inesperado." },
+  { category: "ESTADO / MOVIMENTO", a: { pt: "a aceleração", en: "acceleration" }, b: { pt: "a travagem", en: "braking" }, disambig: "(PT-PT specific)", sentence: "A aceleração brusca seguida de uma travagem forte danifica os travões." },
+  { category: "ESTADO / MOVIMENTO", a: { pt: "a abertura", en: "opening" }, b: { pt: "o fecho", en: "closing" }, sentence: "A abertura da exposição foi um sucesso; o fecho passou despercebido." },
+  { category: "ESTADO / MOVIMENTO", a: { pt: "a subida", en: "rise" }, b: { pt: "a queda", en: "fall" }, disambig: "(motion)", sentence: "A subida das temperaturas foi seguida de uma queda repentina." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "o calor", en: "heat" }, b: { pt: "o frio", en: "cold" }, disambig: "(temperature extremes)", sentence: "O calor de agosto é sufocante, mas o frio de janeiro corta a cara." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "o calor", en: "warmth" }, b: { pt: "o frescor", en: "coolness" }, disambig: "(moderate contrast)", sentence: "O calor da lareira deu lugar ao frescor da brisa noturna." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a luz", en: "light" }, b: { pt: "a escuridão", en: "darkness" }, disambig: "(physical)", sentence: "A luz do candeeiro mal vencia a escuridão daquele corredor." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "o som", en: "sound" }, b: { pt: "o silêncio", en: "silence" }, sentence: "O som do rio foi gradualmente substituído pelo silêncio absoluto da floresta." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "o barulho", en: "noise" }, b: { pt: "o silêncio", en: "silence" }, disambig: "(colloquial)", sentence: "O barulho da festa durou até às três da manhã; depois voltou o silêncio." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a dureza", en: "hardness" }, b: { pt: "a suavidade", en: "softness" }, sentence: "A dureza do granito contrasta com a suavidade da argila húmida." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a dureza", en: "hardness" }, b: { pt: "a macieza", en: "softness" }, disambig: "(PT-PT colloquial)", sentence: "A dureza do colchão velho era insuportável; a macieza do novo foi uma revelação." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "o peso", en: "weight" }, b: { pt: "a leveza", en: "lightness" }, sentence: "O peso da mochila tornava cada passo difícil; a leveza das sandálias era um alívio." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a secura", en: "dryness" }, b: { pt: "a humidade", en: "humidity" }, sentence: "A secura do verão alentejano é tão extrema quanto a humidade do outono minhoto." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a ordem", en: "order" }, b: { pt: "a desordem", en: "disorder" }, sentence: "A ordem na sala de aula facilitava a aprendizagem; a desordem destruía-a." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a ordem", en: "order" }, b: { pt: "o caos", en: "chaos" }, disambig: "(colloquial)", sentence: "A ordem das filas de espera rapidamente se transformou em caos quando abriram as portas." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a limpeza", en: "cleanliness" }, b: { pt: "a sujidade", en: "dirtiness" }, sentence: "A limpeza da cozinha contrastava com a sujidade da garagem." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "a beleza", en: "beauty" }, b: { pt: "a feiura", en: "ugliness" }, sentence: "A beleza da paisagem tornava a feiura das construções ainda mais chocante." },
+  { category: "FÍSICO / SENSORIAL", a: { pt: "o prazer", en: "pleasure" }, b: { pt: "a dor", en: "pain" }, sentence: "O prazer da corrida só é compreendido por quem já sentiu a dor de parar." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "o conhecimento", en: "knowledge" }, b: { pt: "a ignorância", en: "ignorance" }, sentence: "O conhecimento ilumina, mas a ignorância nem sempre é sofrimento — por vezes é conforto." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a certeza", en: "certainty" }, b: { pt: "a dúvida", en: "doubt" }, sentence: "A certeza dava-lhe paz, mas a dúvida foi o que o levou a questionar tudo." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a razão", en: "reason" }, b: { pt: "a loucura", en: "madness" }, sentence: "A razão e a loucura estão separadas por uma linha mais ténue do que julgamos." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a sabedoria", en: "wisdom" }, b: { pt: "a estupidez", en: "stupidity" }, sentence: "A sabedoria reconhece os seus limites; a estupidez ignora-os completamente." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a sabedoria", en: "wisdom" }, b: { pt: "a tolice", en: "foolishness" }, disambig: "(colloquial/softer)", sentence: "A sabedoria dos velhos parece tolice aos jovens, até que provam o contrário." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a memória", en: "memory" }, b: { pt: "o esquecimento", en: "forgetting" }, sentence: "A memória preserva o que somos; o esquecimento apaga o que nos magoou." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a clareza", en: "clarity" }, b: { pt: "a confusão", en: "confusion" }, sentence: "A clareza das instruções evitaria a confusão que se seguiu." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a crença", en: "belief" }, b: { pt: "a descrença", en: "unbelief" }, sentence: "A crença movia-a todos os dias; a descrença do marido era um peso constante." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a consciência", en: "consciousness" }, b: { pt: "a inconsciência", en: "unconsciousness" }, disambig: "(awareness)", sentence: "A consciência do perigo chegou tarde; a inconsciência durou apenas alguns segundos." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a atenção", en: "attention" }, b: { pt: "a distração", en: "distraction" }, sentence: "A atenção às aulas melhorou as notas; a distração do telemóvel destruía-a." },
+  { category: "MENTAL / EPISTÉMICO", a: { pt: "a compreensão", en: "understanding" }, b: { pt: "o mal-entendido", en: "misunderstanding" }, sentence: "A compreensão mútua evitaria o mal-entendido que separou os dois amigos." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "o bem", en: "good" }, b: { pt: "o mal", en: "evil" }, sentence: "O bem e o mal coexistem no mundo, e cada pessoa escolhe o seu caminho." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a verdade", en: "truth" }, b: { pt: "a mentira", en: "lie" }, disambig: "(everyday)", sentence: "A verdade é difícil de ouvir, mas a mentira é ainda mais difícil de viver." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a verdade", en: "truth" }, b: { pt: "o erro", en: "error" }, disambig: "(philosophical/theological)", sentence: "A verdade permanece imutável; o erro é sempre uma distorção dela." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a virtude", en: "virtue" }, b: { pt: "o vício", en: "vice" }, sentence: "A virtude constrói-se com esforço diário; o vício instala-se sem que demos conta." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a honestidade", en: "honesty" }, b: { pt: "a falsidade", en: "falseness" }, sentence: "A honestidade pode custar caro, mas a falsidade custa sempre mais." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a justiça", en: "justice" }, b: { pt: "a injustiça", en: "injustice" }, sentence: "A justiça tarda, mas a injustiça deixa marcas que não se apagam." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "o certo", en: "right" }, b: { pt: "o errado", en: "wrong" }, disambig: "(moral nouns)", sentence: "Saber distinguir o certo do errado é o início de qualquer maturidade moral." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a recompensa", en: "reward" }, b: { pt: "o castigo", en: "punishment" }, sentence: "A recompensa pelo bom comportamento era tão importante quanto o castigo pelo mau." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a coragem", en: "courage" }, b: { pt: "a cobardia", en: "cowardice" }, sentence: "A coragem não é a ausência do medo, mas a cobardia é a recusa de o enfrentar." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a lealdade", en: "loyalty" }, b: { pt: "a traição", en: "betrayal" }, sentence: "A lealdade de anos foi destruída por uma única traição." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a generosidade", en: "generosity" }, b: { pt: "a avareza", en: "miserliness" }, sentence: "A generosidade enriquece quem dá; a avareza empobrece quem guarda." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a humildade", en: "humility" }, b: { pt: "o orgulho", en: "pride" }, disambig: "(neutral pride)", sentence: "A humildade abre portas que o orgulho fecha." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a humildade", en: "humility" }, b: { pt: "a soberba", en: "arrogance" }, disambig: "(moral failing)", sentence: "A humildade é uma virtude rara; a soberba é um defeito comum." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a pureza", en: "purity" }, b: { pt: "a impureza", en: "impurity" }, sentence: "A pureza da intenção distingue o acto generoso do calculista." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a pureza", en: "purity" }, b: { pt: "a corrupção", en: "corruption" }, disambig: "(moral/political)", sentence: "A pureza do ideal original foi destruída pela corrupção do poder." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a inocência", en: "innocence" }, b: { pt: "a culpa", en: "guilt" }, sentence: "A inocência da criança contrasta com a culpa que os adultos carregam." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a obediência", en: "obedience" }, b: { pt: "a rebeldia", en: "rebellion" }, sentence: "A obediência cega tem os seus perigos, mas a rebeldia sem causa também." },
+  { category: "MORAL / AVALIATIVO", a: { pt: "a força", en: "strength" }, b: { pt: "a fraqueza", en: "weakness" }, disambig: "(moral)", sentence: "A força de carácter é mais rara do que a força física; a fraqueza moral é mais perigosa do que a física." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "o amigo", en: "friend" }, b: { pt: "o inimigo", en: "enemy" }, sentence: "Com o tempo percebemos que o amigo verdadeiro é raro, e o inimigo declarado é mais honesto que o falso amigo." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "o amor", en: "love" }, b: { pt: "o ódio", en: "hate" }, sentence: "O amor e o ódio são as duas emoções que mais nos transformam." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a paz", en: "peace" }, b: { pt: "a guerra", en: "war" }, sentence: "A paz é frágil; a guerra destrói em dias o que a paz construiu em anos." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "o acordo", en: "agreement" }, b: { pt: "o desacordo", en: "disagreement" }, sentence: "O acordo foi difícil de alcançar, e o desacordo persistiu em pontos essenciais." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "o acordo", en: "agreement" }, b: { pt: "o conflito", en: "conflict" }, disambig: "(colloquial)", sentence: "O acordo entre as partes evitou o conflito que todos temiam." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a confiança", en: "trust" }, b: { pt: "a desconfiança", en: "distrust" }, sentence: "A confiança leva anos a construir; a desconfiança instala-se num instante." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a união", en: "union" }, b: { pt: "a divisão", en: "division" }, sentence: "A união da família era a sua maior força; a divisão seria a sua ruína." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a união", en: "union" }, b: { pt: "a separação", en: "separation" }, sentence: "A união dos povos é um ideal; a separação é muitas vezes a realidade." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a aceitação", en: "acceptance" }, b: { pt: "a rejeição", en: "rejection" }, sentence: "A aceitação incondicional é rara; a rejeição deixa marcas profundas." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "o respeito", en: "respect" }, b: { pt: "o desrespeito", en: "disrespect" }, sentence: "O respeito ganha-se com coerência; o desrespeito perde-se num só momento." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a solidariedade", en: "solidarity" }, b: { pt: "o egoísmo", en: "selfishness" }, sentence: "A solidariedade da comunidade contrastava com o egoísmo de quem nada partilhava." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "o casamento", en: "marriage" }, b: { pt: "o divórcio", en: "divorce" }, sentence: "O casamento é uma promessa; o divórcio é o reconhecimento de que a promessa falhou." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a liberdade", en: "freedom" }, b: { pt: "a escravidão", en: "slavery" }, sentence: "A liberdade conquistada à força contrasta com a escravidão aceite por comodidade." },
+  { category: "RELACIONAL / SOCIAL", a: { pt: "a liberdade", en: "freedom" }, b: { pt: "o cativeiro", en: "captivity" }, disambig: "(colloquial/religious)", sentence: "A liberdade da alma não depende do cativeiro do corpo." },
+  { category: "TEMPORAL", a: { pt: "o passado", en: "past" }, b: { pt: "o futuro", en: "future" }, sentence: "O passado não se muda; o futuro ainda se pode construir." },
+  { category: "TEMPORAL", a: { pt: "o passado", en: "past" }, b: { pt: "o presente", en: "present" }, sentence: "O passado pesa-nos; o presente exige-nos atenção." },
+  { category: "TEMPORAL", a: { pt: "o dia", en: "day" }, b: { pt: "a noite", en: "night" }, sentence: "O dia pertencia ao trabalho; a noite pertencia ao descanso e aos sonhos." },
+  { category: "TEMPORAL", a: { pt: "a manhã", en: "morning" }, b: { pt: "o anoitecer", en: "nightfall" }, sentence: "A manhã chegou cedo demais; o anoitecer tarde demais." },
+  { category: "TEMPORAL", a: { pt: "a madrugada", en: "early hours" }, b: { pt: "o anoitecer", en: "nightfall" }, disambig: "(colloquial)", sentence: "A madrugada fria era muito diferente do anoitecer quente de setembro." },
+  { category: "TEMPORAL", a: { pt: "o nascimento", en: "birth" }, b: { pt: "a morte", en: "death" }, disambig: "(temporal events)", sentence: "Entre o nascimento e a morte cabe uma vida inteira." },
+  { category: "TEMPORAL", a: { pt: "a juventude", en: "youth" }, b: { pt: "a velhice", en: "old age" }, sentence: "A juventude desperdiça o tempo que a velhice tanto lamenta ter perdido." },
+  { category: "TEMPORAL", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o instante", en: "instant" }, sentence: "A eternidade é incompreensível para quem só conhece o instante." },
+  { category: "TEMPORAL", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o momento", en: "moment" }, disambig: "(colloquial)", sentence: "Aquele momento de silêncio pareceu uma eternidade." },
+  { category: "TEMPORAL", a: { pt: "a antiguidade", en: "antiquity" }, b: { pt: "a modernidade", en: "modernity" }, sentence: "A antiguidade legou-nos sabedoria; a modernidade deu-nos velocidade." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o céu", en: "heaven" }, b: { pt: "o inferno", en: "hell" }, sentence: "O céu é prometido aos humildes; o inferno aos que nada mudaram." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "Deus", en: "God" }, b: { pt: "o demónio", en: "the devil" }, sentence: "Entre Deus e o demónio, o ser humano debate-se com as suas próprias escolhas." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a graça", en: "grace" }, b: { pt: "o pecado", en: "sin" }, sentence: "A graça não se merece; o pecado não se ignora." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a salvação", en: "salvation" }, b: { pt: "a perdição", en: "perdition" }, sentence: "A salvação é um caminho; a perdição é a ausência de qualquer caminho." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a fé", en: "faith" }, b: { pt: "a descrença", en: "unbelief" }, sentence: "A fé move montanhas; a descrença paralisa quem podia agir." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o espírito", en: "spirit" }, b: { pt: "a carne", en: "flesh" }, sentence: "O espírito quer o que a carne recusa, e a carne pede o que o espírito condena." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o tempo", en: "time" }, disambig: "(opposing realms)", sentence: "A eternidade não é o tempo prolongado; é a ausência do tempo." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a luz", en: "light" }, b: { pt: "as trevas", en: "darkness" }, disambig: "(theological)", sentence: "A luz entrou nas trevas, e as trevas não a compreenderam." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a bênção", en: "blessing" }, b: { pt: "a maldição", en: "curse" }, sentence: "Uma bênção dada de coração vale mais do que uma maldição proferida em raiva." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o sagrado", en: "the sacred" }, b: { pt: "o profano", en: "the profane" }, sentence: "A fronteira entre o sagrado e o profano é mais porosa do que a religião admite." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a ressurreição", en: "resurrection" }, b: { pt: "a morte", en: "death" }, sentence: "A ressurreição só tem sentido porque a morte é real." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a criação", en: "creation" }, b: { pt: "a destruição", en: "destruction" }, sentence: "A criação de uma obra de arte demora anos; a destruição acontece num segundo." },
+  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o criador", en: "creator" }, b: { pt: "o destruidor", en: "destroyer" }, sentence: "O criador constrói com paciência o que o destruidor desfaz com prazer." }
+];
 
 const GRAMMAR_SECTIONS = [
   {
@@ -4078,6 +4199,411 @@ const CONTRAST_LABELS = {
   "cluster":          "Consonant cluster",
   "orthographic":     "Orthographic",
 };
+
+
+// ─── OPPOSITES TAB & QUIZ ────────────────────────────────────────────────────
+
+// Build a flat pool of all PT words (with articles) for algorithmic distractor selection.
+// Each entry: { pt, article, bare } where article is "o"|"a"|"" and bare is the word without article.
+const OPPOSITES_WORD_POOL = (() => {
+  const seen = new Set();
+  const pool = [];
+  OPPOSITES.forEach(p => {
+    [p.a, p.b].forEach(side => {
+      if (!seen.has(side.pt)) {
+        seen.add(side.pt);
+        const m = side.pt.match(/^(o|a|os|as)\s+(.+)$/);
+        pool.push({ pt: side.pt, article: m ? m[1] : "", bare: m ? m[2] : side.pt });
+      }
+    });
+  });
+  return pool;
+})();
+
+// Given a correct answer PT string and a pool, pick 3 distractors.
+// Priority: (1) same first-3-chars, (2) same article/gender, (3) similar length.
+// Never include the correct answer or any valid opposite of the prompt word.
+function pickOppDistractors(correctPt, promptPt, validOpposites, precomputed) {
+  if (precomputed && precomputed.length === 3) return precomputed;
+  const correct = correctPt.toLowerCase();
+  const correctBare = correct.replace(/^(o|a|os|as)\s+/, "");
+  const correctLen = correctBare.length;
+  const correctArticle = correct.match(/^(o|a)/) ? correct.match(/^(o|a)/)[0] : "";
+  const validSet = new Set([correctPt.toLowerCase(), promptPt.toLowerCase(), ...validOpposites.map(s => s.toLowerCase())]);
+
+  const candidates = OPPOSITES_WORD_POOL.filter(w => !validSet.has(w.pt.toLowerCase()));
+
+  // Score: lower = better distractor
+  const scored = candidates.map(w => {
+    let score = 100;
+    const bare = w.bare.toLowerCase();
+    const prefix3 = correctBare.slice(0, 3);
+    if (bare.startsWith(prefix3)) score -= 60;
+    else if (bare.startsWith(correctBare.slice(0, 2))) score -= 30;
+    if (w.article === correctArticle) score -= 20;
+    const lenDiff = Math.abs(bare.length - correctLen);
+    score += lenDiff * 2;
+    return { ...w, score };
+  });
+  scored.sort((a, b) => a.score - b.score);
+  return scored.slice(0, 3).map(w => w.pt);
+}
+
+// Shuffle array in place (Fisher-Yates)
+function shuffleArr(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Build category → sorted pairs map (alphabetical by category, pairs sorted by a.pt diacritic-stripped)
+const OPPOSITES_BY_CATEGORY = (() => {
+  const map = {};
+  OPPOSITES.forEach(p => {
+    if (!map[p.category]) map[p.category] = [];
+    map[p.category].push(p);
+  });
+  // Sort pairs within each category by a.pt (diacritic-stripped, lowercase)
+  Object.keys(map).forEach(cat => {
+    map[cat].sort((x, y) => {
+      const kx = stripDiacritics(x.a.pt.replace(/^(o|a|os|as)\s+/i, "")).toLowerCase();
+      const ky = stripDiacritics(y.a.pt.replace(/^(o|a|os|as)\s+/i, "")).toLowerCase();
+      return kx.localeCompare(ky);
+    });
+  });
+  return map;
+})();
+
+const OPPOSITES_CATEGORIES = Object.keys(OPPOSITES_BY_CATEGORY).sort();
+
+// ── OppositesTab (reference/browse view) ────────────────────────────────────
+const OppositesTab = React.memo(function OppositesTab({ fontSize, speakListPT, onStartQuiz }) {
+  const [openCats, setOpenCats] = React.useState(new Set());
+  const toggleCat = (cat) => setOpenCats(prev => {
+    const next = new Set(prev);
+    next.has(cat) ? next.delete(cat) : next.add(cat);
+    return next;
+  });
+  const expandAll = () => setOpenCats(new Set(OPPOSITES_CATEGORIES));
+  const collapseAll = () => setOpenCats(new Set());
+
+  const audioBtn = (text, lang) => (
+    <button
+      onClick={() => speakListPT(text, lang || "pt-PT")}
+      title={"Play: " + text}
+      style={{ background: "transparent", border: "none", cursor: "pointer", padding: "0 3px", fontSize: fontSize, color: "var(--color-accent-blue)", lineHeight: 1, flexShrink: 0 }}>
+      🔊
+    </button>
+  );
+
+  return (
+    <div style={{ flex: 1, overflowY: "auto", padding: "12px 16px" }}>
+      {/* toolbar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+        <button
+          onClick={onStartQuiz}
+          style={{ fontSize, fontWeight: 600, padding: "5px 14px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer" }}>
+          🎯 Take Quiz
+        </button>
+        <button onClick={expandAll} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+        <button onClick={collapseAll} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+        <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginLeft: "auto" }}>{OPPOSITES.length} pairs · {OPPOSITES_CATEGORIES.length} categories</span>
+      </div>
+
+      {/* categories */}
+      {OPPOSITES_CATEGORIES.map(cat => {
+        const pairs = OPPOSITES_BY_CATEGORY[cat];
+        const isOpen = openCats.has(cat);
+        const [ptLabel, enLabel] = cat.split(" / ");
+        return (
+          <div key={cat} style={{ marginBottom: 6, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            {/* category header */}
+            <button
+              onClick={() => toggleCat(cat)}
+              style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", textAlign: "left" }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text-primary)", flex: 1 }}>{ptLabel}</span>
+              <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>{enLabel}</span>
+              <span style={{ fontSize: 11, color: "var(--color-text-tertiary)" }}>{pairs.length} pairs</span>
+              <span style={{ fontSize: 12, color: "var(--color-text-secondary)", marginLeft: 4 }}>{isOpen ? "▲" : "▼"}</span>
+            </button>
+
+            {isOpen && (
+              <div style={{ padding: "8px 12px" }}>
+                {pairs.map((p, i) => (
+                  <div key={i} style={{ marginBottom: 10, paddingBottom: 10, borderBottom: i < pairs.length - 1 ? "0.5px solid var(--color-border-tertiary)" : "none" }}>
+                    {/* pair row */}
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
+                      {/* A side */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
+                        {audioBtn(p.a.pt)}
+                        <div>
+                          <span style={{ fontSize, fontFamily: "var(--font-mono)", color: "var(--color-text-primary)", fontWeight: 500 }}>{p.a.pt}</span>
+                          {p.disambig && <span style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", marginLeft: 4 }}>{p.disambig}</span>}
+                          <div style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", fontStyle: "italic" }}>{p.a.en}</div>
+                        </div>
+                      </div>
+                      {/* separator */}
+                      <span style={{ fontSize: fontSize, color: "var(--color-text-tertiary)", alignSelf: "center", padding: "0 4px" }}>⟷</span>
+                      {/* B side */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
+                        {audioBtn(p.b.pt)}
+                        <div>
+                          <span style={{ fontSize, fontFamily: "var(--font-mono)", color: "var(--color-text-primary)", fontWeight: 500 }}>{p.b.pt}</span>
+                          {p.disambig && <span style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", marginLeft: 4 }}>{p.disambig}</span>}
+                          <div style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", fontStyle: "italic" }}>{p.b.en}</div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* example sentence */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4, paddingLeft: 4 }}>
+                      {audioBtn(p.sentence)}
+                      <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", fontStyle: "italic" }}>{p.sentence}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+});
+
+// ── OppositesQuiz ────────────────────────────────────────────────────────────
+const OppositesQuiz = React.memo(function OppositesQuiz({ fontSize, speakListPT, speechSupported, onBack }) {
+  // Build a shuffled deck: each pair yields two quiz items (ask A→B and ask B→A)
+  const makeDeck = () => {
+    const items = [];
+    OPPOSITES.forEach(p => {
+      items.push({ prompt: p.a, answer: p.b, disambig: p.disambig, sentence: p.sentence, pair: p });
+      items.push({ prompt: p.b, answer: p.a, disambig: p.disambig, sentence: p.sentence, pair: p });
+    });
+    return shuffleArr(items);
+  };
+
+  const [deck, setDeck]               = React.useState(() => makeDeck());
+  const [deckIdx, setDeckIdx]         = React.useState(0);
+  const [score, setScore]             = React.useState({ correct: 0, total: 0 });
+  const [result, setResult]           = React.useState(null);    // null | "correct" | "wrong"
+  const [choices, setChoices]         = React.useState([]);      // 4 PT strings
+  const [heardText, setHeardText]     = React.useState("");
+  const [micActive, setMicActive]     = React.useState(false);
+  const [showSentence, setShowSentence] = React.useState(false);
+  const micRef                        = React.useRef(null);
+
+  const item = deck[deckIdx] || deck[0];
+
+  // Build choices for current item
+  React.useEffect(() => {
+    if (!item) return;
+    // Find all valid opposites of prompt (may be more than one if same word appears in multiple pairs)
+    const validOpposites = OPPOSITES
+      .filter(p => p.a.pt === item.prompt.pt || p.b.pt === item.prompt.pt)
+      .map(p => p.a.pt === item.prompt.pt ? p.b.pt : p.a.pt);
+
+    const distractors = pickOppDistractors(item.answer.pt, item.prompt.pt, validOpposites, item.pair.distractors);
+    const all = shuffleArr([item.answer.pt, ...distractors]);
+    setChoices(all);
+    setResult(null);
+    setHeardText("");
+    setShowSentence(false);
+  }, [deckIdx, deck]);
+
+  function stopMic() {
+    if (micRef.current) { try { micRef.current.stop(); } catch (_) {} micRef.current = null; }
+    setMicActive(false);
+  }
+
+  function normText(s) {
+    return stripDiacritics(s.toLowerCase().trim().replace(/^(o|a|os|as)\s+/, "").replace(/[.,?!;:]/g, "")).trim();
+  }
+
+  function startMicGuess() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR || !item || result !== null) return;
+    stopMic();
+    const r = new SR();
+    r.lang = "pt-PT"; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
+    const allAlts = [];
+    let displayText = "";
+    let gotFinal = false;
+    r.onresult = (e) => {
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          for (let a = 0; a < e.results[i].length; a++) allAlts.push(e.results[i][a].transcript);
+          displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
+          setHeardText(displayText);
+          if (!gotFinal) { gotFinal = true; try { r.stop(); } catch (_) {} }
+        }
+      }
+    };
+    r.onerror = () => { setMicActive(false); micRef.current = null; };
+    r.onend = () => {
+      setMicActive(false); micRef.current = null;
+      if (!allAlts.length) return;
+      // Find all valid answers (multiple pairs may share a prompt word)
+      const validAnswers = OPPOSITES
+        .filter(p => p.a.pt === item.prompt.pt || p.b.pt === item.prompt.pt)
+        .map(p => normText(p.a.pt === item.prompt.pt ? p.b.pt : p.a.pt));
+      let matched = false;
+      for (const transcript of allAlts) {
+        const heard = normText(transcript);
+        if (!heard) continue;
+        if (validAnswers.some(v => heard === v || v.includes(heard) || heard.includes(v))) {
+          matched = true; break;
+        }
+      }
+      const correct = matched;
+      setResult(correct ? "correct" : "wrong");
+      setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+    };
+    micRef.current = r;
+    r.start();
+    setMicActive(true);
+    setHeardText("");
+  }
+
+  function guess(choice) {
+    if (result !== null) return;
+    // Accept if choice matches any valid opposite of the prompt
+    const validAnswers = OPPOSITES
+      .filter(p => p.a.pt === item.prompt.pt || p.b.pt === item.prompt.pt)
+      .map(p => p.a.pt === item.prompt.pt ? p.b.pt : p.a.pt);
+    const correct = validAnswers.includes(choice);
+    setResult(correct ? "correct" : "wrong");
+    setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+  }
+
+  function next() {
+    stopMic();
+    setDeckIdx(i => (i + 1) % deck.length);
+  }
+
+  function restart() {
+    stopMic();
+    setDeck(makeDeck());
+    setDeckIdx(0);
+    setScore({ correct: 0, total: 0 });
+    setResult(null);
+    setHeardText("");
+    setShowSentence(false);
+  }
+
+  const pct = score.total > 0 ? Math.round(score.correct / score.total * 100) : null;
+  const scoreColor = pct === null ? "var(--color-text-secondary)" : pct >= 70 ? "var(--color-accent-green)" : "var(--color-accent-red-deep)";
+
+  if (!item) return null;
+
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "12px 16px", gap: 10, overflowY: "auto" }}>
+      {/* toolbar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", paddingBottom: 8, borderBottom: "1px solid var(--color-border-tertiary)" }}>
+        <button onClick={onBack} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>← Browse</button>
+        <button onClick={restart} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>🔀 Restart</button>
+        <span style={{ marginLeft: "auto", fontSize, color: scoreColor }}>
+          {deckIdx + 1} / {deck.length}
+          {score.total > 0 && <span style={{ marginLeft: 10 }}>{score.correct}/{score.total} ({pct}%)</span>}
+        </span>
+        {score.total > 0 && (
+          <button onClick={() => setScore({ correct: 0, total: 0 })} style={{ fontSize: 11, padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>reset</button>
+        )}
+      </div>
+
+      {/* category label */}
+      <div style={{ fontSize: 11, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>
+        {item.pair.category.split(" / ")[1]}
+      </div>
+
+      {/* prompt card */}
+      <div style={{ background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", padding: "18px 20px", textAlign: "center" }}>
+        <div style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>What is the opposite of…</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <button onClick={() => speakListPT(item.prompt.pt)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: fontSize + 4, color: "var(--color-accent-blue)" }}>🔊</button>
+          <span style={{ fontSize: fontSize + 6, fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--color-text-primary)" }}>{item.prompt.pt}</span>
+        </div>
+        {item.disambig && (
+          <div style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontStyle: "italic", marginTop: 4 }}>{item.disambig}</div>
+        )}
+        <div style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", fontStyle: "italic", marginTop: 4 }}>{item.prompt.en}</div>
+      </div>
+
+      {/* choices */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {choices.map((ch, i) => {
+          const validAnswers = OPPOSITES
+            .filter(p => p.a.pt === item.prompt.pt || p.b.pt === item.prompt.pt)
+            .map(p => p.a.pt === item.prompt.pt ? p.b.pt : p.a.pt);
+          const isCorrectChoice = validAnswers.includes(ch);
+          let bg = "var(--color-background-primary)";
+          let borderColor = "var(--color-border-tertiary)";
+          let textColor = "var(--color-text-primary)";
+          if (result !== null) {
+            if (isCorrectChoice) { bg = "#166534"; borderColor = "var(--color-accent-green)"; textColor = "#fff"; }
+            else if (!isCorrectChoice) { bg = "var(--color-background-secondary)"; textColor = "var(--color-text-tertiary)"; }
+          }
+          return (
+            <button key={i} onClick={() => guess(ch)}
+              disabled={result !== null}
+              style={{ fontSize, fontFamily: "var(--font-mono)", padding: "12px 10px", borderRadius: "var(--border-radius-md)", border: `1px solid ${borderColor}`, background: bg, color: textColor, cursor: result !== null ? "default" : "pointer", textAlign: "center", transition: "background 0.15s" }}>
+              {ch}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* mic / SR row */}
+      {speechSupported && result === null && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button onClick={micActive ? stopMic : startMicGuess}
+            style={{ fontSize, padding: "6px 14px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-border-tertiary)", background: micActive ? "var(--color-accent-red-deep)" : "transparent", color: micActive ? "#fff" : "var(--color-text-secondary)", cursor: "pointer" }}>
+            {micActive ? "⏹ Stop" : "🎤 Say it"}
+          </button>
+          {heardText && <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>Heard: {heardText}</span>}
+        </div>
+      )}
+
+      {/* result feedback + answer reveal */}
+      {result !== null && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ fontSize: fontSize + 2, fontWeight: 700, color: result === "correct" ? "var(--color-accent-green)" : "var(--color-accent-red-deep)", textAlign: "center" }}>
+            {result === "correct" ? "✓ Correct" : "✗ Wrong"}
+          </div>
+          {/* correct answer EN translation */}
+          <div style={{ textAlign: "center" }}>
+            <span style={{ fontSize, fontFamily: "var(--font-mono)", fontWeight: 600, color: "var(--color-accent-green)" }}>{item.answer.pt}</span>
+            <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", fontStyle: "italic", marginLeft: 8 }}>— {item.answer.en}</span>
+          </div>
+          {/* show sentence toggle */}
+          <button onClick={() => setShowSentence(s => !s)} style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer", alignSelf: "flex-start" }}>
+            {showSentence ? "Hide sentence" : "Show sentence"}
+          </button>
+          {showSentence && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 10px", background: "var(--color-background-secondary)", borderRadius: "var(--border-radius-md)", border: "0.5px solid var(--color-border-tertiary)" }}>
+              <button onClick={() => speakListPT(item.sentence)} style={{ background: "transparent", border: "none", cursor: "pointer", fontSize, color: "var(--color-accent-blue)", flexShrink: 0 }}>🔊</button>
+              <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", fontStyle: "italic" }}>{item.sentence}</span>
+            </div>
+          )}
+          <button onClick={next}
+            style={{ fontSize, fontWeight: 600, padding: "8px 20px", borderRadius: "var(--border-radius-md)", border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer", alignSelf: "center", marginTop: 4 }}>
+            Next →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// ── OppositesPanel (wrapper that toggles between browse and quiz) ─────────────
+const OppositesPanel = React.memo(function OppositesPanel({ fontSize, speakListPT, speechSupported }) {
+  const [mode, setMode] = React.useState("browse"); // "browse" | "quiz"
+  if (mode === "quiz") {
+    return <OppositesQuiz fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} onBack={() => setMode("browse")} />;
+  }
+  return <OppositesTab fontSize={fontSize} speakListPT={speakListPT} onStartQuiz={() => setMode("quiz")} />;
+});
 
 const MinimalPairs = React.memo(function MinimalPairs({
   pairIndex, setPairIndex,
@@ -7702,7 +8228,7 @@ function App() {
             ))}
           </div>
           {/* Filter bar — shown for searchable list tabs */}
-          {["phrases","idioms","slang","cognates","numbers","media"].includes(listTab) && (
+          {["phrases","idioms","slang","cognates","numbers","media","opposites"].includes(listTab) && (
             <div style={{ padding: "5px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 8, background: "var(--color-background-primary)", flexShrink: 0 }}>
               <span style={{ fontSize: 13, color: "var(--color-text-tertiary)", flexShrink: 0 }}>🔍</span>
               <input
@@ -8051,6 +8577,9 @@ function App() {
           )}
           {listTab === "numbers" && (
             <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} />
+          )}
+          {listTab === "opposites" && (
+            <OppositesPanel fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} />
           )}
           {listTab === "cognates" && (
             <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
