@@ -5,10 +5,6 @@ const { useState, useRef, useEffect, useMemo, useCallback } = React;
 // True for Safari (macOS/iOS) and ANY browser on iOS/iPadOS — all of which use
 // Apple's WebKit SpeechRecognition backed by SFSpeechRecognizer. That engine
 // drops the speech segment before each pause in continuous mode (Apple FB15290642),
-// so on these platforms we run continuous=false plus a keep-alive restart loop.
-// Chromium (vendor "Google Inc.") and Firefox (vendor "") are unaffected and keep
-// the existing continuous=true path.
-const IS_APPLE_SPEECH = (typeof navigator !== "undefined") && navigator.vendor === "Apple Computer, Inc.";
 
 const LEVELS = ["A1", "A2", "B1", "B2+"];
 const CORRECTION_MODES = [
@@ -30,7 +26,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.33", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.34", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -4429,54 +4425,43 @@ const OppositesQuiz = React.memo(function OppositesQuiz({ fontSize, speakListPT,
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR || !item || result !== null) return;
     stopMic();
+    const r = new SR();
+    r.lang = "pt-PT"; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
     const allAlts = [];
     let displayText = "";
     let gotFinal = false;
-    let micRestarts = 0;
-    const APPLE_MIC_RESTART_CAP = 5;
-    // Apple (Safari macOS/iOS, all iOS browsers) drops pre-pause segments in continuous
-    // mode, so run single-utterance there and keep the engine alive via onend restarts.
-    // Main chat createRecognition reviewed before adding this restart logic.
-    const startRec = () => {
-      const r = new SR();
-      r.lang = "pt-PT"; r.continuous = !IS_APPLE_SPEECH; r.interimResults = true; r.maxAlternatives = 5;
-      r.onresult = (e) => {
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-          if (e.results[i].isFinal) {
-            for (let a = 0; a < e.results[i].length; a++) allAlts.push(e.results[i][a].transcript);
-            displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
-            setHeardText(displayText);
-            if (!gotFinal) { gotFinal = true; try { r.stop(); } catch (_) {} }
-          }
+    r.onresult = (e) => {
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          for (let a = 0; a < e.results[i].length; a++) allAlts.push(e.results[i][a].transcript);
+          displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
+          setHeardText(displayText);
+          if (!gotFinal) { gotFinal = true; try { r.stop(); } catch (_) {} }
         }
-      };
-      r.onerror = (ev) => { if (IS_APPLE_SPEECH && ev && ev.error === "no-speech") return; setMicActive(false); micRef.current = null; };
-      r.onend = () => {
-        if (IS_APPLE_SPEECH && !gotFinal && micRef.current === r && micRestarts < APPLE_MIC_RESTART_CAP) {
-          micRestarts++; try { startRec(); } catch (_) { setMicActive(false); micRef.current = null; } return;
-        }
-        setMicActive(false); micRef.current = null;
-        if (!allAlts.length) return;
-        // Find all valid answers (multiple pairs may share a prompt word)
-        const validAnswers = OPPOSITES
-          .filter(p => p.a.pt === item.prompt.pt || p.b.pt === item.prompt.pt)
-          .map(p => normText(p.a.pt === item.prompt.pt ? p.b.pt : p.a.pt));
-        let matched = false;
-        for (const transcript of allAlts) {
-          const heard = normText(transcript);
-          if (!heard) continue;
-          if (validAnswers.some(v => heard === v || v.includes(heard) || heard.includes(v))) {
-            matched = true; break;
-          }
-        }
-        const correct = matched;
-        setResult(correct ? "correct" : "wrong");
-        setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
-      };
-      micRef.current = r;
-      r.start();
+      }
     };
-    startRec();
+    r.onerror = () => { setMicActive(false); micRef.current = null; };
+    r.onend = () => {
+      setMicActive(false); micRef.current = null;
+      if (!allAlts.length) return;
+      // Find all valid answers (multiple pairs may share a prompt word)
+      const validAnswers = OPPOSITES
+        .filter(p => p.a.pt === item.prompt.pt || p.b.pt === item.prompt.pt)
+        .map(p => normText(p.a.pt === item.prompt.pt ? p.b.pt : p.a.pt));
+      let matched = false;
+      for (const transcript of allAlts) {
+        const heard = normText(transcript);
+        if (!heard) continue;
+        if (validAnswers.some(v => heard === v || v.includes(heard) || heard.includes(v))) {
+          matched = true; break;
+        }
+      }
+      const correct = matched;
+      setResult(correct ? "correct" : "wrong");
+      setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+    };
+    micRef.current = r;
+    r.start();
     setMicActive(true);
     setHeardText("");
   }
@@ -4678,67 +4663,58 @@ const MinimalPairs = React.memo(function MinimalPairs({
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR || !pair || !quizTarget) return;
     stopMic();
+    const r = new SR();
+    // continuous=true keeps the engine alive long enough to capture short words
+    // like "tem", "pão", "só" — which close too fast with continuous=false.
+    // We stop manually after the first final result.
+    r.lang = "pt-PT"; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
     const allAlts = []; // all transcript alternatives across all final results
     let displayText = "";
     let gotFinal = false;
-    let micRestarts = 0;
-    const APPLE_MIC_RESTART_CAP = 5;
-    // Apple WebKit drops pre-pause segments in continuous mode; run single-utterance
-    // there and keep the engine alive via onend restarts (main chat SR reviewed).
-    // Non-Apple keeps continuous=true to hold the engine open for short words
-    // like "tem", "pão", "só".
-    const startRec = () => {
-      const r = new SR();
-      r.lang = "pt-PT"; r.continuous = !IS_APPLE_SPEECH; r.interimResults = true; r.maxAlternatives = 5;
-      r.onresult = (e) => {
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-          if (e.results[i].isFinal) {
-            for (let a = 0; a < e.results[i].length; a++) {
-              allAlts.push(e.results[i][a].transcript);
-            }
-            displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
-            setHeardText(displayText);
-            if (!gotFinal) {
-              gotFinal = true;
-              try { r.stop(); } catch (_) {}
-            }
+    r.onresult = (e) => {
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          for (let a = 0; a < e.results[i].length; a++) {
+            allAlts.push(e.results[i][a].transcript);
+          }
+          displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
+          setHeardText(displayText);
+          if (!gotFinal) {
+            gotFinal = true;
+            try { r.stop(); } catch (_) {}
           }
         }
-      };
-      r.onerror = (ev) => { if (IS_APPLE_SPEECH && ev && ev.error === "no-speech") return; setMicActive(false); micRef.current = null; };
-      r.onend = () => {
-        if (IS_APPLE_SPEECH && !gotFinal && micRef.current === r && micRestarts < APPLE_MIC_RESTART_CAP) {
-          micRestarts++; try { startRec(); } catch (_) { setMicActive(false); micRef.current = null; } return;
-        }
-        setMicActive(false); micRef.current = null;
-        if (!allAlts.length) return;
-        // Check all alternatives against both pair words
-        const targetA = normalizeMicText(pair.a.word);
-        const targetB = normalizeMicText(pair.b.word);
-        let guessedSide = null;
-        for (const transcript of allAlts) {
-          const heard = normalizeMicText(transcript);
-          if (!heard) continue;
-          if (heard === targetA || targetA.includes(heard) || heard.includes(targetA)) {
-            guessedSide = "a"; break;
-          }
-          if (heard === targetB || targetB.includes(heard) || heard.includes(targetB)) {
-            guessedSide = "b"; break;
-          }
-        }
-        if (guessedSide !== null) {
-          const correct = guessedSide === quizTarget;
-          setQuizResult(correct ? "correct" : "wrong");
-          setPairsScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
-        } else {
-          setQuizResult("wrong");
-          setPairsScore(s => ({ correct: s.correct, total: s.total + 1 }));
-        }
-      };
-      micRef.current = r;
-      r.start();
+      }
     };
-    startRec();
+    r.onerror = () => { setMicActive(false); micRef.current = null; };
+    r.onend = () => {
+      setMicActive(false); micRef.current = null;
+      if (!allAlts.length) return;
+      // Check all alternatives against both pair words
+      const targetA = normalizeMicText(pair.a.word);
+      const targetB = normalizeMicText(pair.b.word);
+      let guessedSide = null;
+      for (const transcript of allAlts) {
+        const heard = normalizeMicText(transcript);
+        if (!heard) continue;
+        if (heard === targetA || targetA.includes(heard) || heard.includes(targetA)) {
+          guessedSide = "a"; break;
+        }
+        if (heard === targetB || targetB.includes(heard) || heard.includes(targetB)) {
+          guessedSide = "b"; break;
+        }
+      }
+      if (guessedSide !== null) {
+        const correct = guessedSide === quizTarget;
+        setQuizResult(correct ? "correct" : "wrong");
+        setPairsScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+      } else {
+        setQuizResult("wrong");
+        setPairsScore(s => ({ correct: s.correct, total: s.total + 1 }));
+      }
+    };
+    micRef.current = r;
+    r.start();
     setMicActive(true);
     setHeardText("");
   }
@@ -6191,49 +6167,41 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
     stopMic();
+    const r = new SR();
+    // continuous=true keeps the engine alive long enough to capture short words
+    // like "mil" that close too fast with continuous=false.
+    // We stop manually after the first final result arrives.
+    r.lang = lang; r.continuous = true; r.interimResults = true; r.maxAlternatives = 5;
     const alts = [];
     let displayText = "";
     let gotFinal = false;
-    let micRestarts = 0;
-    const APPLE_MIC_RESTART_CAP = 5;
-    // Apple WebKit drops pre-pause segments in continuous mode; run single-utterance
-    // there and keep the engine alive via onend restarts (main chat SR reviewed).
-    // Non-Apple keeps continuous=true to hold the engine open for short words like "mil".
-    const startRec = () => {
-      const r = new SR();
-      r.lang = lang; r.continuous = !IS_APPLE_SPEECH; r.interimResults = true; r.maxAlternatives = 5;
-      r.onresult = (e) => {
-        let interim = "";
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-          if (e.results[i].isFinal) {
-            const seg = [];
-            for (let a = 0; a < e.results[i].length; a++) seg.push(e.results[i][a].transcript);
-            alts.push(seg);
-            displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
-            if (!gotFinal) {
-              gotFinal = true;
-              // Stop after first final result — gives short words time to register
-              // without forcing the user to press Stop manually.
-              try { r.stop(); } catch (_) {}
-            }
-          } else {
-            interim = e.results[i][0].transcript;
+    r.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          const seg = [];
+          for (let a = 0; a < e.results[i].length; a++) seg.push(e.results[i][a].transcript);
+          alts.push(seg);
+          displayText = (displayText ? displayText + " " : "") + e.results[i][0].transcript;
+          if (!gotFinal) {
+            gotFinal = true;
+            // Stop after first final result — gives short words time to register
+            // without forcing the user to press Stop manually.
+            try { r.stop(); } catch (_) {}
           }
+        } else {
+          interim = e.results[i][0].transcript;
         }
-        setTranscript((displayText + (interim ? " " + interim : "")).trim());
-      };
-      r.onerror = (ev) => { if (IS_APPLE_SPEECH && ev && ev.error === "no-speech") return; setMicActive(false); micRef.current = null; };
-      r.onend   = () => {
-        if (IS_APPLE_SPEECH && !gotFinal && micRef.current === r && micRestarts < APPLE_MIC_RESTART_CAP) {
-          micRestarts++; try { startRec(); } catch (_) { setMicActive(false); micRef.current = null; } return;
-        }
-        setMicActive(false); micRef.current = null;
-        if (alts.length > 0) evaluateMic(alts, displayText.trim());
-      };
-      micRef.current = r;
-      r.start();
+      }
+      setTranscript((displayText + (interim ? " " + interim : "")).trim());
     };
-    startRec();
+    r.onerror = () => { setMicActive(false); micRef.current = null; };
+    r.onend   = () => {
+      setMicActive(false); micRef.current = null;
+      if (alts.length > 0) evaluateMic(alts, displayText.trim());
+    };
+    micRef.current = r;
+    r.start();
     setMicActive(true);
     setTranscript("");
   }
@@ -7061,8 +7029,6 @@ function App() {
   const chatAbortRef = useRef(null);
   const recognitionRef = useRef(null);
   const recognitionRestartCountRef = useRef(0);
-  const persistentRecognizerRef = useRef(null);  // iOS: reuse ONE recognizer across turns; a new instance gets a silent mic on the 2nd+ session
-  const micStreamRef = useRef(null);              // iOS: a held getUserMedia stream keeps the audio session record-capable across TTS playback
   const selectedVoiceRef = useRef(null);
   const intentionalStopRef = useRef(false);
   const enviarStopRef = useRef(false);
@@ -7127,16 +7093,10 @@ function App() {
   const createRecognition = (SR, lang, restartCountRef) => {
     const r = new SR();
     r.lang = lang;
-    r.continuous = !IS_APPLE_SPEECH;  // Apple drops pre-pause segments in continuous mode; the onend restart loop below accumulates instead
+    r.continuous = true;
     r.interimResults = true;
     r.maxAlternatives = 1;
-    r.onstart       = () => { window.__peLog && window.__peLog("SR", "onstart"); };
-    r.onaudiostart  = () => { window.__peLog && window.__peLog("SR", "onaudiostart"); };
-    r.onspeechstart = () => { window.__peLog && window.__peLog("SR", "onspeechstart"); };
-    r.onspeechend   = () => { window.__peLog && window.__peLog("SR", "onspeechend"); };
-    r.onaudioend    = () => { window.__peLog && window.__peLog("SR", "onaudioend"); };
     r.onresult = (e) => {
-      window.__peLog && window.__peLog("SR", "onresult (results=" + e.results.length + ", sending=" + sendingRef.current + ")");
       if (sendingRef.current) return;  // send already fired — discard late speech results
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -7152,7 +7112,6 @@ function App() {
       setInput((finalTranscriptRef.current + (interim ? " " + interim : "")).trim());
     };
     r.onerror = (ev) => {
-      window.__peLog && window.__peLog("SR", "onerror: " + (ev && ev.error) + (ev && ev.message ? " — " + ev.message : ""));
       if (!intentionalStopRef.current && ev.error === "no-speech") return;
       // Clear all mic state on any non-recoverable SR error to prevent stale refs
       // across sessions. Note: onend may not fire after certain error types.
@@ -7162,8 +7121,7 @@ function App() {
       setListening(false);
     };
     r.onend = () => {
-      window.__peLog && window.__peLog("SR", "onend (intentionalStop=" + intentionalStopRef.current + ", enviarStop=" + enviarStopRef.current + ", restarts=" + (restartCountRef ? restartCountRef.current : "-") + ", finalLen=" + finalTranscriptRef.current.length + ")");
-      if (!intentionalStopRef.current && !IS_APPLE_SPEECH) {
+      if (!intentionalStopRef.current) {
         if (restartCountRef && restartCountRef.current >= 5) {
           setListening(false);
           console.warn("[pe] Speech recognition stopped after 5 consecutive restarts without a result.");
@@ -7173,13 +7131,9 @@ function App() {
         try {
           const next = createRecognition(SR, lang, restartCountRef);
           recognitionRef.current = next;
-          window.__peLog && window.__peLog("SR", "restart #" + (restartCountRef ? restartCountRef.current : "-") + " -> start()");
           next.start();
           return;
-        } catch (restartErr) {
-          window.__peLog && window.__peLog("SR", "restart start() THREW: " + (restartErr && restartErr.name) + " — " + (restartErr && restartErr.message));
-          console.warn("[pe] Speech recognition restart failed:", restartErr);
-        }
+        } catch (restartErr) { console.warn("[pe] Speech recognition restart failed:", restartErr); }
       }
       setListening(false);
       if (enviarStopRef.current) { enviarStopRef.current = false; return; }
@@ -7202,35 +7156,18 @@ function App() {
     // requires SpeechRecognition.start() to occur within the user gesture, so the
     // teardown cannot be deferred behind a timeout.
     stopSpeaking();
-    window.__peLog && window.__peLog("MIC", "startListening (vendor=" + navigator.vendor + ", apple=" + IS_APPLE_SPEECH + ", continuous=" + (!IS_APPLE_SPEECH) + ", speakingWas=" + speaking + ")");
-    ensureMicHold();  // iOS: hold a mic stream open so a later TTS reply can't kill the recognizer's mic
     intentionalStopRef.current = false;
     finalTranscriptRef.current = "";
     recognitionRestartCountRef.current = 0;
-    let r;
-    if (IS_APPLE_SPEECH) {
-      // iOS hands a freshly-constructed SpeechRecognition a silent audio tap on the
-      // 2nd+ session of a page (onaudiostart fires but onspeechstart never does, ending
-      // in "aborted — No speech detected"). Reuse ONE recognizer for the page lifetime.
-      const reused = !!persistentRecognizerRef.current;
-      if (!persistentRecognizerRef.current) {
-        persistentRecognizerRef.current = createRecognition(SR, speechLang, null);
-      }
-      r = persistentRecognizerRef.current;
-      r.lang = speechLang;
-      window.__peLog && window.__peLog("MIC", reused ? "reusing recognizer instance" : "created recognizer instance");
-    } else {
-      r = createRecognition(SR, speechLang, recognitionRestartCountRef);
-    }
+    const r = createRecognition(SR, speechLang, recognitionRestartCountRef);
     recognitionRef.current = r;
-    try { r.start(); } catch (startErr) { window.__peLog && window.__peLog("MIC", "start() THREW: " + (startErr && startErr.name) + " — " + (startErr && startErr.message)); }
+    r.start();
     setListening(true);
   };
 
   const stopListening = () => {
     // Read text from DOM directly — always current, bypasses React render lag.
     const capturedText = (inputRef.current?.value || "").trim() || finalTranscriptRef.current.trim();
-    window.__peLog && window.__peLog("MIC", "stopListening (capturedLen=" + capturedText.length + ")");
     intentionalStopRef.current = true;
     enviarStopRef.current = true;   // suppress onend from firing its own send
     const r = recognitionRef.current;
@@ -7245,41 +7182,6 @@ function App() {
 
   const azureBlobUrlRef = useRef(null);
   const azureAudioRef = useRef(null);   // tracks live Azure Audio element for stop
-
-  // iOS only: a spoken reply leaves the audio session in playback mode, killing the mic
-  // for the next SpeechRecognition. The 3.0.32 brief acquire+release ("kick") did NOT
-  // durably restore it (kickMic logged success yet the next recording was still silent).
-  // So HOLD a microphone stream open for the chat's lifetime: a live capture track keeps
-  // the session record-capable, so TTS plays over it and later recordings still hear the
-  // mic. Acquired on the first record (idempotent), released on unmount. Tradeoff: the iOS
-  // "microphone in use" indicator stays on while the app is open.
-  const ensureMicHold = useCallback(() => {
-    if (!IS_APPLE_SPEECH) return;
-    if (micStreamRef.current && micStreamRef.current.getTracks().some((t) => t.readyState === "live")) return;
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      window.__peLog && window.__peLog("MIC", "ensureMicHold: getUserMedia unavailable");
-      return;
-    }
-    window.__peLog && window.__peLog("MIC", "ensureMicHold: acquiring persistent mic stream");
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then((stream) => {
-        micStreamRef.current = stream;
-        window.__peLog && window.__peLog("MIC", "ensureMicHold: holding " + stream.getTracks().length + " track(s)");
-      })
-      .catch((err) => {
-        window.__peLog && window.__peLog("MIC", "ensureMicHold: FAILED " + (err && err.name) + " — " + (err && err.message));
-      });
-  }, []);
-
-  // Release the held mic stream when the app unmounts.
-  useEffect(() => {
-    return () => {
-      if (micStreamRef.current) {
-        micStreamRef.current.getTracks().forEach((t) => t.stop());
-        micStreamRef.current = null;
-      }
-    };
-  }, []);
 
   const speakViaAzure = useCallback(async (text, lang = "pt-PT") => {
     if (!azureKey || !azureRegion || !text) return false;
