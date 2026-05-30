@@ -30,7 +30,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.32", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.33", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7062,6 +7062,7 @@ function App() {
   const recognitionRef = useRef(null);
   const recognitionRestartCountRef = useRef(0);
   const persistentRecognizerRef = useRef(null);  // iOS: reuse ONE recognizer across turns; a new instance gets a silent mic on the 2nd+ session
+  const micStreamRef = useRef(null);              // iOS: a held getUserMedia stream keeps the audio session record-capable across TTS playback
   const selectedVoiceRef = useRef(null);
   const intentionalStopRef = useRef(false);
   const enviarStopRef = useRef(false);
@@ -7202,6 +7203,7 @@ function App() {
     // teardown cannot be deferred behind a timeout.
     stopSpeaking();
     window.__peLog && window.__peLog("MIC", "startListening (vendor=" + navigator.vendor + ", apple=" + IS_APPLE_SPEECH + ", continuous=" + (!IS_APPLE_SPEECH) + ", speakingWas=" + speaking + ")");
+    ensureMicHold();  // iOS: hold a mic stream open so a later TTS reply can't kill the recognizer's mic
     intentionalStopRef.current = false;
     finalTranscriptRef.current = "";
     recognitionRestartCountRef.current = 0;
@@ -7244,27 +7246,39 @@ function App() {
   const azureBlobUrlRef = useRef(null);
   const azureAudioRef = useRef(null);   // tracks live Azure Audio element for stop
 
-  // iOS only: when a spoken reply finishes, the audio session is left in "playback"
-  // mode and the next SpeechRecognition receives a dead mic (onaudiostart fires but
-  // onspeechstart never does). Briefly take and immediately release the microphone to
-  // reset the session to record-capable. This runs BETWEEN turns (after playback ends),
-  // so the async getUserMedia is never inside the recording tap gesture. No-op off Apple.
-  const kickMic = useCallback(() => {
+  // iOS only: a spoken reply leaves the audio session in playback mode, killing the mic
+  // for the next SpeechRecognition. The 3.0.32 brief acquire+release ("kick") did NOT
+  // durably restore it (kickMic logged success yet the next recording was still silent).
+  // So HOLD a microphone stream open for the chat's lifetime: a live capture track keeps
+  // the session record-capable, so TTS plays over it and later recordings still hear the
+  // mic. Acquired on the first record (idempotent), released on unmount. Tradeoff: the iOS
+  // "microphone in use" indicator stays on while the app is open.
+  const ensureMicHold = useCallback(() => {
     if (!IS_APPLE_SPEECH) return;
+    if (micStreamRef.current && micStreamRef.current.getTracks().some((t) => t.readyState === "live")) return;
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-      window.__peLog && window.__peLog("MIC", "kickMic: getUserMedia unavailable");
+      window.__peLog && window.__peLog("MIC", "ensureMicHold: getUserMedia unavailable");
       return;
     }
-    window.__peLog && window.__peLog("MIC", "kickMic: acquiring mic to reset audio session");
+    window.__peLog && window.__peLog("MIC", "ensureMicHold: acquiring persistent mic stream");
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
-        const n = stream.getTracks().length;
-        stream.getTracks().forEach((t) => t.stop());
-        window.__peLog && window.__peLog("MIC", "kickMic: released " + n + " track(s) — session reset");
+        micStreamRef.current = stream;
+        window.__peLog && window.__peLog("MIC", "ensureMicHold: holding " + stream.getTracks().length + " track(s)");
       })
       .catch((err) => {
-        window.__peLog && window.__peLog("MIC", "kickMic: FAILED " + (err && err.name) + " — " + (err && err.message));
+        window.__peLog && window.__peLog("MIC", "ensureMicHold: FAILED " + (err && err.name) + " — " + (err && err.message));
       });
+  }, []);
+
+  // Release the held mic stream when the app unmounts.
+  useEffect(() => {
+    return () => {
+      if (micStreamRef.current) {
+        micStreamRef.current.getTracks().forEach((t) => t.stop());
+        micStreamRef.current = null;
+      }
+    };
   }, []);
 
   const speakViaAzure = useCallback(async (text, lang = "pt-PT") => {
@@ -7311,7 +7325,6 @@ function App() {
           URL.revokeObjectURL(url);
           azureBlobUrlRef.current = null;
         }
-        kickMic();
       };
       audio.onended = cleanup;
       audio.onerror = cleanup;
@@ -7332,8 +7345,8 @@ function App() {
     utt.rate = ttsRateRef.current;
     utt.pitch = 1;
     utt.onstart = () => setSpeaking(true);
-    utt.onend = () => { setSpeaking(false); kickMic(); };
-    utt.onerror = () => { setSpeaking(false); kickMic(); };
+    utt.onend = () => setSpeaking(false);
+    utt.onerror = () => setSpeaking(false);
     window.speechSynthesis.speak(utt);
   }, [ttsSupported]);
 
