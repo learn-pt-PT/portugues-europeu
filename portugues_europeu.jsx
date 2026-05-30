@@ -1,3 +1,5 @@
+// ===================== BEGINNING OF JSX CODE =====================
+
 const { useState, useRef, useEffect, useMemo, useCallback } = React;
 
 // True for Safari (macOS/iOS) and ANY browser on iOS/iPadOS — all of which use
@@ -28,7 +30,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.30", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.31", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7059,6 +7061,7 @@ function App() {
   const chatAbortRef = useRef(null);
   const recognitionRef = useRef(null);
   const recognitionRestartCountRef = useRef(0);
+  const persistentRecognizerRef = useRef(null);  // iOS: reuse ONE recognizer across turns; a new instance gets a silent mic on the 2nd+ session
   const selectedVoiceRef = useRef(null);
   const intentionalStopRef = useRef(false);
   const enviarStopRef = useRef(false);
@@ -7159,7 +7162,7 @@ function App() {
     };
     r.onend = () => {
       window.__peLog && window.__peLog("SR", "onend (intentionalStop=" + intentionalStopRef.current + ", enviarStop=" + enviarStopRef.current + ", restarts=" + (restartCountRef ? restartCountRef.current : "-") + ", finalLen=" + finalTranscriptRef.current.length + ")");
-      if (!intentionalStopRef.current) {
+      if (!intentionalStopRef.current && !IS_APPLE_SPEECH) {
         if (restartCountRef && restartCountRef.current >= 5) {
           setListening(false);
           console.warn("[pe] Speech recognition stopped after 5 consecutive restarts without a result.");
@@ -7202,7 +7205,21 @@ function App() {
     intentionalStopRef.current = false;
     finalTranscriptRef.current = "";
     recognitionRestartCountRef.current = 0;
-    const r = createRecognition(SR, speechLang, recognitionRestartCountRef);
+    let r;
+    if (IS_APPLE_SPEECH) {
+      // iOS hands a freshly-constructed SpeechRecognition a silent audio tap on the
+      // 2nd+ session of a page (onaudiostart fires but onspeechstart never does, ending
+      // in "aborted — No speech detected"). Reuse ONE recognizer for the page lifetime.
+      const reused = !!persistentRecognizerRef.current;
+      if (!persistentRecognizerRef.current) {
+        persistentRecognizerRef.current = createRecognition(SR, speechLang, null);
+      }
+      r = persistentRecognizerRef.current;
+      r.lang = speechLang;
+      window.__peLog && window.__peLog("MIC", reused ? "reusing recognizer instance" : "created recognizer instance");
+    } else {
+      r = createRecognition(SR, speechLang, recognitionRestartCountRef);
+    }
     recognitionRef.current = r;
     try { r.start(); } catch (startErr) { window.__peLog && window.__peLog("MIC", "start() THREW: " + (startErr && startErr.name) + " — " + (startErr && startErr.message)); }
     setListening(true);
@@ -9233,3 +9250,4 @@ finalTranscriptRef.current = e.target.value;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+// ===================== END OF JSX CODE =====================

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.0.30 -->
+  <!-- version: 3.0.31 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:;">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8" crossorigin="anonymous" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh" crossorigin="anonymous" defer></script>
@@ -155,7 +155,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.30", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.31", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7186,6 +7186,7 @@ function App() {
   const chatAbortRef = useRef(null);
   const recognitionRef = useRef(null);
   const recognitionRestartCountRef = useRef(0);
+  const persistentRecognizerRef = useRef(null);  // iOS: reuse ONE recognizer across turns; a new instance gets a silent mic on the 2nd+ session
   const selectedVoiceRef = useRef(null);
   const intentionalStopRef = useRef(false);
   const enviarStopRef = useRef(false);
@@ -7286,7 +7287,7 @@ function App() {
     };
     r.onend = () => {
       window.__peLog && window.__peLog("SR", "onend (intentionalStop=" + intentionalStopRef.current + ", enviarStop=" + enviarStopRef.current + ", restarts=" + (restartCountRef ? restartCountRef.current : "-") + ", finalLen=" + finalTranscriptRef.current.length + ")");
-      if (!intentionalStopRef.current) {
+      if (!intentionalStopRef.current && !IS_APPLE_SPEECH) {
         if (restartCountRef && restartCountRef.current >= 5) {
           setListening(false);
           console.warn("[pe] Speech recognition stopped after 5 consecutive restarts without a result.");
@@ -7329,7 +7330,21 @@ function App() {
     intentionalStopRef.current = false;
     finalTranscriptRef.current = "";
     recognitionRestartCountRef.current = 0;
-    const r = createRecognition(SR, speechLang, recognitionRestartCountRef);
+    let r;
+    if (IS_APPLE_SPEECH) {
+      // iOS hands a freshly-constructed SpeechRecognition a silent audio tap on the
+      // 2nd+ session of a page (onaudiostart fires but onspeechstart never does, ending
+      // in "aborted — No speech detected"). Reuse ONE recognizer for the page lifetime.
+      const reused = !!persistentRecognizerRef.current;
+      if (!persistentRecognizerRef.current) {
+        persistentRecognizerRef.current = createRecognition(SR, speechLang, null);
+      }
+      r = persistentRecognizerRef.current;
+      r.lang = speechLang;
+      window.__peLog && window.__peLog("MIC", reused ? "reusing recognizer instance" : "created recognizer instance");
+    } else {
+      r = createRecognition(SR, speechLang, recognitionRestartCountRef);
+    }
     recognitionRef.current = r;
     try { r.start(); } catch (startErr) { window.__peLog && window.__peLog("MIC", "start() THREW: " + (startErr && startErr.name) + " — " + (startErr && startErr.message)); }
     setListening(true);
