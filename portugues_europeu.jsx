@@ -1,3 +1,4 @@
+
 const { useState, useRef, useEffect, useMemo, useCallback } = React;
 
 // True for Safari (macOS/iOS) and ANY browser on iOS/iPadOS — all of which use
@@ -28,7 +29,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.28", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.29", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7179,6 +7180,13 @@ function App() {
   const startListening = () => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
+    // Tapping the mic interrupts any in-progress reply and, critically on iOS,
+    // releases the audio session held by TTS (Azure <audio> / speechSynthesis).
+    // Without this the recognizer started below receives no microphone input on
+    // the second and later turns. Must run synchronously inside this tap — iOS
+    // requires SpeechRecognition.start() to occur within the user gesture, so the
+    // teardown cannot be deferred behind a timeout.
+    stopSpeaking();
     intentionalStopRef.current = false;
     finalTranscriptRef.current = "";
     recognitionRestartCountRef.current = 0;
