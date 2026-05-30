@@ -30,7 +30,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.31", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.32", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7244,6 +7244,29 @@ function App() {
   const azureBlobUrlRef = useRef(null);
   const azureAudioRef = useRef(null);   // tracks live Azure Audio element for stop
 
+  // iOS only: when a spoken reply finishes, the audio session is left in "playback"
+  // mode and the next SpeechRecognition receives a dead mic (onaudiostart fires but
+  // onspeechstart never does). Briefly take and immediately release the microphone to
+  // reset the session to record-capable. This runs BETWEEN turns (after playback ends),
+  // so the async getUserMedia is never inside the recording tap gesture. No-op off Apple.
+  const kickMic = useCallback(() => {
+    if (!IS_APPLE_SPEECH) return;
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      window.__peLog && window.__peLog("MIC", "kickMic: getUserMedia unavailable");
+      return;
+    }
+    window.__peLog && window.__peLog("MIC", "kickMic: acquiring mic to reset audio session");
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then((stream) => {
+        const n = stream.getTracks().length;
+        stream.getTracks().forEach((t) => t.stop());
+        window.__peLog && window.__peLog("MIC", "kickMic: released " + n + " track(s) — session reset");
+      })
+      .catch((err) => {
+        window.__peLog && window.__peLog("MIC", "kickMic: FAILED " + (err && err.name) + " — " + (err && err.message));
+      });
+  }, []);
+
   const speakViaAzure = useCallback(async (text, lang = "pt-PT") => {
     if (!azureKey || !azureRegion || !text) return false;
     // Revoke any previous blob URL that wasn't cleaned up (e.g. GC before onended).
@@ -7288,6 +7311,7 @@ function App() {
           URL.revokeObjectURL(url);
           azureBlobUrlRef.current = null;
         }
+        kickMic();
       };
       audio.onended = cleanup;
       audio.onerror = cleanup;
@@ -7308,8 +7332,8 @@ function App() {
     utt.rate = ttsRateRef.current;
     utt.pitch = 1;
     utt.onstart = () => setSpeaking(true);
-    utt.onend = () => setSpeaking(false);
-    utt.onerror = () => setSpeaking(false);
+    utt.onend = () => { setSpeaking(false); kickMic(); };
+    utt.onerror = () => { setSpeaking(false); kickMic(); };
     window.speechSynthesis.speak(utt);
   }, [ttsSupported]);
 
