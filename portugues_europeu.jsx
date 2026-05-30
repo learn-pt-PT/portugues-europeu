@@ -1,4 +1,3 @@
-
 const { useState, useRef, useEffect, useMemo, useCallback } = React;
 
 // True for Safari (macOS/iOS) and ANY browser on iOS/iPadOS — all of which use
@@ -29,7 +28,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.29", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.30", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7127,7 +7126,13 @@ function App() {
     r.continuous = !IS_APPLE_SPEECH;  // Apple drops pre-pause segments in continuous mode; the onend restart loop below accumulates instead
     r.interimResults = true;
     r.maxAlternatives = 1;
+    r.onstart       = () => { window.__peLog && window.__peLog("SR", "onstart"); };
+    r.onaudiostart  = () => { window.__peLog && window.__peLog("SR", "onaudiostart"); };
+    r.onspeechstart = () => { window.__peLog && window.__peLog("SR", "onspeechstart"); };
+    r.onspeechend   = () => { window.__peLog && window.__peLog("SR", "onspeechend"); };
+    r.onaudioend    = () => { window.__peLog && window.__peLog("SR", "onaudioend"); };
     r.onresult = (e) => {
+      window.__peLog && window.__peLog("SR", "onresult (results=" + e.results.length + ", sending=" + sendingRef.current + ")");
       if (sendingRef.current) return;  // send already fired — discard late speech results
       let interim = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -7143,6 +7148,7 @@ function App() {
       setInput((finalTranscriptRef.current + (interim ? " " + interim : "")).trim());
     };
     r.onerror = (ev) => {
+      window.__peLog && window.__peLog("SR", "onerror: " + (ev && ev.error) + (ev && ev.message ? " — " + ev.message : ""));
       if (!intentionalStopRef.current && ev.error === "no-speech") return;
       // Clear all mic state on any non-recoverable SR error to prevent stale refs
       // across sessions. Note: onend may not fire after certain error types.
@@ -7152,6 +7158,7 @@ function App() {
       setListening(false);
     };
     r.onend = () => {
+      window.__peLog && window.__peLog("SR", "onend (intentionalStop=" + intentionalStopRef.current + ", enviarStop=" + enviarStopRef.current + ", restarts=" + (restartCountRef ? restartCountRef.current : "-") + ", finalLen=" + finalTranscriptRef.current.length + ")");
       if (!intentionalStopRef.current) {
         if (restartCountRef && restartCountRef.current >= 5) {
           setListening(false);
@@ -7162,9 +7169,13 @@ function App() {
         try {
           const next = createRecognition(SR, lang, restartCountRef);
           recognitionRef.current = next;
+          window.__peLog && window.__peLog("SR", "restart #" + (restartCountRef ? restartCountRef.current : "-") + " -> start()");
           next.start();
           return;
-        } catch (restartErr) { console.warn("[pe] Speech recognition restart failed:", restartErr); }
+        } catch (restartErr) {
+          window.__peLog && window.__peLog("SR", "restart start() THREW: " + (restartErr && restartErr.name) + " — " + (restartErr && restartErr.message));
+          console.warn("[pe] Speech recognition restart failed:", restartErr);
+        }
       }
       setListening(false);
       if (enviarStopRef.current) { enviarStopRef.current = false; return; }
@@ -7187,18 +7198,20 @@ function App() {
     // requires SpeechRecognition.start() to occur within the user gesture, so the
     // teardown cannot be deferred behind a timeout.
     stopSpeaking();
+    window.__peLog && window.__peLog("MIC", "startListening (vendor=" + navigator.vendor + ", apple=" + IS_APPLE_SPEECH + ", continuous=" + (!IS_APPLE_SPEECH) + ", speakingWas=" + speaking + ")");
     intentionalStopRef.current = false;
     finalTranscriptRef.current = "";
     recognitionRestartCountRef.current = 0;
     const r = createRecognition(SR, speechLang, recognitionRestartCountRef);
     recognitionRef.current = r;
-    r.start();
+    try { r.start(); } catch (startErr) { window.__peLog && window.__peLog("MIC", "start() THREW: " + (startErr && startErr.name) + " — " + (startErr && startErr.message)); }
     setListening(true);
   };
 
   const stopListening = () => {
     // Read text from DOM directly — always current, bypasses React render lag.
     const capturedText = (inputRef.current?.value || "").trim() || finalTranscriptRef.current.trim();
+    window.__peLog && window.__peLog("MIC", "stopListening (capturedLen=" + capturedText.length + ")");
     intentionalStopRef.current = true;
     enviarStopRef.current = true;   // suppress onend from firing its own send
     const r = recognitionRef.current;
