@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.0.37 -->
+  <!-- version: 3.0.38 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8" crossorigin="anonymous" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh" crossorigin="anonymous" defer></script>
@@ -76,7 +76,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.37", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.38", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -649,6 +649,46 @@ const IPA_GUIDE = [
 const PRONUNCIATION_GUIDE_SORTED = [...PRONUNCIATION_GUIDE].sort((a, b) => a.section.localeCompare(b.section, "en"));
 const IPA_GUIDE_SORTED = [...IPA_GUIDE].sort((a, b) => a.section.localeCompare(b.section, "en"));
 
+// CONTRAST_TO_IPA: maps each MINIMAL_PAIRS contrast type to a short IPA/fake-phonetic hint
+// drawn directly from IPA_GUIDE data. No new data — just a lookup helper.
+const CONTRAST_TO_IPA = {
+  "nasal-diphthong":  () => {
+    const nd = IPA_GUIDE.find(s => s.section === "Nasal Diphthongs");
+    if (!nd) return null;
+    return nd.items.slice(0, 2).map(it => `${it.ipa} [${it.fake}]`).join(" · ");
+  },
+  "nasal-oral": () => {
+    const nv = IPA_GUIDE.find(s => s.section === "Nasal Vowels");
+    if (!nv) return null;
+    const ex = nv.items[0];
+    return ex ? `${ex.ipa} [${ex.fake}] vs oral vowel` : null;
+  },
+  "vowel-quality": () => {
+    const ov = IPA_GUIDE.find(s => s.section === "Oral Vowels");
+    if (!ov) return null;
+    return "Oral vowel quality contrast — e.g. /ɔ/ [AW] vs /o/ [OH]";
+  },
+  "consonant-onset": () => "Consonant-onset contrast — listen for the first consonant sound",
+  "consonant-double": () => {
+    const cons = IPA_GUIDE.find(s => s.section === "Consonants");
+    if (!cons) return null;
+    const r = cons.items.find(it => it.ipa === "/ɾ/");
+    const rr = cons.items.find(it => it.ipa === "/ʁ/");
+    return r && rr ? `/ɾ/ [${r.fake}] (tap) vs /ʁ/ [${rr.fake}] (uvular)` : null;
+  },
+  "consonant-voiced": () => "Voiced vs unvoiced consonant — e.g. /p/ vs /b/, /t/ vs /d/, /f/ vs /v/",
+  "stress-accent": () => "Stress / accent contrast — the accented syllable is louder and longer",
+  "cluster": () => "Consonant cluster — one word has an extra consonant",
+  "orthographic": () => "Orthographic contrast — same sound, different spelling (e.g. por vs pôr)",
+};
+// Helper: get the IPA hint string for a contrast type
+function getIpaHint(contrast) {
+  const fn = CONTRAST_TO_IPA[contrast];
+  if (!fn) return null;
+  return fn();
+}
+
+
 // PHRASES: displayed in alphabetical section order via PHRASES_SORTED (see below).
 // The source array is kept in the same alphabetical order to match; do not
 // insert new sections at an arbitrary position — maintain alphabetical order.
@@ -952,6 +992,38 @@ const NUMBERS = [
   ]},
 ];
 
+
+// FALSE_FRIENDS: curated EN-EP false cognates with context.
+// Each entry: pt (EP word), en_false (what EN speakers wrongly assume), pt_real (what EN actually means in PT).
+// All verified as genuine false friends in EP — regional variation noted where applicable.
+const FALSE_FRIENDS = [
+  { pt: "puxar",         en_false: "to push",       pt_real: "empurrar",     note: "puxar = to pull; the door signs Puxe/Empurre are a classic trap." },
+  { pt: "constipado",    en_false: "constipated",   pt_real: "obstipado",    note: "constipado = having a cold (nasal congestion). Obstipado = bowel constipation." },
+  { pt: "pasta",         en_false: "pasta (food)",  pt_real: "massa",        note: "pasta = briefcase/folder/toothpaste. The Italian dish is massa (massa alimentícia)." },
+  { pt: "esquisito",     en_false: "exquisite",     pt_real: "requintado",   note: "esquisito = strange, odd, fussy. Exquisite = requintado." },
+  { pt: "êxito",         en_false: "exit",          pt_real: "saída",        note: "êxito = success. Exit = saída. A false friend reinforced by identical spelling." },
+  { pt: "assistir",      en_false: "to assist",     pt_real: "ajudar",       note: "assistir (a) = to watch/attend. To assist = ajudar. Exception: assistir médico (to attend medically)." },
+  { pt: "borracha",      en_false: "drunk",         pt_real: "bêbado/a",     note: "borracha = rubber or eraser. Drunk = bêbado/a. Borracha is also slang for 'a drunk' in some registers — use with care." },
+  { pt: "costume",       en_false: "costume",       pt_real: "fantasia / fato", note: "costume = custom, habit. A theatrical costume = fantasia or fato (de carnaval)." },
+  { pt: "decepção",      en_false: "deception",     pt_real: "engano / fraude", note: "decepção = disappointment. Deception = engano or fraude." },
+  { pt: "discussão",     en_false: "discussion",    pt_real: "conversa",     note: "discussão = argument, heated debate. A calm discussion = conversa or debate." },
+  { pt: "embaraçado",    en_false: "embarrassed",   pt_real: "envergonhado", note: "embaraçado = tangled, confused. Embarrassed = envergonhado." },
+  { pt: "eventual",      en_false: "eventual",      pt_real: "final / último", note: "eventual = possible, hypothetical. Eventual (in time) = final or último." },
+  { pt: "fábrica",       en_false: "fabric",        pt_real: "tecido",       note: "fábrica = factory. Fabric = tecido." },
+  { pt: "jornal",        en_false: "journal",       pt_real: "diário / revista", note: "jornal = newspaper. A personal journal = diário. An academic journal = revista científica." },
+  { pt: "largo",         en_false: "large",         pt_real: "grande",       note: "largo = wide/broad, or a town square. Large = grande." },
+  { pt: "livraria",      en_false: "library",       pt_real: "biblioteca",   note: "livraria = bookshop. Library = biblioteca." },
+  { pt: "novela",        en_false: "novel",         pt_real: "romance",      note: "novela = TV soap opera. A novel (book) = romance." },
+  { pt: "parente",       en_false: "parent",        pt_real: "pai / mãe",    note: "parente = relative, family member. Parent = pai (father) or mãe (mother)." },
+  { pt: "polvo",         en_false: "powder",        pt_real: "pó",           note: "polvo = octopus. Powder = pó." },
+  { pt: "preservativo",  en_false: "preservative",  pt_real: "conservante",  note: "preservativo = condom. Food preservative = conservante." },
+  { pt: "pretender",     en_false: "to pretend",    pt_real: "fingir",       note: "pretender = to intend, to plan. To pretend = fingir." },
+  { pt: "realizar",      en_false: "to realise",    pt_real: "perceber / aperceber-se", note: "realizar = to carry out, achieve. To realise (mentally) = perceber or aperceber-se." },
+  { pt: "sopa",          en_false: "soap",          pt_real: "sabão / sabonete", note: "sopa = soup. Soap = sabão (bar) or sabonete (hand soap)." },
+  { pt: "tuna",          en_false: "tuna (fish)",   pt_real: "atum",         note: "tuna = a traditional student music group. The fish = atum." },
+  { pt: "agenda",        en_false: "agenda",        pt_real: "ordem do dia / programa", note: "agenda = diary, planner. Meeting agenda = ordem do dia or programa." },
+];
+
 const COGNATES = [
   { section: "-AGE → -AGEM (f)", rule: "", items: [
     { pt: "a coragem", en: "courage" }, { pt: "a imagem", en: "image" }, { pt: "a viagem", en: "voyage/trip" }, { pt: "a linguagem", en: "language" },
@@ -959,7 +1031,7 @@ const COGNATES = [
     { pt: "a homenagem", en: "homage" }, { pt: "a sondagem", en: "survey/poll" }, { pt: "a montagem", en: "assembly/montage" },
   ], exceptions: [] },
   { section: "-AL → -AL", rule: "Identical ending — very large group.", items: [
-    { pt: "adicional", en: "additional" }, { pt: "cultural", en: "cultural" }, { pt: "nacional", en: "national" },
+    { pt: "adicional", en: "additional", freq: "high", example_pt: "Precisamos de informação adicional.", example_en: "We need additional information." }, { pt: "cultural", en: "cultural", freq: "high" }, { pt: "nacional", en: "national", freq: "high" },
     { pt: "social", en: "social" }, { pt: "digital", en: "digital" }, { pt: "formal", en: "formal" }, { pt: "legal", en: "legal" },
     { pt: "natural", en: "natural" }, { pt: "total", en: "total" }, { pt: "central", en: "central" }, { pt: "global", en: "global" },
     { pt: "local", en: "local" }, { pt: "musical", en: "musical" }, { pt: "final", en: "final" }, { pt: "original", en: "original" },
@@ -1044,7 +1116,7 @@ const COGNATES = [
     { pt: "anualmente", en: "annually" }, { pt: "rapidamente", en: "rapidly" }, { pt: "normalmente", en: "normally" },
   ], exceptions: [] },
   { section: "-MENT → -MENTO (m)", rule: "Masculine nouns. Distinct from -ENT → -ENTO — this maps English process/result nouns.", items: [
-    { pt: "o tratamento", en: "treatment" }, { pt: "o comportamento", en: "behaviour" }, { pt: "o conhecimento", en: "knowledge" },
+    { pt: "o tratamento", en: "treatment", freq: "high" }, { pt: "o comportamento", en: "behaviour", freq: "high" }, { pt: "o conhecimento", en: "knowledge", freq: "high", example_pt: "O conhecimento da língua abre muitas portas.", example_en: "Knowledge of the language opens many doors." },
     { pt: "o crescimento", en: "growth" }, { pt: "o melhoramento", en: "improvement" }, { pt: "o desenvolvimento", en: "development" },
     { pt: "o investimento", en: "investment" }, { pt: "o argumento", en: "argument" },
   ], exceptions: [] },
@@ -1068,7 +1140,7 @@ const COGNATES = [
     { pt: "a invasão", en: "invasion" }, { pt: "a decisão", en: "decision" }, { pt: "a televisão", en: "television" },
   ], exceptions: [] },
   { section: "-TION → -ÇÃO (f)", rule: "Extremely reliable — thousands of words. Always feminine.", items: [
-    { pt: "a ação", en: "action" }, { pt: "a nação", en: "nation" }, { pt: "a situação", en: "situation" }, { pt: "a informação", en: "information" },
+    { pt: "a ação", en: "action", freq: "high", example_pt: "A ação foi rápida e eficaz.", example_en: "The action was quick and effective." }, { pt: "a nação", en: "nation", freq: "high" }, { pt: "a situação", en: "situation", freq: "high", example_pt: "A situação está sob controlo.", example_en: "The situation is under control." }, { pt: "a informação", en: "information", freq: "high" },
     { pt: "a educação", en: "education" }, { pt: "a produção", en: "production" }, { pt: "a comunicação", en: "communication" },
     { pt: "a organização", en: "organisation" }, { pt: "a administração", en: "administration" }, { pt: "a construção", en: "construction" },
     { pt: "a distribuição", en: "distribution" }, { pt: "a celebração", en: "celebration" }, { pt: "a decoração", en: "decoration" },
@@ -1078,7 +1150,7 @@ const COGNATES = [
     { pt: "a atitude", en: "attitude" }, { pt: "a altitude", en: "altitude" }, { pt: "a gratitude", en: "gratitude" },
   ], exceptions: [] },
   { section: "-TY → -DADE (f)", rule: "Always feminine.", items: [
-    { pt: "a cidade", en: "city" }, { pt: "a liberdade", en: "liberty" }, { pt: "a qualidade", en: "quality" }, { pt: "a universidade", en: "university" },
+    { pt: "a cidade", en: "city", freq: "high", example_pt: "A cidade de Lisboa tem muita história.", example_en: "The city of Lisbon has a lot of history." }, { pt: "a liberdade", en: "liberty", freq: "high" }, { pt: "a qualidade", en: "quality", freq: "high", example_pt: "A qualidade do trabalho é fundamental.", example_en: "The quality of the work is fundamental." }, { pt: "a universidade", en: "university", freq: "high" },
   ], exceptions: [] },
   { section: "False cognates (watch out!)", rule: "These look like English words but mean something different.", items: [
     { pt: "actually → atualmente", en: "atualmente = currently (not 'actually' — na verdade)" },
@@ -2766,7 +2838,7 @@ const WORD_ORDER_ITEMS = [
 // ── CHIP CARVING VOCABULARY DATA ─────────────────────────────────────────────
 const CHIP_CARVING_VOCAB = [
   { id: "cc-verbs", label: "Carving Verbs", items: [
-    { en: "to sharpen",  pt: "afiar",       referent: "sharpening the blade",        pos: "verb", obj: "a faca / a lâmina"},
+    { en: "to sharpen",  pt: "afiar",       referent: "sharpening the blade",        pos: "verb", obj: "a faca / a lâmina", example_pt: "Tenho de afiar a faca antes de começar.", example_en: "I need to sharpen the knife before starting." },
     { en: "to align",    pt: "alinhar",     referent: "bringing into coincidence",   pos: "verb", obj: "os cortes"},
     { en: "to polish",   pt: "alisar",      referent: "smoothing a surface",         pos: "verb", obj: "a superfície"},
     { en: "to tear out", pt: "arrancar",    referent: "fiber failure",               pos: "verb", obj: "a fibra"},
@@ -2774,8 +2846,8 @@ const CHIP_CARVING_VOCAB = [
     { en: "to hone",     pt: "assentar",    referent: "honing the edge",             pos: "verb", obj: "o fio"},
     { en: "to dull",     pt: "cegar",       referent: "dulling the edge",            pos: "verb", obj: "o fio"},
     { en: "to behave",   pt: "comportar",   referent: "how wood behaves",            pos: "verb", obj: "a madeira"},
-    { en: "to cut",      pt: "cortar",      referent: "making an incision",          pos: "verb", obj: "a madeira / a lasca"},
-    { en: "to carve",    pt: "entalhar",    referent: "shaping wood with a knife",   pos: "verb", obj: "a madeira / o padrão"},
+    { en: "to cut",      pt: "cortar",      referent: "making an incision",          pos: "verb", obj: "a madeira / a lasca", example_pt: "É preciso cortar com o veio, não contra ele.", example_en: "You need to cut with the grain, not against it." },
+    { en: "to carve",    pt: "entalhar",    referent: "shaping wood with a knife",   pos: "verb", obj: "a madeira / o padrão", example_pt: "Aprendo a entalhar triângulos em tília.", example_en: "I am learning to carve triangles in basswood." },
     { en: "to split",    pt: "fender",      referent: "splitting the wood",          pos: "verb", obj: "a madeira"},
     { en: "to angle",    pt: "inclinar",    referent: "setting the blade angle",     pos: "verb", obj: "a faca"},
     { en: "to lift / to lift (grain)", pt: "levantar", referent: "raising the knife; grain lifting in wood context", pos: "verb", obj: "a faca / o veio"},
@@ -2783,13 +2855,13 @@ const CHIP_CARVING_VOCAB = [
     { en: "to stop",     pt: "parar",       referent: "halting the motion",          pos: "verb", obj: "o corte"},
     { en: "to strop",    pt: "polir",       referent: "stropping the edge",          pos: "verb", obj: "o fio"},
     { en: "to tear",     pt: "rasgar",      referent: "tearing the grain",           pos: "verb", obj: "o veio"},
-    { en: "to remove",   pt: "remover",     referent: "taking material away",        pos: "verb", obj: "a lasca / a madeira"},
+    { en: "to remove",   pt: "remover",     referent: "taking material away",        pos: "verb", obj: "a lasca / a madeira", example_pt: "Removo o mínimo de material possível por passagem.", example_en: "I remove the minimum material possible per pass." },
     { en: "to resist",   pt: "resistir",    referent: "resisting the cut",           pos: "verb", obj: "ao corte"},
     { en: "to touch up", pt: "retocar",     referent: "making small corrections",    pos: "verb", obj: "a interseção / a área"},
     { en: "to resume",   pt: "retomar",     referent: "continuing an action (also: to restart)",        pos: "verb", obj: "o corte"},
     { en: "to follow",   pt: "seguir",      referent: "tracing a line or curve",     pos: "verb", obj: "a linha / a curva"},
-    { en: "to hold",     pt: "segurar",     referent: "gripping the knife",          pos: "verb", obj: "a faca"},
-    { en: "to pop out",  pt: "soltar",      referent: "freeing a chip",              pos: "verb", obj: "a lasca"},
+    { en: "to hold",     pt: "segurar",     referent: "gripping the knife",          pos: "verb", obj: "a faca", example_pt: "Segura a faca com firmeza mas sem tensão.", example_en: "Hold the knife firmly but without tension." },
+    { en: "to pop out",  pt: "soltar",      referent: "freeing a chip",              pos: "verb", obj: "a lasca", example_pt: "O terceiro corte deve soltar a lasca limpa.", example_en: "The third cut should pop the chip out cleanly." },
   ]},
   { id: "cc-nouns", label: "Core Nouns", items: [
     { en: "edge",         pt: "a aresta",         referent: "aresta do entalhe",            pos: "noun"},
@@ -2890,7 +2962,7 @@ const CHIP_CARVING_VOCAB = [
 ];
 
 // ── WORD ORDER QUIZ COMPONENT ────────────────────────────────────────────────
-const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT }) {
+const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT, onConjugate }) {
   const FOCUS_FILTERS = ["all", "clitic", "progressive", "question", "general"];
   const FOCUS_LABELS = { all: "All", clitic: "Clitic", progressive: "Progressive", question: "Questions", general: "General" };
   const SESSION_SIZE = 10;
@@ -3115,6 +3187,21 @@ const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT }) {
                   Correct: <strong style={{ color: "var(--color-text-primary)" }}>{currentItem.correct}</strong>
                 </p>
               )}
+              {checked && onConjugate && (() => {
+                const verbs = (currentItem.correct || "").split(/\s+/).filter(w => ALL_VERBS_MAP.has(w.replace(/[.,?!;:]/g, "")));
+                if (!verbs.length) return null;
+                const unique = [...new Set(verbs.map(w => w.replace(/[.,?!;:]/g, "")))];
+                return (
+                  <div style={{ display: "flex", gap: 4, flexWrap: "wrap", margin: "4px 0 0" }}>
+                    {unique.map(v => (
+                      <button key={v} onClick={() => onConjugate(v)}
+                        style={{ fontSize: 11, padding: "1px 7px", borderRadius: 999, border: "1px solid var(--color-accent-blue)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", fontFamily: "var(--font-mono)", fontWeight: 600 }}>
+                        {v} ⇢
+                      </button>
+                    ))}
+                  </div>
+                );
+              })()}
               <p style={{ fontSize: 14, color: "var(--color-text-secondary)", margin: 0 }}>{currentItem.en}</p>
             </div>
           )}
@@ -4655,6 +4742,34 @@ const OppositesPanel = React.memo(function OppositesPanel({ fontSize, speakListP
   return <OppositesTab fontSize={fontSize} speakListPT={speakListPT} onStartQuiz={() => setMode("quiz")} />;
 });
 
+// IpaWordCard: single word tile with tap-to-reveal IPA hint in MinimalPairs browse mode.
+// References IPA_GUIDE via getIpaHint() — no data duplication.
+const IpaWordCard = React.memo(function IpaWordCard({ side, pair, fontSize, speakListPT }) {
+  const [ipaOpen, setIpaOpen] = React.useState(false);
+  const hint = getIpaHint(pair.contrast);
+  return (
+    <div style={{ textAlign: "center", background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: 12, padding: "18px 28px", minWidth: 140 }}>
+      <div style={{ fontSize: fontSize * 2, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 6 }}>{pair[side].word}</div>
+      <div style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 12, fontStyle: "italic" }}>{pair[side].meaning}</div>
+      <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Ouvir</button>
+      {hint && (
+        <div style={{ marginTop: 8 }}>
+          <button
+            onClick={() => setIpaOpen(o => !o)}
+            style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-primary)", color: "var(--color-text-tertiary)", cursor: "pointer", fontFamily: "var(--font-mono)" }}>
+            {ipaOpen ? "▲ IPA" : "▼ IPA"}
+          </button>
+          {ipaOpen && (
+            <div style={{ marginTop: 4, fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", fontFamily: "var(--font-mono)", lineHeight: 1.5, maxWidth: 200, margin: "4px auto 0", textAlign: "left" }}>
+              {hint}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
+
 const MinimalPairs = React.memo(function MinimalPairs({
   pairIndex, setPairIndex,
   pairsOrder, setPairsOrder,
@@ -4867,11 +4982,7 @@ const MinimalPairs = React.memo(function MinimalPairs({
           /* Browse mode — both words visible */
           <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
             {["a", "b"].map(side => (
-              <div key={side} style={{ textAlign: "center", background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: 12, padding: "18px 28px", minWidth: 140 }}>
-                <div style={{ fontSize: fontSize * 2, fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 6 }}>{pair[side].word}</div>
-                <div style={{ fontSize: fontSize, color: "var(--color-text-secondary)", marginBottom: 12, fontStyle: "italic" }}>{pair[side].meaning}</div>
-                <button onClick={() => speakListPT(pair[side].word)} style={{ fontSize: 13, padding: "4px 14px", borderRadius: 6, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶ Ouvir</button>
-              </div>
+              <IpaWordCard key={side} side={side} pair={pair} fontSize={fontSize} speakListPT={speakListPT} />
             ))}
             {pair.contrast && <div style={{ width: "100%", textAlign: "center", fontSize: 11, color: "var(--color-text-tertiary)", marginTop: -8 }}>{CONTRAST_LABELS[pair.contrast] || pair.contrast}</div>}
           </div>
@@ -5460,7 +5571,7 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFil
 });
 
 // ── CHIP CARVING TAB COMPONENT ───────────────────────────────────────────────
-const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListPT }) {
+const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListPT, onConjugate }) {
   // ── Shared state ─────────────────────────────────────────────────────────
   const [activeSection, setActiveSection] = useState("all");
   const [quizMode, setQuizMode]           = useState(false);
@@ -5656,6 +5767,14 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
   const isRevealed = (sectionId, itemIdx) => !!revealedRows[`${sectionId}-${itemIdx}`];
 
   // ── Shared style helpers ──────────────────────────────────────────────────
+  const chipGenderTint = React.useCallback((ptText) => {
+    if (!showGenderColors) return {};
+    if (/^(os?|as?)\s+/.test(ptText)) {
+      const isM = /^(o|os)\s+/.test(ptText);
+      return { background: isM ? "var(--color-background-info)" : "var(--color-background-gender-f, #f5f3ff)", borderRadius: 3, padding: "0 3px" };
+    }
+    return {};
+  }, [showGenderColors]);
   const pillBase = {
     fontSize: 11, padding: "3px 10px", borderRadius: 999, border: "1px solid var(--color-border-tertiary)",
     background: "var(--color-background-secondary)", color: "var(--color-text-secondary)",
@@ -5903,8 +6022,16 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
 
                     {/* PT term + referent */}
                     <div style={{ flex: "0 0 38%", minWidth: 0 }}>
-                      <div style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize, color: "var(--color-text-info)", wordBreak: "break-word" }}>
-                        {item.pt}
+                      <div style={{ fontFamily: "var(--font-mono)", fontWeight: 700, fontSize, color: "var(--color-text-info)", wordBreak: "break-word", display: "flex", alignItems: "center", gap: 4 }}>
+                        <span style={chipGenderTint(item.pt)}>{item.pt}</span>
+                        {item.pos === "verb" && onConjugate && (
+                          <button
+                            data-tts="1"
+                            title={`Conjugate ${item.pt}`}
+                            aria-label={`Open conjugator for ${item.pt}`}
+                            onClick={(e) => { e.stopPropagation(); onConjugate(item.pt); }}
+                            style={{ fontSize: 10, padding: "1px 5px", borderRadius: 3, border: "1px solid var(--color-accent-blue)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", fontWeight: 700, lineHeight: 1.4, flexShrink: 0 }}>⇢</button>
+                        )}
                       </div>
                       <div style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)", fontFamily: "var(--font-sans)", marginTop: 1 }}>
                         {item.referent}
@@ -6610,7 +6737,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
   );
 });
 
-const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, listFilter }) {
+const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, listFilter, onConjugate, showGenderColors, showCommonFirst }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
@@ -6621,10 +6748,24 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
     next.has(idx) ? next.delete(idx) : next.add(idx);
     return next;
   });
+  const [ffOpen, setFfOpen] = React.useState(false);
+  const genderTint = React.useCallback((ptText) => {
+    if (!showGenderColors) return {};
+    if (/^(os?|as?)\s+/.test(ptText)) {
+      const isM = /^(o|os)\s+/.test(ptText);
+      return { background: isM ? "var(--color-background-info)" : "var(--color-background-gender-f, #f5f3ff)", borderRadius: 3, padding: "0 3px" };
+    }
+    return {};
+  }, [showGenderColors]);
+  const freqOrder = { high: 0, mid: 1, low: 2 };
+  const sortByFreq = React.useCallback((items) => {
+    if (!showCommonFirst) return items;
+    return [...items].sort((a, b) => (freqOrder[a.freq] ?? 3) - (freqOrder[b.freq] ?? 3));
+  }, [showCommonFirst]);
   const filteredSections = useMemo(() => {
-    if (!needle) return COGNATES;
-    return COGNATES.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
-  }, [needle]);
+    if (!needle) return COGNATES.map(sec => ({ ...sec, items: sortByFreq(sec.items) }));
+    return COGNATES.map(sec => ({ ...sec, items: sortByFreq(sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle))) })).filter(sec => sec.items.length > 0);
+  }, [needle, sortByFreq]);
   const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
@@ -6640,6 +6781,41 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
       )}
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
       {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
+      {!needle && (
+          <div style={{ marginBottom: 8, border: "1px solid #fed7aa", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button onClick={() => setFfOpen(o => !o)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 10px", background: "#fff7ed", border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)", color: "#c2410c", fontWeight: 700, textAlign: "left" }}>
+              <span>⚠ False Friends — looks like English, means something else</span>
+              <span style={{ fontSize: 11, color: "#c2410c", marginLeft: 8 }}>{ffOpen ? "▲" : "▼"}</span>
+            </button>
+            {ffOpen && (
+              <div style={{ borderTop: "1px solid #fed7aa", padding: "6px 0 8px" }}>
+                <p style={{ fontSize: Math.max(10, fontSize - 2), color: "#92400e", margin: "0 6px 8px", fontStyle: "italic", lineHeight: 1.5 }}>
+                  These EP words look like English cognates but carry a different meaning. The correct EP equivalent is shown in the right column.
+                </p>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize }}><tbody>
+                  {FALSE_FRIENDS.map((ff, ffi) => (
+                    <tr key={ffi} style={{ borderBottom: "1px solid #fed7aa" }}>
+                      <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle", paddingLeft: 8 }}>
+                        <button onClick={() => speakListPT(ff.pt)} aria-label={`Hear: ${ff.pt}`}
+                          style={{ fontSize: 13, padding: "1px 5px", borderRadius: 4, border: "1px solid #fed7aa", background: "#fff7ed", color: "#c2410c", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                      </td>
+                      <td style={{ fontFamily: "var(--font-mono)", color: "#c2410c", fontWeight: 700, padding: "5px 8px 5px 0", verticalAlign: "top", width: "20%" }}>
+                        {ff.pt}<span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 3, background: "#fff7ed", color: "#c2410c", border: "1px solid #fed7aa", verticalAlign: "middle", marginLeft: 5, fontFamily: "var(--font-sans)" }}>⚠ False friend</span>
+                      </td>
+                      <td style={{ color: "var(--color-text-secondary)", padding: "5px 8px 5px 0", verticalAlign: "top", width: "20%" }}>
+                        <span style={{ fontSize: Math.max(10, fontSize - 1), fontStyle: "italic" }}>≠ {ff.en_false}</span>
+                      </td>
+                      <td style={{ padding: "5px 8px 5px 0", verticalAlign: "top" }}>
+                        <span style={{ color: "var(--color-text-primary)", fontFamily: "var(--font-mono)", fontWeight: 600 }}>{ff.pt_real}</span>
+                        {ff.note && <div style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", marginTop: 2, fontStyle: "italic" }}>{ff.note}</div>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody></table>
+              </div>
+            )}
+          </div>
+      )}
       {filteredSections.map((sec, si) => {
         const isFalseCognate = sec.section === "False cognates (watch out!)";
         const tdLComputed = isFalseCognate ? { ...tdL, color: "var(--color-text-danger, #dc2626)" } : tdL;
@@ -7016,6 +7192,8 @@ function App() {
   const [vocabShowReview, setVocabShowReview] = useState(false);
   const [showVocab, setShowVocab] = useState(() => ls("pe_show_vocab", true));
   const [showTranslation, setShowTranslation] = useState(() => ls("pe_show_translation", true));
+  const [showGenderColors, setShowGenderColors] = useState(() => { const v = ls("pe_gender_colors", false); return v === true || v === "true"; });
+  const [showCommonFirst, setShowCommonFirst] = useState(() => { const v = ls("pe_common_first", false); return v === true || v === "true"; });
   const [verbDropdownOpen, setVerbDropdownOpen] = useState(false);
   const [verbDropdownSearch, setVerbDropdownSearch] = useState("");
   const verbDropdownRef = useRef(null);
@@ -8382,6 +8560,32 @@ function App() {
             </div>
             <button style={{ ...toolBtn(false), background: "var(--color-background-info)", color: "var(--color-accent-blue)" }} onClick={addCustomTopic}>+ Add</button>
           </div>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Gender Colour-Coding</p>
+          <div style={{ marginBottom: 12 }}>
+            <div style={segCtrl}>
+              {[["on","On"],["off","Off"]].map(([id, label], i) => {
+                const pos = i === 0 ? "first" : "last";
+                const active = id === "on" ? showGenderColors : !showGenderColors;
+                return <button key={id} style={segBtn(active, pos)} onClick={() => { const next = id === "on"; setShowGenderColors(next); lsSet("pe_gender_colors", next); }}>{label}</button>;
+              })}
+            </div>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
+              When On, nouns with an article (o/a/os/as) are tinted by gender in the Cognates and Chip Carving lists.
+            </p>
+          </div>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Common Words First</p>
+          <div style={{ marginBottom: 12 }}>
+            <div style={segCtrl}>
+              {[["on","On"],["off","Off"]].map(([id, label], i) => {
+                const pos = i === 0 ? "first" : "last";
+                const active = id === "on" ? showCommonFirst : !showCommonFirst;
+                return <button key={id} style={segBtn(active, pos)} onClick={() => { const next = id === "on"; setShowCommonFirst(next); lsSet("pe_common_first", next); }}>{label}</button>;
+              })}
+            </div>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
+              When On, high-frequency items float to the top in Cognates, Phrases, and Opposites lists.
+            </p>
+          </div>
           <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Conjugation Cache</p>
           <div style={{ marginBottom: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -8659,10 +8863,15 @@ function App() {
               {!selectedVerb ? (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                   {verbRefList.map((v, i) => (
-                    <button key={i} style={{ fontSize, padding: "3px 8px", borderRadius: 20, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-mono)" }}
-                      onClick={() => setSelectedVerb(v.inf)}>
-                      {v.inf}{v.en ? <span style={{ fontFamily: "var(--font-sans)", fontStyle: "italic", opacity: 0.75 }}> — {v.en}</span> : null}
-                    </button>
+                    <div key={i} style={{ display: "inline-flex", alignItems: "center", gap: 2, margin: 2 }}>
+                      <button style={{ fontSize, padding: "3px 8px", borderRadius: "20px 0 0 20px", border: "1px solid var(--color-border-tertiary)", borderRight: "none", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-mono)" }}
+                        onClick={() => setSelectedVerb(v.inf)}>
+                        {v.inf}{v.en ? <span style={{ fontFamily: "var(--font-sans)", fontStyle: "italic", opacity: 0.75 }}> — {v.en}</span> : null}
+                      </button>
+                      <button title="Open in Conjugator" aria-label={`Conjugate ${v.inf}`}
+                        style={{ fontSize: 10, padding: "3px 6px", borderRadius: "0 20px 20px 0", border: "1px solid var(--color-accent-blue)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer", lineHeight: 1.2, fontWeight: 700 }}
+                        onClick={() => { lookupVerbFor(v.inf); setActivePanel("verblookup"); }}>⇢</button>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -8763,10 +8972,10 @@ function App() {
             <OppositesPanel fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} />
           )}
           {listTab === "cognates" && (
-            <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
+            <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} showGenderColors={showGenderColors} showCommonFirst={showCommonFirst} />
           )}
           {listTab === "chipcarving" && (
-            <ChipCarvingTab fontSize={fontSize} speakListPT={speakListPT} />
+            <ChipCarvingTab fontSize={fontSize} speakListPT={speakListPT} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} showGenderColors={showGenderColors} />
           )}
           {listTab === "dictation" && (
             <DictationQuizTab
@@ -8790,7 +8999,7 @@ function App() {
             <SlangTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
           )}
           {listTab === "wordorder" && (
-            <WordOrderTab level={level} speakListPT={speakListPT} />
+            <WordOrderTab level={level} speakListPT={speakListPT} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} />
           )}
         </div>
       )}
