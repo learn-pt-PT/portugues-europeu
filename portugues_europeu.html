@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.0.35 -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:;">
+  <!-- version: 3.0.37 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8" crossorigin="anonymous" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh" crossorigin="anonymous" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" integrity="sha384-aGlMNK3U/x0wl4lEH5jD1PGhJlX9hApuPmIiA5gtiYCOQ1J8ejIdC0btaU/TMoBD" crossorigin="anonymous" defer></script>
@@ -76,7 +76,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.35", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.37", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -3672,7 +3672,7 @@ const _vqBtnSecondary = (fontSize) => ({
 });
 
 const VerbQuizTab = React.memo(function VerbQuizTab({
-  level, conjCache, apiKey, verbInput, setVerbInput,
+  level, conjCache, scheduleConjCacheWrite, apiKey, verbInput, setVerbInput,
   speakListPT, fontSize,
   externalLaunch, // {verb, en} | null — set by "Quiz this verb" button in Conjugator
   clearExternalLaunch,
@@ -5667,7 +5667,7 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
   };
 
   // ── Render: header row (pills + quiz toggle) ──────────────────────────────
-  const insufficientPool = flattenPool(activeSection).length < 2;
+  const insufficientPool = useMemo(() => flattenPool(activeSection).length < 2, [activeSection]);
 
   const headerRow = (
     <div style={{ marginBottom: 12, paddingBottom: 8, borderBottom: "1px solid var(--color-border-tertiary)" }}>
@@ -7021,6 +7021,7 @@ function App() {
   const verbDropdownRef = useRef(null);
 
   const [storageFull, setStorageFull] = useState(false);
+  const [reviewFull, setReviewFull] = useState(false); // P3-001: non-blocking banner replaces alert() at the review cap
   const [aboutOpen, setAboutOpen] = useState(false);
   const [commitDate, setCommitDate] = useState(APP_META.date || "Unknown");
   const aboutModalRef = useRef(null);
@@ -7255,7 +7256,6 @@ function App() {
           "Ocp-Apim-Subscription-Key": azureKey,
           "Content-Type": "application/ssml+xml",
           "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
-          "User-Agent": "PortuguesEuropeu",
         },
         body: ssml,
       });
@@ -7619,7 +7619,7 @@ function App() {
       setVocabReview(prev => { const next = prev.filter(r => r.word_bp !== vocabCard.word_bp); lsSet("pe_vocab_review", next); return next; });
     } else {
       if (vocabReview.length >= VOCAB_REVIEW_CAP) {
-        alert(`Review list is full (${VOCAB_REVIEW_CAP} words). Remove some entries before adding more.`);
+        setReviewFull(true);
         return;
       }
       setVocabReview(prev => { const next = [...prev, vocabCard]; lsSet("pe_vocab_review", next); return next; });
@@ -7638,7 +7638,7 @@ function App() {
     if (ALL_VERB_INFS_SORTED.includes(v)) return null;
 
     // 1. Portuguese-legal characters only.
-    const ptChars = /^[a-záàâãéêíóôõúüçà-ɏ-]+$/;
+    const ptChars = /^[a-záàâãéêíóôõúüç-]+$/;
     if (!ptChars.test(v)) {
       return `"${raw.trim()}" contains characters not valid in a Portuguese verb.`;
     }
@@ -7933,6 +7933,14 @@ function App() {
         <div role="alert" style={{ position: "fixed", bottom: 12, left: "50%", transform: "translateX(-50%)", zIndex: 99999, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", borderRadius: 8, padding: "10px 18px", fontSize: 13, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", maxWidth: "90vw", textAlign: "center", cursor: "pointer" }}
           title="Click to dismiss" onClick={() => setStorageFull(false)}>
           ⚠ Settings could not be saved — storage is full or unavailable (e.g. private browsing). Changes will be lost on reload.
+        </div>
+      )}
+
+      {/* Review-list-full banner — non-blocking, mirrors the storage-full pattern (P3-001) */}
+      {reviewFull && (
+        <div role="alert" style={{ position: "fixed", bottom: 12, left: "50%", transform: "translateX(-50%)", zIndex: 99999, background: "var(--color-background-warning)", color: "var(--color-text-warning)", border: "1px solid #fcd34d", borderRadius: 8, padding: "10px 18px", fontSize: 13, boxShadow: "0 4px 12px rgba(0,0,0,0.15)", maxWidth: "90vw", textAlign: "center", cursor: "pointer" }}
+          title="Click to dismiss" onClick={() => setReviewFull(false)}>
+          ⚠ Review list is full ({VOCAB_REVIEW_CAP} words). Remove some entries before adding more.
         </div>
       )}
 
@@ -8630,6 +8638,7 @@ function App() {
             <VerbQuizTab
               level={level}
               conjCache={conjCache}
+              scheduleConjCacheWrite={scheduleConjCacheWrite}
               apiKey={apiKey}
               verbInput={verbInput}
               setVerbInput={setVerbInput}
@@ -9181,7 +9190,7 @@ function App() {
             value={input}
             onChange={e => {
               setInput(e.target.value);
-finalTranscriptRef.current = e.target.value;
+              finalTranscriptRef.current = e.target.value;
               // Auto-grow: reset to auto so scrollHeight reflects the content, then clamp to maxHeight.
               const el = e.target;
               el.style.height = "auto";
