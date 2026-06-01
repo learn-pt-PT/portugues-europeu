@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.1.1 -->
+  <!-- version: 3.1.8 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.1.1", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.1.8", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -712,66 +712,66 @@ function getIpaHint(contrast) {
 // insert new sections at an arbitrary position — maintain alphabetical order.
 const PHRASES = [
   { section: "Administrative & daily life", items: [
-    { pt: "Preciso de uma fatura com NIF", en: "I need a receipt with my tax number" },
-    { pt: "Qual é o contribuinte daqui?", en: "What is the tax number here?" },
-    { pt: "Onde posso pagar?", en: "Where can I pay?" },
-    { pt: "Precisava de falar com alguém", en: "I need to speak with someone" },
-    { pt: "Tenho uma questão sobre...", en: "I have a question about..." },
-    { pt: "Pode ajudar-me com isto?", en: "Can you help me with this?" },
-    { pt: "Onde fica a junta de freguesia?", en: "Where is the local council office?" },
-    { pt: "A que horas abre?", en: "What time does it open?" }, { pt: "A que horas fecha?", en: "What time does it close?" },
-    { pt: "Está fechado para almoço?", en: "Is it closed for lunch?" },
-    { pt: "Posso deixar uma mensagem?", en: "Can I leave a message?" },
+    { pt: "Preciso de uma fatura com NIF", en: "I need a receipt with my tax number", freq: "high" },
+    { pt: "Qual é o contribuinte daqui?", en: "What is the tax number here?", freq: "mid" },
+    { pt: "Onde posso pagar?", en: "Where can I pay?", freq: "high" },
+    { pt: "Precisava de falar com alguém", en: "I need to speak with someone", freq: "high" },
+    { pt: "Tenho uma questão sobre...", en: "I have a question about...", freq: "high" },
+    { pt: "Pode ajudar-me com isto?", en: "Can you help me with this?", freq: "high" },
+    { pt: "Onde fica a junta de freguesia?", en: "Where is the local council office?", freq: "mid" },
+    { pt: "A que horas abre?", en: "What time does it open?", freq: "high" }, { pt: "A que horas fecha?", en: "What time does it close?", freq: "high" },
+    { pt: "Está fechado para almoço?", en: "Is it closed for lunch?", freq: "mid" },
+    { pt: "Posso deixar uma mensagem?", en: "Can I leave a message?", freq: "low" },
   ]},
   { section: "Emergencies & help", items: [
-    { pt: "Preciso de ajuda", en: "I need help" }, { pt: "Chame uma ambulância", en: "Call an ambulance" },
-    { pt: "Perdi a minha carteira", en: "I lost my wallet" }, { pt: "Não me sinto bem", en: "I don't feel well" },
-    { pt: "Fala inglês?", en: "Do you speak English?" }, { pt: "Não percebo", en: "I don't understand" }, { pt: "Não entendo", en: "I don't understand" },
+    { pt: "Preciso de ajuda", en: "I need help", freq: "high" }, { pt: "Chame uma ambulância", en: "Call an ambulance", freq: "high" },
+    { pt: "Perdi a minha carteira", en: "I lost my wallet", freq: "high" }, { pt: "Não me sinto bem", en: "I don't feel well", freq: "high" },
+    { pt: "Fala inglês?", en: "Do you speak English?", freq: "high" }, { pt: "Não percebo", en: "I don't understand", freq: "high" }, { pt: "Não entendo", en: "I don't understand", freq: "high" },
   ]},
   { section: "Food & restaurants", items: [
-    { pt: "Uma mesa para dois, faz favor", en: "A table for two, please" }, { pt: "A ementa, faz favor", en: "The menu, please" },
-    { pt: "O que recomenda?", en: "What do you recommend?" }, { pt: "Está delicioso", en: "It's delicious" },
-    { pt: "A conta, faz favor", en: "The bill, please" }, { pt: "Sem glúten, por favor", en: "Gluten-free, please" }, { pt: "Sou vegetariano/a", en: "I'm vegetarian" },
-    { pt: "Uma bica, por favor.", en: "An espresso, please." },
-    { pt: "Um galão, faz favor.", en: "A galão, please." },
-    { pt: "Uma meia de leite descafeinada, se faz favor.", en: "A decaf white coffee, please." },
-    { pt: "Um café, se faz favor.", en: "A coffee, please." },
-    { pt: "Tem pastel de nata?", en: "Do you have custard tarts?" },
-    { pt: "Queria uma bifana.", en: "I'd like a bifana." },
-    { pt: "Pode trazer a conta, faz favor?", en: "Can you bring the bill, please?" },
-    { pt: "Está incluído o serviço?", en: "Is service included?" },
-    { pt: "Queria uma imperial.", en: "I'd like a draft beer." },
+    { pt: "Uma mesa para dois, faz favor", en: "A table for two, please", freq: "high" }, { pt: "A ementa, faz favor", en: "The menu, please", freq: "high" },
+    { pt: "O que recomenda?", en: "What do you recommend?", freq: "high" }, { pt: "Está delicioso", en: "It's delicious", freq: "high" },
+    { pt: "A conta, faz favor", en: "The bill, please", freq: "high" }, { pt: "Sem glúten, por favor", en: "Gluten-free, please", freq: "low" }, { pt: "Sou vegetariano/a", en: "I'm vegetarian", freq: "low" },
+    { pt: "Uma bica, por favor.", en: "An espresso, please.", freq: "high" },
+    { pt: "Um galão, faz favor.", en: "A galão, please.", freq: "mid" },
+    { pt: "Uma meia de leite descafeinada, se faz favor.", en: "A decaf white coffee, please.", freq: "low" },
+    { pt: "Um café, se faz favor.", en: "A coffee, please.", freq: "high" },
+    { pt: "Tem pastel de nata?", en: "Do you have custard tarts?", freq: "mid" },
+    { pt: "Queria uma bifana.", en: "I'd like a bifana.", freq: "mid" },
+    { pt: "Pode trazer a conta, faz favor?", en: "Can you bring the bill, please?", freq: "high" },
+    { pt: "Está incluído o serviço?", en: "Is service included?", freq: "mid" },
+    { pt: "Queria uma imperial.", en: "I'd like a draft beer.", freq: "mid" },
   ]},
   { section: "Getting around", items: [
-    { pt: "Onde fica...?", en: "Where is...?" }, { pt: "Como chego a...?", en: "How do I get to...?" },
-    { pt: "Vire à direita", en: "Turn right" }, { pt: "Vire à esquerda", en: "Turn left" }, { pt: "Sempre em frente", en: "Straight ahead" },
-    { pt: "Um bilhete para..., faz favor", en: "A ticket to..., please" }, { pt: "A que horas parte o autocarro?", en: "What time does the bus leave?" },
+    { pt: "Onde fica...?", en: "Where is...?", freq: "high" }, { pt: "Como chego a...?", en: "How do I get to...?", freq: "high" },
+    { pt: "Vire à direita", en: "Turn right", freq: "high" }, { pt: "Vire à esquerda", en: "Turn left", freq: "high" }, { pt: "Sempre em frente", en: "Straight ahead", freq: "high" },
+    { pt: "Um bilhete para..., faz favor", en: "A ticket to..., please", freq: "high" }, { pt: "A que horas parte o autocarro?", en: "What time does the bus leave?", freq: "mid" },
   ]},
   { section: "Greetings & farewells", items: [
-    { pt: "Bom dia", en: "Good morning" }, { pt: "Boa tarde", en: "Good afternoon" },
-    { pt: "Boa noite", en: "Good evening / Good night" }, { pt: "Olá, tudo bem?", en: "Hello, all good?" },
-    { pt: "Tudo bem, obrigado/a", en: "All good, thank you" }, { pt: "Até logo", en: "See you soon" }, { pt: "Até já", en: "See you in a bit" },
-    { pt: "Adeus", en: "Goodbye (final)" }, { pt: "Com licença", en: "Excuse me (to pass)" }, { pt: "Desculpe", en: "Sorry / Excuse me" },
+    { pt: "Bom dia", en: "Good morning", freq: "high" }, { pt: "Boa tarde", en: "Good afternoon", freq: "high" },
+    { pt: "Boa noite", en: "Good evening / Good night", freq: "high" }, { pt: "Olá, tudo bem?", en: "Hello, all good?", freq: "high" },
+    { pt: "Tudo bem, obrigado/a", en: "All good, thank you", freq: "high" }, { pt: "Até logo", en: "See you soon", freq: "high" }, { pt: "Até já", en: "See you in a bit", freq: "high" },
+    { pt: "Adeus", en: "Goodbye (final)", freq: "mid" }, { pt: "Com licença", en: "Excuse me (to pass)", freq: "high" }, { pt: "Desculpe", en: "Sorry / Excuse me", freq: "high" },
   ]},
   { section: "Healthcare & pharmacy", items: [
-    { pt: "Onde fica a farmácia de serviço?", en: "Where is the duty pharmacy?" },
-    { pt: "Preciso de um médico", en: "I need a doctor" },
-    { pt: "Tenho uma marcação", en: "I have an appointment" },
-    { pt: "Dói-me aqui", en: "It hurts here" },
-    { pt: "Sou alérgico/a a...", en: "I'm allergic to..." },
-    { pt: "Tem alguma coisa para a tosse?", en: "Do you have anything for a cough?" },
-    { pt: "Preciso de uma receita?", en: "Do I need a prescription?" },
-    { pt: "Pode repetir mais devagar, por favor?", en: "Can you repeat more slowly, please?" },
+    { pt: "Onde fica a farmácia de serviço?", en: "Where is the duty pharmacy?", freq: "high" },
+    { pt: "Preciso de um médico", en: "I need a doctor", freq: "high" },
+    { pt: "Tenho uma marcação", en: "I have an appointment", freq: "high" },
+    { pt: "Dói-me aqui", en: "It hurts here", freq: "high" },
+    { pt: "Sou alérgico/a a...", en: "I'm allergic to...", freq: "mid" },
+    { pt: "Tem alguma coisa para a tosse?", en: "Do you have anything for a cough?", freq: "mid" },
+    { pt: "Preciso de uma receita?", en: "Do I need a prescription?", freq: "mid" },
+    { pt: "Pode repetir mais devagar, por favor?", en: "Can you repeat more slowly, please?", freq: "high" },
   ]},
   { section: "Politeness", items: [
-    { pt: "Por favor", en: "Please" }, { pt: "Obrigado", en: "Thank you (male speaker)" }, { pt: "Obrigada", en: "Thank you (female speaker)" },
-    { pt: "De nada", en: "You're welcome" }, { pt: "Com muito prazer", en: "With great pleasure" },
-    { pt: "Faz favor", en: "Please / Excuse me (to get attention)" }, { pt: "Não faz mal", en: "It doesn't matter / No worries" },
+    { pt: "Por favor", en: "Please", freq: "high" }, { pt: "Obrigado", en: "Thank you (male speaker)", freq: "high" }, { pt: "Obrigada", en: "Thank you (female speaker)", freq: "high" },
+    { pt: "De nada", en: "You're welcome", freq: "high" }, { pt: "Com muito prazer", en: "With great pleasure", freq: "mid" },
+    { pt: "Faz favor", en: "Please / Excuse me (to get attention)", freq: "high" }, { pt: "Não faz mal", en: "It doesn't matter / No worries", freq: "high" },
   ]},
   { section: "Shopping & money", items: [
-    { pt: "Quanto custa?", en: "How much does it cost?" }, { pt: "É muito caro", en: "It's very expensive" },
-    { pt: "Tem mais barato?", en: "Do you have something cheaper?" }, { pt: "Posso pagar com cartão?", en: "Can I pay by card?" },
-    { pt: "Onde fica a caixa?", en: "Where is the checkout?" }, { pt: "Queria...", en: "I would like..." }, { pt: "Estou só a ver", en: "I'm just looking" },
+    { pt: "Quanto custa?", en: "How much does it cost?", freq: "high" }, { pt: "É muito caro", en: "It's very expensive", freq: "high" },
+    { pt: "Tem mais barato?", en: "Do you have something cheaper?", freq: "mid" }, { pt: "Posso pagar com cartão?", en: "Can I pay by card?", freq: "high" },
+    { pt: "Onde fica a caixa?", en: "Where is the checkout?", freq: "mid" }, { pt: "Queria...", en: "I would like...", freq: "high" }, { pt: "Estou só a ver", en: "I'm just looking", freq: "high" },
   ]},
 ];
 const PHRASES_SORTED = [...PHRASES].sort((a, b) => a.section.localeCompare(b.section, "en"));
@@ -1786,123 +1786,123 @@ const GRAMMAR_SECTIONS_PARENT_MAP = {
 };
 
 const OPPOSITES = [
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a vida", en: "life" }, b: { pt: "a morte", en: "death" }, sentence: "A vida é um dom precioso, mas a morte é inevitável." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a saúde", en: "health" }, b: { pt: "a doença", en: "illness" }, sentence: "A saúde é mais valiosa do que a riqueza, pois a doença pode destruir tudo." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a vigília", en: "wakefulness" }, b: { pt: "o sono", en: "sleep" }, sentence: "Durante a vigília pensamos claramente, mas o sono restaura as nossas forças." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a fome", en: "hunger" }, b: { pt: "a saciedade", en: "satiety" }, disambig: "(hunger vs. fullness)", sentence: "A fome torna qualquer refeição deliciosa, mas a saciedade faz-nos ser exigentes." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a sede", en: "thirst" }, b: { pt: "a saciedade", en: "satiation" }, disambig: "(thirst vs. satiation)", sentence: "A sede intensa desaparece com a saciedade que uma boa água fresca proporciona." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a fertilidade", en: "fertility" }, b: { pt: "a esterilidade", en: "sterility" }, sentence: "A fertilidade do solo contrasta com a esterilidade do deserto." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "o crescimento", en: "growth" }, b: { pt: "o declínio", en: "decline" }, sentence: "O crescimento rápido da empresa foi seguido de um declínio inesperado." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a cura", en: "cure" }, b: { pt: "a doença", en: "illness" }, disambig: "(healing vs. sickness)", sentence: "A cura parecia impossível, mas a doença acabou por ceder ao tratamento." },
-  { category: "BIOLÓGICO / ESTADO FÍSICO", a: { pt: "a força", en: "strength" }, b: { pt: "a fraqueza", en: "weakness" }, disambig: "(physical)", sentence: "A força muscular diminui com a idade, mas a fraqueza pode ser combatida com exercício." },
-  { category: "ECONÓMICO / MATERIAL", a: { pt: "a riqueza", en: "wealth" }, b: { pt: "a pobreza", en: "poverty" }, sentence: "A riqueza traz conforto, mas a pobreza ensina a valorizar o essencial." },
-  { category: "ECONÓMICO / MATERIAL", a: { pt: "o lucro", en: "profit" }, b: { pt: "o prejuízo", en: "loss" }, disambig: "(financial)", sentence: "O lucro do primeiro trimestre foi apagado pelo prejuízo do segundo." },
-  { category: "ECONÓMICO / MATERIAL", a: { pt: "o ganho", en: "gain" }, b: { pt: "a perda", en: "loss" }, disambig: "(general)", sentence: "O ganho de experiência compensa sempre a perda de tempo." },
-  { category: "ECONÓMICO / MATERIAL", a: { pt: "a abundância", en: "abundance" }, b: { pt: "a escassez", en: "scarcity" }, disambig: "(material)", sentence: "A abundância de alimentos no verão contrasta com a escassez do inverno." },
-  { category: "ECONÓMICO / MATERIAL", a: { pt: "o trabalho", en: "work" }, b: { pt: "o descanso", en: "rest" }, sentence: "O trabalho árduo merece um descanso bem ganho." },
-  { category: "ECONÓMICO / MATERIAL", a: { pt: "o trabalho", en: "work" }, b: { pt: "o ócio", en: "idleness" }, disambig: "(industry vs. idleness)", sentence: "O trabalho constrói o carácter, enquanto o ócio o corrói." },
-  { category: "ECONÓMICO / MATERIAL", a: { pt: "a poupança", en: "saving" }, b: { pt: "o desperdício", en: "waste" }, sentence: "A poupança de recursos naturais é o oposto do desperdício irresponsável." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a esquerda", en: "left" }, b: { pt: "a direita", en: "right" }, disambig: "(direction)", sentence: "Vira à esquerda no semáforo e depois à direita na rotunda." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o cimo", en: "top" }, b: { pt: "o fundo", en: "bottom" }, sentence: "O cimo da montanha estava coberto de neve, mas o fundo do vale estava verde." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a frente", en: "front" }, b: { pt: "a costa", en: "back" }, disambig: "(colloquial)", sentence: "Sentou-se na frente do autocarro porque não aguentava andar de costa para a frente." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a frente", en: "front" }, b: { pt: "a retaguarda", en: "rear" }, disambig: "(formal/military)", sentence: "As tropas avançaram pela frente enquanto a retaguarda protegia a retirada." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o interior", en: "inside" }, b: { pt: "o exterior", en: "outside" }, sentence: "O interior da casa estava quente enquanto o exterior estava gelado." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o centro", en: "center" }, b: { pt: "a periferia", en: "periphery" }, sentence: "Os serviços concentram-se no centro da cidade, deixando a periferia mal servida." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o norte", en: "north" }, b: { pt: "o sul", en: "south" }, sentence: "O norte do país é mais chuvoso do que o sul." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o este", en: "east" }, b: { pt: "o oeste", en: "west" }, sentence: "O sol nasce a este e põe-se a oeste." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o oriente", en: "east" }, b: { pt: "o ocidente", en: "west" }, disambig: "(cultural/formal)", sentence: "O oriente e o ocidente têm tradições filosóficas muito distintas." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a proximidade", en: "nearness" }, b: { pt: "a distância", en: "distance" }, sentence: "A proximidade entre vizinhos pode ser reconfortante, mas a distância também tem o seu valor." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a subida", en: "ascent" }, b: { pt: "a descida", en: "descent" }, disambig: "(slope/terrain)", sentence: "A subida até ao miradouro foi difícil, mas a descida foi tranquila." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "a entrada", en: "entrance" }, b: { pt: "a saída", en: "exit" }, sentence: "A entrada do museu é gratuita, mas a saída é pela loja." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o começo", en: "beginning" }, b: { pt: "o fim", en: "end" }, sentence: "O começo da história é animado, mas o fim é melancólico." },
-  { category: "ESPACIAL / DIRECIONAL", a: { pt: "o início", en: "start" }, b: { pt: "o final", en: "finish" }, disambig: "(events/formal)", sentence: "O início da corrida foi caótico, mas o final foi emocionante." },
-  { category: "ESTADO / MOVIMENTO", a: { pt: "o movimento", en: "movement" }, b: { pt: "a imobilidade", en: "stillness" }, sentence: "O movimento constante da cidade contrasta com a imobilidade da madrugada." },
-  { category: "ESTADO / MOVIMENTO", a: { pt: "o movimento", en: "movement" }, b: { pt: "o repouso", en: "rest" }, disambig: "(colloquial)", sentence: "O médico recomendou alternar o movimento suave com o repouso total." },
-  { category: "ESTADO / MOVIMENTO", a: { pt: "a chegada", en: "arrival" }, b: { pt: "a partida", en: "departure" }, sentence: "A chegada foi festejada com abraços, e a partida com lágrimas." },
-  { category: "ESTADO / MOVIMENTO", a: { pt: "o avanço", en: "advance" }, b: { pt: "o recuo", en: "retreat" }, sentence: "O avanço das negociações foi interrompido por um recuo inesperado." },
-  { category: "ESTADO / MOVIMENTO", a: { pt: "a aceleração", en: "acceleration" }, b: { pt: "a travagem", en: "braking" }, disambig: "(PT-PT specific)", sentence: "A aceleração brusca seguida de uma travagem forte danifica os travões." },
-  { category: "ESTADO / MOVIMENTO", a: { pt: "a abertura", en: "opening" }, b: { pt: "o fecho", en: "closing" }, sentence: "A abertura da exposição foi um sucesso; o fecho passou despercebido." },
-  { category: "ESTADO / MOVIMENTO", a: { pt: "a subida", en: "rise" }, b: { pt: "a queda", en: "fall" }, disambig: "(motion)", sentence: "A subida das temperaturas foi seguida de uma queda repentina." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "o calor", en: "heat" }, b: { pt: "o frio", en: "cold" }, disambig: "(temperature extremes)", sentence: "O calor de agosto é sufocante, mas o frio de janeiro corta a cara." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "o calor", en: "warmth" }, b: { pt: "o frescor", en: "coolness" }, disambig: "(moderate contrast)", sentence: "O calor da lareira deu lugar ao frescor da brisa noturna." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a luz", en: "light" }, b: { pt: "a escuridão", en: "darkness" }, disambig: "(physical)", sentence: "A luz do candeeiro mal vencia a escuridão daquele corredor." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "o som", en: "sound" }, b: { pt: "o silêncio", en: "silence" }, sentence: "O som do rio foi gradualmente substituído pelo silêncio absoluto da floresta." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "o barulho", en: "noise" }, b: { pt: "o silêncio", en: "silence" }, disambig: "(colloquial)", sentence: "O barulho da festa durou até às três da manhã; depois voltou o silêncio." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a dureza", en: "hardness" }, b: { pt: "a suavidade", en: "softness" }, sentence: "A dureza do granito contrasta com a suavidade da argila húmida." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a dureza", en: "hardness" }, b: { pt: "a macieza", en: "softness" }, disambig: "(PT-PT colloquial)", sentence: "A dureza do colchão velho era insuportável; a macieza do novo foi uma revelação." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "o peso", en: "weight" }, b: { pt: "a leveza", en: "lightness" }, sentence: "O peso da mochila tornava cada passo difícil; a leveza das sandálias era um alívio." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a secura", en: "dryness" }, b: { pt: "a humidade", en: "humidity" }, sentence: "A secura do verão alentejano é tão extrema quanto a humidade do outono minhoto." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a ordem", en: "order" }, b: { pt: "a desordem", en: "disorder" }, sentence: "A ordem na sala de aula facilitava a aprendizagem; a desordem destruía-a." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a ordem", en: "order" }, b: { pt: "o caos", en: "chaos" }, disambig: "(colloquial)", sentence: "A ordem das filas de espera rapidamente se transformou em caos quando abriram as portas." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a limpeza", en: "cleanliness" }, b: { pt: "a sujidade", en: "dirtiness" }, sentence: "A limpeza da cozinha contrastava com a sujidade da garagem." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "a beleza", en: "beauty" }, b: { pt: "a feiura", en: "ugliness" }, sentence: "A beleza da paisagem tornava a feiura das construções ainda mais chocante." },
-  { category: "FÍSICO / SENSORIAL", a: { pt: "o prazer", en: "pleasure" }, b: { pt: "a dor", en: "pain" }, sentence: "O prazer da corrida só é compreendido por quem já sentiu a dor de parar." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "o conhecimento", en: "knowledge" }, b: { pt: "a ignorância", en: "ignorance" }, sentence: "O conhecimento ilumina, mas a ignorância nem sempre é sofrimento — por vezes é conforto." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a certeza", en: "certainty" }, b: { pt: "a dúvida", en: "doubt" }, sentence: "A certeza dava-lhe paz, mas a dúvida foi o que o levou a questionar tudo." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a razão", en: "reason" }, b: { pt: "a loucura", en: "madness" }, sentence: "A razão e a loucura estão separadas por uma linha mais ténue do que julgamos." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a sabedoria", en: "wisdom" }, b: { pt: "a estupidez", en: "stupidity" }, sentence: "A sabedoria reconhece os seus limites; a estupidez ignora-os completamente." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a sabedoria", en: "wisdom" }, b: { pt: "a tolice", en: "foolishness" }, disambig: "(colloquial/softer)", sentence: "A sabedoria dos velhos parece tolice aos jovens, até que provam o contrário." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a memória", en: "memory" }, b: { pt: "o esquecimento", en: "forgetting" }, sentence: "A memória preserva o que somos; o esquecimento apaga o que nos magoou." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a clareza", en: "clarity" }, b: { pt: "a confusão", en: "confusion" }, sentence: "A clareza das instruções evitaria a confusão que se seguiu." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a crença", en: "belief" }, b: { pt: "a descrença", en: "unbelief" }, sentence: "A crença movia-a todos os dias; a descrença do marido era um peso constante." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a consciência", en: "consciousness" }, b: { pt: "a inconsciência", en: "unconsciousness" }, disambig: "(awareness)", sentence: "A consciência do perigo chegou tarde; a inconsciência durou apenas alguns segundos." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a atenção", en: "attention" }, b: { pt: "a distração", en: "distraction" }, sentence: "A atenção às aulas melhorou as notas; a distração do telemóvel destruía-a." },
-  { category: "MENTAL / EPISTÉMICO", a: { pt: "a compreensão", en: "understanding" }, b: { pt: "o mal-entendido", en: "misunderstanding" }, sentence: "A compreensão mútua evitaria o mal-entendido que separou os dois amigos." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "o bem", en: "good" }, b: { pt: "o mal", en: "evil" }, sentence: "O bem e o mal coexistem no mundo, e cada pessoa escolhe o seu caminho." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a verdade", en: "truth" }, b: { pt: "a mentira", en: "lie" }, disambig: "(everyday)", sentence: "A verdade é difícil de ouvir, mas a mentira é ainda mais difícil de viver." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a verdade", en: "truth" }, b: { pt: "o erro", en: "error" }, disambig: "(philosophical/theological)", sentence: "A verdade permanece imutável; o erro é sempre uma distorção dela." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a virtude", en: "virtue" }, b: { pt: "o vício", en: "vice" }, sentence: "A virtude constrói-se com esforço diário; o vício instala-se sem que demos conta." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a honestidade", en: "honesty" }, b: { pt: "a falsidade", en: "falseness" }, sentence: "A honestidade pode custar caro, mas a falsidade custa sempre mais." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a justiça", en: "justice" }, b: { pt: "a injustiça", en: "injustice" }, sentence: "A justiça tarda, mas a injustiça deixa marcas que não se apagam." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "o certo", en: "right" }, b: { pt: "o errado", en: "wrong" }, disambig: "(moral nouns)", sentence: "Saber distinguir o certo do errado é o início de qualquer maturidade moral." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a recompensa", en: "reward" }, b: { pt: "o castigo", en: "punishment" }, sentence: "A recompensa pelo bom comportamento era tão importante quanto o castigo pelo mau." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a coragem", en: "courage" }, b: { pt: "a cobardia", en: "cowardice" }, sentence: "A coragem não é a ausência do medo, mas a cobardia é a recusa de o enfrentar." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a lealdade", en: "loyalty" }, b: { pt: "a traição", en: "betrayal" }, sentence: "A lealdade de anos foi destruída por uma única traição." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a generosidade", en: "generosity" }, b: { pt: "a avareza", en: "miserliness" }, sentence: "A generosidade enriquece quem dá; a avareza empobrece quem guarda." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a humildade", en: "humility" }, b: { pt: "o orgulho", en: "pride" }, disambig: "(neutral pride)", sentence: "A humildade abre portas que o orgulho fecha." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a humildade", en: "humility" }, b: { pt: "a soberba", en: "arrogance" }, disambig: "(moral failing)", sentence: "A humildade é uma virtude rara; a soberba é um defeito comum." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a pureza", en: "purity" }, b: { pt: "a impureza", en: "impurity" }, sentence: "A pureza da intenção distingue o acto generoso do calculista." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a pureza", en: "purity" }, b: { pt: "a corrupção", en: "corruption" }, disambig: "(moral/political)", sentence: "A pureza do ideal original foi destruída pela corrupção do poder." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a inocência", en: "innocence" }, b: { pt: "a culpa", en: "guilt" }, sentence: "A inocência da criança contrasta com a culpa que os adultos carregam." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a obediência", en: "obedience" }, b: { pt: "a rebeldia", en: "rebellion" }, sentence: "A obediência cega tem os seus perigos, mas a rebeldia sem causa também." },
-  { category: "MORAL / AVALIATIVO", a: { pt: "a força", en: "strength" }, b: { pt: "a fraqueza", en: "weakness" }, disambig: "(moral)", sentence: "A força de carácter é mais rara do que a força física; a fraqueza moral é mais perigosa do que a física." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "o amigo", en: "friend" }, b: { pt: "o inimigo", en: "enemy" }, sentence: "Com o tempo percebemos que o amigo verdadeiro é raro, e o inimigo declarado é mais honesto que o falso amigo." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "o amor", en: "love" }, b: { pt: "o ódio", en: "hate" }, sentence: "O amor e o ódio são as duas emoções que mais nos transformam." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a paz", en: "peace" }, b: { pt: "a guerra", en: "war" }, sentence: "A paz é frágil; a guerra destrói em dias o que a paz construiu em anos." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "o acordo", en: "agreement" }, b: { pt: "o desacordo", en: "disagreement" }, sentence: "O acordo foi difícil de alcançar, e o desacordo persistiu em pontos essenciais." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "o acordo", en: "agreement" }, b: { pt: "o conflito", en: "conflict" }, disambig: "(colloquial)", sentence: "O acordo entre as partes evitou o conflito que todos temiam." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a confiança", en: "trust" }, b: { pt: "a desconfiança", en: "distrust" }, sentence: "A confiança leva anos a construir; a desconfiança instala-se num instante." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a união", en: "union" }, b: { pt: "a divisão", en: "division" }, sentence: "A união da família era a sua maior força; a divisão seria a sua ruína." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a união", en: "union" }, b: { pt: "a separação", en: "separation" }, sentence: "A união dos povos é um ideal; a separação é muitas vezes a realidade." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a aceitação", en: "acceptance" }, b: { pt: "a rejeição", en: "rejection" }, sentence: "A aceitação incondicional é rara; a rejeição deixa marcas profundas." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "o respeito", en: "respect" }, b: { pt: "o desrespeito", en: "disrespect" }, sentence: "O respeito ganha-se com coerência; o desrespeito perde-se num só momento." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a solidariedade", en: "solidarity" }, b: { pt: "o egoísmo", en: "selfishness" }, sentence: "A solidariedade da comunidade contrastava com o egoísmo de quem nada partilhava." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "o casamento", en: "marriage" }, b: { pt: "o divórcio", en: "divorce" }, sentence: "O casamento é uma promessa; o divórcio é o reconhecimento de que a promessa falhou." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a liberdade", en: "freedom" }, b: { pt: "a escravidão", en: "slavery" }, sentence: "A liberdade conquistada à força contrasta com a escravidão aceite por comodidade." },
-  { category: "RELACIONAL / SOCIAL", a: { pt: "a liberdade", en: "freedom" }, b: { pt: "o cativeiro", en: "captivity" }, disambig: "(colloquial/religious)", sentence: "A liberdade da alma não depende do cativeiro do corpo." },
-  { category: "TEMPORAL", a: { pt: "o passado", en: "past" }, b: { pt: "o futuro", en: "future" }, sentence: "O passado não se muda; o futuro ainda se pode construir." },
-  { category: "TEMPORAL", a: { pt: "o passado", en: "past" }, b: { pt: "o presente", en: "present" }, sentence: "O passado pesa-nos; o presente exige-nos atenção." },
-  { category: "TEMPORAL", a: { pt: "o dia", en: "day" }, b: { pt: "a noite", en: "night" }, sentence: "O dia pertencia ao trabalho; a noite pertencia ao descanso e aos sonhos." },
-  { category: "TEMPORAL", a: { pt: "a manhã", en: "morning" }, b: { pt: "o anoitecer", en: "nightfall" }, sentence: "A manhã chegou cedo demais; o anoitecer tarde demais." },
-  { category: "TEMPORAL", a: { pt: "a madrugada", en: "early hours" }, b: { pt: "o anoitecer", en: "nightfall" }, disambig: "(colloquial)", sentence: "A madrugada fria era muito diferente do anoitecer quente de setembro." },
-  { category: "TEMPORAL", a: { pt: "o nascimento", en: "birth" }, b: { pt: "a morte", en: "death" }, disambig: "(temporal events)", sentence: "Entre o nascimento e a morte cabe uma vida inteira." },
-  { category: "TEMPORAL", a: { pt: "a juventude", en: "youth" }, b: { pt: "a velhice", en: "old age" }, sentence: "A juventude desperdiça o tempo que a velhice tanto lamenta ter perdido." },
-  { category: "TEMPORAL", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o instante", en: "instant" }, sentence: "A eternidade é incompreensível para quem só conhece o instante." },
-  { category: "TEMPORAL", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o momento", en: "moment" }, disambig: "(colloquial)", sentence: "Aquele momento de silêncio pareceu uma eternidade." },
-  { category: "TEMPORAL", a: { pt: "a antiguidade", en: "antiquity" }, b: { pt: "a modernidade", en: "modernity" }, sentence: "A antiguidade legou-nos sabedoria; a modernidade deu-nos velocidade." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o céu", en: "heaven" }, b: { pt: "o inferno", en: "hell" }, sentence: "O céu é prometido aos humildes; o inferno aos que nada mudaram." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "Deus", en: "God" }, b: { pt: "o demónio", en: "the devil" }, sentence: "Entre Deus e o demónio, o ser humano debate-se com as suas próprias escolhas." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a graça", en: "grace" }, b: { pt: "o pecado", en: "sin" }, sentence: "A graça não se merece; o pecado não se ignora." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a salvação", en: "salvation" }, b: { pt: "a perdição", en: "perdition" }, sentence: "A salvação é um caminho; a perdição é a ausência de qualquer caminho." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a fé", en: "faith" }, b: { pt: "a descrença", en: "unbelief" }, sentence: "A fé move montanhas; a descrença paralisa quem podia agir." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o espírito", en: "spirit" }, b: { pt: "a carne", en: "flesh" }, sentence: "O espírito quer o que a carne recusa, e a carne pede o que o espírito condena." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o tempo", en: "time" }, disambig: "(opposing realms)", sentence: "A eternidade não é o tempo prolongado; é a ausência do tempo." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a luz", en: "light" }, b: { pt: "as trevas", en: "darkness" }, disambig: "(theological)", sentence: "A luz entrou nas trevas, e as trevas não a compreenderam." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a bênção", en: "blessing" }, b: { pt: "a maldição", en: "curse" }, sentence: "Uma bênção dada de coração vale mais do que uma maldição proferida em raiva." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o sagrado", en: "the sacred" }, b: { pt: "o profano", en: "the profane" }, sentence: "A fronteira entre o sagrado e o profano é mais porosa do que a religião admite." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a ressurreição", en: "resurrection" }, b: { pt: "a morte", en: "death" }, sentence: "A ressurreição só tem sentido porque a morte é real." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "a criação", en: "creation" }, b: { pt: "a destruição", en: "destruction" }, sentence: "A criação de uma obra de arte demora anos; a destruição acontece num segundo." },
-  { category: "TEOLÓGICO / METAFÍSICO", a: { pt: "o criador", en: "creator" }, b: { pt: "o destruidor", en: "destroyer" }, sentence: "O criador constrói com paciência o que o destruidor desfaz com prazer." }
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "high", a: { pt: "a vida", en: "life" }, b: { pt: "a morte", en: "death" }, sentence: "A vida é um dom precioso, mas a morte é inevitável." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "high", a: { pt: "a saúde", en: "health" }, b: { pt: "a doença", en: "illness" }, sentence: "A saúde é mais valiosa do que a riqueza, pois a doença pode destruir tudo." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "mid", a: { pt: "a vigília", en: "wakefulness" }, b: { pt: "o sono", en: "sleep" }, sentence: "Durante a vigília pensamos claramente, mas o sono restaura as nossas forças." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "high", a: { pt: "a fome", en: "hunger" }, b: { pt: "a saciedade", en: "satiety" }, disambig: "(hunger vs. fullness)", sentence: "A fome torna qualquer refeição deliciosa, mas a saciedade faz-nos ser exigentes." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "mid", a: { pt: "a sede", en: "thirst" }, b: { pt: "a saciedade", en: "satiation" }, disambig: "(thirst vs. satiation)", sentence: "A sede intensa desaparece com a saciedade que uma boa água fresca proporciona." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "low", a: { pt: "a fertilidade", en: "fertility" }, b: { pt: "a esterilidade", en: "sterility" }, sentence: "A fertilidade do solo contrasta com a esterilidade do deserto." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "mid", a: { pt: "o crescimento", en: "growth" }, b: { pt: "o declínio", en: "decline" }, sentence: "O crescimento rápido da empresa foi seguido de um declínio inesperado." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "mid", a: { pt: "a cura", en: "cure" }, b: { pt: "a doença", en: "illness" }, disambig: "(healing vs. sickness)", sentence: "A cura parecia impossível, mas a doença acabou por ceder ao tratamento." },
+  { category: "BIOLÓGICO / ESTADO FÍSICO", freq: "high", a: { pt: "a força", en: "strength" }, b: { pt: "a fraqueza", en: "weakness" }, disambig: "(physical)", sentence: "A força muscular diminui com a idade, mas a fraqueza pode ser combatida com exercício." },
+  { category: "ECONÓMICO / MATERIAL", freq: "high", a: { pt: "a riqueza", en: "wealth" }, b: { pt: "a pobreza", en: "poverty" }, sentence: "A riqueza traz conforto, mas a pobreza ensina a valorizar o essencial." },
+  { category: "ECONÓMICO / MATERIAL", freq: "high", a: { pt: "o lucro", en: "profit" }, b: { pt: "o prejuízo", en: "loss" }, disambig: "(financial)", sentence: "O lucro do primeiro trimestre foi apagado pelo prejuízo do segundo." },
+  { category: "ECONÓMICO / MATERIAL", freq: "high", a: { pt: "o ganho", en: "gain" }, b: { pt: "a perda", en: "loss" }, disambig: "(general)", sentence: "O ganho de experiência compensa sempre a perda de tempo." },
+  { category: "ECONÓMICO / MATERIAL", freq: "mid", a: { pt: "a abundância", en: "abundance" }, b: { pt: "a escassez", en: "scarcity" }, disambig: "(material)", sentence: "A abundância de alimentos no verão contrasta com a escassez do inverno." },
+  { category: "ECONÓMICO / MATERIAL", freq: "high", a: { pt: "o trabalho", en: "work" }, b: { pt: "o descanso", en: "rest" }, sentence: "O trabalho árduo merece um descanso bem ganho." },
+  { category: "ECONÓMICO / MATERIAL", freq: "mid", a: { pt: "o trabalho", en: "work" }, b: { pt: "o ócio", en: "idleness" }, disambig: "(industry vs. idleness)", sentence: "O trabalho constrói o carácter, enquanto o ócio o corrói." },
+  { category: "ECONÓMICO / MATERIAL", freq: "mid", a: { pt: "a poupança", en: "saving" }, b: { pt: "o desperdício", en: "waste" }, sentence: "A poupança de recursos naturais é o oposto do desperdício irresponsável." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "high", a: { pt: "a esquerda", en: "left" }, b: { pt: "a direita", en: "right" }, disambig: "(direction)", sentence: "Vira à esquerda no semáforo e depois à direita na rotunda." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "mid", a: { pt: "o cimo", en: "top" }, b: { pt: "o fundo", en: "bottom" }, sentence: "O cimo da montanha estava coberto de neve, mas o fundo do vale estava verde." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "mid", a: { pt: "a frente", en: "front" }, b: { pt: "a costa", en: "back" }, disambig: "(colloquial)", sentence: "Sentou-se na frente do autocarro porque não aguentava andar de costa para a frente." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "low", a: { pt: "a frente", en: "front" }, b: { pt: "a retaguarda", en: "rear" }, disambig: "(formal/military)", sentence: "As tropas avançaram pela frente enquanto a retaguarda protegia a retirada." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "high", a: { pt: "o interior", en: "inside" }, b: { pt: "o exterior", en: "outside" }, sentence: "O interior da casa estava quente enquanto o exterior estava gelado." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "mid", a: { pt: "o centro", en: "center" }, b: { pt: "a periferia", en: "periphery" }, sentence: "Os serviços concentram-se no centro da cidade, deixando a periferia mal servida." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "high", a: { pt: "o norte", en: "north" }, b: { pt: "o sul", en: "south" }, sentence: "O norte do país é mais chuvoso do que o sul." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "high", a: { pt: "o este", en: "east" }, b: { pt: "o oeste", en: "west" }, sentence: "O sol nasce a este e põe-se a oeste." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "low", a: { pt: "o oriente", en: "east" }, b: { pt: "o ocidente", en: "west" }, disambig: "(cultural/formal)", sentence: "O oriente e o ocidente têm tradições filosóficas muito distintas." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "mid", a: { pt: "a proximidade", en: "nearness" }, b: { pt: "a distância", en: "distance" }, sentence: "A proximidade entre vizinhos pode ser reconfortante, mas a distância também tem o seu valor." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "mid", a: { pt: "a subida", en: "ascent" }, b: { pt: "a descida", en: "descent" }, disambig: "(slope/terrain)", sentence: "A subida até ao miradouro foi difícil, mas a descida foi tranquila." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "high", a: { pt: "a entrada", en: "entrance" }, b: { pt: "a saída", en: "exit" }, sentence: "A entrada do museu é gratuita, mas a saída é pela loja." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "high", a: { pt: "o começo", en: "beginning" }, b: { pt: "o fim", en: "end" }, sentence: "O começo da história é animado, mas o fim é melancólico." },
+  { category: "ESPACIAL / DIRECIONAL", freq: "mid", a: { pt: "o início", en: "start" }, b: { pt: "o final", en: "finish" }, disambig: "(events/formal)", sentence: "O início da corrida foi caótico, mas o final foi emocionante." },
+  { category: "ESTADO / MOVIMENTO", freq: "mid", a: { pt: "o movimento", en: "movement" }, b: { pt: "a imobilidade", en: "stillness" }, sentence: "O movimento constante da cidade contrasta com a imobilidade da madrugada." },
+  { category: "ESTADO / MOVIMENTO", freq: "mid", a: { pt: "o movimento", en: "movement" }, b: { pt: "o repouso", en: "rest" }, disambig: "(colloquial)", sentence: "O médico recomendou alternar o movimento suave com o repouso total." },
+  { category: "ESTADO / MOVIMENTO", freq: "high", a: { pt: "a chegada", en: "arrival" }, b: { pt: "a partida", en: "departure" }, sentence: "A chegada foi festejada com abraços, e a partida com lágrimas." },
+  { category: "ESTADO / MOVIMENTO", freq: "mid", a: { pt: "o avanço", en: "advance" }, b: { pt: "o recuo", en: "retreat" }, sentence: "O avanço das negociações foi interrompido por um recuo inesperado." },
+  { category: "ESTADO / MOVIMENTO", freq: "low", a: { pt: "a aceleração", en: "acceleration" }, b: { pt: "a travagem", en: "braking" }, disambig: "(PT-PT specific)", sentence: "A aceleração brusca seguida de uma travagem forte danifica os travões." },
+  { category: "ESTADO / MOVIMENTO", freq: "mid", a: { pt: "a abertura", en: "opening" }, b: { pt: "o fecho", en: "closing" }, sentence: "A abertura da exposição foi um sucesso; o fecho passou despercebido." },
+  { category: "ESTADO / MOVIMENTO", freq: "mid", a: { pt: "a subida", en: "rise" }, b: { pt: "a queda", en: "fall" }, disambig: "(motion)", sentence: "A subida das temperaturas foi seguida de uma queda repentina." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "o calor", en: "heat" }, b: { pt: "o frio", en: "cold" }, disambig: "(temperature extremes)", sentence: "O calor de agosto é sufocante, mas o frio de janeiro corta a cara." },
+  { category: "FÍSICO / SENSORIAL", freq: "mid", a: { pt: "o calor", en: "warmth" }, b: { pt: "o frescor", en: "coolness" }, disambig: "(moderate contrast)", sentence: "O calor da lareira deu lugar ao frescor da brisa noturna." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "a luz", en: "light" }, b: { pt: "a escuridão", en: "darkness" }, disambig: "(physical)", sentence: "A luz do candeeiro mal vencia a escuridão daquele corredor." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "o som", en: "sound" }, b: { pt: "o silêncio", en: "silence" }, sentence: "O som do rio foi gradualmente substituído pelo silêncio absoluto da floresta." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "o barulho", en: "noise" }, b: { pt: "o silêncio", en: "silence" }, disambig: "(colloquial)", sentence: "O barulho da festa durou até às três da manhã; depois voltou o silêncio." },
+  { category: "FÍSICO / SENSORIAL", freq: "mid", a: { pt: "a dureza", en: "hardness" }, b: { pt: "a suavidade", en: "softness" }, sentence: "A dureza do granito contrasta com a suavidade da argila húmida." },
+  { category: "FÍSICO / SENSORIAL", freq: "low", a: { pt: "a dureza", en: "hardness" }, b: { pt: "a macieza", en: "softness" }, disambig: "(PT-PT colloquial)", sentence: "A dureza do colchão velho era insuportável; a macieza do novo foi uma revelação." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "o peso", en: "weight" }, b: { pt: "a leveza", en: "lightness" }, sentence: "O peso da mochila tornava cada passo difícil; a leveza das sandálias era um alívio." },
+  { category: "FÍSICO / SENSORIAL", freq: "mid", a: { pt: "a secura", en: "dryness" }, b: { pt: "a humidade", en: "humidity" }, sentence: "A secura do verão alentejano é tão extrema quanto a humidade do outono minhoto." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "a ordem", en: "order" }, b: { pt: "a desordem", en: "disorder" }, sentence: "A ordem na sala de aula facilitava a aprendizagem; a desordem destruía-a." },
+  { category: "FÍSICO / SENSORIAL", freq: "mid", a: { pt: "a ordem", en: "order" }, b: { pt: "o caos", en: "chaos" }, disambig: "(colloquial)", sentence: "A ordem das filas de espera rapidamente se transformou em caos quando abriram as portas." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "a limpeza", en: "cleanliness" }, b: { pt: "a sujidade", en: "dirtiness" }, sentence: "A limpeza da cozinha contrastava com a sujidade da garagem." },
+  { category: "FÍSICO / SENSORIAL", freq: "mid", a: { pt: "a beleza", en: "beauty" }, b: { pt: "a feiura", en: "ugliness" }, sentence: "A beleza da paisagem tornava a feiura das construções ainda mais chocante." },
+  { category: "FÍSICO / SENSORIAL", freq: "high", a: { pt: "o prazer", en: "pleasure" }, b: { pt: "a dor", en: "pain" }, sentence: "O prazer da corrida só é compreendido por quem já sentiu a dor de parar." },
+  { category: "MENTAL / EPISTÉMICO", freq: "high", a: { pt: "o conhecimento", en: "knowledge" }, b: { pt: "a ignorância", en: "ignorance" }, sentence: "O conhecimento ilumina, mas a ignorância nem sempre é sofrimento — por vezes é conforto." },
+  { category: "MENTAL / EPISTÉMICO", freq: "high", a: { pt: "a certeza", en: "certainty" }, b: { pt: "a dúvida", en: "doubt" }, sentence: "A certeza dava-lhe paz, mas a dúvida foi o que o levou a questionar tudo." },
+  { category: "MENTAL / EPISTÉMICO", freq: "mid", a: { pt: "a razão", en: "reason" }, b: { pt: "a loucura", en: "madness" }, sentence: "A razão e a loucura estão separadas por uma linha mais ténue do que julgamos." },
+  { category: "MENTAL / EPISTÉMICO", freq: "mid", a: { pt: "a sabedoria", en: "wisdom" }, b: { pt: "a estupidez", en: "stupidity" }, sentence: "A sabedoria reconhece os seus limites; a estupidez ignora-os completamente." },
+  { category: "MENTAL / EPISTÉMICO", freq: "mid", a: { pt: "a sabedoria", en: "wisdom" }, b: { pt: "a tolice", en: "foolishness" }, disambig: "(colloquial/softer)", sentence: "A sabedoria dos velhos parece tolice aos jovens, até que provam o contrário." },
+  { category: "MENTAL / EPISTÉMICO", freq: "high", a: { pt: "a memória", en: "memory" }, b: { pt: "o esquecimento", en: "forgetting" }, sentence: "A memória preserva o que somos; o esquecimento apaga o que nos magoou." },
+  { category: "MENTAL / EPISTÉMICO", freq: "high", a: { pt: "a clareza", en: "clarity" }, b: { pt: "a confusão", en: "confusion" }, sentence: "A clareza das instruções evitaria a confusão que se seguiu." },
+  { category: "MENTAL / EPISTÉMICO", freq: "mid", a: { pt: "a crença", en: "belief" }, b: { pt: "a descrença", en: "unbelief" }, sentence: "A crença movia-a todos os dias; a descrença do marido era um peso constante." },
+  { category: "MENTAL / EPISTÉMICO", freq: "mid", a: { pt: "a consciência", en: "consciousness" }, b: { pt: "a inconsciência", en: "unconsciousness" }, disambig: "(awareness)", sentence: "A consciência do perigo chegou tarde; a inconsciência durou apenas alguns segundos." },
+  { category: "MENTAL / EPISTÉMICO", freq: "high", a: { pt: "a atenção", en: "attention" }, b: { pt: "a distração", en: "distraction" }, sentence: "A atenção às aulas melhorou as notas; a distração do telemóvel destruía-a." },
+  { category: "MENTAL / EPISTÉMICO", freq: "mid", a: { pt: "a compreensão", en: "understanding" }, b: { pt: "o mal-entendido", en: "misunderstanding" }, sentence: "A compreensão mútua evitaria o mal-entendido que separou os dois amigos." },
+  { category: "MORAL / AVALIATIVO", freq: "high", a: { pt: "o bem", en: "good" }, b: { pt: "o mal", en: "evil" }, sentence: "O bem e o mal coexistem no mundo, e cada pessoa escolhe o seu caminho." },
+  { category: "MORAL / AVALIATIVO", freq: "high", a: { pt: "a verdade", en: "truth" }, b: { pt: "a mentira", en: "lie" }, disambig: "(everyday)", sentence: "A verdade é difícil de ouvir, mas a mentira é ainda mais difícil de viver." },
+  { category: "MORAL / AVALIATIVO", freq: "low", a: { pt: "a verdade", en: "truth" }, b: { pt: "o erro", en: "error" }, disambig: "(philosophical/theological)", sentence: "A verdade permanece imutável; o erro é sempre uma distorção dela." },
+  { category: "MORAL / AVALIATIVO", freq: "mid", a: { pt: "a virtude", en: "virtue" }, b: { pt: "o vício", en: "vice" }, sentence: "A virtude constrói-se com esforço diário; o vício instala-se sem que demos conta." },
+  { category: "MORAL / AVALIATIVO", freq: "mid", a: { pt: "a honestidade", en: "honesty" }, b: { pt: "a falsidade", en: "falseness" }, sentence: "A honestidade pode custar caro, mas a falsidade custa sempre mais." },
+  { category: "MORAL / AVALIATIVO", freq: "high", a: { pt: "a justiça", en: "justice" }, b: { pt: "a injustiça", en: "injustice" }, sentence: "A justiça tarda, mas a injustiça deixa marcas que não se apagam." },
+  { category: "MORAL / AVALIATIVO", freq: "high", a: { pt: "o certo", en: "right" }, b: { pt: "o errado", en: "wrong" }, disambig: "(moral nouns)", sentence: "Saber distinguir o certo do errado é o início de qualquer maturidade moral." },
+  { category: "MORAL / AVALIATIVO", freq: "mid", a: { pt: "a recompensa", en: "reward" }, b: { pt: "o castigo", en: "punishment" }, sentence: "A recompensa pelo bom comportamento era tão importante quanto o castigo pelo mau." },
+  { category: "MORAL / AVALIATIVO", freq: "high", a: { pt: "a coragem", en: "courage" }, b: { pt: "a cobardia", en: "cowardice" }, sentence: "A coragem não é a ausência do medo, mas a cobardia é a recusa de o enfrentar." },
+  { category: "MORAL / AVALIATIVO", freq: "high", a: { pt: "a lealdade", en: "loyalty" }, b: { pt: "a traição", en: "betrayal" }, sentence: "A lealdade de anos foi destruída por uma única traição." },
+  { category: "MORAL / AVALIATIVO", freq: "mid", a: { pt: "a generosidade", en: "generosity" }, b: { pt: "a avareza", en: "miserliness" }, sentence: "A generosidade enriquece quem dá; a avareza empobrece quem guarda." },
+  { category: "MORAL / AVALIATIVO", freq: "high", a: { pt: "a humildade", en: "humility" }, b: { pt: "o orgulho", en: "pride" }, disambig: "(neutral pride)", sentence: "A humildade abre portas que o orgulho fecha." },
+  { category: "MORAL / AVALIATIVO", freq: "mid", a: { pt: "a humildade", en: "humility" }, b: { pt: "a soberba", en: "arrogance" }, disambig: "(moral failing)", sentence: "A humildade é uma virtude rara; a soberba é um defeito comum." },
+  { category: "MORAL / AVALIATIVO", freq: "low", a: { pt: "a pureza", en: "purity" }, b: { pt: "a impureza", en: "impurity" }, sentence: "A pureza da intenção distingue o acto generoso do calculista." },
+  { category: "MORAL / AVALIATIVO", freq: "low", a: { pt: "a pureza", en: "purity" }, b: { pt: "a corrupção", en: "corruption" }, disambig: "(moral/political)", sentence: "A pureza do ideal original foi destruída pela corrupção do poder." },
+  { category: "MORAL / AVALIATIVO", freq: "mid", a: { pt: "a inocência", en: "innocence" }, b: { pt: "a culpa", en: "guilt" }, sentence: "A inocência da criança contrasta com a culpa que os adultos carregam." },
+  { category: "MORAL / AVALIATIVO", freq: "low", a: { pt: "a obediência", en: "obedience" }, b: { pt: "a rebeldia", en: "rebellion" }, sentence: "A obediência cega tem os seus perigos, mas a rebeldia sem causa também." },
+  { category: "MORAL / AVALIATIVO", freq: "mid", a: { pt: "a força", en: "strength" }, b: { pt: "a fraqueza", en: "weakness" }, disambig: "(moral)", sentence: "A força de carácter é mais rara do que a força física; a fraqueza moral é mais perigosa do que a física." },
+  { category: "RELACIONAL / SOCIAL", freq: "high", a: { pt: "o amigo", en: "friend" }, b: { pt: "o inimigo", en: "enemy" }, sentence: "Com o tempo percebemos que o amigo verdadeiro é raro, e o inimigo declarado é mais honesto que o falso amigo." },
+  { category: "RELACIONAL / SOCIAL", freq: "high", a: { pt: "o amor", en: "love" }, b: { pt: "o ódio", en: "hate" }, sentence: "O amor e o ódio são as duas emoções que mais nos transformam." },
+  { category: "RELACIONAL / SOCIAL", freq: "high", a: { pt: "a paz", en: "peace" }, b: { pt: "a guerra", en: "war" }, sentence: "A paz é frágil; a guerra destrói em dias o que a paz construiu em anos." },
+  { category: "RELACIONAL / SOCIAL", freq: "mid", a: { pt: "o acordo", en: "agreement" }, b: { pt: "o desacordo", en: "disagreement" }, sentence: "O acordo foi difícil de alcançar, e o desacordo persistiu em pontos essenciais." },
+  { category: "RELACIONAL / SOCIAL", freq: "mid", a: { pt: "o acordo", en: "agreement" }, b: { pt: "o conflito", en: "conflict" }, disambig: "(colloquial)", sentence: "O acordo entre as partes evitou o conflito que todos temiam." },
+  { category: "RELACIONAL / SOCIAL", freq: "high", a: { pt: "a confiança", en: "trust" }, b: { pt: "a desconfiança", en: "distrust" }, sentence: "A confiança leva anos a construir; a desconfiança instala-se num instante." },
+  { category: "RELACIONAL / SOCIAL", freq: "mid", a: { pt: "a união", en: "union" }, b: { pt: "a divisão", en: "division" }, sentence: "A união da família era a sua maior força; a divisão seria a sua ruína." },
+  { category: "RELACIONAL / SOCIAL", freq: "mid", a: { pt: "a união", en: "union" }, b: { pt: "a separação", en: "separation" }, sentence: "A união dos povos é um ideal; a separação é muitas vezes a realidade." },
+  { category: "RELACIONAL / SOCIAL", freq: "mid", a: { pt: "a aceitação", en: "acceptance" }, b: { pt: "a rejeição", en: "rejection" }, sentence: "A aceitação incondicional é rara; a rejeição deixa marcas profundas." },
+  { category: "RELACIONAL / SOCIAL", freq: "high", a: { pt: "o respeito", en: "respect" }, b: { pt: "o desrespeito", en: "disrespect" }, sentence: "O respeito ganha-se com coerência; o desrespeito perde-se num só momento." },
+  { category: "RELACIONAL / SOCIAL", freq: "mid", a: { pt: "a solidariedade", en: "solidarity" }, b: { pt: "o egoísmo", en: "selfishness" }, sentence: "A solidariedade da comunidade contrastava com o egoísmo de quem nada partilhava." },
+  { category: "RELACIONAL / SOCIAL", freq: "mid", a: { pt: "o casamento", en: "marriage" }, b: { pt: "o divórcio", en: "divorce" }, sentence: "O casamento é uma promessa; o divórcio é o reconhecimento de que a promessa falhou." },
+  { category: "RELACIONAL / SOCIAL", freq: "high", a: { pt: "a liberdade", en: "freedom" }, b: { pt: "a escravidão", en: "slavery" }, sentence: "A liberdade conquistada à força contrasta com a escravidão aceite por comodidade." },
+  { category: "RELACIONAL / SOCIAL", freq: "low", a: { pt: "a liberdade", en: "freedom" }, b: { pt: "o cativeiro", en: "captivity" }, disambig: "(colloquial/religious)", sentence: "A liberdade da alma não depende do cativeiro do corpo." },
+  { category: "TEMPORAL", freq: "high", a: { pt: "o passado", en: "past" }, b: { pt: "o futuro", en: "future" }, sentence: "O passado não se muda; o futuro ainda se pode construir." },
+  { category: "TEMPORAL", freq: "high", a: { pt: "o passado", en: "past" }, b: { pt: "o presente", en: "present" }, sentence: "O passado pesa-nos; o presente exige-nos atenção." },
+  { category: "TEMPORAL", freq: "high", a: { pt: "o dia", en: "day" }, b: { pt: "a noite", en: "night" }, sentence: "O dia pertencia ao trabalho; a noite pertencia ao descanso e aos sonhos." },
+  { category: "TEMPORAL", freq: "mid", a: { pt: "a manhã", en: "morning" }, b: { pt: "o anoitecer", en: "nightfall" }, sentence: "A manhã chegou cedo demais; o anoitecer tarde demais." },
+  { category: "TEMPORAL", freq: "low", a: { pt: "a madrugada", en: "early hours" }, b: { pt: "o anoitecer", en: "nightfall" }, disambig: "(colloquial)", sentence: "A madrugada fria era muito diferente do anoitecer quente de setembro." },
+  { category: "TEMPORAL", freq: "high", a: { pt: "o nascimento", en: "birth" }, b: { pt: "a morte", en: "death" }, disambig: "(temporal events)", sentence: "Entre o nascimento e a morte cabe uma vida inteira." },
+  { category: "TEMPORAL", freq: "high", a: { pt: "a juventude", en: "youth" }, b: { pt: "a velhice", en: "old age" }, sentence: "A juventude desperdiça o tempo que a velhice tanto lamenta ter perdido." },
+  { category: "TEMPORAL", freq: "low", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o instante", en: "instant" }, sentence: "A eternidade é incompreensível para quem só conhece o instante." },
+  { category: "TEMPORAL", freq: "mid", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o momento", en: "moment" }, disambig: "(colloquial)", sentence: "Aquele momento de silêncio pareceu uma eternidade." },
+  { category: "TEMPORAL", freq: "mid", a: { pt: "a antiguidade", en: "antiquity" }, b: { pt: "a modernidade", en: "modernity" }, sentence: "A antiguidade legou-nos sabedoria; a modernidade deu-nos velocidade." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "mid", a: { pt: "o céu", en: "heaven" }, b: { pt: "o inferno", en: "hell" }, sentence: "O céu é prometido aos humildes; o inferno aos que nada mudaram." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "mid", a: { pt: "Deus", en: "God" }, b: { pt: "o demónio", en: "the devil" }, sentence: "Entre Deus e o demónio, o ser humano debate-se com as suas próprias escolhas." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "a graça", en: "grace" }, b: { pt: "o pecado", en: "sin" }, sentence: "A graça não se merece; o pecado não se ignora." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "a salvação", en: "salvation" }, b: { pt: "a perdição", en: "perdition" }, sentence: "A salvação é um caminho; a perdição é a ausência de qualquer caminho." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "mid", a: { pt: "a fé", en: "faith" }, b: { pt: "a descrença", en: "unbelief" }, sentence: "A fé move montanhas; a descrença paralisa quem podia agir." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "o espírito", en: "spirit" }, b: { pt: "a carne", en: "flesh" }, sentence: "O espírito quer o que a carne recusa, e a carne pede o que o espírito condena." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "a eternidade", en: "eternity" }, b: { pt: "o tempo", en: "time" }, disambig: "(opposing realms)", sentence: "A eternidade não é o tempo prolongado; é a ausência do tempo." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "mid", a: { pt: "a luz", en: "light" }, b: { pt: "as trevas", en: "darkness" }, disambig: "(theological)", sentence: "A luz entrou nas trevas, e as trevas não a compreenderam." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "a bênção", en: "blessing" }, b: { pt: "a maldição", en: "curse" }, sentence: "Uma bênção dada de coração vale mais do que uma maldição proferida em raiva." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "o sagrado", en: "the sacred" }, b: { pt: "o profano", en: "the profane" }, sentence: "A fronteira entre o sagrado e o profano é mais porosa do que a religião admite." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "a ressurreição", en: "resurrection" }, b: { pt: "a morte", en: "death" }, sentence: "A ressurreição só tem sentido porque a morte é real." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "mid", a: { pt: "a criação", en: "creation" }, b: { pt: "a destruição", en: "destruction" }, sentence: "A criação de uma obra de arte demora anos; a destruição acontece num segundo." },
+  { category: "TEOLÓGICO / METAFÍSICO", freq: "low", a: { pt: "o criador", en: "creator" }, b: { pt: "o destruidor", en: "destroyer" }, sentence: "O criador constrói com paciência o que o destruidor desfaz com prazer." }
 ];
 
 const GRAMMAR_SECTIONS = [
@@ -3802,8 +3802,8 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
   // Stores the in-flight Promise in prefetchPromiseRef so startSession can await it
   // instead of launching a duplicate request.
   useEffect(() => {
-    if (!quizVerb) return;
-    if (conjCache.current[quizVerb]) return; // already cached
+    if (!quizVerb) { prefetchPromiseRef.current = null; return; }
+    if (conjCache.current[quizVerb]) { prefetchPromiseRef.current = null; return; } // already cached
     let cancelled = false;
     const promise = (async () => {
       try {
@@ -4268,7 +4268,7 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
                     const isSelected = v === quizVerb;
                     return (
                       <div key={v}
-                        style={{ padding: "5px 12px", cursor: "pointer", background: isSelected ? "#dbeafe" : "transparent", display: "flex", alignItems: "baseline", gap: 6 }}
+                        style={{ padding: "5px 12px", cursor: "pointer", background: isSelected ? "var(--color-background-green)" : "transparent", display: "flex", alignItems: "baseline", gap: 6 }}
                         onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "var(--color-surface-raised)"; }}
                         onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                         onClick={() => { setQuizVerb(v); setQuizVerbEn(en); setQuizDropOpen(false); setQuizDropSearch(""); }}>
@@ -4425,7 +4425,7 @@ const OPPOSITES_BY_CATEGORY = (() => {
 const OPPOSITES_CATEGORIES = Object.keys(OPPOSITES_BY_CATEGORY).sort();
 
 // ── OppositesTab (reference/browse view) ────────────────────────────────────
-const OppositesTab = React.memo(function OppositesTab({ fontSize, speakListPT, onStartQuiz }) {
+const OppositesTab = React.memo(function OppositesTab({ fontSize, speakListPT, onStartQuiz, showCommonFirst }) {
   const [openCats, setOpenCats] = React.useState(new Set());
   const toggleCat = (cat) => setOpenCats(prev => {
     const next = new Set(prev);
@@ -4434,6 +4434,11 @@ const OppositesTab = React.memo(function OppositesTab({ fontSize, speakListPT, o
   });
   const expandAll = () => setOpenCats(new Set(OPPOSITES_CATEGORIES));
   const collapseAll = () => setOpenCats(new Set());
+  const freqOrder = { high: 0, mid: 1, low: 2 };
+  const sortByFreq = React.useCallback((pairs) => {
+    if (!showCommonFirst) return pairs;
+    return [...pairs].sort((a, b) => (freqOrder[a.freq] ?? 3) - (freqOrder[b.freq] ?? 3));
+  }, [showCommonFirst]);
 
   const audioBtn = (text, lang) => (
     <button
@@ -4461,7 +4466,7 @@ const OppositesTab = React.memo(function OppositesTab({ fontSize, speakListPT, o
 
       {/* categories */}
       {OPPOSITES_CATEGORIES.map(cat => {
-        const pairs = OPPOSITES_BY_CATEGORY[cat];
+        const pairs = sortByFreq(OPPOSITES_BY_CATEGORY[cat]);
         const isOpen = openCats.has(cat);
         const [ptLabel, enLabel] = cat.split(" / ");
         return (
@@ -4703,12 +4708,19 @@ const OppositesQuiz = React.memo(function OppositesQuiz({ fontSize, speakListPT,
 
       {/* mic / SR row */}
       {speechSupported && result === null && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={micActive ? stopMic : startMicGuess}
-            style={{ fontSize, padding: "6px 14px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-border-tertiary)", background: micActive ? "var(--color-accent-red-deep)" : "transparent", color: micActive ? "#fff" : "var(--color-text-secondary)", cursor: "pointer" }}>
-            {micActive ? "⏹ Stop" : "🎤 Say it"}
-          </button>
-          {heardText && <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>Heard: {heardText}</span>}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
+          <span style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>Speak</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button onClick={micActive ? stopMic : startMicGuess}
+              style={{ fontSize, padding: "6px 14px", borderRadius: "var(--border-radius-md)",
+                border: micActive ? "2px solid var(--color-accent-red-deep)" : "1px solid var(--color-accent-blue)",
+                background: micActive ? "var(--color-accent-red-deep)" : "var(--color-background-green)",
+                color: micActive ? "#fff" : "var(--color-accent-blue)",
+                cursor: "pointer" }}>
+              {micActive ? "⏹ Stop" : "🎤 Say it"}
+            </button>
+            {heardText && <span style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>Heard: {heardText}</span>}
+          </div>
         </div>
       )}
 
@@ -4744,12 +4756,12 @@ const OppositesQuiz = React.memo(function OppositesQuiz({ fontSize, speakListPT,
 });
 
 // ── OppositesPanel (wrapper that toggles between browse and quiz) ─────────────
-const OppositesPanel = React.memo(function OppositesPanel({ fontSize, speakListPT, speechSupported }) {
+const OppositesPanel = React.memo(function OppositesPanel({ fontSize, speakListPT, speechSupported, showCommonFirst }) {
   const [mode, setMode] = React.useState("browse"); // "browse" | "quiz"
   if (mode === "quiz") {
     return <OppositesQuiz fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} onBack={() => setMode("browse")} />;
   }
-  return <OppositesTab fontSize={fontSize} speakListPT={speakListPT} onStartQuiz={() => setMode("quiz")} />;
+  return <OppositesTab fontSize={fontSize} speakListPT={speakListPT} onStartQuiz={() => setMode("quiz")} showCommonFirst={showCommonFirst} />;
 });
 
 // IpaWordCard: single word tile with tap-to-reveal IPA hint in MinimalPairs browse mode.
@@ -5019,13 +5031,14 @@ const MinimalPairs = React.memo(function MinimalPairs({
                     {/* Change 6 & 7: optional mic input */}
                     {speechSupported && (
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, marginTop: 4 }}>
+                        <span style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>Speak</span>
                         <button
                           onClick={micActive ? stopMic : startMicGuess}
                           aria-label={micActive ? "Stop microphone" : "Speak the word aloud"}
                           style={{ fontSize: Math.max(12, fontSize - 1), padding: "6px 18px", borderRadius: 6,
-                            border: micActive ? "2px solid var(--color-accent-red-deep)" : "1px solid var(--color-border-tertiary)",
-                            background: micActive ? "var(--color-background-danger)" : "var(--color-background-secondary)",
-                            color: micActive ? "var(--color-text-danger)" : "var(--color-text-secondary)",
+                            border: micActive ? "2px solid var(--color-accent-red-deep)" : "1px solid var(--color-accent-blue)",
+                            background: micActive ? "var(--color-background-danger)" : "var(--color-background-green)",
+                            color: micActive ? "var(--color-text-danger)" : "var(--color-accent-blue)",
                             cursor: "pointer" }}>
                           {micActive ? "⏹ Stop" : "🎤 Say it"}
                         </button>
@@ -5428,7 +5441,7 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
 // Single source of truth for section title style — used by tab components and App.
 const makeSecTitle = (fontSize) => ({ fontSize: Math.max(11, fontSize - 1), fontWeight: 600, color: "var(--color-text-tertiary)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" });
 
-const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listFilter }) {
+const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listFilter, showCommonFirst }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
@@ -5437,10 +5450,15 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
   const togglePhrSec = (name) => setOpenPhrSections(prev => {
     const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
   });
+  const freqOrder = { high: 0, mid: 1, low: 2 };
+  const sortByFreq = React.useCallback((items) => {
+    if (!showCommonFirst) return items;
+    return [...items].sort((a, b) => (freqOrder[a.freq] ?? 3) - (freqOrder[b.freq] ?? 3));
+  }, [showCommonFirst]);
   const filteredSections = useMemo(() => {
-    if (!needle) return PHRASES_SORTED;
-    return PHRASES_SORTED.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle)) })).filter(sec => sec.items.length > 0);
-  }, [needle]);
+    if (!needle) return PHRASES_SORTED.map(sec => ({ ...sec, items: sortByFreq(sec.items) }));
+    return PHRASES_SORTED.map(sec => ({ ...sec, items: sortByFreq(sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle))) })).filter(sec => sec.items.length > 0);
+  }, [needle, sortByFreq]);
   const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
@@ -6727,8 +6745,13 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
             )}
             {(direction === "en-pt" || (direction === "pt-en" && inputMethod === "mic")) && speechSupported && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic" }}>Speak</span>
                 <button onClick={micActive ? stopMic : () => startMic(micLang)}
-                  style={{ fontSize, padding: "10px 28px", borderRadius: 8, border: micActive ? "2px solid var(--color-accent-red-deep)" : "1.5px solid var(--color-border-tertiary)", background: micActive ? "var(--color-background-danger)" : "var(--color-background-secondary)", color: micActive ? "var(--color-text-danger)" : "var(--color-text-secondary)", cursor: "pointer", fontWeight: 700 }}>
+                  style={{ fontSize, padding: "10px 28px", borderRadius: 8,
+                    border: micActive ? "2px solid var(--color-accent-red-deep)" : "1.5px solid var(--color-accent-blue)",
+                    background: micActive ? "var(--color-background-danger)" : "var(--color-background-green)",
+                    color: micActive ? "var(--color-text-danger)" : "var(--color-accent-blue)",
+                    cursor: "pointer", fontWeight: 700 }}>
                   {micActive ? "⏹ Stop" : `🎤 Speak ${direction === "pt-en" ? "English" : "Portuguese"}`}
                 </button>
                 {transcript && <p style={{ fontSize, color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic" }}>"{transcript}"</p>}
@@ -6869,15 +6892,30 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
                     ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
                     : item.pt;
                   return (
-                    <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                      <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                        <button onClick={() => speakListPT(speakText)}
-                          aria-label={`Hear: ${item.pt}`}
-                          style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                      </td>
-                      <td style={tdLComputed}>{item.pt}</td>
-                      <td style={tdR}>{item.en}</td>
-                    </tr>
+                    <React.Fragment key={ii}>
+                      <tr style={{ borderBottom: item.example_pt ? "none" : "1px solid var(--color-border-tertiary)" }}>
+                        <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                          <button onClick={() => speakListPT(speakText)}
+                            aria-label={`Hear: ${item.pt}`}
+                            style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                        </td>
+                        <td style={tdLComputed}>{item.pt}</td>
+                        <td style={tdR}>{item.en}</td>
+                      </tr>
+                      {item.example_pt && (
+                        <tr style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                          <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                            <button onClick={() => speakListPT(item.example_pt)}
+                              aria-label={`Hear example: ${item.example_pt}`}
+                              style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                          </td>
+                          <td colSpan={2} style={{ padding: "2px 0 5px", verticalAlign: "top" }}>
+                            <p style={{ fontSize: Math.max(11, fontSize - 1), fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
+                            {item.example_en && <p style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>}
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </tbody></table>
@@ -6909,15 +6947,30 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
                       ? item.pt.replace(/^(.*?)(\/a|\/o)\b/, (m, base, suffix) => `${base} ... ${base.slice(0, -1)}${suffix.slice(1)}`)
                       : item.pt;
                     return (
-                      <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
-                        <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
-                          <button onClick={() => speakListPT(speakText)}
-                            aria-label={`Hear: ${item.pt}`}
-                            style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
-                        </td>
-                        <td style={tdLComputed}>{item.pt}</td>
-                        <td style={tdR}>{item.en}</td>
-                      </tr>
+                      <React.Fragment key={ii}>
+                        <tr style={{ borderBottom: item.example_pt ? "none" : "1px solid var(--color-border-tertiary)" }}>
+                          <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                            <button onClick={() => speakListPT(speakText)}
+                              aria-label={`Hear: ${item.pt}`}
+                              style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                          </td>
+                          <td style={tdLComputed}>{item.pt}</td>
+                          <td style={tdR}>{item.en}</td>
+                        </tr>
+                        {item.example_pt && (
+                          <tr style={{ borderBottom: "1px solid var(--color-border-tertiary)" }}>
+                            <td style={{ width: 32, paddingRight: 6, verticalAlign: "middle" }}>
+                              <button onClick={() => speakListPT(item.example_pt)}
+                                aria-label={`Hear example: ${item.example_pt}`}
+                                style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                            </td>
+                            <td colSpan={2} style={{ padding: "2px 0 5px", verticalAlign: "top" }}>
+                              <p style={{ fontSize: Math.max(11, fontSize - 1), fontStyle: "italic", color: "var(--color-text-info)", margin: "0 0 1px", lineHeight: 1.5 }}>{item.example_pt}</p>
+                              {item.example_en && <p style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-tertiary)", margin: 0, lineHeight: 1.4 }}>{item.example_en}</p>}
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </tbody></table>
@@ -7214,6 +7267,9 @@ function App() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [lastUsage, setLastUsage] = useState(null); // { input_tokens, output_tokens } from last successful chat response
+  const [rpOpen, setRpOpen] = useState(false);           // roleplay launcher expanded
+  const [rpScenario, setRpScenario] = useState("");       // user-typed scenario
+  const [rpPrompt, setRpPrompt] = useState("");           // assembled+editable prompt
   const [activePanel, setActivePanel] = useState(null);
   const [listTab, setListTab] = useState("cognates");
   const [listFilter, setListFilter] = useState("");
@@ -8261,8 +8317,8 @@ function App() {
                   const isSelected = v === verbOfSession;
                   return (
                     <HoverDiv key={v}
-                      baseBg={isSelected ? "#dbeafe" : "var(--color-background-primary)"}
-                      hoverBg={isSelected ? "#dbeafe" : "var(--color-surface-raised)"}
+                      baseBg={isSelected ? "var(--color-background-green)" : "var(--color-background-primary)"}
+                      hoverBg={isSelected ? "var(--color-background-green)" : "var(--color-surface-raised)"}
                       style={{ padding: "5px 12px", cursor: "pointer", display: "flex", alignItems: "baseline", gap: 6 }}
                       onClick={() => { setVerbOfSession(v); setVerbDropdownOpen(false); setVerbDropdownSearch(""); }}>
                       <span style={{ fontSize: Math.max(14, fontSize + 1), fontWeight: 700, color }}>{v.toUpperCase()}</span>
@@ -8903,7 +8959,7 @@ function App() {
             />
           )}
           {listTab === "phrases" && (
-            <PhrasesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
+            <PhrasesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} showCommonFirst={showCommonFirst} />
           )}
           {listTab === "idioms" && (
             <IdiomsTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
@@ -9039,7 +9095,7 @@ function App() {
             <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} />
           )}
           {listTab === "opposites" && (
-            <OppositesPanel fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} />
+            <OppositesPanel fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} showCommonFirst={showCommonFirst} />
           )}
           {listTab === "cognates" && (
             <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} showGenderColors={showGenderColors} showCommonFirst={showCommonFirst} />
@@ -9377,6 +9433,70 @@ function App() {
         <div ref={bottomRef} />
       </div>
 
+      {/* Roleplay launcher — visible when chat is active, collapsed by default */}
+      {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
+        <div style={{ borderTop: "1px solid var(--color-border-tertiary)", flexShrink: 0 }}>
+          <button
+            onClick={() => setRpOpen(o => !o)}
+            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 16px", background: rpOpen ? "var(--color-background-green)" : "var(--color-background-secondary)", border: "none", cursor: "pointer", fontSize: Math.max(11, fontSize - 3), color: rpOpen ? "var(--color-accent-blue)" : "var(--color-text-secondary)", fontWeight: rpOpen ? 700 : 400 }}>
+            <span>🎭 Role Play</span>
+            <span style={{ fontSize: Math.max(10, fontSize - 4) }}>{rpOpen ? "▲" : "▼"}</span>
+          </button>
+          {rpOpen && (
+            <div style={{ padding: "10px 16px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+              <label style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", fontWeight: 600 }}>
+                Scenario
+                <span style={{ fontWeight: 400, marginLeft: 6, color: "var(--color-text-tertiary)" }}>— describe the role play in English or Portuguese</span>
+              </label>
+              <textarea
+                placeholder="e.g. empregado de balcão num café da Baixa / pharmacist helping a customer / landlord discussing a repair"
+                value={rpScenario}
+                onChange={e => { setRpScenario(e.target.value); setRpPrompt(""); }}
+                rows={2}
+                style={{ fontSize, padding: "7px 10px", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", resize: "vertical", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", lineHeight: 1.5, outline: "none" }}
+              />
+              <button
+                disabled={!rpScenario.trim()}
+                onClick={() => {
+                  const scenario = rpScenario.trim();
+                  setRpPrompt(`És português/a de Lisboa. Estamos a fazer: ${scenario}. Fala só português europeu — não português do Brasil. O meu nível é intermédio. Fica sempre em personagem. Quando eu escrever corrige-me, corrige os meus erros das últimas trocas e depois continua.`);
+                }}
+                style={{ alignSelf: "flex-start", fontSize: Math.max(11, fontSize - 2), padding: "5px 14px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: rpScenario.trim() ? "var(--color-background-green)" : "var(--color-background-secondary)", color: rpScenario.trim() ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: rpScenario.trim() ? "pointer" : "default", fontWeight: 600 }}>
+                Prepare prompt
+              </button>
+              {rpPrompt !== "" && (
+                <>
+                  <label style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", fontWeight: 600, marginTop: 2 }}>
+                    Prompt
+                    <span style={{ fontWeight: 400, marginLeft: 6, color: "var(--color-text-tertiary)" }}>— review and edit before sending</span>
+                  </label>
+                  <textarea
+                    value={rpPrompt}
+                    onChange={e => setRpPrompt(e.target.value)}
+                    rows={4}
+                    style={{ fontSize: Math.max(11, fontSize - 1), padding: "7px 10px", border: "1px solid var(--color-accent-blue)", borderRadius: "var(--border-radius-md)", resize: "vertical", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", lineHeight: 1.6, outline: "none" }}
+                  />
+                  <button
+                    onClick={() => {
+                      const text = rpPrompt.trim();
+                      if (!text) return;
+                      setInput(text);
+                      setRpOpen(false);
+                      setRpScenario("");
+                      setRpPrompt("");
+                      // Small delay so setInput has rendered before sendMessage reads it
+                      setTimeout(() => { sendMessage(text); }, 0);
+                    }}
+                    style={{ alignSelf: "flex-start", fontSize: Math.max(11, fontSize - 2), padding: "6px 18px", borderRadius: "var(--border-radius-md)", border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer", fontWeight: 700 }}>
+                    Send to chat ▶
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Footer */}
       {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
       <div style={{ padding: "10px 16px", borderTop: "1px solid var(--color-border-tertiary)", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
@@ -9393,7 +9513,7 @@ function App() {
               onClick={listening ? stopListening : startListening}
               aria-label={listening ? "Stop recording" : "Start recording"}
               title={listening ? "Stop listening" : `Speak (${speechLang})`}
-              style={{ padding: "6px 12px", fontSize: Math.max(15, fontSize + 3), borderRadius: "var(--border-radius-lg)", border: listening ? "2px solid var(--color-text-danger)" : "1px solid var(--color-border-tertiary)", background: listening ? "var(--color-background-danger)" : "var(--color-background-secondary)", color: listening ? "var(--color-text-danger)" : "var(--color-text-secondary)", cursor: "pointer", flexShrink: 0 }}>
+              style={{ padding: "6px 12px", fontSize: Math.max(15, fontSize + 3), borderRadius: "var(--border-radius-lg)", border: listening ? "2px solid var(--color-text-danger)" : "1px solid var(--color-accent-blue)", background: listening ? "var(--color-background-danger)" : "var(--color-background-green)", color: listening ? "var(--color-text-danger)" : "var(--color-accent-blue)", cursor: "pointer", flexShrink: 0 }}>
               {listening ? "⏹" : "🎤"}
             </button>
           )}
