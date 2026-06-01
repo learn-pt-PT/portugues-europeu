@@ -5,31 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.0.39 -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
+  <!-- version: 3.0.40 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8" crossorigin="anonymous" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh" crossorigin="anonymous" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" integrity="sha384-aGlMNK3U/x0wl4lEH5jD1PGhJlX9hApuPmIiA5gtiYCOQ1J8ejIdC0btaU/TMoBD" crossorigin="anonymous" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body, #root { height: 100%; width: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
     :root {
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-display: "Fraunces", Georgia, serif;
       --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
       --border-radius-sm: 4px;
       --border-radius-md: 8px;
       --border-radius-lg: 12px;
-      --color-border-tertiary: #e5e7eb;
-      --color-accent-blue: #2563eb;
+      --color-border-tertiary: #dcd5c8;
+      --color-accent-blue: #006633;
     }
+
+    /* Refined scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.28); }
 
     /* Loading placeholder — shown during Babel transpilation, removed when React mounts */
     #pe-loading {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100%; gap: 14px; color: #6b7280; font-size: 14px;
+      height: 100%; gap: 16px; color: #7c6b52; font-size: 14px;
+      background: #faf8f5;
+      font-family: "DM Sans", sans-serif;
+      letter-spacing: 0.04em;
     }
-    #pe-loading svg { animation: pe-spin 1.2s linear infinite; }
+    #pe-loading svg { animation: pe-spin 1.4s cubic-bezier(0.4,0,0.6,1) infinite; opacity: 0.6; }
     @keyframes pe-spin { to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -76,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.39", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.40", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -2572,27 +2589,28 @@ const chip = (active) => ({
   cursor: "pointer", margin: "2px", fontFamily: "var(--font-sans)", outline: "none",
   fontWeight: active ? 600 : 400, textTransform: "uppercase", transition: "all 0.15s",
 });
-const segCtrl = { display: "inline-flex", borderRadius: 999, overflow: "hidden", border: "1.5px solid var(--color-accent-blue)", background: "transparent" };
+const segCtrl = { display: "inline-flex", borderRadius: 6, overflow: "hidden", border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)" };
 const segBtn = (active, pos) => ({
-  fontSize: 12, fontWeight: active ? 700 : 400,
-  padding: "4px 14px",
+  fontSize: 12, fontWeight: active ? 600 : 400,
+  padding: "5px 14px",
   background: active ? "var(--color-accent-blue)" : "transparent",
-  color: active ? "#fff" : "var(--color-accent-blue)",
+  color: active ? "#fff" : "var(--color-text-secondary)",
   border: "none",
-  borderLeft: pos === "mid" || pos === "last" ? "1px solid var(--color-accent-blue)" : "none",
+  borderLeft: pos === "mid" || pos === "last" ? "1px solid var(--color-border-tertiary)" : "none",
   cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none",
-  textTransform: "uppercase", transition: "all 0.15s",
+  letterSpacing: "0.02em",
+  transition: "background 0.15s, color 0.15s",
 });
 const toolBtn = (active) => ({
-  fontSize: 13, fontWeight: 600, padding: "5px 14px", borderRadius: 999,
+  fontSize: 13, fontWeight: active ? 600 : 400, padding: "5px 14px", borderRadius: 6,
   border: "none",
-  background: active ? "var(--color-accent-blue)" : "var(--color-background-secondary)",
+  background: active ? "var(--color-accent-blue)" : "transparent",
   color: active ? "#fff" : "var(--color-text-secondary)",
   cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none", whiteSpace: "nowrap",
-  textTransform: "uppercase", textDecoration: "none", transition: "all 0.15s",
+  transition: "background 0.15s, color 0.15s",
 });
-const panelStyle = { padding: "12px 16px", borderBottom: "0.5px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", flexShrink: 0, overflowY: "auto", maxHeight: 300 };
-const listPanelStyle = { padding: "12px 16px", background: "var(--color-background-secondary)", flex: 1, overflowY: "auto" };
+const panelStyle = { padding: "16px 20px", borderBottom: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", flexShrink: 0, overflowY: "auto", maxHeight: 300 };
+const listPanelStyle = { padding: "16px 20px", background: "var(--color-background-secondary)", flex: 1, overflowY: "auto" };
 const secWrap = { marginBottom: 14 };
 const mediaSubLabelStyle = { fontSize: 11, fontWeight: 700, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "8px 0 4px" };
 
@@ -5407,7 +5425,7 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
 });
 
 // Single source of truth for section title style — used by tab components and App.
-const makeSecTitle = (fontSize) => ({ fontSize, fontWeight: 500, color: "var(--color-text-primary)", margin: "0 0 6px", textTransform: "uppercase" });
+const makeSecTitle = (fontSize) => ({ fontSize: Math.max(11, fontSize - 1), fontWeight: 600, color: "var(--color-text-tertiary)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" });
 
 const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listFilter }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
@@ -7034,110 +7052,124 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT, listFilte
 });
 
 const LIGHT_VARS = {
-  "--color-background-primary": "#ffffff",
-  "--color-background-secondary": "#f3f4f6",
-  "--color-background-info": "#eff6ff",
-  "--color-background-warning": "#fef3c7",
-  "--color-text-primary": "#111827",
-  "--color-text-secondary": "#6b7280",
-  "--color-text-tertiary": "#9ca3af",
-  "--color-text-info": "#1e40af",
-  "--color-text-warning": "#92400e",
-  "--color-text-danger": "#b91c1c",
-  "--color-border-tertiary": "#e5e7eb",
-  // Accent colours — all must have dark counterparts in DARK_VARS
-  "--color-accent-purple":        "#581c87",
-  "--color-accent-violet":        "#7c3aed",
-  "--color-accent-violet-mid":    "#6d28d9",
-  "--color-accent-violet-deep":   "#4c1d95",
-  "--color-background-violet":    "#f5f3ff",
+  // ── Typography ─────────────────────────────────────────────────────
+  "--font-sans":  "\"DM Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+  "--font-display": "\"Fraunces\", Georgia, serif",
+  "--font-mono":  "ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, monospace",
+  // ── Surface & Background ─────────────────────────────────────────────
+  "--color-background-primary":   "#faf8f5",   // warm off-white, like quality paper
+  "--color-background-secondary": "#f2ede6",   // slightly deeper warm parchment
+  "--color-background-info":      "#eef4ff",
+  "--color-background-warning":   "#fef3c7",
+  // ── Text ─────────────────────────────────────────────────────────────
+  "--color-text-primary":         "#1a1208",   // deep warm ink
+  "--color-text-secondary":       "#6b5f52",   // warm mid-tone
+  "--color-text-tertiary":        "#a09480",   // warm light
+  "--color-text-info":            "#1a3d7a",
+  "--color-text-warning":         "#92400e",
+  "--color-text-danger":          "#9b1a1a",
+  // ── Borders ──────────────────────────────────────────────────────────
+  "--color-border-tertiary":      "#dcd5c8",   // warm parchment border
+  // ── Accent: Portugal Flag Green ───────────────────────────────────────
+  "--color-accent-purple":        "#3d1a6e",
+  "--color-accent-violet":        "#6d28d9",
+  "--color-accent-violet-mid":    "#5b21b6",
+  "--color-accent-violet-deep":   "#3b0764",
+  "--color-background-violet":    "#f5f0ff",
   "--color-border-violet":        "#ddd6fe",
-  "--color-accent-blue":          "#2563eb",
-  "--color-accent-blue-chat":     "#1a56db",
-  "--color-accent-blue-deep":     "#1d4ed8",
-  "--color-accent-teal":          "#0369a1",
-  "--color-accent-teal-deep":     "#0c4a6e",
-  "--color-background-teal":      "#f0f9ff",
+  "--color-accent-blue":          "#006633",   // Portugal flag green — primary interactive
+  "--color-accent-blue-chat":     "#004d26",
+  "--color-accent-blue-deep":     "#003d1f",
+  "--color-accent-teal":          "#0d7480",
+  "--color-accent-teal-deep":     "#0e4f58",
+  "--color-background-teal":      "#f0fdff",
   "--color-border-info":          "#bfdbfe",
-  "--color-background-green":     "#f0fdf4",
-  "--color-border-green":         "#bbf7d0",
-  "--color-accent-green":         "#166534",
-  "--color-accent-green-mid":     "#16a34a",
+  "--color-background-green":     "#ecfdf5",
+  "--color-border-green":         "#a7f3d0",
+  "--color-accent-green":         "#065f46",
+  "--color-accent-green-mid":     "#10b981",
   "--color-background-lime":      "#f7fee7",
   "--color-accent-lime":          "#3f6212",
   "--color-accent-lime-mid":      "#4d7c0f",
   "--color-accent-red-deep":      "#991b1b",
   "--color-background-danger":    "#fee2e2",
-  "--color-accent-maroon":        "#800000",
-  "--color-accent-sienna":        "#7c2d12",
-  "--color-background-sienna":    "#fef9ec",
-  "--color-border-sienna":        "#d6c98a",
-  "--color-text-sienna":          "#92700a",
-  "--color-accent-amber":         "#d97706",
-  "--color-accent-amber-indicator":"#f59e0b",
-  "--color-surface":              "#f9fafb",
-  "--color-surface-raised":       "#f3f4f6",
-  "--color-background-book":      "#f9f7f0",
-  "--color-border-book":          "#d6c98a",
-  "--color-text-book-quote":      "#5a4a1a",
-  "--color-text-book-cite":       "#7a5c10",
-  "--color-background-gender-f":  "#fdf4ff",
-  "--color-border-gender-f":      "#e9d5ff",
-  "--color-text-success":       "#166534",
-  "--color-background-success": "#dcfce7",
+  "--color-accent-maroon":        "#8b1a1a",   // Portugal flag red, warm
+  "--color-accent-sienna":        "#7c3a12",
+  "--color-background-sienna":    "#fef5e8",
+  "--color-border-sienna":        "#d9b87a",
+  "--color-text-sienna":          "#8a6b12",
+  "--color-accent-amber":         "#c07a10",
+  "--color-accent-amber-indicator": "#e09a20",
+  "--color-surface":              "#f5f1ea",
+  "--color-surface-raised":       "#ede8df",
+  "--color-background-book":      "#f8f5ee",
+  "--color-border-book":          "#d9c99a",
+  "--color-text-book-quote":      "#5a4320",
+  "--color-text-book-cite":       "#7a5c20",
+  "--color-background-gender-f":  "#fff0fc",
+  "--color-border-gender-f":      "#f0c6f0",
+  "--color-text-success":         "#065f46",
+  "--color-background-success":   "#d1fae5",
 };
 const DARK_VARS = {
-  "--color-background-primary": "#1f2937",
-  "--color-background-secondary": "#111827",
-  "--color-background-info": "#1e3a5f",
-  "--color-background-warning": "#451a03",
-  "--color-text-primary": "#f9fafb",
-  "--color-text-secondary": "#9ca3af",
-  "--color-text-tertiary": "#6b7280",
-  "--color-text-info": "#93c5fd",
-  "--color-text-warning": "#fcd34d",
-  "--color-text-danger": "#f87171",
-  "--color-border-tertiary": "#374151",
-  // Accent colours
+  // ── Typography ─────────────────────────────────────────────────────
+  "--font-sans":  "\"DM Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+  "--font-display": "\"Fraunces\", Georgia, serif",
+  "--font-mono":  "ui-monospace, \"Cascadia Code\", \"Source Code Pro\", Menlo, Consolas, monospace",
+  // ── Surface & Background ─────────────────────────────────────────────
+  "--color-background-primary":   "#181c1a",   // very deep warm slate
+  "--color-background-secondary": "#0f1410",   // even deeper
+  "--color-background-info":      "#0d1f3a",
+  "--color-background-warning":   "#3d1a03",
+  // ── Text ─────────────────────────────────────────────────────────────
+  "--color-text-primary":         "#e8e2d6",   // warm off-white
+  "--color-text-secondary":       "#9e9480",   // warm mid grey
+  "--color-text-tertiary":        "#66594a",   // warm darker grey
+  "--color-text-info":            "#7fb8f0",
+  "--color-text-warning":         "#f5c842",
+  "--color-text-danger":          "#f08080",
+  // ── Borders ──────────────────────────────────────────────────────────
+  "--color-border-tertiary":      "#2a3028",   // dark warm border
+  // ── Accents ──────────────────────────────────────────────────────────
   "--color-accent-purple":        "#c084fc",
   "--color-accent-violet":        "#a78bfa",
   "--color-accent-violet-mid":    "#c4b5fd",
   "--color-accent-violet-deep":   "#ddd6fe",
-  "--color-background-violet":    "#2e1065",
-  "--color-border-violet":        "#4c1d95",
-  "--color-accent-blue":          "#60a5fa",
-  "--color-accent-blue-chat":     "#93c5fd",
-  "--color-accent-blue-deep":     "#93c5fd",
+  "--color-background-violet":    "#1e0a42",
+  "--color-border-violet":        "#3b1585",
+  "--color-accent-blue":          "#4caf72",   // muted Portugal green for dark mode
+  "--color-accent-blue-chat":     "#7dcf9a",
+  "--color-accent-blue-deep":     "#9de0b8",
   "--color-accent-teal":          "#38bdf8",
   "--color-accent-teal-deep":     "#7dd3fc",
-  "--color-background-teal":      "#0c2a4a",
-  "--color-border-info":          "#1d4ed8",
-  "--color-background-green":     "#052e16",
-  "--color-border-green":         "#166534",
+  "--color-background-teal":      "#061c2e",
+  "--color-border-info":          "#1a3d6e",
+  "--color-background-green":     "#041a0e",
+  "--color-border-green":         "#0d4a28",
   "--color-accent-green":         "#4ade80",
   "--color-accent-green-mid":     "#22c55e",
-  "--color-background-lime":      "#1a2e05",
+  "--color-background-lime":      "#111a05",
   "--color-accent-lime":          "#a3e635",
   "--color-accent-lime-mid":      "#84cc16",
   "--color-accent-red-deep":      "#fca5a5",
-  "--color-background-danger":    "#450a0a",
-  "--color-accent-maroon":        "#f87171",
+  "--color-background-danger":    "#3d0808",
+  "--color-accent-maroon":        "#f08080",
   "--color-accent-sienna":        "#fb923c",
-  "--color-background-sienna":    "#3c1a06",
-  "--color-border-sienna":        "#7c5a2a",
-  "--color-text-sienna":          "#fcd34d",
+  "--color-background-sienna":    "#2a1006",
+  "--color-border-sienna":        "#6b4820",
+  "--color-text-sienna":          "#f5c842",
   "--color-accent-amber":         "#fbbf24",
   "--color-accent-amber-indicator":"#fbbf24",
-  "--color-surface":              "#374151",
-  "--color-surface-raised":       "#374151",
-  "--color-background-book":      "#1c1a14",
-  "--color-border-book":          "#4a3f1a",
-  "--color-text-book-quote":      "#e2c97e",
-  "--color-text-book-cite":       "#d4a54a",
-  "--color-background-gender-f":  "#2e1065",
-  "--color-border-gender-f":      "#4c1d95",
-  "--color-text-success":       "#4ade80",
-  "--color-background-success": "#052e16",
+  "--color-surface":              "#222820",
+  "--color-surface-raised":       "#2a3028",
+  "--color-background-book":      "#16140e",
+  "--color-border-book":          "#3a3010",
+  "--color-text-book-quote":      "#e0c87c",
+  "--color-text-book-cite":       "#c8a040",
+  "--color-background-gender-f":  "#1a0a2e",
+  "--color-border-gender-f":      "#3a1060",
+  "--color-text-success":         "#4ade80",
+  "--color-background-success":   "#041a0e",
 };
 
 // Stable message ID counter — incremented each time a message object is created.
@@ -8057,7 +8089,7 @@ function App() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          borderRight: "0.5px solid var(--color-border-tertiary)",
+          borderRight: "1px solid var(--color-border-tertiary)",
           background: "var(--color-background-primary)",
           padding: "12px 8px 8px",
           gap: 8,
@@ -8143,9 +8175,9 @@ function App() {
       )}
 
       {/* Header */}
-      <div style={{ padding: "8px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, gap: 8, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <svg width="28" height="20" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: 2, flexShrink: 0, boxShadow: "0 0 0 0.5px rgba(0,0,0,0.15)" }}>
+      <div style={{ padding: "10px 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, gap: 12, flexWrap: "wrap", background: "var(--color-background-primary)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <svg width="32" height="22" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: 3, flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }}>
             <rect x="0" y="0" width="11" height="20" fill="#006600" />
             <rect x="11" y="0" width="17" height="20" fill="#CC0000" />
             <ellipse cx="11" cy="10" rx="5.5" ry="5.5" fill="none" stroke="#FFD700" strokeWidth="1.2" />
@@ -8157,8 +8189,8 @@ function App() {
             <rect x="10.4" y="7.3" width="1.2" height="1.2" rx="0.2" fill="#003399" />
           </svg>
           <div>
-            <p style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text-primary)", margin: 0 }}>Português Europeu</p>
-            <p style={{ fontSize: 13, color: "var(--color-text-secondary)", margin: "1px 0 0" }}>European Portuguese practice</p>
+            <p style={{ fontSize: 18, fontWeight: 600, color: "var(--color-text-primary)", margin: 0, fontFamily: "var(--font-display)", letterSpacing: "-0.01em", lineHeight: 1.1 }}>Português Europeu</p>
+            <p style={{ fontSize: 11, color: "var(--color-text-tertiary)", margin: "2px 0 0", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 500 }}>European Portuguese Practice</p>
           </div>
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
@@ -8168,15 +8200,15 @@ function App() {
               return <button key={l} style={segBtn(level === l, pos)} aria-label={`Level ${l}`} onClick={() => applyLevel(l)}>{l}</button>;
             })}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: 16, background: "var(--color-background-secondary)", borderRadius: 999, padding: "2px 4px", position: "relative" }}>
-            <button style={{ ...toolBtn(false), padding: "3px 10px" }} aria-label="Decrease font size" onClick={() => adjustFontOffset(-1)}>A−</button>
-            <button style={{ ...toolBtn(false), padding: "3px 10px" }} aria-label="Increase font size" onClick={() => adjustFontOffset(1)}>A+</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 2, marginLeft: 10, background: "var(--color-background-secondary)", borderRadius: 6, padding: "2px 4px", position: "relative", border: "1px solid var(--color-border-tertiary)" }}>
+            <button style={{ ...toolBtn(false), padding: "3px 10px", fontSize: 12 }} aria-label="Decrease font size" onClick={() => adjustFontOffset(-1)}>A−</button>
+            <button style={{ ...toolBtn(false), padding: "3px 10px", fontSize: 12 }} aria-label="Increase font size" onClick={() => adjustFontOffset(1)}>A+</button>
             {fontOffset !== 0 && (
               <span title={`Session override: ${fontOffset > 0 ? "+" : ""}${fontOffset}px (base: ${baseFontSize}px)`}
                 style={{ position: "absolute", top: 1, right: 1, width: 6, height: 6, borderRadius: "50%", background: "var(--color-accent-amber-indicator)", pointerEvents: "none" }} />
             )}
           </div>
-          <button style={{ ...toolBtn(false), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)" }} onClick={() => { chatAbortRef.current?.abort(); setMessages([]); setLastUsage(null); }}>↺ Clear</button>
+          <button style={{ ...toolBtn(false), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)", border: "1px solid var(--color-border-green)", borderRadius: 6, fontSize: 12 }} onClick={() => { chatAbortRef.current?.abort(); setMessages([]); setLastUsage(null); }}>↺ Clear</button>
           {lastUsage && (() => {
             const used = lastUsage.input_tokens;
             const pct  = Math.min(100, (used / CHAT_MODEL_CTX) * 100);
@@ -8188,7 +8220,7 @@ function App() {
                 <span style={{ fontSize: 11, fontWeight: 600, color, fontFamily: "var(--font-mono)", whiteSpace: "nowrap" }}>
                   {pct.toFixed(1)}% · {msgCount}msg
                 </span>
-                <div style={{ width: 72, height: 4, borderRadius: 2, background: "var(--color-border-tertiary)", overflow: "hidden" }}>
+                <div style={{ width: 72, height: 3, borderRadius: 2, background: "var(--color-border-tertiary)", overflow: "hidden" }}>
                   <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: 2, transition: "width 0.4s ease, background 0.4s ease" }} />
                 </div>
               </div>
@@ -8198,12 +8230,12 @@ function App() {
       </div>
 
       {/* Focus bar */}
-      <div style={{ padding: "5px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 10, flexShrink: 0, background: "var(--color-background-secondary)", flexWrap: "wrap" }}>
+      <div style={{ padding: "6px 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 10, flexShrink: 0, background: "var(--color-background-primary)", flexWrap: "wrap" }}>
         {/* Focus Verb */}
         <div ref={verbDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Verb</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Focus Verb</span>
           <button onClick={() => { setVerbDropdownOpen(o => !o); setVerbDropdownSearch(""); }}
-            style={{ fontSize: 16, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: "var(--color-background-primary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "var(--color-accent-maroon)" : "var(--color-accent-blue)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 330, overflow: "hidden" }}>
+            style={{ fontSize: 14, fontWeight: 600, padding: "3px 10px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: IRREGULAR_VERBS_SET.has(verbOfSession) ? "var(--color-accent-maroon)" : "var(--color-accent-blue)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 330, overflow: "hidden" }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {(() => {
               const rawEn = ALL_VERBS_MAP.get(verbOfSession) || "";
@@ -8245,9 +8277,9 @@ function App() {
 
         {/* Focus Idiom */}
         <div ref={idiomDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Idiom</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Focus Idiom</span>
           <button onClick={() => { setIdiomDropdownOpen(o => !o); setIdiomDropdownSearch(""); }}
-            style={{ fontSize: 14, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-violet)", background: "var(--color-background-primary)", color: "var(--color-accent-violet)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 260 }}>
+            style={{ fontSize: 14, fontWeight: 600, padding: "3px 10px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-accent-violet)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 260 }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{focusIdiom ? focusIdiom.pt : "None"}</span>
             {focusIdiom && (
               <button
@@ -8292,9 +8324,9 @@ function App() {
 
         {/* Focus Grammar */}
         <div ref={grammarDropdownRef} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 2 }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", fontVariant: "small-caps", textTransform: "lowercase" }}>Focus Grammar</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: "var(--color-text-tertiary)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Focus Grammar</span>
           <button onClick={() => setGrammarDropdownOpen(o => !o)}
-            style={{ fontSize: 14, fontWeight: 700, padding: "3px 12px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-teal)", background: "var(--color-background-primary)", color: "var(--color-accent-teal)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 220 }}>
+            style={{ fontSize: 14, fontWeight: 600, padding: "3px 10px", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", background: "var(--color-background-secondary)", color: "var(--color-accent-teal)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, maxWidth: 220 }}>
             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{focusGrammar ? focusGrammar.label : "None"}</span>
             {focusGrammar && (
               <button
@@ -8343,13 +8375,30 @@ function App() {
           tabs[next].focus();
           e.preventDefault();
         }}
-        style={{ padding: "6px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 3, flexWrap: "wrap", flexShrink: 0 }}>
+        style={{ padding: "0 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", gap: 0, flexWrap: "wrap", flexShrink: 0, background: "var(--color-background-primary)" }}>
         {PANELS.filter(p => p.id !== "vocab" || showVocab).map(p => {
           const isSettings = p.id === "settings";
           const isActive = activePanel === p.id;
-          const style = isSettings
-            ? { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "var(--color-accent-green-mid)" : "var(--color-background-green)", color: isActive ? "#fff" : "var(--color-accent-green-mid)" }
-            : { ...toolBtn(isActive), fontSize: 15, fontWeight: 700, background: isActive ? "var(--color-accent-blue)" : "transparent", color: isActive ? "#fff" : "var(--color-text-secondary)" };
+          const tabStyle = {
+            fontSize: 13,
+            fontWeight: isActive ? 600 : 400,
+            padding: "10px 14px",
+            background: "transparent",
+            border: "none",
+            borderBottom: isActive
+              ? (isSettings ? "2px solid var(--color-accent-green-mid)" : "2px solid var(--color-accent-blue)")
+              : "2px solid transparent",
+            color: isActive
+              ? (isSettings ? "var(--color-accent-green-mid)" : "var(--color-accent-blue)")
+              : "var(--color-text-secondary)",
+            cursor: "pointer",
+            fontFamily: "var(--font-sans)",
+            outline: "none",
+            whiteSpace: "nowrap",
+            letterSpacing: "0.01em",
+            transition: "color 0.15s, border-color 0.15s",
+            marginBottom: -1,
+          };
           const label = isSettings ? `⚙ ${p.label}` : p.id === "lists" ? `☰ ${p.label}` : p.label;
           return (
             <button
@@ -8357,7 +8406,7 @@ function App() {
               role="tab"
               aria-selected={isActive}
               tabIndex={isActive ? 0 : -1}
-              style={style}
+              style={tabStyle}
               onClick={e => {
                 panelTriggerRef.current = e.currentTarget; // P5-5: store trigger for focus return
                 setActivePanel(ap => {
@@ -8370,7 +8419,7 @@ function App() {
         })}
         <button
           ref={aboutTriggerRef}
-          style={{ ...toolBtn(false), fontSize: 15, fontWeight: 700, background: "var(--color-surface-raised)", color: "var(--color-text-secondary)", marginLeft: 4 }}
+          style={{ fontSize: 13, fontWeight: 400, padding: "10px 14px", background: "transparent", border: "none", borderBottom: "2px solid transparent", color: "var(--color-text-tertiary)", cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none", whiteSpace: "nowrap", marginBottom: -1, marginLeft: "auto" }}
           onClick={() => setAboutOpen(true)}>ℹ About</button>
       </div>
 
@@ -8624,16 +8673,16 @@ function App() {
       )}
       {activePanel === "lists" && (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <div style={{ padding: "4px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 2, flexWrap: "wrap", background: "var(--color-background-secondary)", flexShrink: 0 }}>
+          <div style={{ padding: "0 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", gap: 0, flexWrap: "wrap", background: "var(--color-background-primary)", flexShrink: 0 }}>
             {LIST_TABS.map(t => (
               <button key={t.id}
-                style={{ fontSize: 14, fontWeight: 700, padding: "3px 10px", borderRadius: 999, border: "none", background: listTab === t.id ? "var(--color-accent-blue)" : "transparent", color: listTab === t.id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
+                style={{ fontSize: 12, fontWeight: listTab === t.id ? 600 : 400, padding: "8px 11px", border: "none", borderBottom: listTab === t.id ? "2px solid var(--color-accent-blue)" : "2px solid transparent", background: "transparent", color: listTab === t.id ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: "pointer", fontFamily: "var(--font-sans)", letterSpacing: "0.01em", whiteSpace: "nowrap", marginBottom: -1, transition: "color 0.15s, border-color 0.15s" }}
                 onClick={() => setListTab(t.id)}>{t.label}</button>
             ))}
           </div>
           {/* Filter bar — shown for searchable list tabs */}
           {["phrases","idioms","slang","cognates","numbers","media","opposites"].includes(listTab) && (
-            <div style={{ padding: "5px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 8, background: "var(--color-background-primary)", flexShrink: 0 }}>
+            <div style={{ padding: "6px 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 8, background: "var(--color-background-secondary)", flexShrink: 0 }}>
               <span style={{ fontSize: 13, color: "var(--color-text-tertiary)", flexShrink: 0 }}>🔍</span>
               <input
                 type="text"
@@ -8651,10 +8700,10 @@ function App() {
           {listTab === "sounds" && (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
               {/* Sounds sub-tab bar: Letters / IPA */}
-              <div style={{ padding: "4px 14px", borderBottom: "0.5px solid var(--color-border-tertiary)", display: "flex", gap: 6, background: "var(--color-background-secondary)", flexShrink: 0 }}>
+              <div style={{ padding: "0 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", gap: 0, background: "var(--color-background-primary)", flexShrink: 0 }}>
                 {[["letters", "Letters"], ["ipa", "IPA"]].map(([id, label]) => (
                   <button key={id}
-                    style={{ fontSize: 13, fontWeight: 700, padding: "3px 14px", borderRadius: 999, border: "none", background: soundsTab === id ? "var(--color-accent-violet)" : "transparent", color: soundsTab === id ? "#fff" : "var(--color-text-secondary)", cursor: "pointer", fontFamily: "var(--font-sans)", textTransform: "uppercase" }}
+                    style={{ fontSize: 12, fontWeight: soundsTab === id ? 600 : 400, padding: "8px 12px", border: "none", borderBottom: soundsTab === id ? "2px solid var(--color-accent-violet)" : "2px solid transparent", background: "transparent", color: soundsTab === id ? "var(--color-accent-violet)" : "var(--color-text-tertiary)", cursor: "pointer", fontFamily: "var(--font-sans)", marginBottom: -1, transition: "color 0.15s" }}
                     onClick={() => setSoundsTab(id)}>{label}</button>
                 ))}
               </div>
@@ -8874,9 +8923,9 @@ function App() {
           )}
           {listTab === "verbref" && (
             <div style={listPanelStyle}>
-              <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
+              <div style={{ display: "flex", gap: 0, marginBottom: 10, borderBottom: "1px solid var(--color-border-tertiary)" }}>
                 {VERB_REF_TABS.map((id, i) => (
-                  <button key={id} style={toolBtn(verbRefTab === id)} onClick={() => { setVerbRefTab(id); setSelectedVerb(null); }}>{VERB_REF_LABELS[id]}</button>
+                  <button key={id} style={{ fontSize: 12, fontWeight: verbRefTab === id ? 600 : 400, padding: "7px 12px", border: "none", borderBottom: verbRefTab === id ? "2px solid var(--color-accent-blue)" : "2px solid transparent", background: "transparent", color: verbRefTab === id ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: "pointer", fontFamily: "var(--font-sans)", marginBottom: -1, transition: "color 0.15s" }} onClick={() => { setVerbRefTab(id); setSelectedVerb(null); }}>{VERB_REF_LABELS[id]}</button>
                 ))}
               </div>
               <p style={{ margin: "0 0 10px 0", fontSize: 11, color: "var(--color-text-secondary)", fontStyle: "italic" }}>All lists are presented in alphabetical order.</p>
@@ -9321,7 +9370,7 @@ function App() {
 
       {/* Footer */}
       {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
-      <div style={{ padding: "10px 12px", borderTop: "0.5px solid var(--color-border-tertiary)", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+      <div style={{ padding: "10px 16px", borderTop: "1px solid var(--color-border-tertiary)", display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
         {!apiKey && (
           <div style={{ padding: "6px 10px", background: "var(--color-background-warning)", borderRadius: "var(--border-radius-md)", fontSize: 13, color: "var(--color-text-warning)" }}>
             ⚠ No API key — open <strong>⚙ Settings</strong> and paste your Anthropic key to start chatting.
@@ -9414,7 +9463,7 @@ function App() {
         <div style={{ display: "flex", gap: 8 }}>
           <textarea ref={inputRef}
             aria-label="Mensagem"
-            style={{ flex: 1, fontSize, padding: "8px 12px", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-lg)", resize: "none", background: "var(--color-background-primary)", color: "var(--color-text-primary)", lineHeight: 1.5, minHeight: 38, maxHeight: 120, fontFamily: "var(--font-sans)", outline: "none", overflowY: "auto" }}
+            style={{ flex: 1, fontSize, padding: "8px 14px", border: "1px solid var(--color-border-tertiary)", borderRadius: 10, resize: "none", background: "var(--color-background-primary)", color: "var(--color-text-primary)", lineHeight: 1.5, minHeight: 38, maxHeight: 120, fontFamily: "var(--font-sans)", outline: "none", overflowY: "auto", transition: "border-color 0.15s" }}
             rows={1} placeholder="Type or use 🎤 to speak…"
             value={input}
             onChange={e => {
@@ -9426,9 +9475,9 @@ function App() {
               el.style.height = Math.min(el.scrollHeight, 120) + "px";
             }}
             onKeyDown={handleKey} />
-          <button style={{ padding: "8px 16px", fontSize: 14, borderRadius: "var(--border-radius-lg)", border: "none", background: loading || (!input.trim() && !listening) ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || (!input.trim() && !listening) ? "var(--color-text-tertiary)" : "#fff", cursor: loading || (!input.trim() && !listening) ? "default" : "pointer", fontWeight: 500 }}
+          <button style={{ padding: "8px 18px", fontSize: 13, borderRadius: 10, border: "none", background: loading || (!input.trim() && !listening) ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || (!input.trim() && !listening) ? "var(--color-text-tertiary)" : "#fff", cursor: loading || (!input.trim() && !listening) ? "default" : "pointer", fontWeight: 600, letterSpacing: "0.04em", transition: "background 0.15s" }}
             aria-label="Send message"
-            onClick={() => sendMessage()} disabled={loading || (!input.trim() && !listening)}> ENVIAR</button>
+            onClick={() => sendMessage()} disabled={loading || (!input.trim() && !listening)}>Enviar</button>
         </div>
       </div>
       )}
