@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.0.38 -->
+  <!-- version: 3.0.39 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8" crossorigin="anonymous" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh" crossorigin="anonymous" defer></script>
@@ -76,7 +76,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.0.38", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.0.39", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -695,7 +695,7 @@ function getIpaHint(contrast) {
 const PHRASES = [
   { section: "Administrative & daily life", items: [
     { pt: "Preciso de uma fatura com NIF", en: "I need a receipt with my tax number" },
-    { pt: "Qual é o NIF daqui?", en: "What is the NIF here?" },
+    { pt: "Qual é o contribuinte daqui?", en: "What is the tax number here?" },
     { pt: "Onde posso pagar?", en: "Where can I pay?" },
     { pt: "Precisava de falar com alguém", en: "I need to speak with someone" },
     { pt: "Tenho uma questão sobre...", en: "I have a question about..." },
@@ -1151,34 +1151,6 @@ const COGNATES = [
   ], exceptions: [] },
   { section: "-TY → -DADE (f)", rule: "Always feminine.", items: [
     { pt: "a cidade", en: "city", freq: "high", example_pt: "A cidade de Lisboa tem muita história.", example_en: "The city of Lisbon has a lot of history." }, { pt: "a liberdade", en: "liberty", freq: "high" }, { pt: "a qualidade", en: "quality", freq: "high", example_pt: "A qualidade do trabalho é fundamental.", example_en: "The quality of the work is fundamental." }, { pt: "a universidade", en: "university", freq: "high" },
-  ], exceptions: [] },
-  { section: "False cognates (watch out!)", rule: "These look like English words but mean something different.", items: [
-    { pt: "actually → atualmente", en: "atualmente = currently (not 'actually' — na verdade)" },
-    { pt: "agenda", en: "diary/planner (not a meeting agenda — ordem do dia)" },
-    { pt: "assistir", en: "to watch/attend (not to assist — ajudar)" },
-    { pt: "borracha", en: "rubber/eraser (not drunk — bêbado)" },
-    { pt: "constipado", en: "having a cold (not constipated — obstipado)" },
-    { pt: "costume", en: "custom/habit (not a costume — fantasia/fato)" },
-    { pt: "decepção", en: "disappointment (not deception — engano/fraude)" },
-    { pt: "discussão", en: "argument/heated debate (not a calm discussion — conversa)" },
-    { pt: "embaraçado", en: "tangled/confused (not embarrassed — envergonhado)" },
-    { pt: "esquisito", en: "strange/odd (not exquisite — requintado)" },
-    { pt: "eventual", en: "possible/hypothetical (not eventual — final/último)" },
-    { pt: "fábrica", en: "factory (not fabric — tecido)" },
-    { pt: "jornal", en: "newspaper (not journal/diary — diário)" },
-    { pt: "largo", en: "wide/broad or a town square (not large — grande)" },
-    { pt: "livraria", en: "bookshop (not library — biblioteca)" },
-    { pt: "novela", en: "TV soap opera (not a novel — romance)" },
-    { pt: "parente", en: "relative/family member (not parent — pai/mãe)" },
-    { pt: "a polícia (f) / o polícia (m)", en: "a polícia (f) = the police force; o polícia (m) = a police officer. The gender changes the meaning." },
-    { pt: "tapete", en: "carpet/rug (not tape — fita adesiva)" },
-    { pt: "polvo", en: "octopus (not powder — pó)" },
-    { pt: "preservativo", en: "condom (not food preservative — conservante)" },
-    { pt: "pretender", en: "to intend/plan (not to pretend — fingir)" },
-    { pt: "realizar", en: "to carry out/achieve (not to realize mentally — perceber)" },
-    { pt: "o rádio (m) / a rádio (f)", en: "o rádio (m) = the radio device; a rádio (f) = the radio station. The gender changes the meaning." },
-    { pt: "sopa", en: "soup (not soap — sabão)" },
-    { pt: "tuna", en: "student music group (not the fish — atum)" },
   ], exceptions: [] },
 ];
 
@@ -3788,6 +3760,9 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
   const [fetchError, setFetchError] = useState("");
 
   const inputRef = useRef(null);
+  // Track an in-flight prefetch Promise so startSession can await it instead of
+  // launching a competing API call (which risks a 429 and the "data unavailable" error).
+  const prefetchPromiseRef = useRef(null);
 
   // Honour externalLaunch (from "Quiz this verb" button in Conjugator)
   useEffect(() => {
@@ -3805,11 +3780,13 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
 
   // Silent background prefetch: as soon as a verb is selected, fetch its conjugation
   // data into cache so Start Quiz is instant. Does not touch fetchLoading/fetchError.
+  // Stores the in-flight Promise in prefetchPromiseRef so startSession can await it
+  // instead of launching a duplicate request.
   useEffect(() => {
     if (!quizVerb) return;
     if (conjCache.current[quizVerb]) return; // already cached
     let cancelled = false;
-    (async () => {
+    const promise = (async () => {
       try {
         const resp = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
@@ -3838,6 +3815,11 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
         scheduleConjCacheWrite();
       } catch { /* silent — prefetch failures are non-fatal; background fetch only */ }
     })();
+    prefetchPromiseRef.current = promise;
+    promise.finally(() => {
+      // Clear the ref once the prefetch has settled so subsequent verbs get a fresh slot.
+      if (prefetchPromiseRef.current === promise) prefetchPromiseRef.current = null;
+    });
     return () => { cancelled = true; };
   }, [quizVerb]);
 
@@ -3915,6 +3897,15 @@ const VerbQuizTab = React.memo(function VerbQuizTab({
   async function fetchConjugation(verb) {
     // Check cache first
     if (conjCache.current[verb]) return { ok: true, data: conjCache.current[verb] };
+    // If a prefetch for this same verb is already in flight, wait for it to complete
+    // rather than launching a competing request (which risks a 429 rate-limit error).
+    if (prefetchPromiseRef.current) {
+      setFetchLoading(true);
+      await prefetchPromiseRef.current;
+      setFetchLoading(false);
+      if (conjCache.current[verb]) return { ok: true, data: conjCache.current[verb] };
+      // Prefetch completed but didn't populate cache (e.g. network error) — fall through to own fetch.
+    }
     setFetchLoading(true);
     setFetchError("");
     try {
@@ -5571,7 +5562,7 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFil
 });
 
 // ── CHIP CARVING TAB COMPONENT ───────────────────────────────────────────────
-const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListPT, onConjugate }) {
+const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListPT, onConjugate, showGenderColors }) {
   // ── Shared state ─────────────────────────────────────────────────────────
   const [activeSection, setActiveSection] = useState("all");
   const [quizMode, setQuizMode]           = useState(false);
@@ -6161,6 +6152,31 @@ function makeOrder(len) {
   return arr;
 }
 
+// Post-shuffle pass: swap adjacent duplicates (same .en value) to reduce consecutive repetition.
+// Operates on the pool directly so we can compare .en values via pool[arr[i]].en.
+function dedupeConsecutive(arr, pool) {
+  if (arr.length < 2) return arr;
+  const result = [...arr];
+  for (let i = 0; i < result.length - 1; i++) {
+    if (pool[result[i]].en === pool[result[i + 1]].en) {
+      // Find the next index further ahead that has a different en value
+      let swapIdx = -1;
+      for (let j = i + 2; j < result.length; j++) {
+        if (pool[result[j]].en !== pool[result[i]].en) { swapIdx = j; break; }
+      }
+      if (swapIdx !== -1) {
+        [result[i + 1], result[swapIdx]] = [result[swapIdx], result[i + 1]];
+      }
+    }
+  }
+  return result;
+}
+
+function makeOrderDeduped(len, pool) {
+  const raw = makeOrder(len);
+  return dedupeConsecutive(raw, pool);
+}
+
 // Pick up to 3 distractors: same category, different en value, shuffled.
 function pickDistractors(pool, correctItem) {
   const correctEn = correctItem.en;
@@ -6246,7 +6262,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
   // ── Quiz state ──
   // order is always built from activePool.length (reset whenever activePool changes).
   // Do NOT use modulo indexing — order and activePool must always be the same length.
-  const [order, setOrder]             = S(() => makeOrder(NUMBERS_QUIZ_POOLS.cardinals.length));
+  const [order, setOrder]             = S(() => makeOrderDeduped(NUMBERS_QUIZ_POOLS.cardinals.length, NUMBERS_QUIZ_POOLS.cardinals));
   const [qIdx, setQIdx]               = S(0);
   const [options, setOptions]         = S([]);
   const [result, setResult]           = S(null);
@@ -6325,7 +6341,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
   quizModeRef.current = quizMode;
   E(() => {
     if (!quizModeRef.current) return;
-    setOrder(makeOrder(activePool.length));
+    setOrder(makeOrderDeduped(activePool.length, activePool));
     setQIdx(0);
     setResult(null);
     setTranscript("");
@@ -6429,25 +6445,30 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
 
   function guessChoice(chosen) {
     if (result !== null) return;
+    // Guard: if options haven't been rebuilt yet for the current question, ignore the tap.
+    // This prevents a stale option from a previous question being scored against the new item.
+    if (!options.includes(chosen)) return;
     const correct = chosen === item.en;
     setResult(correct ? "correct" : "wrong");
     setWrongAnswer(correct ? "" : chosen);
     setScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
   }
 
-  function next() { stopMic(); stopSpeaking(); setQIdx(i => (i + 1) % order.length); }
-  function prev() { stopMic(); stopSpeaking(); setQIdx(i => (i - 1 + order.length) % order.length); }
+  function next() { stopMic(); stopSpeaking(); setOptions([]); setQIdx(i => (i + 1) % order.length); }
+  function prev() { stopMic(); stopSpeaking(); setOptions([]); setQIdx(i => (i - 1 + order.length) % order.length); }
 
   function shuffle() {
     stopMic(); stopSpeaking();
-    setOrder(makeOrder(activePool.length));
+    setOptions([]);
+    setOrder(makeOrderDeduped(activePool.length, activePool));
     setQIdx(0); setResult(null); setTranscript("");
   }
 
   function resetQuiz() {
     stopMic(); stopSpeaking();
     setResult(null); setTranscript(""); setScore({ correct: 0, total: 0 });
-    setOrder(makeOrder(activePool.length)); setQIdx(0);
+    setOptions([]);
+    setOrder(makeOrderDeduped(activePool.length, activePool)); setQIdx(0);
   }
 
   function toggleQuizMode() { stopMic(); setQuizMode(m => !m); resetQuiz(); }
@@ -6817,8 +6838,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
           </div>
       )}
       {filteredSections.map((sec, si) => {
-        const isFalseCognate = sec.section === "False cognates (watch out!)";
-        const tdLComputed = isFalseCognate ? { ...tdL, color: "var(--color-text-danger, #dc2626)" } : tdL;
+        const tdLComputed = tdL;
         if (needle) {
           // Search mode: flat render, no accordion
           return (
@@ -6852,14 +6872,14 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
             <button onClick={() => toggleSec(si)} style={{
               width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
               padding: "7px 10px",
-              background: isFalseCognate ? "var(--color-background-danger, #fef2f2)" : "var(--color-background-secondary)",
+              background: "var(--color-background-secondary)",
               border: "none", cursor: "pointer", fontSize, fontFamily: "var(--font-sans)",
-              color: isFalseCognate ? "var(--color-text-danger, #dc2626)" : "var(--color-accent-purple)",
+              color: "var(--color-accent-purple)",
               fontWeight: 700, textAlign: "left",
             }}>
               <span style={{ textDecoration: "underline" }}>{sec.section}</span>
-              {sec.rule && !isFalseCognate && <span style={{ fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "var(--color-text-tertiary)", marginLeft: 8, fontStyle: "italic", flexShrink: 0 }}>{sec.rule}</span>}
-              <span style={{ fontSize: 11, color: isFalseCognate ? "var(--color-text-danger, #dc2626)" : "var(--color-text-tertiary)", marginLeft: 8, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
+              {sec.rule && <span style={{ fontSize: Math.max(10, fontSize - 3), fontWeight: 400, color: "var(--color-text-tertiary)", marginLeft: 8, fontStyle: "italic", flexShrink: 0 }}>{sec.rule}</span>}
+              <span style={{ fontSize: 11, color: "var(--color-text-tertiary)", marginLeft: 8, flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
             </button>
             {isOpen && (
               <div style={{ borderTop: "0.5px solid var(--color-border-tertiary)", padding: "6px 0 8px" }}>
