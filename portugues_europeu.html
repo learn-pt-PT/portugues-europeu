@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.1.10 -->
+  <!-- version: 3.1.15 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.1.10", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.1.15", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -194,6 +194,9 @@ const MINIMAL_PAIRS = [
 // to display the hardcoded IRREGULAR_VERBS tense tables. They are NOT used by the Conjugator panel,
 // which renders tense rows directly from the API response.
 const TENSE_LABELS = ["Presente","Pret. Perfeito","Pret. Imperfeito","Futuro","Condicional","Particípio"];
+// Colour per tense for the horizontal verb table: Presente=blue, Pret.Perfeito=red,
+// Pret.Imperfeito=green, Futuro=purple, Condicional+Particípio=black.
+const TENSE_COLORS = ["#1d4ed8","#dc2626","#16a34a","#7c3aed","#111827","#111827"];
 const PRONOUNS = ["eu","tu","ele/ela","nós","vocês","eles/elas"];
 
 const IRREGULAR_VERBS = [
@@ -280,6 +283,13 @@ const IRREGULAR_VERBS = [
     ["quererei","quererás","quererá","quereremos","quererão","quererão"],
     ["quereria","quererias","quereria","quereríamos","quereriam","quereriam"],
     ["querido"]]},
+  { inf:"sair", en:"to leave/go out", tenses:[
+    ["saio","sais","sai","saímos","saem","saem"],
+    ["saí","saíste","saiu","saímos","saíram","saíram"],
+    ["saía","saías","saía","saíamos","saíam","saíam"],
+    ["sairei","sairás","sairá","sairemos","sairão","sairão"],
+    ["sairia","sairias","sairia","sairiamos","sairiam","sairiam"],
+    ["saído"]]},
   { inf:"saber", en:"to know", tenses:[
     ["sei","sabes","sabe","sabemos","sabem","sabem"],
     ["soube","soubeste","soube","soubemos","souberam","souberam"],
@@ -2236,7 +2246,85 @@ function buildChipCarvingVocabBlock() {
   return lines.join("\n");
 }
 
-function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation) {
+// ── Roleplay corpus injection ──
+/**
+ * Keyword-matches scenarioText against PHRASES sections and IDIOMS.
+ * Returns a formatted string suitable for injection into the system prompt,
+ * or "" if no relevant items found or text is empty.
+ *
+ * Section mapping: keywords (lowercase) → PHRASES section name(s).
+ * Idiom matching: checks item.when text for keyword overlap.
+ * Caps: up to 8 phrases total (high-freq first), up to 4 idioms.
+ * Greetings & Politeness high-freq items are always injected (small, universal).
+ */
+function buildRpCorpusBlock(scenarioText) {
+  if (!scenarioText || !scenarioText.trim()) return "";
+  const lower = scenarioText.toLowerCase();
+
+  // Map: array of trigger keywords → PHRASES section name
+  const SECTION_MAP = [
+    { keys: ["café","coffee","bica","galão","drink","bar","eat","food","restaurante","restaurant","menu","refeição","almoço","jantar","petisco","snack","gelado","ice cream"], section: "Food & restaurants" },
+    { keys: ["farmácia","pharmacy","farmacia","médico","doctor","médica","saúde","health","hospital","clínica","clinic","consulta","appointment","prescription","receita","tosse","cough","dor","pain","medicine","medicamento"], section: "Healthcare & pharmacy" },
+    { keys: ["loja","shop","comprar","buy","dinheiro","money","pay","pagar","caixa","checkout","preço","price","caro","cheap","barato","supermercado","supermarket","mercado","market"], section: "Shopping & money" },
+    { keys: ["autocarro","bus","comboio","train","metro","taxi","uber","transport","transporte","bilhete","ticket","viagem","travel","trip","rua","street","direção","direction","where","onde"], section: "Getting around" },
+    { keys: ["administrative","junta","câmara","camara","repartição","reparticao","bureau","form","papel","document","documento","fatura","invoice","nif","contribuinte","serviço público"], section: "Administrative & daily life" },
+    { keys: ["emergency","emergência","emergencia","lost","perdido","help","ajuda","police","polícia","policia","ambulância","ambulancia","accident","acidente"], section: "Emergencies & help" },
+  ];
+
+  // Always include a small universal set (high-freq only)
+  const UNIVERSAL_SECTIONS = ["Politeness", "Greetings & farewells"];
+
+  const matched = new Set();
+  for (const { keys, section } of SECTION_MAP) {
+    if (keys.some(k => lower.includes(k))) matched.add(section);
+  }
+
+  // Collect phrases: universal sections first, then matched
+  const phraseParts = [];
+  const allSections = [...UNIVERSAL_SECTIONS, ...Array.from(matched)];
+  const seenSections = new Set();
+  let phraseCount = 0;
+  const MAX_PHRASES = 10;
+
+  for (const sectionName of allSections) {
+    if (seenSections.has(sectionName)) continue;
+    seenSections.add(sectionName);
+    const sec = PHRASES.find(s => s.section === sectionName);
+    if (!sec) continue;
+    // For universal sections take only high-freq; for matched sections take all, high first
+    const isUniversal = UNIVERSAL_SECTIONS.includes(sectionName);
+    let items = isUniversal
+      ? sec.items.filter(it => it.freq === "high")
+      : [...sec.items].sort((a, b) => {
+          const order = { high: 0, mid: 1, low: 2 };
+          return (order[a.freq] ?? 2) - (order[b.freq] ?? 2);
+        });
+    // Cap total phrases
+    const take = items.slice(0, MAX_PHRASES - phraseCount);
+    if (take.length === 0) continue;
+    phraseCount += take.length;
+    phraseParts.push(`[${sectionName}]: ${take.map(it => `"${it.pt}" (${it.en})`).join("; ")}`);
+    if (phraseCount >= MAX_PHRASES) break;
+  }
+
+  // Idioms: match scenario keywords against item.when text (use same lower)
+  const MAX_IDIOMS = 4;
+  const scenarioWords = lower.split(/\s+/).filter(w => w.length > 3);
+  const matchedIdioms = IDIOMS
+    .filter(item => scenarioWords.some(w => item.when.toLowerCase().includes(w) || item.pt.toLowerCase().includes(w)))
+    .slice(0, MAX_IDIOMS);
+
+  if (phraseParts.length === 0 && matchedIdioms.length === 0) return "";
+
+  const lines = ["\n\nRelevant corpus for this roleplay scenario — use these naturally in context; surface them gently if the learner hasn't tried them yet:"];
+  for (const p of phraseParts) lines.push(p);
+  if (matchedIdioms.length > 0) {
+    lines.push(`[Idioms]: ${matchedIdioms.map(it => `"${it.pt}" (${it.when})`).join("; ")}`);
+  }
+  return lines.join("\n");
+}
+
+function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation, rpCorpus) {
   const topicList = topics.filter(t => t.selected).map(t => t.label).join(", ");
   const chipCarvingActive = topics.some(t => t.label === "Chip carving" && t.selected);
   const chipCarvingInstruction = chipCarvingActive
@@ -2275,7 +2363,7 @@ function buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusId
     : correctionBlockPossible
       ? "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only (plus any correction block if applicable)."
       : "\n\nDo NOT append any English translation block. Do not use === as a separator. Respond in Portuguese only.";
-  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. ${level === "A1" ? "Keep responses very short — 1 to 2 sentences. Simple vocabulary only." : level === "A2" ? "Keep responses short — 2 to 3 sentences." : level === "B1" ? "Keep responses natural — 3 to 5 sentences." : "Respond at natural length — no artificial brevity. Longer texts help the learner practice reading."}\n\nDo not use any emoji in your responses under any circumstances.${translationInstruction}${chipCarvingInstruction}`;
+  return `You are a friendly, patient European Portuguese (Portugal, not Brazil) conversation partner helping a native English speaker learn Portuguese.\n\nThe learner's level is ${level} — treat them as a ${levelDesc}\n\nAlways use European Portuguese vocabulary and grammar (e.g. "autocarro" not "ônibus", "casa de banho" not "banheiro", "fixe" not "legal"). Never use Brazilian Portuguese variants.\n\nPreferred conversation topics: ${topicList || "any topic"}.\n\nError correction policy: ${correctionDesc}${registerInstruction}${verbInstruction}${idiomInstruction}${grammarInstruction}\n\nRespond primarily in European Portuguese, adapting complexity to the learner's level. Be warm, encouraging, and conversational. ${level === "A1" ? "Keep responses very short — 1 to 2 sentences. Simple vocabulary only." : level === "A2" ? "Keep responses short — 2 to 3 sentences." : level === "B1" ? "Keep responses natural — 3 to 5 sentences." : "Respond at natural length — no artificial brevity. Longer texts help the learner practice reading."}\n\nDo not use any emoji in your responses under any circumstances.${translationInstruction}${chipCarvingInstruction}${rpCorpus || ""}`;
 }
 
 // Tense-to-level mapping used by the conjugator display
@@ -5441,7 +5529,7 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
 // Single source of truth for section title style — used by tab components and App.
 const makeSecTitle = (fontSize) => ({ fontSize: Math.max(11, fontSize - 1), fontWeight: 600, color: "var(--color-text-tertiary)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.08em" });
 
-const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listFilter, showCommonFirst }) {
+const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listFilter, showCommonFirst, rpSeenPhrases }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
@@ -5476,7 +5564,12 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
                         aria-label={`Hear: ${item.pt}`}
                         style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                     </td>
-                    <td style={tdL}>{item.pt}</td>
+                    <td style={tdL}>
+                      {item.pt}
+                      {rpSeenPhrases && rpSeenPhrases.has(item.pt) && (
+                        <span style={{ marginLeft: 5, fontSize: Math.max(9, fontSize - 5), padding: "1px 4px", borderRadius: 3, background: "var(--color-background-green)", color: "var(--color-accent-green-mid)", border: "1px solid var(--color-border-green)", fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>ctx</span>
+                      )}
+                    </td>
                     <td style={tdR}>{item.en}</td>
                   </tr>
                 ))}
@@ -5506,7 +5599,12 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
                           aria-label={`Hear: ${item.pt}`}
                           style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                       </td>
-                      <td style={tdL}>{item.pt}</td>
+                      <td style={tdL}>
+                        {item.pt}
+                        {rpSeenPhrases && rpSeenPhrases.has(item.pt) && (
+                          <span style={{ marginLeft: 5, fontSize: Math.max(9, fontSize - 5), padding: "1px 4px", borderRadius: 3, background: "var(--color-background-green)", color: "var(--color-accent-green-mid)", border: "1px solid var(--color-border-green)", fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>ctx</span>
+                        )}
+                      </td>
                       <td style={tdR}>{item.en}</td>
                     </tr>
                   ))}
@@ -5527,7 +5625,7 @@ const IDIOM_REGISTER_COLORS = {
   rude:       { bg: "#fef2f2", color: "#dc2626", border: "#fecaca" },
 };
 
-const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFilter }) {
+const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFilter, rpSeenIdioms }) {
   const [freqFilter, setFreqFilter] = useState("all");
   const [regFilter, setRegFilter]   = useState("all");
 
@@ -5581,6 +5679,9 @@ const IdiomsTab = React.memo(function IdiomsTab({ fontSize, speakListPT, listFil
               </td>
               <td style={{ ...tdL, width: "34%", paddingBottom: 8, paddingTop: 6 }}>
                 {item.pt}
+                {rpSeenIdioms && rpSeenIdioms.has(item.pt) && (
+                  <span style={{ marginLeft: 5, fontSize: Math.max(9, fontSize - 5), padding: "1px 4px", borderRadius: 3, background: "var(--color-background-green)", color: "var(--color-accent-green-mid)", border: "1px solid var(--color-border-green)", fontFamily: "var(--font-sans)", verticalAlign: "middle" }}>ctx</span>
+                )}
                 {item.register && (
                   <div style={{ marginTop: 3, display: "flex", alignItems: "center", gap: 5 }}>
                     <span style={{ fontSize: Math.max(11, fontSize - 4), padding: "1px 5px", borderRadius: 3, background: rc.bg, color: rc.color, border: `1px solid ${rc.border}`, fontFamily: "var(--font-sans)" }}>{item.register}</span>
@@ -7270,6 +7371,10 @@ function App() {
   const [rpOpen, setRpOpen] = useState(false);           // roleplay launcher expanded
   const [rpScenario, setRpScenario] = useState("");       // user-typed scenario
   const [rpPrompt, setRpPrompt] = useState("");           // assembled+editable prompt
+  const [rpCorpusEnabled, setRpCorpusEnabled] = useState(() => { const v = ls("pe_rp_corpus", true); return v === true || v === "true"; }); // corpus injection toggle
+  const [rpCorpus, setRpCorpus] = useState(null);         // active corpus block injected into system prompt
+  const [rpSeenPhrases, setRpSeenPhrases] = useState(() => new Set(ls("pe_rp_seen", {}).phrases || [])); // phrases seen in roleplay context
+  const [rpSeenIdioms,  setRpSeenIdioms]  = useState(() => new Set(ls("pe_rp_seen", {}).idioms  || [])); // idioms seen in roleplay context
   const [headerCollapsed, setHeaderCollapsed] = useState(() => ls("pe_header_collapsed", null) === "true"); // collapsible header
   const [activePanel, setActivePanel] = useState(null);
   const [listTab, setListTab] = useState("cognates");
@@ -7698,8 +7803,8 @@ function App() {
   }, []);
 
   const systemPrompt = useMemo(() =>
-    buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation),
-    [level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation]
+    buildSystemPrompt(level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation, rpCorpus),
+    [level, correctionMode, topics, verbOfSession, focusIdiom, focusGrammar, registerMode, showTranslation, rpCorpus]
   );
 
   const sendMessage = async (overrideText, calledFromStop = false) => {
@@ -8289,7 +8394,7 @@ function App() {
                 style={{ position: "absolute", top: 1, right: 1, width: 6, height: 6, borderRadius: "50%", background: "var(--color-accent-amber-indicator)", pointerEvents: "none" }} />
             )}
           </div>
-          <button style={{ ...toolBtn(false, fontSize), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)", border: "1px solid var(--color-border-green)", borderRadius: 6, fontSize: Math.max(11, fontSize - 3) }} onClick={() => { chatAbortRef.current?.abort(); setMessages([]); setLastUsage(null); }}>↺ Clear</button>
+          <button style={{ ...toolBtn(false, fontSize), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)", border: "1px solid var(--color-border-green)", borderRadius: 6, fontSize: Math.max(11, fontSize - 3) }} onClick={() => { chatAbortRef.current?.abort(); setMessages([]); setLastUsage(null); setRpCorpus(null); }}>↺ Clear</button>
           <button title="Collapse header" aria-label="Collapse header" style={{ ...toolBtn(false, fontSize), marginLeft: 4, borderRadius: 6, fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)" }} onClick={() => { setHeaderCollapsed(true); try { localStorage.setItem("pe_header_collapsed", "true"); } catch(e) {} }}>▲ Collapse</button>
           {lastUsage && (() => {
             const used = lastUsage.input_tokens;
@@ -8529,11 +8634,30 @@ function App() {
             disabled={!rpScenario.trim()}
             onClick={() => {
               const scenario = rpScenario.trim();
-              setRpPrompt(`És português/a de Lisboa. Estamos a fazer: ${scenario}. Fala só português europeu — não português do Brasil. O meu nível é intermédio. Fica sempre em personagem. Quando eu escrever corrige-me, corrige os meus erros das últimas trocas e depois continua.`);
+              setRpPrompt(`És português/a de Barcelos. Estamos a fazer: ${scenario}. Fala só português europeu — não português do Brasil. O meu nível é intermédio. Fica sempre em personagem. Quando eu escrever corrige-me, corrige os meus erros das últimas trocas e depois continua.`);
+              if (rpCorpusEnabled) {
+                setRpCorpus(buildRpCorpusBlock(scenario));
+              } else {
+                setRpCorpus(null);
+              }
             }}
             style={{ alignSelf: "flex-start", fontSize: Math.max(11, fontSize - 2), padding: "5px 14px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: rpScenario.trim() ? "var(--color-background-green)" : "var(--color-background-secondary)", color: rpScenario.trim() ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: rpScenario.trim() ? "pointer" : "default", fontWeight: 600 }}>
             Prepare prompt
           </button>
+          {rpCorpusEnabled && rpCorpus && (
+            <p style={{ fontSize: Math.max(11, fontSize - 4), color: "var(--color-text-tertiary)", margin: "0", fontStyle: "italic" }}>
+              {(() => {
+                const phraseMatches = (rpCorpus.match(/\[.*?\]:/g) || []).filter(s => !s.startsWith("[Idioms"));
+                const idiomMatch   = rpCorpus.includes("[Idioms]:");
+                const phraseCount  = (rpCorpus.match(/"[^"]+"/g) || []).length - (idiomMatch ? (rpCorpus.match(/\[Idioms\]:.*/) || [""])[0].split('"').length >> 1 : 0);
+                const idiomCount   = idiomMatch ? ((rpCorpus.match(/\[Idioms\]:.*/) || [""])[0].match(/"[^"]+"/g) || []).length / 2 | 0 : 0;
+                const parts = [];
+                if (phraseCount > 0) parts.push(`${phraseCount} phrase${phraseCount !== 1 ? "s" : ""}`);
+                if (idiomCount  > 0) parts.push(`${idiomCount} idiom${idiomCount  !== 1 ? "s" : ""}`);
+                return parts.length ? `Corpus injected: ${parts.join(" · ")}` : "Corpus: no matches for this scenario";
+              })()}
+            </p>
+          )}
           {rpPrompt !== "" && (
             <>
               <label style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", fontWeight: 600, marginTop: 2 }}>
@@ -8550,6 +8674,38 @@ function App() {
                 onClick={() => {
                   const text = rpPrompt.trim();
                   if (!text) return;
+                  // Mark injected corpus items as seen in localStorage
+                  if (rpCorpusEnabled && rpCorpus) {
+                    const scenario = rpScenario.trim();
+                    const lower = scenario.toLowerCase();
+                    const SECTION_MAP_KEYS = [
+                      { keys: ["café","coffee","bica","galão","drink","bar","eat","food","restaurante","restaurant","menu","refeição","almoço","jantar","petisco","snack","gelado","ice cream"], section: "Food & restaurants" },
+                      { keys: ["farmácia","pharmacy","farmacia","médico","doctor","médica","saúde","health","hospital","clínica","clinic","consulta","appointment","prescription","receita","tosse","cough","dor","pain","medicine","medicamento"], section: "Healthcare & pharmacy" },
+                      { keys: ["loja","shop","comprar","buy","dinheiro","money","pay","pagar","caixa","checkout","preço","price","caro","cheap","barato","supermercado","supermarket","mercado","market"], section: "Shopping & money" },
+                      { keys: ["autocarro","bus","comboio","train","metro","taxi","uber","transport","transporte","bilhete","ticket","viagem","travel","trip","rua","street","direção","direction","where","onde"], section: "Getting around" },
+                      { keys: ["administrative","junta","câmara","camara","repartição","reparticao","bureau","form","papel","document","documento","fatura","invoice","nif","contribuinte","serviço público"], section: "Administrative & daily life" },
+                      { keys: ["emergency","emergência","emergencia","lost","perdido","help","ajuda","police","polícia","policia","ambulância","ambulancia","accident","acidente"], section: "Emergencies & help" },
+                    ];
+                    const UNIVERSAL_SECTIONS = ["Politeness", "Greetings & farewells"];
+                    const matchedSections = new Set(UNIVERSAL_SECTIONS);
+                    for (const { keys, section } of SECTION_MAP_KEYS) {
+                      if (keys.some(k => lower.includes(k))) matchedSections.add(section);
+                    }
+                    const newPhrases = new Set(rpSeenPhrases);
+                    for (const sectionName of matchedSections) {
+                      const sec = PHRASES.find(s => s.section === sectionName);
+                      if (sec) sec.items.forEach(it => newPhrases.add(it.pt));
+                    }
+                    const scenarioWords = lower.split(/\s+/).filter(w => w.length > 3);
+                    const newIdioms = new Set(rpSeenIdioms);
+                    IDIOMS
+                      .filter(item => scenarioWords.some(w => item.when.toLowerCase().includes(w) || item.pt.toLowerCase().includes(w)))
+                      .slice(0, 4)
+                      .forEach(item => newIdioms.add(item.pt));
+                    setRpSeenPhrases(newPhrases);
+                    setRpSeenIdioms(newIdioms);
+                    lsSet("pe_rp_seen", { phrases: [...newPhrases], idioms: [...newIdioms] });
+                  }
                   setInput(text);
                   setRpOpen(false);
                   setRpScenario("");
@@ -8799,6 +8955,20 @@ function App() {
               When On, high-frequency items float to the top in Cognates, Phrases, and Opposites lists.
             </p>
           </div>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Roleplay</p>
+          <div style={{ marginBottom: 12 }}>
+            <div style={segCtrl}>
+              {[["on","On"],["off","Off"]].map(([id, label], i) => {
+                const pos = i === 0 ? "first" : "last";
+                const active = id === "on" ? rpCorpusEnabled : !rpCorpusEnabled;
+                return <button key={id} style={segBtn(active, pos, fontSize)} onClick={() => { const next = id === "on"; setRpCorpusEnabled(next); lsSet("pe_rp_corpus", next); }}>{label}</button>;
+              })}
+            </div>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: "5px 0 0", fontStyle: "italic" }}>
+              When On, relevant phrases and idioms from the lists are injected into the system prompt when you start a roleplay session.
+              Items surfaced this way are marked <span style={{ padding: "1px 4px", borderRadius: 3, background: "var(--color-background-green)", color: "var(--color-accent-green-mid)", border: "1px solid var(--color-border-green)", fontSize: Math.max(9, fontSize - 5) }}>ctx</span> in the Phrases and Idioms lists.
+            </p>
+          </div>
           <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Conjugation Cache</p>
           <div style={{ marginBottom: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -9046,10 +9216,10 @@ function App() {
             />
           )}
           {listTab === "phrases" && (
-            <PhrasesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} showCommonFirst={showCommonFirst} />
+            <PhrasesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} showCommonFirst={showCommonFirst} rpSeenPhrases={rpSeenPhrases} />
           )}
           {listTab === "idioms" && (
-            <IdiomsTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
+            <IdiomsTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} rpSeenIdioms={rpSeenIdioms} />
           )}
           {listTab === "verbquiz" && (
             <VerbQuizTab
@@ -9101,69 +9271,125 @@ function App() {
                         setTimeout(() => { sendMessageRef.current?.(prompt); }, 100);
                       }}>Practice in chat</button>
                   </div>
-                  {selectedVerb === "haver" && (
-                    <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Modern EP note: only 'há' (3rd person singular present) is in common use. All other forms are archaic or literary.</p>
-                  )}
                   {irreg ? (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 8 }}>
-                      {TENSE_LABELS.map((tname, ti) => (
-                        <div key={ti} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", padding: "8px 10px" }}>
-                          <p style={{ fontSize: Math.max(10, fontSize - 6), fontWeight: 500, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 5px" }}>{tname}</p>
-                          {ti < 4 ? (
-                            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 3) }}><tbody>
-                              {PRONOUNS.map((pr, pi) => (
-                                <tr key={pi}>
-                                  <td style={{ color: "var(--color-text-secondary)", padding: "1px 6px 1px 0", width: "40%" }}>{pr}</td>
-                                  <td style={{ color: "var(--color-text-primary)", fontWeight: 500, padding: "1px 0" }}>{irreg.tenses[ti][pi]}</td>
-                                </tr>
+                    selectedVerb === "haver" ? (
+                      /* haver: show only Presente + Pret.Perfeito, ele/ela row only */
+                      <div style={{ overflowX: "auto" }}>
+                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Modern EP note: only 'há' (3rd person singular present) is in common use. All other forms are archaic or literary.</p>
+                        <table style={{ borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 2) }}>
+                          <thead>
+                            <tr>
+                              <th style={{ padding: "4px 10px 4px 0", textAlign: "left", color: "var(--color-text-tertiary)", fontWeight: 600, fontSize: Math.max(10, fontSize - 4), whiteSpace: "nowrap", borderBottom: "1.5px solid var(--color-border-tertiary)" }}></th>
+                              {[0,1].map(ti => (
+                                <th key={ti} style={{ padding: "4px 12px 4px 4px", textAlign: "left", fontWeight: 700, fontSize: Math.max(10, fontSize - 4), textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap", color: TENSE_COLORS[ti], borderBottom: "1.5px solid var(--color-border-tertiary)" }}>{TENSE_LABELS[ti]}</th>
                               ))}
-                            </tbody></table>
-                          ) : (
-                            <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 500, color: "var(--color-text-primary)", margin: 0 }}>{irreg.tenses[4][0]}</p>
-                          )}
-                        </div>
-                      ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+                              <td style={{ padding: "3px 10px 3px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap", fontSize: Math.max(10, fontSize - 3) }}>ele/ela</td>
+                              {[0,1].map(ti => (
+                                <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap" }}>{irreg.tenses[ti][2]}</td>
+                              ))}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 2), width: "100%" }}>
+                        <thead>
+                          <tr>
+                            <th style={{ padding: "4px 10px 4px 0", textAlign: "left", color: "var(--color-text-tertiary)", fontWeight: 600, fontSize: Math.max(10, fontSize - 4), whiteSpace: "nowrap", borderBottom: "1.5px solid var(--color-border-tertiary)" }}></th>
+                            {[0,1,2,3].map(ti => (
+                              <th key={ti} style={{ padding: "4px 12px 4px 4px", textAlign: "left", fontWeight: 700, fontSize: Math.max(10, fontSize - 4), textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap", color: TENSE_COLORS[ti], borderBottom: "1.5px solid var(--color-border-tertiary)" }}>{TENSE_LABELS[ti]}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {PRONOUNS.map((pr, pi) => (
+                            <tr key={pi} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+                              <td style={{ padding: "3px 10px 3px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap", fontSize: Math.max(10, fontSize - 3) }}>{pr}</td>
+                              {[0,1,2,3].map(ti => (
+                                <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap" }}>{irreg.tenses[ti][pi]}</td>
+                              ))}
+                            </tr>
+                          ))}
+                          <tr style={{ borderTop: "1.5px solid var(--color-border-tertiary)" }}>
+                            <td style={{ padding: "4px 10px 4px 0", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}></td>
+                            <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap" }}>
+                              <span style={{ display: "block", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: TENSE_COLORS[4], marginBottom: 1 }}>{TENSE_LABELS[4]}</span>
+                              <span style={{ fontWeight: 500, color: TENSE_COLORS[4] }}>{irreg.tenses[4][0]}</span>
+                            </td>
+                            <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap" }}>
+                              <span style={{ display: "block", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: TENSE_COLORS[5], marginBottom: 1 }}>{TENSE_LABELS[5]}</span>
+                              <span style={{ fontWeight: 500, color: TENSE_COLORS[5] }}>{irreg.tenses[5][0]}</span>
+                            </td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
+                    )
                   ) : (
                     <div>
                       <p style={{ fontSize: Math.max(13, fontSize - 1), color: "var(--color-text-secondary)", fontStyle: "italic", marginBottom: 10 }}>
                         Regular {verbRefTab === "ar" ? "-AR" : "-ER/-IR"} pattern — stem: <strong style={{ fontFamily: "var(--font-mono)", color: "var(--color-text-info)" }}>{selectedVerb.slice(0, -2)}-</strong>
                       </p>
-                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 8 }}>
-                        {TENSE_LABELS.map((tname, ti) => {
+                      <div style={{ overflowX: "auto" }}>
+                        {(() => {
                           const stem = selectedVerb.slice(0, -2);
                           const isAR = verbRefTab === "ar";
                           const endings = isAR ? [
                             ["-o","-as","-a","-amos","-am","-am"],
                             ["-ei","-aste","-ou","-ámos","-aram","-aram"],
                             ["-ava","-avas","-ava","-ávamos","-avam","-avam"],
-                            ["-arei","-arás","-ará","-aremos","-arão","-arão"],
-                            ["-ado"]
+                            ["-arei","-arás","-ará","-aremos","-arão","-arão"]
                           ] : [
                             ["-o","-es","-e","-emos","-em","-em"],
                             ["-i","-este","-eu","-emos","-eram","-eram"],
                             ["-ia","-ias","-ia","-íamos","-iam","-iam"],
-                            ["-erei","-erás","-erá","-eremos","-erão","-erão"],
-                            ["-ido"]
+                            ["-erei","-erás","-erá","-eremos","-erão","-erão"]
                           ];
+                          const condForm = stem + (isAR ? "-aria" : "-eria");
+                          const partForm = stem + (isAR ? "-ado" : "-ido");
                           return (
-                            <div key={ti} style={{ background: "var(--color-background-primary)", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", padding: "8px 10px" }}>
-                              <p style={{ fontSize: Math.max(10, fontSize - 6), fontWeight: 500, color: "var(--color-text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 5px" }}>{tname}</p>
-                              {ti < 4 ? (
-                                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 3) }}><tbody>
-                                  {PRONOUNS.map((pr, pi) => (
-                                    <tr key={pi}>
-                                      <td style={{ color: "var(--color-text-secondary)", padding: "1px 6px 1px 0", width: "40%" }}>{pr}</td>
-                                      <td style={{ color: "var(--color-text-primary)", fontWeight: 500, padding: "1px 0" }}>{stem}{endings[ti][pi]}</td>
-                                    </tr>
+                            <table style={{ borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 2), width: "100%" }}>
+                              <thead>
+                                <tr>
+                                  <th style={{ padding: "4px 10px 4px 0", textAlign: "left", color: "var(--color-text-tertiary)", fontWeight: 600, fontSize: Math.max(10, fontSize - 4), whiteSpace: "nowrap", borderBottom: "1.5px solid var(--color-border-tertiary)" }}></th>
+                                  {[0,1,2,3].map(ti => (
+                                    <th key={ti} style={{ padding: "4px 12px 4px 4px", textAlign: "left", fontWeight: 700, fontSize: Math.max(10, fontSize - 4), textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap", color: TENSE_COLORS[ti], borderBottom: "1.5px solid var(--color-border-tertiary)" }}>{TENSE_LABELS[ti]}</th>
                                   ))}
-                                </tbody></table>
-                              ) : (
-                                <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 500, color: "var(--color-text-primary)", margin: 0 }}>{stem}{endings[4][0]}</p>
-                              )}
-                            </div>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {PRONOUNS.map((pr, pi) => (
+                                  <tr key={pi} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
+                                    <td style={{ padding: "3px 10px 3px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap", fontSize: Math.max(10, fontSize - 3) }}>{pr}</td>
+                                    {[0,1,2,3].map(ti => (
+                                      <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap" }}>{stem}{endings[ti][pi]}</td>
+                                    ))}
+                                  </tr>
+                                ))}
+                                <tr style={{ borderTop: "1.5px solid var(--color-border-tertiary)" }}>
+                                  <td style={{ padding: "4px 10px 4px 0", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}></td>
+                                  <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap" }}>
+                                    <span style={{ display: "block", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: TENSE_COLORS[4], marginBottom: 1 }}>{TENSE_LABELS[4]}</span>
+                                    <span style={{ fontWeight: 500, color: TENSE_COLORS[4] }}>{condForm}</span>
+                                  </td>
+                                  <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap" }}>
+                                    <span style={{ display: "block", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: TENSE_COLORS[5], marginBottom: 1 }}>{TENSE_LABELS[5]}</span>
+                                    <span style={{ fontWeight: 500, color: TENSE_COLORS[5] }}>{partForm}</span>
+                                  </td>
+                                  <td></td>
+                                  <td></td>
+                                </tr>
+                              </tbody>
+                            </table>
                           );
-                        })}
+                        })()}
                       </div>
                     </div>
                   )}
