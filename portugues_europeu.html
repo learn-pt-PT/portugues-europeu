@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.1.15 -->
+  <!-- version: 3.1.17 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.1.15", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.1.17", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -120,7 +120,7 @@ const LIST_TABS = [
   { id: "wordorder", label: "Word Order" },
 ];
 
-const VERB_REF_TABS = ["irregular", "ar", "erir", "semi"];
+const VERB_REF_TABS = ["irregular", "semi", "ar", "erir"];
 const VERB_REF_LABELS = { irregular: "Irregular", ar: "Regular -AR", erir: "Regular -ER/-IR", semi: "Semi-irregular" };
 
 const MINIMAL_PAIRS = [
@@ -3128,7 +3128,7 @@ const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT, onCo
     const builtStr = built.map(b => b.token).join(" ");
     // The correct string may have punctuation as part of a token (e.g. "faz?") or separate
     // Normalise: strip terminal punctuation from both sides for comparison
-    const normalise = s => s.trim().replace(/[.?!]$/, "").replace(/-/g, " ").replace(/\s+/g, " ").toLowerCase();
+    const normalise = s => s.trim().replace(/[.?!]$/, "").replace(/,/g, "").replace(/-/g, " ").replace(/\s+/g, " ").toLowerCase();
     const isCorrect = normalise(builtStr) === normalise(currentItem.correct);
     setCorrect(isCorrect);
     setChecked(true);
@@ -6333,7 +6333,7 @@ function pickDistractors(pool, correctItem) {
   return unique;
 }
 
-const GenderBadge = React.memo(function GenderBadge({ gender }) { return gender
+const GenderBadge = React.memo(function GenderBadge({ gender, fontSize = 14 }) { return gender
   ? <span style={{ display: "inline-block", marginLeft: 5, fontSize: Math.max(10, fontSize - 6), fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: gender === "m" ? "var(--color-background-info)" : "var(--color-background-gender-f)", color: gender === "m" ? "var(--color-accent-blue-deep)" : "var(--color-accent-violet)", border: `1px solid ${gender === "m" ? "var(--color-border-info)" : "var(--color-border-gender-f)"}`, verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>{gender === "m" ? "m" : "f"}</span>
   : null; });
 
@@ -6659,7 +6659,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
                         <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
                           style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                       </td>
-                      <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} /></td>
+                      <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} fontSize={fontSize} /></td>
                       <td style={tdR}>{it.en}</td>
                     </tr>
                   ))}
@@ -6689,7 +6689,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
                           <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
                             style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                         </td>
-                        <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} /></td>
+                        <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} fontSize={fontSize} /></td>
                         <td style={tdR}>{it.en}</td>
                       </tr>
                     ))}
@@ -6877,7 +6877,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
               <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-info)", fontSize: fontSize * 1.1 }}>
                 {showGenderedPrompt ? `${effectiveItem.pt} ${effectiveItem._noun}` : effectiveItem.pt}
               </span>
-              <GenderBadge gender={effectiveItem.gender} />
+              <GenderBadge gender={effectiveItem.gender} fontSize={fontSize} />
               <span>—</span>
               <span>{enPrompt}</span>
               <button onClick={() => speakListPT(effectiveItem.pt)} style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 6px", borderRadius: 4, border: "1px solid var(--color-border-info)", background: "var(--color-background-info)", color: "var(--color-accent-blue)", cursor: "pointer" }}>▶</button>
@@ -7000,7 +7000,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
                             aria-label={`Hear: ${item.pt}`}
                             style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                         </td>
-                        <td style={tdLComputed}>{item.pt}</td>
+                        <td style={tdLComputed}><span style={genderTint(item.pt)}>{item.pt}</span></td>
                         <td style={tdR}>{item.en}</td>
                       </tr>
                       {item.example_pt && (
@@ -7055,7 +7055,7 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
                               aria-label={`Hear: ${item.pt}`}
                               style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                           </td>
-                          <td style={tdLComputed}>{item.pt}</td>
+                          <td style={tdLComputed}><span style={genderTint(item.pt)}>{item.pt}</span></td>
                           <td style={tdR}>{item.en}</td>
                         </tr>
                         {item.example_pt && (
@@ -8634,7 +8634,7 @@ function App() {
             disabled={!rpScenario.trim()}
             onClick={() => {
               const scenario = rpScenario.trim();
-              setRpPrompt(`És português/a de Barcelos. Estamos a fazer: ${scenario}. Fala só português europeu — não português do Brasil. O meu nível é intermédio. Fica sempre em personagem. Quando eu escrever corrige-me, corrige os meus erros das últimas trocas e depois continua.`);
+              setRpPrompt(`Estamos a fazer: ${scenario}. Fica sempre em personagem.`);
               if (rpCorpusEnabled) {
                 setRpCorpus(buildRpCorpusBlock(scenario));
               } else {
@@ -9280,7 +9280,7 @@ function App() {
                           <thead>
                             <tr>
                               <th style={{ padding: "4px 10px 4px 0", textAlign: "left", color: "var(--color-text-tertiary)", fontWeight: 600, fontSize: Math.max(10, fontSize - 4), whiteSpace: "nowrap", borderBottom: "1.5px solid var(--color-border-tertiary)" }}></th>
-                              {[0,1].map(ti => (
+                              {[0,1,2].map(ti => (
                                 <th key={ti} style={{ padding: "4px 12px 4px 4px", textAlign: "left", fontWeight: 700, fontSize: Math.max(10, fontSize - 4), textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap", color: TENSE_COLORS[ti], borderBottom: "1.5px solid var(--color-border-tertiary)" }}>{TENSE_LABELS[ti]}</th>
                               ))}
                             </tr>
@@ -9288,7 +9288,7 @@ function App() {
                           <tbody>
                             <tr style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
                               <td style={{ padding: "3px 10px 3px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap", fontSize: Math.max(10, fontSize - 3) }}>ele/ela</td>
-                              {[0,1].map(ti => (
+                              {[0,1,2].map(ti => (
                                 <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap" }}>{irreg.tenses[ti][2]}</td>
                               ))}
                             </tr>
