@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.1.17 -->
+  <!-- version: 3.1.23 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.1.17", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.1.23", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -389,15 +389,69 @@ const REGULAR_ER_IR_VERBS = [
   { inf:"viver", en:"to live" },
 ];
 const SEMI_IRREGULAR_ER_IR_VERBS = [
-  { inf:"caber", en:"to fit" },
-  { inf:"manter", en:"to maintain" },
-  { inf:"doer", en:"to hurt", defective: true },
-  { inf:"valer", en:"to be worth" },
-  { inf:"pedir", en:"to ask for/request" },
-  { inf:"perder", en:"to lose" },
-  { inf:"subir", en:"to go up/climb" },
-  { inf:"rir", en:"to laugh" },
-  { inf:"sorrir", en:"to smile" },
+  { inf:"caber", en:"to fit", tenses:[
+    ["caibo","cabes","cabe","cabemos","cabem","cabem"],
+    ["coube","coubeste","coube","coubemos","couberam","couberam"],
+    ["cabia","cabias","cabia","cabíamos","cabiam","cabiam"],
+    ["caberei","caberás","caberá","caberemos","caberão","caberão"],
+    ["caberia"],
+    ["cabido"]]},
+  { inf:"manter", en:"to maintain", tenses:[
+    ["mantenho","manténs","mantém","mantemos","mantêm","mantêm"],
+    ["mantive","mantiveste","manteve","mantivemos","mantiveram","mantiveram"],
+    ["mantinha","mantinhas","mantinha","mantínhamos","mantinham","mantinham"],
+    ["manterei","manterás","manterá","manteremos","manterão","manterão"],
+    ["manteria"],
+    ["mantido"]]},
+  { inf:"doer", en:"to hurt", defective: true, tenses:[
+    ["—","—","dói","—","doem","doem"],
+    ["—","—","doeu","—","doeram","doeram"],
+    ["—","—","doía","—","doíam","doíam"],
+    ["—","—","doerá","—","doerão","doerão"],
+    ["—"],
+    ["doído"]]},
+  { inf:"valer", en:"to be worth", tenses:[
+    ["valho","vales","vale","valemos","valem","valem"],
+    ["vali","valeste","valeu","valemos","valeram","valeram"],
+    ["valia","valias","valia","valíamos","valiam","valiam"],
+    ["valerei","valerás","valerá","valeremos","valerão","valerão"],
+    ["valeria"],
+    ["valido"]]},
+  { inf:"pedir", en:"to ask for/request", tenses:[
+    ["peço","pedes","pede","pedimos","pedem","pedem"],
+    ["pedi","pediste","pediu","pedimos","pediram","pediram"],
+    ["pedia","pedias","pedia","pedíamos","pediam","pediam"],
+    ["pedirei","pedirás","pedirá","pediremos","pedirão","pedirão"],
+    ["pediria"],
+    ["pedido"]]},
+  { inf:"perder", en:"to lose", tenses:[
+    ["perco","perdes","perde","perdemos","perdem","perdem"],
+    ["perdi","perdeste","perdeu","perdemos","perderam","perderam"],
+    ["perdia","perdias","perdia","perdíamos","perdiam","perdiam"],
+    ["perderei","perderás","perderá","perderemos","perderão","perderão"],
+    ["perderia"],
+    ["perdido"]]},
+  { inf:"subir", en:"to go up/climb", tenses:[
+    ["subo","sobes","sobe","subimos","sobem","sobem"],
+    ["subi","subiste","subiu","subimos","subiram","subiram"],
+    ["subia","subias","subia","subíamos","subiam","subiam"],
+    ["subirei","subirás","subirá","subiremos","subirão","subirão"],
+    ["subiria"],
+    ["subido"]]},
+  { inf:"rir", en:"to laugh", tenses:[
+    ["rio","ris","ri","rimos","riem","riem"],
+    ["ri","riste","riu","rimos","riram","riram"],
+    ["ria","rias","ria","ríamos","riam","riam"],
+    ["rirei","rirás","rirá","riremos","rirão","rirão"],
+    ["riria"],
+    ["rido"]]},
+  { inf:"sorrir", en:"to smile", tenses:[
+    ["sorrio","sorris","sorri","sorrimos","sorriem","sorriem"],
+    ["sorri","sorriste","sorriu","sorrimos","sorriram","sorriram"],
+    ["sorria","sorrias","sorria","sorríamos","sorriam","sorriam"],
+    ["sorrirei","sorrirás","sorrirá","sorriremos","sorrirão","sorrirão"],
+    ["sorriria"],
+    ["sorrido"]]},
 ];
 
 
@@ -419,6 +473,45 @@ const ALL_VERBS_MAP = new Map(ALL_VERBS_DATA.map(x => [x.inf, x.en]));
 
 // O(1) irregularity check; replaces IRREGULAR_VERBS.some() at all call sites.
 const IRREGULAR_VERBS_SET = new Set(IRREGULAR_VERBS.map(v => v.inf));
+
+// Regular conjugation endings used for irregularity highlighting in the Verb List table.
+// Index: [tenseIdx][personIdx] for tenses 0–3 (6 persons); tenses 4–5 are single forms.
+// tense 0=Presente, 1=Pret.Perfeito, 2=Pret.Imperfeito, 3=Futuro, 4=Condicional(eu), 5=Particípio
+const REG_ENDINGS_AR = [
+  ["-o","-as","-a","-amos","-am","-am"],           // Presente
+  ["-ei","-aste","-ou","-ámos","-aram","-aram"],    // Pret. Perfeito
+  ["-ava","-avas","-ava","-ávamos","-avam","-avam"],// Pret. Imperfeito
+  ["-arei","-arás","-ará","-aremos","-arão","-arão"],// Futuro
+  ["-aria"],                                         // Condicional (eu only shown)
+  ["-ado"],                                          // Particípio
+];
+const REG_ENDINGS_ERIR = [
+  ["-o","-es","-e","-emos","-em","-em"],
+  ["-i","-este","-eu","-emos","-eram","-eram"],
+  ["-ia","-ias","-ia","-íamos","-iam","-iam"],
+  ["-erei","-erás","-erá","-eremos","-erão","-erão"],
+  ["-eria"],
+  ["-ido"],
+];
+
+// Returns true if the actual form in the verb table departs from the regular pattern.
+// Used to highlight irregular cells in yellow in the Verb List (Lists → Verb List).
+// Only meaningful for irregular and semi-irregular verbs; regular verbs are never highlighted.
+function isIrregularForm(inf, actual, tenseIdx, personIdx) {
+  if (!actual || actual === "—") return false;
+  const isAR = inf.endsWith("ar");
+  const endings = isAR ? REG_ENDINGS_AR : REG_ENDINGS_ERIR;
+  const stem = inf.slice(0, -2);
+  // tense 4 and 5 are single-form rows
+  const pi = (tenseIdx >= 4) ? 0 : personIdx;
+  const ending = endings[tenseIdx]?.[pi];
+  if (!ending) return false;
+  // Endings are stored with a leading "-" for display purposes; strip it before comparing.
+  const expected = stem + ending.replace(/^-/, "");
+  // Normalise: strip diacritics for comparison so accent-only differences still flag
+  const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  return norm(actual) !== norm(expected);
+}
 
 function pickRandom(arr) { if (!arr || !arr.length) return null; return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -2857,7 +2950,7 @@ const WORD_ORDER_ITEMS = [
   // ── PROGRESSIVE CONSTRUCTION (focus: "progressive") — 17 items ──────────────
   { tokens:["a","estou","trabalhar"], correct:"Estou a trabalhar.", en:"I am working.", focus:"progressive", level:"A1" },
   { tokens:["a","estava","chover"], correct:"Estava a chover.", en:"It was raining.", focus:"progressive", level:"A2" },
-  { tokens:["a","o","está","que","ele","fazer"], correct:"O que é que ele está a fazer?", en:"What is he doing?", focus:"progressive", level:"A2" },
+  { tokens:["o","que","é","que","ele","está","a","fazer"], correct:"O que é que ele está a fazer?", en:"What is he doing?", focus:"progressive", level:"A2" },
   { tokens:["a","eles","estão","jantar"], correct:"Eles estão a jantar.", en:"They are having dinner.", focus:"progressive", level:"A1" },
   { tokens:["a","estavas","ler","o","livro"], correct:"Estavas a ler o livro.", en:"You were reading the book.", focus:"progressive", level:"A2" },
   { tokens:["a","estamos","aprender","português"], correct:"Estamos a aprender português.", en:"We are learning Portuguese.", focus:"progressive", level:"A1" },
@@ -7378,6 +7471,7 @@ function App() {
   const [headerCollapsed, setHeaderCollapsed] = useState(() => ls("pe_header_collapsed", null) === "true"); // collapsible header
   const [activePanel, setActivePanel] = useState(null);
   const [listTab, setListTab] = useState("cognates");
+  const [hiddenListTabs, setHiddenListTabs] = useState(() => new Set(ls("pe_hidden_list_tabs", [])));
   const [listFilter, setListFilter] = useState("");
   const [baseFontSize, setBaseFontSize] = useState(() => ls("pe_fontsize", 16));
   const [fontOffset, setFontOffset] = useState(0);
@@ -8214,7 +8308,7 @@ function App() {
     });
   }, [verbDropdownSearch]);
 
-  const irreg = IRREGULAR_VERBS.find(v => v.inf === selectedVerb);
+  const irreg = IRREGULAR_VERBS.find(v => v.inf === selectedVerb) || SEMI_IRREGULAR_ER_IR_VERBS.find(v => v.inf === selectedVerb);
 
 
   const companionIsMale = selectedVoice?.name === "__azure_duarte__";
@@ -8969,6 +9063,50 @@ function App() {
               Items surfaced this way are marked <span style={{ padding: "1px 4px", borderRadius: 3, background: "var(--color-background-green)", color: "var(--color-accent-green-mid)", border: "1px solid var(--color-border-green)", fontSize: Math.max(9, fontSize - 5) }}>ctx</span> in the Phrases and Idioms lists.
             </p>
           </div>
+          <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>List Tabs</p>
+          <div style={{ marginBottom: 12 }}>
+            <p style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>
+              Tap a tab to hide or show it in the Lists panel. At least one tab must remain visible.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+              {LIST_TABS.map(t => {
+                const hidden = hiddenListTabs.has(t.id);
+                const isLast = !hidden && LIST_TABS.filter(x => !hiddenListTabs.has(x.id)).length === 1;
+                return (
+                  <button key={t.id}
+                    title={isLast ? "At least one tab must remain visible" : (hidden ? "Click to show" : "Click to hide")}
+                    style={{
+                      fontSize: Math.max(11, fontSize - 2),
+                      padding: "3px 10px",
+                      borderRadius: 999,
+                      border: hidden ? "1.5px solid var(--color-border-tertiary)" : "1.5px solid var(--color-accent-blue)",
+                      background: hidden ? "var(--color-background-secondary)" : "var(--color-background-info)",
+                      color: hidden ? "var(--color-text-tertiary)" : "var(--color-accent-blue)",
+                      cursor: isLast ? "not-allowed" : "pointer",
+                      opacity: isLast ? 0.5 : 1,
+                      fontFamily: "var(--font-sans)",
+                      textDecoration: hidden ? "line-through" : "none",
+                      transition: "all 0.15s",
+                    }}
+                    onClick={() => {
+                      if (isLast) return;
+                      setHiddenListTabs(prev => {
+                        const next = new Set(prev);
+                        if (next.has(t.id)) { next.delete(t.id); } else { next.add(t.id); }
+                        lsSet("pe_hidden_list_tabs", [...next]);
+                        return next;
+                      });
+                    }}>{t.label}</button>
+                );
+              })}
+            </div>
+            {hiddenListTabs.size > 0 && (
+              <button style={{ ...toolBtn(false, fontSize), marginTop: 8, fontSize: Math.max(11, fontSize - 2), color: "var(--color-accent-blue)" }}
+                onClick={() => { setHiddenListTabs(new Set()); lsSet("pe_hidden_list_tabs", []); }}>
+                Reset (show all)
+              </button>
+            )}
+          </div>
           <p style={{ ...secTitle, color: "var(--color-accent-purple)", fontWeight: 700, textDecoration: "underline" }}>Conjugation Cache</p>
           <div style={{ marginBottom: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -8985,10 +9123,15 @@ function App() {
           </div>
         </div>
       )}
-      {activePanel === "lists" && (
+      {activePanel === "lists" && (() => {
+        const visibleListTabs = LIST_TABS.filter(t => !hiddenListTabs.has(t.id));
+        if (visibleListTabs.length > 0 && !visibleListTabs.find(t => t.id === listTab)) {
+          setListTab(visibleListTabs[0].id);
+        }
+        return (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ padding: "0 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", gap: 0, flexWrap: "wrap", background: "var(--color-background-primary)", flexShrink: 0 }}>
-            {LIST_TABS.map(t => (
+            {visibleListTabs.map(t => (
               <button key={t.id}
                 style={{ fontSize: Math.max(11, fontSize - 3), fontWeight: listTab === t.id ? 600 : 400, padding: "8px 11px", border: "none", borderBottom: listTab === t.id ? "2px solid var(--color-accent-blue)" : "2px solid transparent", background: "transparent", color: listTab === t.id ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: "pointer", fontFamily: "var(--font-sans)", letterSpacing: "0.01em", whiteSpace: "nowrap", marginBottom: -1, transition: "color 0.15s, border-color 0.15s" }}
                 onClick={() => setListTab(t.id)}>{t.label}</button>
@@ -9271,9 +9414,15 @@ function App() {
                         setTimeout(() => { sendMessageRef.current?.(prompt); }, 100);
                       }}>Practice in chat</button>
                   </div>
+                  {irreg && (
+                    <p style={{ fontSize: Math.max(10, fontSize - 4), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px", display: "flex", alignItems: "center", gap: 5 }}>
+                      <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: "var(--color-background-warning)", border: "1px solid var(--color-accent-amber)", flexShrink: 0 }}></span>
+                      Highlighted cells depart from the regular pattern.
+                    </p>
+                  )}
                   {irreg ? (
                     selectedVerb === "haver" ? (
-                      /* haver: show only Presente + Pret.Perfeito, ele/ela row only */
+                      /* haver: show only Presente + Pret.Perfeito + Imperfeito, ele/ela row only */
                       <div style={{ overflowX: "auto" }}>
                         <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Modern EP note: only 'há' (3rd person singular present) is in common use. All other forms are archaic or literary.</p>
                         <table style={{ borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 2) }}>
@@ -9288,15 +9437,22 @@ function App() {
                           <tbody>
                             <tr style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
                               <td style={{ padding: "3px 10px 3px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap", fontSize: Math.max(10, fontSize - 3) }}>ele/ela</td>
-                              {[0,1,2].map(ti => (
-                                <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap" }}>{irreg.tenses[ti][2]}</td>
-                              ))}
+                              {[0,1,2].map(ti => {
+                                const form = irreg.tenses[ti][2];
+                                const hilit = isIrregularForm(selectedVerb, form, ti, 2);
+                                return (
+                                  <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap", background: hilit ? "var(--color-background-warning)" : "transparent", borderRadius: hilit ? 3 : 0 }}>{form}</td>
+                                );
+                              })}
                             </tr>
                           </tbody>
                         </table>
                       </div>
                     ) : (
                     <div style={{ overflowX: "auto" }}>
+                      {irreg.defective && (
+                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Defective verb — only 3rd person forms are used. Other slots are marked —.</p>
+                      )}
                       <table style={{ borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 2), width: "100%" }}>
                         <thead>
                           <tr>
@@ -9310,18 +9466,22 @@ function App() {
                           {PRONOUNS.map((pr, pi) => (
                             <tr key={pi} style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
                               <td style={{ padding: "3px 10px 3px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap", fontSize: Math.max(10, fontSize - 3) }}>{pr}</td>
-                              {[0,1,2,3].map(ti => (
-                                <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap" }}>{irreg.tenses[ti][pi]}</td>
-                              ))}
+                              {[0,1,2,3].map(ti => {
+                                const form = irreg.tenses[ti][pi];
+                                const hilit = isIrregularForm(selectedVerb, form, ti, pi);
+                                return (
+                                  <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap", background: hilit ? "var(--color-background-warning)" : "transparent", borderRadius: hilit ? 3 : 0 }}>{form}</td>
+                                );
+                              })}
                             </tr>
                           ))}
                           <tr style={{ borderTop: "1.5px solid var(--color-border-tertiary)" }}>
                             <td style={{ padding: "4px 10px 4px 0", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}></td>
-                            <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap" }}>
+                            <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap", background: isIrregularForm(selectedVerb, irreg.tenses[4][0], 4, 0) ? "var(--color-background-warning)" : "transparent", borderRadius: 3 }}>
                               <span style={{ display: "block", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: TENSE_COLORS[4], marginBottom: 1 }}>{TENSE_LABELS[4]}</span>
                               <span style={{ fontWeight: 500, color: TENSE_COLORS[4] }}>{irreg.tenses[4][0]}</span>
                             </td>
-                            <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap" }}>
+                            <td style={{ padding: "4px 12px 4px 4px", whiteSpace: "nowrap", background: isIrregularForm(selectedVerb, irreg.tenses[5][0], 5, 0) ? "var(--color-background-warning)" : "transparent", borderRadius: 3 }}>
                               <span style={{ display: "block", fontSize: Math.max(10, fontSize - 4), fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", color: TENSE_COLORS[5], marginBottom: 1 }}>{TENSE_LABELS[5]}</span>
                               <span style={{ fontWeight: 500, color: TENSE_COLORS[5] }}>{irreg.tenses[5][0]}</span>
                             </td>
@@ -9449,7 +9609,8 @@ function App() {
             <WordOrderTab level={level} speakListPT={speakListPT} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} fontSize={fontSize} />
           )}
         </div>
-      )}
+        );
+      })()}
 
       {/* Conjugator panel */}
       {activePanel === "verblookup" && (
