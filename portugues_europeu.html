@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.1.8 -->
+  <!-- version: 3.1.10 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.1.8", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.1.10", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -7270,6 +7270,7 @@ function App() {
   const [rpOpen, setRpOpen] = useState(false);           // roleplay launcher expanded
   const [rpScenario, setRpScenario] = useState("");       // user-typed scenario
   const [rpPrompt, setRpPrompt] = useState("");           // assembled+editable prompt
+  const [headerCollapsed, setHeaderCollapsed] = useState(() => ls("pe_header_collapsed", null) === "true"); // collapsible header
   const [activePanel, setActivePanel] = useState(null);
   const [listTab, setListTab] = useState("cognates");
   const [listFilter, setListFilter] = useState("");
@@ -8231,7 +8232,30 @@ function App() {
         </div>
       )}
 
-      {/* Header */}
+      {/* Collapsed header bar — tap anywhere to expand */}
+      {headerCollapsed && (
+        <button
+          onClick={() => { setHeaderCollapsed(false); try { localStorage.setItem("pe_header_collapsed", "false"); } catch(e) {} }}
+          aria-label="Expand header"
+          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "5px 20px", background: "var(--color-background-primary)", border: "none", borderBottom: "1px solid var(--color-border-tertiary)", cursor: "pointer", flexShrink: 0, gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <svg width="22" height="15" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: 2, flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }}>
+              <rect x="0" y="0" width="11" height="20" fill="#006600" />
+              <rect x="11" y="0" width="17" height="20" fill="#CC0000" />
+              <ellipse cx="11" cy="10" rx="5.5" ry="5.5" fill="none" stroke="#FFD700" strokeWidth="1.2" />
+              <rect x="8.2" y="7.5" width="5.6" height="5" rx="0.5" fill="#FFD700" fillOpacity="0.15" stroke="#FFD700" strokeWidth="0.8" />
+            </svg>
+            <span style={{ fontSize: Math.max(12, fontSize - 1), fontWeight: 600, color: "var(--color-text-primary)", letterSpacing: "-0.01em" }}>Português Europeu</span>
+          </div>
+          <span style={{ fontSize: Math.max(10, fontSize - 4), color: "var(--color-text-tertiary)" }}>▼ Expand</span>
+        </button>
+      )}
+
+      {/* Collapsible header block */}
+      {!headerCollapsed && (
+      <div style={{ display: "contents" }}>
+
+            {/* Header */}
       <div style={{ padding: "10px 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, gap: 12, flexWrap: "wrap", background: "var(--color-background-primary)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <svg width="32" height="22" viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" style={{ borderRadius: 3, flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.18)" }}>
@@ -8266,6 +8290,7 @@ function App() {
             )}
           </div>
           <button style={{ ...toolBtn(false, fontSize), marginLeft: 4, color: "var(--color-accent-green-mid)", background: "var(--color-background-green)", border: "1px solid var(--color-border-green)", borderRadius: 6, fontSize: Math.max(11, fontSize - 3) }} onClick={() => { chatAbortRef.current?.abort(); setMessages([]); setLastUsage(null); }}>↺ Clear</button>
+          <button title="Collapse header" aria-label="Collapse header" style={{ ...toolBtn(false, fontSize), marginLeft: 4, borderRadius: 6, fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)" }} onClick={() => { setHeaderCollapsed(true); try { localStorage.setItem("pe_header_collapsed", "true"); } catch(e) {} }}>▲ Collapse</button>
           {lastUsage && (() => {
             const used = lastUsage.input_tokens;
             const pct  = Math.min(100, (used / CHAT_MODEL_CTX) * 100);
@@ -8417,6 +8442,13 @@ function App() {
             </div>
           )}
         </div>
+
+        {/* Roleplay toggle button — rightmost item in focus bar */}
+        <button
+          onClick={() => setRpOpen(o => !o)}
+          style={{ ...toolBtn(rpOpen, fontSize), marginLeft: "auto", borderRadius: 6, fontSize: Math.max(11, fontSize - 3), background: rpOpen ? "var(--color-background-green)" : undefined, color: rpOpen ? "var(--color-accent-blue)" : "var(--color-text-secondary)", border: rpOpen ? "1px solid var(--color-border-green)" : "1px solid var(--color-border-tertiary)", padding: "3px 10px", whiteSpace: "nowrap" }}>
+          🎭 Role Play
+        </button>
       </div>
 
       {/* Panel tabs */}
@@ -8479,6 +8511,61 @@ function App() {
           style={{ fontSize: Math.max(12, fontSize - 2), fontWeight: 400, padding: "10px 14px", background: "transparent", border: "none", borderBottom: "2px solid transparent", color: "var(--color-text-tertiary)", cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none", whiteSpace: "nowrap", marginBottom: -1, marginLeft: "auto" }}
           onClick={() => setAboutOpen(true)}>ℹ About</button>
       </div>
+      {/* Roleplay panel — expands below Lists bar when toggle is active */}
+      {rpOpen && (
+        <div style={{ borderBottom: "1px solid var(--color-border-tertiary)", padding: "10px 20px 12px", display: "flex", flexDirection: "column", gap: 8, flexShrink: 0, background: "var(--color-background-primary)" }}>
+          <label style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", fontWeight: 600 }}>
+            Scenario
+            <span style={{ fontWeight: 400, marginLeft: 6, color: "var(--color-text-tertiary)" }}>— describe the role play in English or Portuguese</span>
+          </label>
+          <textarea
+            placeholder="e.g. empregado de balcão num café da Baixa / pharmacist helping a customer / landlord discussing a repair"
+            value={rpScenario}
+            onChange={e => { setRpScenario(e.target.value); setRpPrompt(""); }}
+            rows={2}
+            style={{ fontSize, padding: "7px 10px", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", resize: "vertical", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", lineHeight: 1.5, outline: "none" }}
+          />
+          <button
+            disabled={!rpScenario.trim()}
+            onClick={() => {
+              const scenario = rpScenario.trim();
+              setRpPrompt(`És português/a de Lisboa. Estamos a fazer: ${scenario}. Fala só português europeu — não português do Brasil. O meu nível é intermédio. Fica sempre em personagem. Quando eu escrever corrige-me, corrige os meus erros das últimas trocas e depois continua.`);
+            }}
+            style={{ alignSelf: "flex-start", fontSize: Math.max(11, fontSize - 2), padding: "5px 14px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: rpScenario.trim() ? "var(--color-background-green)" : "var(--color-background-secondary)", color: rpScenario.trim() ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: rpScenario.trim() ? "pointer" : "default", fontWeight: 600 }}>
+            Prepare prompt
+          </button>
+          {rpPrompt !== "" && (
+            <>
+              <label style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", fontWeight: 600, marginTop: 2 }}>
+                Prompt
+                <span style={{ fontWeight: 400, marginLeft: 6, color: "var(--color-text-tertiary)" }}>— review and edit before sending</span>
+              </label>
+              <textarea
+                value={rpPrompt}
+                onChange={e => setRpPrompt(e.target.value)}
+                rows={4}
+                style={{ fontSize: Math.max(11, fontSize - 1), padding: "7px 10px", border: "1px solid var(--color-accent-blue)", borderRadius: "var(--border-radius-md)", resize: "vertical", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", lineHeight: 1.6, outline: "none" }}
+              />
+              <button
+                onClick={() => {
+                  const text = rpPrompt.trim();
+                  if (!text) return;
+                  setInput(text);
+                  setRpOpen(false);
+                  setRpScenario("");
+                  setRpPrompt("");
+                  setTimeout(() => { sendMessage(text); }, 0);
+                }}
+                style={{ alignSelf: "flex-start", fontSize: Math.max(11, fontSize - 2), padding: "6px 18px", borderRadius: "var(--border-radius-md)", border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer", fontWeight: 700 }}>
+                Send to chat ▶
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      </div>
+      )}{/* end collapsible header block */}
 
       {/* Settings panel */}
       {activePanel === "settings" && (
@@ -9432,70 +9519,6 @@ function App() {
         {loading && <div style={{ alignSelf: "flex-start", background: "var(--color-background-secondary)", padding: "10px 14px", borderRadius: "18px 18px 18px 4px", fontSize: Math.max(12, fontSize - 2), color: "var(--color-text-tertiary)" }}>A escrever… {/* Intentional Portuguese — reinforces immersion for the learner */}</div>}
         <div ref={bottomRef} />
       </div>
-
-      {/* Roleplay launcher — visible when chat is active, collapsed by default */}
-      {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
-        <div style={{ borderTop: "1px solid var(--color-border-tertiary)", flexShrink: 0 }}>
-          <button
-            onClick={() => setRpOpen(o => !o)}
-            style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 16px", background: rpOpen ? "var(--color-background-green)" : "var(--color-background-secondary)", border: "none", cursor: "pointer", fontSize: Math.max(11, fontSize - 3), color: rpOpen ? "var(--color-accent-blue)" : "var(--color-text-secondary)", fontWeight: rpOpen ? 700 : 400 }}>
-            <span>🎭 Role Play</span>
-            <span style={{ fontSize: Math.max(10, fontSize - 4) }}>{rpOpen ? "▲" : "▼"}</span>
-          </button>
-          {rpOpen && (
-            <div style={{ padding: "10px 16px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", fontWeight: 600 }}>
-                Scenario
-                <span style={{ fontWeight: 400, marginLeft: 6, color: "var(--color-text-tertiary)" }}>— describe the role play in English or Portuguese</span>
-              </label>
-              <textarea
-                placeholder="e.g. empregado de balcão num café da Baixa / pharmacist helping a customer / landlord discussing a repair"
-                value={rpScenario}
-                onChange={e => { setRpScenario(e.target.value); setRpPrompt(""); }}
-                rows={2}
-                style={{ fontSize, padding: "7px 10px", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", resize: "vertical", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", lineHeight: 1.5, outline: "none" }}
-              />
-              <button
-                disabled={!rpScenario.trim()}
-                onClick={() => {
-                  const scenario = rpScenario.trim();
-                  setRpPrompt(`És português/a de Lisboa. Estamos a fazer: ${scenario}. Fala só português europeu — não português do Brasil. O meu nível é intermédio. Fica sempre em personagem. Quando eu escrever corrige-me, corrige os meus erros das últimas trocas e depois continua.`);
-                }}
-                style={{ alignSelf: "flex-start", fontSize: Math.max(11, fontSize - 2), padding: "5px 14px", borderRadius: "var(--border-radius-md)", border: "1px solid var(--color-accent-blue)", background: rpScenario.trim() ? "var(--color-background-green)" : "var(--color-background-secondary)", color: rpScenario.trim() ? "var(--color-accent-blue)" : "var(--color-text-tertiary)", cursor: rpScenario.trim() ? "pointer" : "default", fontWeight: 600 }}>
-                Prepare prompt
-              </button>
-              {rpPrompt !== "" && (
-                <>
-                  <label style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", fontWeight: 600, marginTop: 2 }}>
-                    Prompt
-                    <span style={{ fontWeight: 400, marginLeft: 6, color: "var(--color-text-tertiary)" }}>— review and edit before sending</span>
-                  </label>
-                  <textarea
-                    value={rpPrompt}
-                    onChange={e => setRpPrompt(e.target.value)}
-                    rows={4}
-                    style={{ fontSize: Math.max(11, fontSize - 1), padding: "7px 10px", border: "1px solid var(--color-accent-blue)", borderRadius: "var(--border-radius-md)", resize: "vertical", background: "var(--color-background-primary)", color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", lineHeight: 1.6, outline: "none" }}
-                  />
-                  <button
-                    onClick={() => {
-                      const text = rpPrompt.trim();
-                      if (!text) return;
-                      setInput(text);
-                      setRpOpen(false);
-                      setRpScenario("");
-                      setRpPrompt("");
-                      // Small delay so setInput has rendered before sendMessage reads it
-                      setTimeout(() => { sendMessage(text); }, 0);
-                    }}
-                    style={{ alignSelf: "flex-start", fontSize: Math.max(11, fontSize - 2), padding: "6px 18px", borderRadius: "var(--border-radius-md)", border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer", fontWeight: 700 }}>
-                    Send to chat ▶
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Footer */}
       {(activePanel !== "lists" && activePanel !== "verblookup" && activePanel !== "vocab" && activePanel !== "settings") && (
