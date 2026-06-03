@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.1.23 -->
+  <!-- version: 3.1.25 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.1.23", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.1.25", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -493,6 +493,14 @@ const REG_ENDINGS_ERIR = [
   ["-eria"],
   ["-ido"],
 ];
+const REG_ENDINGS_IR = [
+  ["-o","-es","-e","-imos","-em","-em"],
+  ["-i","-iste","-iu","-imos","-iram","-iram"],
+  ["-ia","-ias","-ia","-íamos","-iam","-iam"],
+  ["-irei","-irás","-irá","-iremos","-irão","-irão"],
+  ["-iria"],
+  ["-ido"],
+];
 
 // Returns true if the actual form in the verb table departs from the regular pattern.
 // Used to highlight irregular cells in yellow in the Verb List (Lists → Verb List).
@@ -500,7 +508,8 @@ const REG_ENDINGS_ERIR = [
 function isIrregularForm(inf, actual, tenseIdx, personIdx) {
   if (!actual || actual === "—") return false;
   const isAR = inf.endsWith("ar");
-  const endings = isAR ? REG_ENDINGS_AR : REG_ENDINGS_ERIR;
+  const isIR = inf.endsWith("ir");
+  const endings = isAR ? REG_ENDINGS_AR : isIR ? REG_ENDINGS_IR : REG_ENDINGS_ERIR;
   const stem = inf.slice(0, -2);
   // tense 4 and 5 are single-form rows
   const pi = (tenseIdx >= 4) ? 0 : personIdx;
@@ -2350,19 +2359,24 @@ function buildChipCarvingVocabBlock() {
  * Caps: up to 8 phrases total (high-freq first), up to 4 idioms.
  * Greetings & Politeness high-freq items are always injected (small, universal).
  */
+// RP_SECTION_MAP: maps roleplay scenario keywords to PHRASES section names.
+// Shared by buildRpCorpusBlock() and the Send handler seen-tracking logic.
+// A keyword added here propagates to both automatically.
+const RP_SECTION_MAP = [
+  { keys: ["café","coffee","bica","galão","drink","bar","eat","food","restaurante","restaurant","menu","refeição","almoço","jantar","petisco","snack","gelado","ice cream"], section: "Food & restaurants" },
+  { keys: ["farmácia","pharmacy","farmacia","médico","doctor","médica","saúde","health","hospital","clínica","clinic","consulta","appointment","prescription","receita","tosse","cough","dor","pain","medicine","medicamento"], section: "Healthcare & pharmacy" },
+  { keys: ["loja","shop","comprar","buy","dinheiro","money","pay","pagar","caixa","checkout","preço","price","caro","cheap","barato","supermercado","supermarket","mercado","market"], section: "Shopping & money" },
+  { keys: ["autocarro","bus","comboio","train","metro","taxi","uber","transport","transporte","bilhete","ticket","viagem","travel","trip","rua","street","direção","direction","where","onde"], section: "Getting around" },
+  { keys: ["administrative","junta","câmara","camara","repartição","reparticao","bureau","form","papel","document","documento","fatura","invoice","nif","contribuinte","serviço público"], section: "Administrative & daily life" },
+  { keys: ["emergency","emergência","emergencia","lost","perdido","help","ajuda","police","polícia","policia","ambulância","ambulancia","accident","acidente"], section: "Emergencies & help" },
+];
+
 function buildRpCorpusBlock(scenarioText) {
   if (!scenarioText || !scenarioText.trim()) return "";
   const lower = scenarioText.toLowerCase();
 
-  // Map: array of trigger keywords → PHRASES section name
-  const SECTION_MAP = [
-    { keys: ["café","coffee","bica","galão","drink","bar","eat","food","restaurante","restaurant","menu","refeição","almoço","jantar","petisco","snack","gelado","ice cream"], section: "Food & restaurants" },
-    { keys: ["farmácia","pharmacy","farmacia","médico","doctor","médica","saúde","health","hospital","clínica","clinic","consulta","appointment","prescription","receita","tosse","cough","dor","pain","medicine","medicamento"], section: "Healthcare & pharmacy" },
-    { keys: ["loja","shop","comprar","buy","dinheiro","money","pay","pagar","caixa","checkout","preço","price","caro","cheap","barato","supermercado","supermarket","mercado","market"], section: "Shopping & money" },
-    { keys: ["autocarro","bus","comboio","train","metro","taxi","uber","transport","transporte","bilhete","ticket","viagem","travel","trip","rua","street","direção","direction","where","onde"], section: "Getting around" },
-    { keys: ["administrative","junta","câmara","camara","repartição","reparticao","bureau","form","papel","document","documento","fatura","invoice","nif","contribuinte","serviço público"], section: "Administrative & daily life" },
-    { keys: ["emergency","emergência","emergencia","lost","perdido","help","ajuda","police","polícia","policia","ambulância","ambulancia","accident","acidente"], section: "Emergencies & help" },
-  ];
+  // Map: array of trigger keywords → PHRASES section name — see RP_SECTION_MAP at module scope.
+  const SECTION_MAP = RP_SECTION_MAP;
 
   // Always include a small universal set (high-freq only)
   const UNIVERSAL_SECTIONS = ["Politeness", "Greetings & farewells"];
@@ -3765,7 +3779,7 @@ const MessageBubble = React.memo(function MessageBubble({ m, fontSize, ttsSuppor
           <p style={{ fontSize: Math.max(16, fontSize), fontWeight: 700, color: "var(--color-accent-teal-deep)", margin: "0 0 8px" }}>{gt.label}</p>
           <p style={{ fontSize: Math.max(14, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 8px", lineHeight: 1.6 }}>{intro.body}</p>
           {examples.map((sec, si) => (
-            <div key={si} style={{ paddingTop: 6, borderTop: "0.5px solid #bae6fd", marginTop: 4 }}>
+            <div key={si} style={{ paddingTop: 6, borderTop: "0.5px solid var(--color-border-info)", marginTop: 4 }}>
               <p style={{ fontSize, fontWeight: 700, color: "var(--color-accent-teal)", textTransform: "uppercase", letterSpacing: "0.04em", margin: "0 0 2px" }}>{sec.title}</p>
               <p style={{ fontSize, color: "var(--color-text-primary)", margin: 0, lineHeight: 1.5 }}>{sec.body}</p>
             </div>
@@ -5713,7 +5727,7 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
 
 const IDIOM_REGISTER_COLORS = {
   neutral:    { bg: "#f3f4f6", color: "#6b7280", border: "#d1d5db" },
-  informal:   { bg: "#eff6ff", color: "#2563eb", border: "#bfdbfe" },
+  informal:   { bg: "var(--color-background-info)", color: "var(--color-text-info)", border: "var(--color-border-info)" },
   colloquial: { bg: "#fffbeb", color: "#b45309", border: "#fde68a" },
   rude:       { bg: "#fef2f2", color: "#dc2626", border: "#fecaca" },
 };
@@ -6426,8 +6440,12 @@ function pickDistractors(pool, correctItem) {
   return unique;
 }
 
-const GenderBadge = React.memo(function GenderBadge({ gender, fontSize = 14 }) { return gender
-  ? <span style={{ display: "inline-block", marginLeft: 5, fontSize: Math.max(10, fontSize - 6), fontWeight: 700, padding: "1px 5px", borderRadius: 3, background: gender === "m" ? "var(--color-background-info)" : "var(--color-background-gender-f)", color: gender === "m" ? "var(--color-accent-blue-deep)" : "var(--color-accent-violet)", border: `1px solid ${gender === "m" ? "var(--color-border-info)" : "var(--color-border-gender-f)"}`, verticalAlign: "middle", fontFamily: "var(--font-sans)" }}>{gender === "m" ? "m" : "f"}</span>
+const GenderBadge = React.memo(function GenderBadge({ gender, fontSize = 16 }) { return gender
+  ? <span style={{ display: "inline-block", marginLeft: 6, fontSize: Math.max(11, fontSize - 3), fontWeight: 800, padding: "2px 7px", borderRadius: 4,
+      background: gender === "m" ? "#1d4ed8" : "#7c3aed",
+      color: "#fff",
+      border: "none",
+      verticalAlign: "middle", fontFamily: "var(--font-sans)", letterSpacing: "0.04em" }}>{gender === "m" ? "m" : "f"}</span>
   : null; });
 
 // Gendered context nouns for change 5.
@@ -6994,7 +7012,458 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
   );
 });
 
-const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, listFilter, onConjugate, showGenderColors, showCommonFirst }) {
+// ── COGNATE DRILL ─────────────────────────────────────────────────────────────
+// Builds a flat drill item list from COGNATES + FALSE_FRIENDS + cached API extras.
+// COGNATE items: prompt = EN word, answer = PT word (article included if present).
+// FALSE_FRIEND items: prompt = PT word (labelled as false friend), answer = pt_real.
+
+const COGNATE_EXTRAS_KEY = "pe_cognate_extras";
+const COGNATE_EXTRAS_MAX = 100;
+const COGNATE_DRILL_SESSION = 20;
+
+// Normalise for comparison: lowercase, strip diacritics, strip leading article, strip punctuation.
+function normCognate(s) {
+  if (!s) return "";
+  // For m/f adjective forms like "lógico/a" accept either — handled at call site.
+  return stripDiacritics(s.toLowerCase().trim().replace(/^(o|a|os|as)\s+/, "").replace(/[.,?!;:]/g, "")).trim();
+}
+
+// Returns all accepted answer variants for a cognate drill item.
+function cognateAccepted(item) {
+  if (item.isFalseFriend) {
+    // Accept any of the pt_real values (may be "engano / fraude" — split on " / " or " or ").
+    return item.pt_real.split(/\s*\/\s*|\s+or\s+/i).map(normCognate).filter(Boolean);
+  }
+  const raw = item.answer;
+  // Handle m/f forms: "lógico/a" → accept lógico and lógica.
+  const mfMatch = raw.match(/^(.+?)\/([ao])$/);
+  if (mfMatch) {
+    const base = mfMatch[1];
+    const femSuffix = mfMatch[2];
+    const masc = normCognate(base);
+    const fem = normCognate(base.slice(0, -1) + femSuffix);
+    return [masc, fem].filter(Boolean);
+  }
+  // Handle "o criador / a criadora" style pairs — accept either.
+  if (raw.includes(" / ")) {
+    return raw.split(" / ").map(normCognate).filter(Boolean);
+  }
+  return [normCognate(raw)].filter(Boolean);
+}
+
+// Build the hardcoded prompt key set so API extras can exclude them.
+function buildHardcodedPtSet() {
+  const s = new Set();
+  COGNATES.forEach(sec => sec.items.forEach(it => s.add(normCognate(it.pt))));
+  FALSE_FRIENDS.forEach(ff => s.add(normCognate(ff.pt)));
+  return s;
+}
+
+// Build hardcoded EN prompt set for same exclusion from API.
+function buildHardcodedEnSet() {
+  const s = new Set();
+  COGNATES.forEach(sec => sec.items.forEach(it => s.add(it.en.toLowerCase().trim())));
+  return s;
+}
+
+function buildDrillItems(extras) {
+  const items = [];
+  // Cognates: EN → PT
+  COGNATES.forEach(sec => {
+    sec.items.forEach(it => {
+      items.push({ id: "c_" + normCognate(it.pt), type: "cognate", prompt: it.en, answer: it.pt, isFalseFriend: false, section: sec.section });
+    });
+  });
+  // False friends: show PT word, answer is pt_real
+  FALSE_FRIENDS.forEach(ff => {
+    items.push({ id: "ff_" + normCognate(ff.pt), type: "falsefriend", prompt: ff.pt, answer: ff.pt_real, pt_real: ff.pt_real, en_false: ff.en_false, isFalseFriend: true, note: ff.note });
+  });
+  // API extras: EN → PT
+  if (extras && extras.length) {
+    extras.forEach((ex, i) => {
+      items.push({ id: "ex_" + i + "_" + normCognate(ex.pt || ""), type: "cognate", prompt: ex.en, answer: ex.pt, isFalseFriend: false, section: "Extra" });
+    });
+  }
+  return items;
+}
+
+function buildDrillPrompt(hardcodedPtSet, hardcodedEnSet) {
+  const ptExamples = [...hardcodedPtSet].slice(0, 8).join(", ");
+  const enExamples = [...hardcodedEnSet].slice(0, 8).join(", ");
+  return `You are a European Portuguese vocabulary expert. Generate ${COGNATE_EXTRAS_MAX} cognate pairs that are NOT already in this existing list.
+
+Existing PT words (sample): ${ptExamples} — and many more. Do NOT repeat any of these.
+Existing EN words (sample): ${enExamples} — and many more. Do NOT repeat any of these.
+
+Rules:
+- Each pair must be a genuine English→European Portuguese cognate (similar spelling AND same/near-same meaning).
+- Use only European Portuguese spelling (not Brazilian).
+- Include the definite article (o/a) for nouns.
+- For adjectives with gender forms, use "masc/a" format e.g. "lógico/a".
+- Vary the suffix patterns — include -ção, -agem, -mente, -vel, -oso/a, -ista, -ismo, -al, -ar, -ivo/a, -ente, -mento, -ância, -ência, and others.
+
+Return ONLY a JSON array with no preamble or explanation, exactly like this:
+[{"en":"courage","pt":"a coragem"},{"en":"digital","pt":"digital"},...]`;
+}
+
+const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakListPT, apiKey, onBack }) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micRef = React.useRef(null);
+
+  const [extras, setExtras] = React.useState(() => ls(COGNATE_EXTRAS_KEY, []));
+  const [fetchingExtras, setFetchingExtras] = React.useState(false);
+  const [extrasError, setExtrasError] = React.useState(null);
+
+  const allItems = React.useMemo(() => buildDrillItems(extras), [extras]);
+
+  // Session: random subset of COGNATE_DRILL_SESSION items
+  const [session, setSession] = React.useState(null);
+  const [sessionIdx, setSessionIdx] = React.useState(0);
+  const [score, setScore] = React.useState({ correct: 0, total: 0 });
+
+  // Per-item state
+  const [inputText, setInputText] = React.useState("");
+  const [micActive, setMicActive] = React.useState(false);
+  const [heardText, setHeardText] = React.useState("");
+  const [result, setResult] = React.useState(null); // null | "correct" | "wrong"
+  const [revealed, setRevealed] = React.useState(false);
+
+  const inputRef = React.useRef(null);
+
+  function buildSession(items) {
+    const shuffled = shuffleArray([...Array(items.length).keys()]);
+    return shuffled.slice(0, Math.min(COGNATE_DRILL_SESSION, shuffled.length));
+  }
+
+  React.useEffect(() => {
+    if (allItems.length > 0) {
+      setSession(buildSession(allItems));
+      setSessionIdx(0);
+      setScore({ correct: 0, total: 0 });
+      resetItem();
+    }
+  }, []); // only on mount
+
+  function resetItem() {
+    setInputText("");
+    setHeardText("");
+    setResult(null);
+    setRevealed(false);
+    stopMic();
+  }
+
+  function stopMic() {
+    if (micRef.current) { try { micRef.current.stop(); } catch (_) {} micRef.current = null; }
+    setMicActive(false);
+  }
+
+  const currentItem = session ? allItems[session[sessionIdx]] : null;
+
+  function checkAnswer(raw) {
+    if (!currentItem || result !== null) return;
+    const heard = normCognate(raw);
+    if (!heard) return;
+    const accepted = cognateAccepted(currentItem);
+    const isCorrect = accepted.some(a => heard === a || a.includes(heard) || heard.includes(a));
+    setResult(isCorrect ? "correct" : "wrong");
+    setScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
+    if (isCorrect && speakListPT) speakListPT(currentItem.answer.replace(/\/[ao]$/, ""));
+  }
+
+  function handleType(e) {
+    if (result !== null) return;
+    setInputText(e.target.value);
+  }
+
+  function handleTypeSubmit(e) {
+    if (e.key === "Enter" || e.type === "click") {
+      if (result !== null) { handleNext(); return; }
+      checkAnswer(inputText);
+    }
+  }
+
+  function startMic() {
+    if (!SR || result !== null) return;
+    stopMic();
+    const r = new SR();
+    r.lang = "pt-PT"; r.continuous = false; r.interimResults = true; r.maxAlternatives = 5;
+    const allAlts = [];
+    r.onresult = (e) => {
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) {
+          for (let a = 0; a < e.results[i].length; a++) allAlts.push(e.results[i][a].transcript);
+          setHeardText(t);
+          setInputText(t);
+        } else {
+          setHeardText(t);
+        }
+      }
+    };
+    r.onerror = () => { setMicActive(false); micRef.current = null; };
+    r.onend = () => {
+      setMicActive(false); micRef.current = null;
+      if (!allAlts.length) return;
+      // Try all alternatives; accept if any matches
+      let matched = false;
+      let bestTranscript = allAlts[0];
+      for (const t of allAlts) {
+        const accepted = cognateAccepted(currentItem);
+        const heard = normCognate(t);
+        if (heard && accepted.some(a => heard === a || a.includes(heard) || heard.includes(a))) {
+          matched = true; bestTranscript = t; break;
+        }
+      }
+      setInputText(bestTranscript);
+      setHeardText(bestTranscript);
+      const isCorrect = matched;
+      setResult(isCorrect ? "correct" : "wrong");
+      setScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
+      if (isCorrect && speakListPT) speakListPT(currentItem.answer.replace(/\/[ao]$/, ""));
+    };
+    micRef.current = r;
+    r.start();
+    setMicActive(true);
+    setHeardText("");
+  }
+
+  function handleNext() {
+    const nextIdx = sessionIdx + 1;
+    if (!session || nextIdx >= session.length) {
+      // Session done — rebuild
+      setSession(buildSession(allItems));
+      setSessionIdx(0);
+      setScore({ correct: 0, total: 0 });
+    } else {
+      setSessionIdx(nextIdx);
+    }
+    resetItem();
+    setTimeout(() => { if (inputRef.current) inputRef.current.focus(); }, 50);
+  }
+
+  function handleReveal() {
+    setRevealed(true);
+    setResult("wrong");
+    setScore(s => ({ ...s, total: s.total + 1 }));
+  }
+
+  async function fetchExtras() {
+    if (!apiKey) { setExtrasError("API key required — set it in Settings."); return; }
+    setFetchingExtras(true); setExtrasError(null);
+    try {
+      const hardcodedPt = buildHardcodedPtSet();
+      const hardcodedEn = buildHardcodedEnSet();
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "anthropic-version": ANTHROPIC_API_VERSION,
+          "anthropic-dangerous-direct-browser-access": "true",
+          ...(apiKey ? { "x-api-key": apiKey } : {}),
+        },
+        body: JSON.stringify({
+          model: TOOLS_MODEL, max_tokens: 3000,
+          messages: [{ role: "user", content: buildDrillPrompt(hardcodedPt, hardcodedEn) }],
+        }),
+      });
+      if (!resp.ok) throw new Error(`API error ${resp.status}`);
+      const data = await resp.json();
+      const raw = data.content?.find(b => b.type === "text")?.text || "";
+      // Parse JSON array from response
+      const startArr = raw.indexOf("[");
+      const endArr = raw.lastIndexOf("]");
+      if (startArr === -1 || endArr === -1) throw new SyntaxError("No JSON array in response");
+      const parsed = JSON.parse(raw.slice(startArr, endArr + 1));
+      if (!Array.isArray(parsed)) throw new SyntaxError("Response is not an array");
+      // Filter out any that duplicate hardcoded items
+      const filtered = parsed.filter(ex => {
+        if (!ex.en || !ex.pt) return false;
+        if (hardcodedPt.has(normCognate(ex.pt))) return false;
+        if (hardcodedEn.has(ex.en.toLowerCase().trim())) return false;
+        return true;
+      }).slice(0, COGNATE_EXTRAS_MAX);
+      lsSet(COGNATE_EXTRAS_KEY, filtered);
+      setExtras(filtered);
+      // Rebuild session to include new extras
+      const newItems = buildDrillItems(filtered);
+      setSession(buildSession(newItems));
+      setSessionIdx(0);
+      setScore({ correct: 0, total: 0 });
+      resetItem();
+    } catch (e) {
+      setExtrasError("Failed to fetch extras: " + e.message);
+    } finally {
+      setFetchingExtras(false);
+    }
+  }
+
+  const pct = score.total > 0 ? Math.round(score.correct / score.total * 100) : null;
+  const scoreColor = pct === null ? "var(--color-text-secondary)" : pct >= 70 ? "#065f46" : "#991b1b";
+
+  const btnBase = { fontFamily: "var(--font-sans)", cursor: "pointer", borderRadius: 6, fontWeight: 600, border: "none" };
+
+  if (!currentItem) return (
+    <div style={{ padding: 16 }}>
+      <button onClick={onBack} style={{ ...btnBase, fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)" }}>← Browse</button>
+      <p style={{ marginTop: 12, fontSize, color: "var(--color-text-secondary)" }}>No drill items available.</p>
+    </div>
+  );
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+      {/* Toolbar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", padding: "8px 12px", borderBottom: "1px solid var(--color-border-tertiary)", flexShrink: 0 }}>
+        <button onClick={() => { stopMic(); onBack(); }} style={{ ...btnBase, fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)" }}>← Browse</button>
+        <button onClick={() => { if (!fetchingExtras) fetchExtras(); }}
+          disabled={fetchingExtras}
+          title={extras.length ? `${extras.length} extras cached — click to refresh` : "Generate extra cognate pairs via API"}
+          style={{ ...btnBase, fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", border: "1px solid var(--color-border-tertiary)", background: "transparent", color: fetchingExtras ? "var(--color-text-tertiary)" : "var(--color-text-secondary)", cursor: fetchingExtras ? "wait" : "pointer" }}>
+          {fetchingExtras ? "Fetching…" : extras.length ? `↻ Extras (${extras.length})` : "+ Extras"}
+        </button>
+        <span style={{ marginLeft: "auto", fontSize: Math.max(12, fontSize - 2), color: scoreColor, fontWeight: 600 }}>
+          {session ? `${sessionIdx + 1}/${session.length}` : ""}
+          {score.total > 0 && <span style={{ marginLeft: 10 }}>{score.correct}/{score.total}{pct !== null ? ` (${pct}%)` : ""}</span>}
+        </span>
+      </div>
+      {extrasError && <div style={{ padding: "4px 12px", fontSize: Math.max(11, fontSize - 3), color: "#991b1b", background: "#fee2e2", flexShrink: 0 }}>{extrasError}</div>}
+
+      {/* Drill card */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 12px", display: "flex", flexDirection: "column", gap: 14 }}>
+
+        {/* Item type badge */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {currentItem.isFalseFriend
+            ? <span style={{ fontSize: Math.max(10, fontSize - 4), fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "#fff7ed", color: "#c2410c", border: "1px solid #fed7aa" }}>⚠ False Friend</span>
+            : <span style={{ fontSize: Math.max(10, fontSize - 4), fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: "var(--color-background-secondary)", color: "var(--color-text-tertiary)", border: "1px solid var(--color-border-tertiary)" }}>
+                {currentItem.section || "Cognate"}
+              </span>
+          }
+        </div>
+
+        {/* Prompt card */}
+        <div style={{ background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", padding: "18px 20px", textAlign: "center" }}>
+          <div style={{ fontSize: Math.max(10, fontSize - 4), color: "var(--color-text-tertiary)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            {currentItem.isFalseFriend ? "What does this PT word actually mean? (answer in Portuguese)" : "What is the Portuguese for…"}
+          </div>
+          {currentItem.isFalseFriend && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 4 }}>
+              <button onClick={() => speakListPT && speakListPT(currentItem.prompt)} aria-label={"Ouvir: " + currentItem.prompt}
+                style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: fontSize + 2, color: "#c2410c" }}>🔊</button>
+              <span style={{ fontSize: fontSize + 8, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c2410c" }}>{currentItem.prompt}</span>
+            </div>
+          )}
+          {!currentItem.isFalseFriend && (
+            <span style={{ fontSize: fontSize + 8, fontWeight: 700, color: "var(--color-text-primary)" }}>{currentItem.prompt}</span>
+          )}
+          {currentItem.isFalseFriend && (
+            <div style={{ fontSize: Math.max(11, fontSize - 2), color: "#92400e", fontStyle: "italic", marginTop: 4 }}>
+              (not "{currentItem.en_false || currentItem.prompt}")
+            </div>
+          )}
+        </div>
+
+        {/* Answer area: text input + mic */}
+        <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={result !== null ? (heardText || inputText) : inputText}
+            onChange={handleType}
+            onKeyDown={handleTypeSubmit}
+            disabled={result !== null}
+            placeholder={currentItem.isFalseFriend ? "type the real meaning…" : "type the Portuguese word…"}
+            style={{
+              flex: 1, fontSize: Math.max(14, fontSize), padding: "8px 12px",
+              borderRadius: 6, border: "2px solid",
+              borderColor: result === "correct" ? "#10b981" : result === "wrong" ? "#ef4444" : "var(--color-border-tertiary)",
+              background: result === "correct" ? "#f0fdf4" : result === "wrong" ? "#fef2f2" : "var(--color-background-primary)",
+              color: "var(--color-text-primary)", fontFamily: "var(--font-sans)", outline: "none",
+            }}
+            autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+          />
+          {SR && (
+            <button
+              onClick={micActive ? stopMic : startMic}
+              disabled={result !== null}
+              title={micActive ? "Stop listening" : "Speak answer (pt-PT)"}
+              style={{ ...btnBase, padding: "0 14px", fontSize: fontSize + 2, border: "2px solid",
+                borderColor: micActive ? "#ef4444" : "var(--color-border-tertiary)",
+                background: micActive ? "#fee2e2" : "var(--color-background-secondary)",
+                color: micActive ? "#ef4444" : "var(--color-text-secondary)",
+                opacity: result !== null ? 0.4 : 1,
+                animation: micActive ? "pulse 1s infinite" : "none",
+              }}>
+              🎤
+            </button>
+          )}
+        </div>
+
+        {/* Interim mic text */}
+        {micActive && heardText && (
+          <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "-8px 0 0" }}>
+            Hearing: {heardText}
+          </p>
+        )}
+
+        {/* Result feedback */}
+        {result !== null && (
+          <div style={{ padding: "10px 14px", borderRadius: 8, background: result === "correct" ? "#d1fae5" : "#fee2e2", border: "1px solid", borderColor: result === "correct" ? "#6ee7b7" : "#fca5a5" }}>
+            <p style={{ fontWeight: 700, fontSize: Math.max(13, fontSize), color: result === "correct" ? "#065f46" : "#991b1b", margin: "0 0 4px" }}>
+              {result === "correct" ? "✓ Correto!" : revealed ? "Answer shown" : "✗ Incorreto"}
+            </p>
+            {(result === "wrong" || revealed) && (
+              <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 2px" }}>
+                Answer: <strong style={{ fontFamily: "var(--font-mono)" }}>{currentItem.answer}</strong>
+                {currentItem.isFalseFriend && (
+                  <button onClick={() => speakListPT && speakListPT(currentItem.pt_real.split(/\s*\/\s*/)[0])} aria-label="Hear answer"
+                    style={{ marginLeft: 8, background: "transparent", border: "none", cursor: "pointer", fontSize: fontSize, color: "#c2410c" }}>🔊</button>
+                )}
+              </p>
+            )}
+            {currentItem.isFalseFriend && currentItem.note && (
+              <p style={{ fontSize: Math.max(10, fontSize - 3), color: "#92400e", margin: "4px 0 0", fontStyle: "italic", lineHeight: 1.4 }}>{currentItem.note}</p>
+            )}
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {result === null && (
+            <>
+              <button
+                onClick={() => checkAnswer(inputText)}
+                disabled={!inputText.trim()}
+                style={{ ...btnBase, padding: "8px 20px", fontSize: Math.max(13, fontSize - 1), background: inputText.trim() ? "var(--color-accent-blue)" : "var(--color-background-secondary)", color: inputText.trim() ? "#fff" : "var(--color-text-tertiary)", cursor: inputText.trim() ? "pointer" : "default" }}>
+                Check
+              </button>
+              <button onClick={handleReveal}
+                style={{ ...btnBase, padding: "8px 16px", fontSize: Math.max(13, fontSize - 1), background: "transparent", color: "var(--color-text-tertiary)", border: "1px solid var(--color-border-tertiary)" }}>
+                Show answer
+              </button>
+            </>
+          )}
+          {result !== null && (
+            <button onClick={handleNext}
+              style={{ ...btnBase, padding: "8px 20px", fontSize: Math.max(13, fontSize - 1), background: result === "correct" ? "#10b981" : "#ef4444", color: "#fff" }}>
+              Next →
+            </button>
+          )}
+        </div>
+
+      </div>
+    </div>
+  );
+});
+
+const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, listFilter, onConjugate, showGenderColors, showCommonFirst, apiKey }) {
+  const [drillMode, setDrillMode] = React.useState(false);
+  if (drillMode) {
+    return <CognateDrillMode fontSize={fontSize} speakListPT={speakListPT} apiKey={apiKey} onBack={() => setDrillMode(false)} />;
+  }
+  return <CognatesBrowse fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} onConjugate={onConjugate} showGenderColors={showGenderColors} showCommonFirst={showCommonFirst} onDrill={() => setDrillMode(true)} />;
+});
+
+const CognatesBrowse = React.memo(function CognatesBrowse({ fontSize, speakListPT, listFilter, onConjugate, showGenderColors, showCommonFirst, onDrill }) {
   const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
   const tdL = useMemo(() => ({ fontFamily: "var(--font-mono)", color: "var(--color-text-info)", padding: "3px 8px 3px 0", verticalAlign: "top", width: "42%", fontSize }), [fontSize]);
   const tdR = useMemo(() => ({ color: "var(--color-text-secondary)", padding: "3px 0", verticalAlign: "top", fontSize }), [fontSize]);
@@ -7031,9 +7500,13 @@ const CognatesTab = React.memo(function CognatesTab({ fontSize, speakListPT, lis
           <p style={{ fontSize, color: "var(--color-text-primary)", margin: "0 0 6px", lineHeight: 1.6 }}>
             Cognates are words that look and mean the same (or nearly the same) in both English and Portuguese. Learning the common suffix patterns below lets you convert thousands of English words into Portuguese instantly — a reliable shortcut to vocabulary.
           </p>
-          <p style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic", lineHeight: 1.5 }}>
+          <p style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", margin: "0 0 10px", fontStyle: "italic", lineHeight: 1.5 }}>
             Each heading shows one English→Portuguese ending pattern. Applying the rule mechanically gives a correct or near-correct Portuguese word in most cases. This list is illustrative, not exhaustive — the productive patterns shown here apply to hundreds or thousands of words beyond those listed.
           </p>
+          <button onClick={onDrill}
+            style={{ fontFamily: "var(--font-sans)", fontSize: Math.max(12, fontSize - 1), fontWeight: 700, padding: "6px 18px", borderRadius: 20, border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer" }}>
+            ▶ Drill
+          </button>
         </div>
       )}
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
@@ -8772,14 +9245,7 @@ function App() {
                   if (rpCorpusEnabled && rpCorpus) {
                     const scenario = rpScenario.trim();
                     const lower = scenario.toLowerCase();
-                    const SECTION_MAP_KEYS = [
-                      { keys: ["café","coffee","bica","galão","drink","bar","eat","food","restaurante","restaurant","menu","refeição","almoço","jantar","petisco","snack","gelado","ice cream"], section: "Food & restaurants" },
-                      { keys: ["farmácia","pharmacy","farmacia","médico","doctor","médica","saúde","health","hospital","clínica","clinic","consulta","appointment","prescription","receita","tosse","cough","dor","pain","medicine","medicamento"], section: "Healthcare & pharmacy" },
-                      { keys: ["loja","shop","comprar","buy","dinheiro","money","pay","pagar","caixa","checkout","preço","price","caro","cheap","barato","supermercado","supermarket","mercado","market"], section: "Shopping & money" },
-                      { keys: ["autocarro","bus","comboio","train","metro","taxi","uber","transport","transporte","bilhete","ticket","viagem","travel","trip","rua","street","direção","direction","where","onde"], section: "Getting around" },
-                      { keys: ["administrative","junta","câmara","camara","repartição","reparticao","bureau","form","papel","document","documento","fatura","invoice","nif","contribuinte","serviço público"], section: "Administrative & daily life" },
-                      { keys: ["emergency","emergência","emergencia","lost","perdido","help","ajuda","police","polícia","policia","ambulância","ambulancia","accident","acidente"], section: "Emergencies & help" },
-                    ];
+                    const SECTION_MAP_KEYS = RP_SECTION_MAP;
                     const UNIVERSAL_SECTIONS = ["Politeness", "Greetings & farewells"];
                     const matchedSections = new Set(UNIVERSAL_SECTIONS);
                     for (const { keys, section } of SECTION_MAP_KEYS) {
@@ -9571,7 +10037,7 @@ function App() {
             <OppositesPanel fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} showCommonFirst={showCommonFirst} />
           )}
           {listTab === "cognates" && (
-            <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} showGenderColors={showGenderColors} showCommonFirst={showCommonFirst} />
+            <CognatesTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} showGenderColors={showGenderColors} showCommonFirst={showCommonFirst} apiKey={apiKey} />
           )}
           {listTab === "chipcarving" && (
             <ChipCarvingTab fontSize={fontSize} speakListPT={speakListPT} onConjugate={(v) => { lookupVerbFor(v); setActivePanel("verblookup"); }} showGenderColors={showGenderColors} />
@@ -9709,7 +10175,7 @@ function App() {
                                     )}
                                     <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                                       {usage.examples.map((ex, ei) => (
-                                        <div key={ei} style={{ paddingLeft: 8, borderLeft: "2px solid #bae6fd" }}>
+                                        <div key={ei} style={{ paddingLeft: 8, borderLeft: "2px solid var(--color-border-info)" }}>
                                           <p style={{ fontSize: Math.max(11, fontSize - 2), fontWeight: 600, color: "var(--color-accent-blue-deep)", margin: 0, fontStyle: "italic" }}>{ex.pt}</p>
                                           <p style={{ fontSize: Math.max(10, fontSize - 3), color: "var(--color-text-secondary)", margin: 0 }}>{ex.en}</p>
                                         </div>
