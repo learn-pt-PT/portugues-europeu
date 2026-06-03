@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.2.4 -->
+  <!-- version: 3.2.7 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1308,8 +1308,8 @@ const MEDIA_SECTIONS = [
     { label: "Audiolivros", links: [
       { label: "Imprensa Nacional — Audiolivros", url: "https://imprensanacional.pt/digitais/audiolivros/", desc: "Audiobooks produced and distributed by Portugal's national press" },
       { label: "Bertrand — Audiolivros em Português", url: "https://www.bertrand.pt/arvoretematica/audiolivros-em-portugues/25188x25189/P", desc: "Portuguese-language audiobook catalogue from Bertrand bookshop" },
-      { label: "Audiolivros — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLJrrzPTVK9DeTyGHEufvbmRpEPDsErlIp", desc: "uncertain" },
-      { label: "Contos Portugueses — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLQ7SbCg65jTLZsvPsyBDg_KQYuMZBIymC", desc: "uncertain" },
+      { label: "Audiolivros — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLJrrzPTVK9DeTyGHEufvbmRpEPDsErlIp", desc: "Portuguese-language audiobooks of classic EP literature — Eça de Queiroz, Pessoa, Camões, Gil Vicente — read in European Portuguese." },
+      { label: "Contos Portugueses — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLQ7SbCg65jTLZsvPsyBDg_KQYuMZBIymC", desc: "FnacPortugal's storytime series — read-alouds of Portuguese children's books, primarily for ages 3–8." },
     ]},
     { label: "Canais YouTube", links: [
       { label: "Abrir o Livro (YouTube)", url: "https://www.youtube.com/c/AbriroLivro", desc: "Portuguese YouTube channel featuring book reviews and literary discussion" },
@@ -1324,10 +1324,9 @@ const MEDIA_SECTIONS = [
     { label: "RTP Zigzag — Directo", url: "https://www.rtp.pt/play/direto/zigzag", desc: "RTP's children's channel streaming live — cartoons, shows, and educational content" },
     { label: "Zigzag — Podcasts Infantis", url: "https://www.rtp.pt/play/zigzag/podcasts", desc: "RTP Zigzag children's podcasts — stories and educational audio for kids" },
     { label: "Portuguese Fairy Tales (YouTube)", url: "https://www.youtube.com/@PortugueseFairyTales", desc: "Traditional Portuguese fairy tales read aloud in European Portuguese" },
-    { label: "Mundo Animado PT (YouTube)", url: "https://www.youtube.com/c/MundoAnimadoPT/videos", desc: "uncertain" },
-    { label: "Desenhos Animados PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV", desc: "uncertain" },
+    { label: "Mundo Animado PT (YouTube)", url: "https://www.youtube.com/c/MundoAnimadoPT/videos", desc: "Children's cartoons and animated series dubbed or narrated in European Portuguese." },
+    { label: "Desenhos Animados PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV", desc: "Playlist of classic animated feature films dubbed in European Portuguese (Snow White, Alice, 101 Dalmatians, Dumbo, and others)." },
     { label: "Projecto Adamastor — Audiolivros Infantis", url: "https://projectoadamastor.org/audiolivros-para-criancas/", desc: "Free children's audiobooks in European Portuguese from Projecto Adamastor" },
-    { label: "Histórias Infantis — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9", desc: "uncertain" },
     { label: "Fundação Jorge Álvares — Contos e Lendas", url: "https://www.fundacaojorgealvares-bibliotecadigital.com/index.php?s=colecao&coleccao=contos-e-lendas", desc: "Digital library of Portuguese tales and legends for children from Fundação Jorge Álvares" },
   ]},
   { id: "s03", pt: "Comédia, Variedades e Talk Shows", en: "Comedy, Variety & Talk Shows", links: [
@@ -1341,21 +1340,22 @@ const MEDIA_SECTIONS = [
     { label: "Beatriz Gosta (YouTube)", url: "https://www.youtube.com/c/BeatrizGosta", desc: "Portuguese comedian and actress known for character sketches and social commentary" },
     { label: "Fernando Rocha (YouTube)", url: "https://www.youtube.com/c/FernandoRochaComedy", desc: "Portuguese comedian and TV presenter known for light, family-friendly humour" },
     { label: "Guilherme Geirinhas (YouTube)", url: "https://www.youtube.com/@GuilhermeGeirinhas", desc: "Portuguese comedian producing short-form sketch comedy and observational humour" },
-    { label: "Mat3us (YouTube)", url: "https://www.youtube.com/@mat3us/videos", desc: "uncertain" },
+    { label: "Ricardo Mateus (YouTube)", url: "https://www.youtube.com/@mat3us/videos", desc: "Ricardo 'Mateus' — Portuguese full-time designer and poker player; YouTube channel supporting his Twitch stream." },
   ]},
   { id: "s17", pt: "Artesanato, DIY e Casa", en: "Crafts, DIY & Home", links: [
     { label: "Trabalhos Manuais da Di (YouTube)", url: "https://www.youtube.com/c/TrabalhosManuaisdaDi/videos", desc: "Portuguese craft channel focused on handmade projects, sewing, and DIY tutorials" },
     { label: "Fios Cruzados (YouTube)", url: "https://www.youtube.com/@fioscruzados/videos", desc: "Portuguese YouTube channel dedicated to crochet and knitting tutorials" },
+    { label: "Filipa Carneiro Handknitting (YouTube)", url: "https://www.youtube.com/c/Nionoi/featured", desc: "Portuguese handknitting channel by Filipa Carneiro." },
     { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos", desc: "Portuguese DIY and home repair channel with practical hands-on tutorials" },
     { label: "Leroy Merlin Portugal (YouTube)", url: "https://www.youtube.com/c/leroymerlinportugal/videos", desc: "Official YouTube channel of Leroy Merlin Portugal — home improvement guides and product tips" },
-    { label: "Querido, Mudei a Casa (YouTube)", url: "https://www.youtube.com/@queridomudeiacasaoficial/videos", desc: "uncertain" },
+    { label: "Querido, Mudei a Casa (YouTube)", url: "https://www.youtube.com/@queridomudeiacasaoficial/videos", desc: "Official channel of Portugal's long-running TVI home renovation and interior design reality show, on air since 2004." },
     { label: "GEM — Revistas de Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/", desc: "Portuguese craft magazine publisher specialising in sewing, knitting, and needlework" },
-    { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos", desc: "uncertain" },
+    { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos", desc: "Portuguese podcast where tattoo artists and creatives discuss tattoo culture, illustration, photography, music, and life in the creative industry." },
   ]},
   { id: "s04", pt: "Documentários e Actualidade", en: "Documentaries & Current Affairs", links: [
     { label: "RTP Play — Documentários", url: "https://www.rtp.pt/play/colecao/documentarios", desc: "Full documentary archive available on-demand from Portugal's public broadcaster RTP" },
     { label: "FFMS Play — Documentários", url: "https://www.ffms.pt/pt-pt/ffms-play/documentarios", desc: "Documentary content from the Francisco Manuel dos Santos Foundation" },
-    { label: "Canal Documentários PT (YouTube)", url: "https://www.youtube.com/channel/UCAzXTUnXaYXsscGtzWae1dA", desc: "uncertain" },
+    { label: "Canal Documentários PT (YouTube)", url: "https://www.youtube.com/channel/UCAzXTUnXaYXsscGtzWae1dA", desc: "Non-profit educational channel hosting HD documentaries narrated or subtitled in Portuguese, covering a wide range of subjects." },
     { label: "Fundação Francisco Manuel dos Santos (YouTube)", url: "https://www.youtube.com/@ffmspt/videos", desc: "YouTube channel of Portugal's leading public policy foundation — talks, debates, and documentaries" },
   ]},
   { id: "s14", pt: "Gastronomia e Culinária", en: "Food & Cooking", links: [
@@ -1372,12 +1372,12 @@ const MEDIA_SECTIONS = [
     { label: "Herdeiros de Saramago", url: "https://www.rtp.pt/play/p7972/herdeiros-de-saramago", desc: "RTP series examining the legacy of Nobel Prize-winning Portuguese author José Saramago" },
     { label: "História de Portugal JHS (YouTube)", url: "https://www.youtube.com/@historiadeportugaljhs3389", desc: "YouTube channel dedicated to Portuguese history — engaging narrative-style videos" },
     { label: "Sete Cidades — Da Lenda à Realidade", url: "https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade", desc: "RTP documentary exploring the legend and geology of Sete Cidades in the Azores" },
-    { label: "Portugal Tradições (YouTube)", url: "https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es", desc: "uncertain" },
-    { label: "Nionoi — História PT (YouTube)", url: "https://www.youtube.com/c/Nionoi/featured", desc: "uncertain" },
+    { label: "Portugal Tradições (YouTube)", url: "https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es", desc: "Videos celebrating Portuguese traditions, culture, gastronomy, and regional heritage." },
     { label: "Casa Comum — Universidade do Porto", url: "https://www.up.pt/casacomum/", desc: "University of Porto digital repository of historical documents and cultural heritage" },
     { label: "Direcção-Geral do Património Cultural", url: "https://patrimoniocultural.gov.pt/", desc: "Official Portuguese government portal for national cultural heritage and monuments" },
     { label: "Agenda Cultural do Porto", url: "https://agendaculturalporto.org/", desc: "Comprehensive listings of cultural events, exhibitions, and shows in Porto" },
     { label: "Agenda LX — Lisboa", url: "https://www.agendalx.pt/", desc: "Comprehensive listings of cultural events, exhibitions, and shows in Lisbon" },
+    { label: "O Encantador de Ricos — Podcast", url: "https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9", desc: "8-episode podcast on Pedro Caldeira, Portugal's most prominent stock broker of the 1980s, who seduced high society and lost the millions they entrusted to him." },
   ]},
   { id: "s01", pt: "Televisão em Directo & Plataformas de Streaming", en: "Live TV & Streaming Platforms", links: [
     { label: "RTP Play — Directo", url: "https://www.rtp.pt/play/direto", desc: "Live stream of RTP1 — Portugal's main public broadcast channel" },
@@ -1410,13 +1410,10 @@ const MEDIA_SECTIONS = [
     { label: "Televisão e Rádio", links: [
       { label: "RTP África", url: "https://www.rtp.pt/rtpafrica", desc: "RTP's channel for Portuguese-speaking Africa — news, culture, and entertainment" },
     ]},
-    { label: "Podcasts", links: [
-      { label: "Ouro Negro — Podcast", url: "https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5ibHVicnJ5LmNvbS9mZWVkcy9vdXJvbmVncm8ueG1s", desc: "Mozambican Portuguese-language podcast — uncertain" },
-    ]},
     { label: "YouTube", links: [
-      { label: "José Diversão (YouTube)", url: "https://www.youtube.com/@JoseDiversao/videos", desc: "uncertain" },
-      { label: "Maningue Magic (YouTube)", url: "https://www.youtube.com/maninguemagic/playlists", desc: "uncertain" },
-      { label: "Pátria Minha — Moz (YouTube)", url: "https://www.youtube.com/@patriaminhaMoz/videos", desc: "uncertain" },
+      { label: "José Diversão (YouTube)", url: "https://www.youtube.com/@JoseDiversao/videos", desc: "Mozambican channel exploring cultural exchange — curiosities about Mozambican and African ways of life, traditions, and customs." },
+      { label: "Maningue Magic (YouTube)", url: "https://www.youtube.com/maninguemagic/playlists", desc: "Mozambican general entertainment channel (DStv/GOtv) producing local telenovelas, music shows, dating formats, and lifestyle content." },
+      { label: "Pátria Minha — Moz (YouTube)", url: "https://www.youtube.com/@patriaminhaMoz/videos", desc: "José Lino's Mozambican vlog documenting rural life, farming, local traditions, and community stories from Chimoio." },
     ]},
   ]},
   { id: "s11", pt: "Música", en: "Music", links: [
@@ -1436,7 +1433,7 @@ const MEDIA_SECTIONS = [
     { label: "Jardim Zoológico de Lisboa (YouTube)", url: "https://www.youtube.com/user/ZoologicoJardim/playlists", desc: "Official YouTube channel of Lisbon Zoo — animal videos and conservation content" },
     { label: "SPEA BirdLife Portugal (YouTube)", url: "https://www.youtube.com/@spea_birdlife/videos", desc: "Portuguese Society for the Study of Birds — birdwatching and conservation videos" },
     { label: "A Cientista Agrícola", url: "https://acientistaagricola.pt/", desc: "Portuguese blog and resource on agriculture, rural life, and farming science" },
-    { label: "Portugal Rural na Prática (YouTube)", url: "https://www.youtube.com/@portugalruralnapratica/videos", desc: "uncertain" },
+    { label: "Portugal Rural na Prática (YouTube)", url: "https://www.youtube.com/@portugalruralnapratica/videos", desc: "Day-to-day life of a small-scale farmer in inland Portugal." },
   ]},
   { id: "s09", pt: "Notícias", en: "News", links: [
     { label: "RTP Notícias", url: "https://www.rtp.pt/noticias/", desc: "RTP's online news portal — Portugal's public broadcaster news website" },
@@ -1461,11 +1458,11 @@ const MEDIA_SECTIONS = [
     { label: "Portugal Manual — Artesanato (Spotify)", url: "https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid", desc: "Portuguese podcast about traditional crafts and artisanal culture" },
     { label: "Portugueses no Mundo — Antena 1 (Spotify)", url: "https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3", desc: "Antena 1 radio programme following Portuguese emigrants living around the world" },
     { label: "Avó Carmo (YouTube)", url: "https://www.youtube.com/@Av%C3%B3Carmo", desc: "Warm conversational Portuguese podcast hosted by Carmo — natural everyday speech" },
-    { label: "Decifrar Pessoas (YouTube)", url: "https://www.youtube.com/@DecifrarPessoas/videos", desc: "uncertain" },
+    { label: "Decifrar Pessoas (YouTube)", url: "https://www.youtube.com/@DecifrarPessoas/videos", desc: "Alexandre Monteiro's channel on reading people — body language, behavioural analysis, and human psychology." },
     { label: "Joana Perez (YouTube)", url: "https://www.youtube.com/@joana_perez", desc: "Portuguese lifestyle and personal development content creator" },
     { label: "Não Mandas em Mim Podcast (YouTube)", url: "https://www.youtube.com/@NaoMandasemMim", desc: "Portuguese podcast discussing relationships, self-development, and everyday life" },
-    { label: "O Martim (YouTube)", url: "https://www.youtube.com/@OMartim/videos", desc: "uncertain" },
-    { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos", desc: "uncertain" },
+    { label: "O Martim (YouTube)", url: "https://www.youtube.com/@OMartim/videos", desc: "Martim Torres's channel — Portuguese musician, photographer, and podcaster; music sessions, studio interviews, and the 'pop de rua' podcast." },
+    { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos", desc: "Interview podcast amplifying women's voices across entrepreneurship, culture, and society." },
   ]},
   { id: "s02", pt: "Séries de Ficção Portuguesa", en: "Portuguese Drama & Fiction Series", links: [
     { label: "Os Nossos Dias", url: "https://www.rtp.pt/play/p1844/os-nossos-dias", desc: "RTP long-running family drama series set in contemporary Portugal" },
@@ -1476,9 +1473,9 @@ const MEDIA_SECTIONS = [
     { label: "Sara", url: "https://www.rtp.pt/play/p4996/e696433/sara", desc: "RTP crime drama series following a female detective" },
     { label: "Esta Língua Que Nos Une", url: "https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une", desc: "RTP series exploring the Portuguese language across the Lusophone world" },
     { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias", desc: "RTP spy thriller series featuring female intelligence agents" },
-    { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames", desc: "uncertain" },
-    { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC", desc: "uncertain" },
-    { label: "O Sábio (YouTube)", url: "https://www.youtube.com/playlist?list=PLTuOFDgd5lcawQ9Keo09mu-aTqRL4PcTJ", desc: "uncertain" },
+    { label: "Conta-me Como Foi (YouTube)", url: "https://www.youtube.com/@2kingofgames", desc: "Portuguese historical drama following the Lopes family in Lisbon from the late 1960s through the Estado Novo, Carnation Revolution, and beyond." },
+    { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC", desc: "Playlist of Portuguese fiction and drama series episodes." },
+    { label: "O Sábio (YouTube)", url: "https://www.youtube.com/playlist?list=PLTuOFDgd5lcawQ9Keo09mu-aTqRL4PcTJ", desc: "Portuguese drama series: a man who can see the future returns to his hometown after 20 years, seeking his daughter and confronting long-buried secrets." },
   ]},
   { id: "s08", pt: "Ferramentas de Língua Portuguesa", en: "Portuguese Language Tools", subgroups: [
     { label: "Dicionários e Tradução", links: [
@@ -1526,9 +1523,9 @@ const MEDIA_SECTIONS = [
     { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos", desc: "Portuguese linguist and author explaining language curiosities and EP grammar" },
     { label: "A Tua Filosofia", url: "https://www.youtube.com/@ATuaFilosofia/videos", desc: "Portuguese YouTube channel making philosophy accessible — ideas explained in plain language" },
     { label: "Luís Pinto TekTest — Tecnologia", url: "https://www.youtube.com/@LuisPintoTekTest/videos", desc: "Portuguese technology review and analysis channel" },
-    { label: "Olívia Ortiz", url: "https://www.youtube.com/@OliviaOrtiz/videos", desc: "uncertain" },
+    { label: "Olívia Ortiz", url: "https://www.youtube.com/@OliviaOrtiz/videos", desc: "Portuguese actress and TV presenter; travel vlogs, lifestyle content, and behind-the-scenes television footage." },
     { label: "Rádio Portuense Online", url: "https://www.youtube.com/c/R%C3%A1dioPortuenseOnline", desc: "Online radio channel from Porto broadcasting music and local content" },
-    { label: "Como os Pés na Terra", url: "https://www.youtube.com/c/Comosp%C3%A9snaterra", desc: "uncertain" },
+    { label: "Como os Pés na Terra", url: "https://www.youtube.com/c/Comosp%C3%A9snaterra", desc: "Portuguese-language channel on permaculture, sustainability, agroforestry, natural building, and off-grid living." },
     { label: "Jornalismo Porto Net", url: "https://www.youtube.com/c/JornalismoPortoNet", desc: "Porto-based citizen journalism YouTube channel covering local news and events" },
   ]},
   { id: "s12", pt: "Rádio", en: "Radio", links: [
@@ -1551,7 +1548,7 @@ const MEDIA_SECTIONS = [
     { label: "RTP Palco — Música ao Vivo", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos", desc: "RTP archive of live music concerts and performances from Portugal" },
     { label: "Teatro Nacional São João — Porto", url: "https://www.tnsj.pt/", desc: "Porto's national theatre — programme, tickets, and archive of productions" },
     { label: "Direcção-Geral das Artes", url: "https://www.dgartes.gov.pt/", desc: "Portuguese government body overseeing arts funding and cultural policy" },
-    { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN", desc: "uncertain" },
+    { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN", desc: "Playlist of Portuguese theatre productions and performances." },
   ]},
   { id: "s05", pt: "Viagens e Geografia", en: "Travel & Geography", links: [
     { label: "Portugal Mais Perto", url: "https://www.rtp.pt/play/p5665/portugal-mais-perto", desc: "RTP travel series exploring towns and regions across Portugal" },
@@ -1560,9 +1557,9 @@ const MEDIA_SECTIONS = [
     { label: "Visita Guiada", url: "https://www.rtp.pt/play/p7378/visita-guiada", desc: "RTP heritage series taking guided tours of Portugal's monuments and historic buildings" },
     { label: "Lisboa, Cidade Triste e Alegre", url: "https://www.rtp.pt/play/p10399/e623375/lisboa-cidade-triste-e-alegre", desc: "RTP documentary portrait of Lisbon — history, culture, and city life" },
     { label: "Alma de Viajante", url: "https://www.almadeviajante.com/", desc: "Portuguese travel blog and community for travellers exploring Portugal and beyond" },
-    { label: "Cidades de Portugal (YouTube)", url: "https://www.youtube.com/@CidadesdePortugal/videos", desc: "uncertain" },
-    { label: "Meio Cheio (YouTube)", url: "https://www.youtube.com/@MeioCheio/videos", desc: "uncertain" },
-    { label: "Remote Portugal (YouTube)", url: "https://www.youtube.com/@RemotePortugal/videos", desc: "uncertain" },
+    { label: "Cidades de Portugal (YouTube)", url: "https://www.youtube.com/@CidadesdePortugal/videos", desc: "Episode-per-city series exploring the history, culture, and points of interest of Portuguese towns and cities (KuriakosTV)." },
+    { label: "Meio Cheio (YouTube)", url: "https://www.youtube.com/@MeioCheio/videos", desc: "Portuguese couple's video diary: motorhome travel across Europe, van conversions, home renovation, and alternative lifestyle." },
+    { label: "Remote Portugal (YouTube)", url: "https://www.youtube.com/@RemotePortugal/videos", desc: "Education and community platform for remote workers in Portugal — practical guides, tools, and shared experiences." },
   ]},
 ];
 const MEDIA_SECTIONS_SORTED = [...MEDIA_SECTIONS].sort((a, b) => a.en.localeCompare(b.en, "en"));
