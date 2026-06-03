@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.3.0 -->
+  <!-- version: 3.3.4 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.2.4", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.3.4", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -110,6 +110,7 @@ const LIST_TABS = [
   { id: "idioms", label: "Idioms" },
   { id: "media", label: "Media" },
   { id: "numbers", label: "Numbers" },
+  { id: "onomatopoeia", label: "Onomatopoeia" },
   { id: "opposites", label: "Opposites" },
   { id: "pairs", label: "Min. Pairs" },
   { id: "phrases", label: "Phrases" },
@@ -1782,6 +1783,213 @@ const SLANG = [
 const SLANG_SORTED = [...SLANG]
   .sort((a, b) => a.en.localeCompare(b.en, "en"))
   .map(sec => ({ ...sec, items: [...sec.items].sort((a, b) => a.pt.localeCompare(b.pt, "pt")) }));
+
+// ── ONOMATOPOEIA ──────────────────────────────────────────────────────────────
+// Each entry: { pt, en, example_pt, example_en, formal_pt, formal_en, tier (1–4), category }
+// Categories: animals | people | impacts | mechanical | motion
+const ONOMATOPOEIA = [
+  // ── Animals ──
+  { pt: "ão ão",      en: "woof",              example_pt: "O cão fez \"ão ão\".",            example_en: "The dog went \"woof\".",                  formal_pt: "O cão ladrou.",                          formal_en: "The dog barked.",                          tier: 1, category: "animals" },
+  { pt: "miau",       en: "meow",              example_pt: "O gato fez \"miau\".",            example_en: "The cat went \"meow\".",                  formal_pt: "O gato miou.",                           formal_en: "The cat meowed.",                          tier: 1, category: "animals" },
+  { pt: "ronron",     en: "purr",              example_pt: "O gato faz \"ronron\".",          example_en: "The cat goes \"purr\".",                  formal_pt: "O gato ronrona.",                        formal_en: "The cat purrs.",                           tier: 3, category: "animals" },
+  { pt: "muuu",       en: "moo",               example_pt: "A vaca fez \"muuu\".",            example_en: "The cow went \"moo\".",                   formal_pt: "A vaca mugiu.",                          formal_en: "The cow mooed.",                           tier: 2, category: "animals" },
+  { pt: "mé mé",      en: "baa",               example_pt: "A ovelha fez \"mé mé\".",         example_en: "The sheep went \"baa\".",                 formal_pt: "A ovelha baliu.",                        formal_en: "The sheep bleated.",                       tier: 2, category: "animals" },
+  { pt: "quá quá",    en: "quack",             example_pt: "O pato fez \"quá quá\".",         example_en: "The duck went \"quack quack\".",          formal_pt: "O pato grasnou.",                        formal_en: "The duck quacked.",                        tier: 3, category: "animals" },
+  { pt: "cucurucu",   en: "cock-a-doodle-doo", example_pt: "O galo fez \"cucurucu\".",        example_en: "The rooster went \"cock-a-doodle-doo\".", formal_pt: "O galo cantou.",                         formal_en: "The rooster crowed.",                      tier: 3, category: "animals" },
+  { pt: "croac croac",en: "ribbit",            example_pt: "A rã fez \"croac croac\".",       example_en: "The frog went \"ribbit\".",               formal_pt: "A rã coaxou.",                           formal_en: "The frog croaked.",                        tier: 3, category: "animals" },
+  { pt: "uhu uhu",    en: "hoot",              example_pt: "A coruja fez \"uhu uhu\".",       example_en: "The owl went \"hoot hoot\".",             formal_pt: "A coruja piou.",                         formal_en: "The owl hooted.",                          tier: 3, category: "animals" },
+  { pt: "cri cri",    en: "cricket chirp",     example_pt: "\"Cri cri\" — o grilo cantava.", example_en: "\"Chirp chirp\" — the cricket sang.",    formal_pt: "O grilo cantava.",                       formal_en: "The cricket was chirping.",                tier: 4, category: "animals" },
+  { pt: "grrr",       en: "growl",             example_pt: "O cão fez \"grrr\".",             example_en: "The dog went \"grrr\".",                  formal_pt: "O cão rosnou.",                          formal_en: "The dog growled.",                         tier: 3, category: "animals" },
+  { pt: "zum zum",    en: "buzz",              example_pt: "Há um \"zum zum\" no quarto.",    example_en: "There's a \"buzz buzz\" in the room.",   formal_pt: "Ouve-se um zumbido.",                    formal_en: "A buzzing can be heard.",                  tier: 1, category: "animals" },
+  // ── People ──
+  { pt: "ai",         en: "ouch / ow",         example_pt: "\"Ai!\", disse ele.",             example_en: "\"Ow!\", he said.",                      formal_pt: "Ele queixou-se de dor.",                 formal_en: "He cried out in pain.",                    tier: 1, category: "people" },
+  { pt: "atchim",     en: "achoo (sneeze)",     example_pt: "\"Atchim!\"",                    example_en: "\"Achoo!\"",                             formal_pt: "Ele espirrou.",                          formal_en: "He sneezed.",                              tier: 2, category: "people" },
+  { pt: "cof cof",    en: "cough",             example_pt: "\"Cof cof\", tossiu ele.",         example_en: "\"Cough cough\", he coughed.",           formal_pt: "Ele tossiu.",                            formal_en: "He coughed.",                              tier: 2, category: "people" },
+  { pt: "zzzz",       en: "snore / sleeping",  example_pt: "\"Zzzz\" — estava a dormir.",     example_en: "\"Zzzz\" — he was asleep.",              formal_pt: "Estava a dormir.",                       formal_en: "He was sleeping.",                         tier: 4, category: "people" },
+  // ── Impacts & Collisions ──
+  { pt: "pum",        en: "bang / boom",       example_pt: "Ouviu-se um \"pum\".",            example_en: "A \"bang\" was heard.",                  formal_pt: "Ouviu-se uma explosão.",                 formal_en: "An explosion was heard.",                  tier: 1, category: "impacts" },
+  { pt: "pum pum",    en: "bang bang",         example_pt: "Fez \"pum pum\".",                example_en: "It went \"bang bang\".",                 formal_pt: "Simulou disparos.",                      formal_en: "He mimicked gunshots.",                    tier: 1, category: "impacts" },
+  { pt: "tum",        en: "thud",              example_pt: "Caiu com um \"tum\".",             example_en: "It fell with a \"thud\".",               formal_pt: "Caiu com um impacto surdo.",             formal_en: "It fell with a dull impact.",              tier: 1, category: "impacts" },
+  { pt: "crac",       en: "crack / snap",      example_pt: "Fez \"crac\".",                   example_en: "It went \"crack\".",                     formal_pt: "Estalou.",                               formal_en: "It snapped.",                              tier: 2, category: "impacts" },
+  { pt: "clonc",      en: "clunk",             example_pt: "Caiu com \"clonc\".",              example_en: "It fell with a \"clunk\".",              formal_pt: "Caiu com ruído metálico surdo.",         formal_en: "It fell with a dull metallic sound.",      tier: 2, category: "impacts" },
+  { pt: "pof / paf",  en: "impact / thwack",   example_pt: "\"Pof\", caiu no chão.",          example_en: "\"Thwack\", it hit the floor.",          formal_pt: "Caiu abruptamente.",                     formal_en: "It fell abruptly.",                        tier: 4, category: "impacts" },
+  { pt: "boom",       en: "explosion",         example_pt: "\"Boom!\" — a explosão ecoou.",   example_en: "\"Boom!\" — the explosion echoed.",     formal_pt: "Houve uma explosão.",                    formal_en: "There was an explosion.",                  tier: 4, category: "impacts" },
+  { pt: "clangue",    en: "clang",             example_pt: "A panela fez \"clangue\".",        example_en: "The pan went \"clang\".",                formal_pt: "Produziu um som metálico.",              formal_en: "It produced a metallic sound.",            tier: 4, category: "impacts" },
+  { pt: "tchibum",    en: "splash",            example_pt: "Caiu: \"tchibum\".",               example_en: "It fell: \"splash\".",                  formal_pt: "Caiu na água com um salpico.",           formal_en: "It fell into the water with a splash.",    tier: 2, category: "impacts" },
+  // ── Mechanical & Environmental ──
+  { pt: "tic tac",    en: "tick-tock",         example_pt: "O relógio faz \"tic tac\".",       example_en: "The clock goes \"tick-tock\".",          formal_pt: "O relógio marca o tempo.",               formal_en: "The clock keeps time.",                    tier: 1, category: "mechanical" },
+  { pt: "toc toc",    en: "knock knock",       example_pt: "\"Toc toc\", bateram à porta.",    example_en: "\"Knock knock\", someone knocked.",     formal_pt: "Bateram à porta.",                       formal_en: "Someone knocked at the door.",             tier: 1, category: "mechanical" },
+  { pt: "clic",       en: "click",             example_pt: "Fez \"clic\".",                    example_en: "It went \"click\".",                     formal_pt: "Ouviu-se um estalido.",                  formal_en: "A click was heard.",                       tier: 1, category: "mechanical" },
+  { pt: "bi bi",      en: "beep / honk",       example_pt: "O carro fez \"bi bi\".",           example_en: "The car went \"beep beep\".",            formal_pt: "O carro buzinou.",                       formal_en: "The car honked.",                          tier: 2, category: "mechanical" },
+  { pt: "trim trim",  en: "ring (phone)",      example_pt: "O telefone fez \"trim trim\".",    example_en: "The phone went \"ring ring\".",          formal_pt: "O telefone tocou.",                      formal_en: "The phone rang.",                          tier: 2, category: "mechanical" },
+  { pt: "ding dong",  en: "ding dong (doorbell)", example_pt: "\"Ding dong\" — a campainha.", example_en: "\"Ding dong\" — the doorbell.",          formal_pt: "A campainha tocou.",                     formal_en: "The doorbell rang.",                       tier: 3, category: "mechanical" },
+  { pt: "plim plim",  en: "drip drip",         example_pt: "Água: \"plim plim\".",              example_en: "Water: \"drip drip\".",                  formal_pt: "A água pingava.",                        formal_en: "The water was dripping.",                  tier: 3, category: "mechanical" },
+  { pt: "vuush",      en: "whoosh (wind)",     example_pt: "O vento fez \"vuush\".",            example_en: "The wind went \"whoosh\".",              formal_pt: "O vento soprou com força.",              formal_en: "The wind blew hard.",                      tier: 3, category: "mechanical" },
+  // ── Motion & Comic ──
+  { pt: "zás",        en: "whoosh / zip",      example_pt: "Passou \"zás\".",                  example_en: "It zipped past.",                        formal_pt: "Passou rapidamente.",                    formal_en: "It passed quickly.",                       tier: 2, category: "motion" },
+  { pt: "boim",       en: "boing",             example_pt: "A mola fez \"boim\".",              example_en: "The spring went \"boing\".",             formal_pt: "A mola saltou.",                         formal_en: "The spring bounced.",                      tier: 3, category: "motion" },
+  { pt: "nhóim",      en: "boing-like bounce", example_pt: "\"Nhóim\" — saltou.",              example_en: "\"Boing\" — it bounced.",                formal_pt: "Saltou elasticamente.",                  formal_en: "It bounced elastically.",                  tier: 4, category: "motion" },
+];
+
+const ONOMA_CATEGORIES = [
+  { id: "animals",    label: "Animals",                    labelPt: "Animais" },
+  { id: "people",     label: "People",                     labelPt: "Pessoas" },
+  { id: "impacts",    label: "Impacts & Collisions",       labelPt: "Impactos e Colisões" },
+  { id: "mechanical", label: "Mechanical & Environmental", labelPt: "Mecânico e Ambiental" },
+  { id: "motion",     label: "Motion & Comic",             labelPt: "Movimento e Banda Desenhada" },
+];
+
+const ONOMA_TIER_COLORS = {
+  1: { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0", label: "T1" },
+  2: { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe", label: "T2" },
+  3: { bg: "#fefce8", color: "#a16207", border: "#fde68a", label: "T3" },
+  4: { bg: "#faf5ff", color: "#7e22ce", border: "#e9d5ff", label: "T4" },
+};
+
+const OnomatopoeiaTab = React.memo(function OnomatopoeiaTab({ fontSize, speakListPT, listFilter }) {
+  const tbl = useMemo(() => ({ width: "100%", borderCollapse: "collapse", fontSize }), [fontSize]);
+  const needle = (listFilter || "").toLowerCase();
+
+  const [openCats, setOpenCats] = useState(new Set());
+  const toggleCat = (id) => setOpenCats(prev => {
+    const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next;
+  });
+  const expandAll   = () => setOpenCats(new Set(ONOMA_CATEGORIES.map(c => c.id)));
+  const collapseAll = () => setOpenCats(new Set());
+
+  // EN translation toggle state
+  // showAllEN: global default; enOverrides: Set of item keys that deviate from global
+  const [showAllEN, setShowAllEN] = useState(false);
+  const [enOverrides, setEnOverrides] = useState(new Set());
+
+  const toggleGlobalEN = () => {
+    setShowAllEN(prev => !prev);
+    setEnOverrides(new Set()); // global always clears individual overrides
+  };
+  const toggleRowEN = (key) => setEnOverrides(prev => {
+    const next = new Set(prev);
+    next.has(key) ? next.delete(key) : next.add(key);
+    return next;
+  });
+  const rowShowsEN = (key) => (showAllEN && !enOverrides.has(key)) || (!showAllEN && enOverrides.has(key));
+
+  const filteredCats = useMemo(() => {
+    if (!needle) return ONOMA_CATEGORIES.map(cat => ({
+      ...cat,
+      items: ONOMATOPOEIA.filter(x => x.category === cat.id),
+    }));
+    return ONOMA_CATEGORIES.map(cat => ({
+      ...cat,
+      items: ONOMATOPOEIA.filter(x =>
+        x.category === cat.id && (
+          x.pt.toLowerCase().includes(needle) ||
+          x.en.toLowerCase().includes(needle) ||
+          x.example_pt.toLowerCase().includes(needle) ||
+          x.formal_pt.toLowerCase().includes(needle)
+        )
+      ),
+    })).filter(cat => cat.items.length > 0);
+  }, [needle]);
+
+  const totalMatches = needle ? filteredCats.reduce((n, c) => n + c.items.length, 0) : null;
+
+  const btnBase = { fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", cursor: "pointer" };
+
+  return (
+    <div style={listPanelStyle}>
+      <div style={{ padding: "6px 0 10px", borderBottom: "0.5px solid var(--color-border-tertiary)", marginBottom: 12 }}>
+        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-secondary)", margin: 0, fontStyle: "italic", lineHeight: 1.5 }}>
+          Onomatopoeia in EP — sounds spelled as they are heard.
+          Each entry shows the onomatopoeia sentence and its formal equivalent.
+          Tier badges (T1–T4) indicate frequency: T1 = core spoken usage, T4 = stylised/comic.
+          Use <strong>EN</strong> on each row or <strong>Show EN</strong> globally to reveal English translations.
+        </p>
+      </div>
+      {!needle && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap", alignItems: "center" }}>
+          <button onClick={expandAll}    style={{ ...btnBase, background: "transparent", color: "var(--color-text-secondary)" }}>Expand all</button>
+          <button onClick={collapseAll}  style={{ ...btnBase, background: "transparent", color: "var(--color-text-secondary)" }}>Collapse all</button>
+          <button onClick={toggleGlobalEN}
+            style={{ ...btnBase,
+              background: showAllEN ? "var(--color-background-info)" : "transparent",
+              color:      showAllEN ? "var(--color-accent-blue)"     : "var(--color-text-secondary)",
+              border:     showAllEN ? "1px solid var(--color-accent-blue)" : "1px solid var(--color-border-tertiary)",
+              fontWeight: showAllEN ? 700 : 400,
+            }}>{showAllEN ? "Hide EN" : "Show EN"}</button>
+        </div>
+      )}
+      {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
+      {filteredCats.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
+      {filteredCats.map((cat) => {
+        const isOpen = needle ? true : openCats.has(cat.id);
+        return (
+          <div key={cat.id} style={{ marginBottom: 10, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
+            <button
+              onClick={() => toggleCat(cat.id)}
+              style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+              <span>
+                <span style={{ fontSize: Math.max(13, fontSize - 1), fontWeight: 700, color: "var(--color-text-primary)" }}>{cat.label}</span>
+                <span style={{ fontSize: Math.max(12, fontSize - 2), color: "var(--color-text-tertiary)", marginLeft: 6 }}>({cat.labelPt})</span>
+                <span style={{ fontSize: Math.max(10, fontSize - 4), color: "var(--color-text-tertiary)", marginLeft: 6 }}>{cat.items.length}</span>
+              </span>
+              <span style={{ fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", flexShrink: 0 }}>{isOpen ? "▲" : "▼"}</span>
+            </button>
+            {isOpen && (
+              <div style={{ padding: "6px 0 8px" }}>
+                <table style={tbl}><tbody>
+                  {cat.items.map((item, ii) => {
+                    const tc = ONOMA_TIER_COLORS[item.tier];
+                    const rowKey = `${cat.id}-${ii}`;
+                    const showEN = rowShowsEN(rowKey);
+                    return (
+                      <tr key={ii} style={{ borderBottom: "1px solid var(--color-border-tertiary)", verticalAlign: "top" }}>
+                        {/* Play button */}
+                        <td style={{ width: 32, paddingLeft: 8, paddingRight: 4, paddingTop: 8, paddingBottom: 8, verticalAlign: "top" }}>
+                          <button onClick={() => speakListPT(item.example_pt)}
+                            aria-label={`Hear: ${item.pt}`}
+                            style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
+                        </td>
+                        {/* PT word + tier badge + EN row toggle */}
+                        <td style={{ padding: "8px 8px 8px 0", verticalAlign: "top", width: "22%" }}>
+                          <span style={{ fontFamily: "var(--font-mono)", fontWeight: 700, color: "var(--color-text-info)", fontSize }}>{item.pt}</span>
+                          <span style={{ display: "inline-block", fontSize: Math.max(9, fontSize - 5), fontWeight: 700, padding: "1px 5px", borderRadius: 3, marginLeft: 5, background: tc.bg, color: tc.color, border: `1px solid ${tc.border}`, verticalAlign: "middle" }}>{tc.label}</span>
+                          <button
+                            onClick={() => toggleRowEN(rowKey)}
+                            title={showEN ? "Hide English translations for this row" : "Show English translations for this row"}
+                            style={{ display: "inline-block", fontSize: Math.max(9, fontSize - 5), fontWeight: 700, padding: "1px 5px", borderRadius: 3, marginLeft: 4, verticalAlign: "middle", cursor: "pointer",
+                              background: showEN ? "var(--color-background-info)" : "transparent",
+                              color:      showEN ? "var(--color-accent-blue)"     : "var(--color-text-tertiary)",
+                              border:     showEN ? "1px solid var(--color-accent-blue)" : "1px solid var(--color-border-tertiary)",
+                            }}>EN</button>
+                        </td>
+                        {/* English equivalent */}
+                        <td style={{ padding: "8px 8px 8px 0", verticalAlign: "top", width: "20%", color: "var(--color-text-secondary)", fontSize }}>
+                          {item.en}
+                        </td>
+                        {/* Sentences */}
+                        <td style={{ padding: "8px 8px 8px 0", verticalAlign: "top", fontSize }}>
+                          <span style={{ fontFamily: "var(--font-mono)", color: "var(--color-text-info)" }}>{item.example_pt}</span>
+                          {showEN && (
+                            <span style={{ display: "block", fontSize: Math.max(10, fontSize - 3), color: "var(--color-accent-blue)", marginTop: 1, fontStyle: "italic" }}>{item.example_en}</span>
+                          )}
+                          <span style={{ display: "block", fontSize: Math.max(10, fontSize - 3), color: "var(--color-text-tertiary)", marginTop: showEN ? 4 : 2, fontStyle: "italic" }}>{item.formal_pt}</span>
+                          {showEN && (
+                            <span style={{ display: "block", fontSize: Math.max(10, fontSize - 3), color: "var(--color-accent-blue)", marginTop: 1, fontStyle: "italic", opacity: 0.8 }}>{item.formal_en}</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody></table>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+});
+
 
 const GRAMMAR_TOPICS = [
   {
@@ -5534,8 +5742,11 @@ const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListP
   const expandAllGrammar = () => {
     setOpenTopics(new Set(GRAMMAR_TOPICS.map(t => t.id)));
     setOpenNestedSecs(new Set(GRAMMAR_SECTIONS.map(s => s.title)));
+    setOpenNestedRules(new Set(
+      GRAMMAR_SECTIONS.flatMap(s => s.rules.map((_, ri) => `${s.title}|${ri}`))
+    ));
   };
-  const collapseAllGrammar = () => { setOpenTopics(new Set()); setOpenNestedSecs(new Set()); };
+  const collapseAllGrammar = () => { setOpenTopics(new Set()); setOpenNestedSecs(new Set()); setOpenNestedRules(new Set()); };
 
   return (
     <div style={listPanelStyle}>
@@ -9752,7 +9963,7 @@ function App() {
             ))}
           </div>
           {/* Filter bar — shown for searchable list tabs */}
-          {["phrases","idioms","slang","cognates","numbers","media","opposites"].includes(listTab) && (
+          {["phrases","idioms","slang","cognates","numbers","media","opposites","onomatopoeia"].includes(listTab) && (
             <div style={{ padding: "6px 20px", borderBottom: "1px solid var(--color-border-tertiary)", display: "flex", alignItems: "center", gap: 8, background: "var(--color-background-secondary)", flexShrink: 0 }}>
               <span style={{ fontSize: Math.max(12, fontSize - 2), color: "var(--color-text-tertiary)", flexShrink: 0 }}>🔍</span>
               <input
@@ -10159,6 +10370,9 @@ function App() {
           )}
           {listTab === "numbers" && (
             <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} showGenderColors={showGenderColors} />
+          )}
+          {listTab === "onomatopoeia" && (
+            <OnomatopoeiaTab fontSize={fontSize} speakListPT={speakListPT} listFilter={listFilter} />
           )}
           {listTab === "opposites" && (
             <OppositesPanel fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} showCommonFirst={showCommonFirst} />
