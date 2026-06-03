@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.2.2 -->
+  <!-- version: 3.2.4 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.2.2", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.2.4", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -242,12 +242,12 @@ const IRREGULAR_VERBS = [
     ["farei","farás","fará","faremos","farão","farão"],
     ["faria","farias","faria","faríamos","fariam","fariam"],
     ["feito"]]},
-  { inf:"haver", en:"to have/exist (modern EP: only 'há' is common — other forms are archaic)", tenses:[
-    ["hei","hás","há","havemos","hão","hão"],
-    ["houve","houveste","houve","houvemos","houveram","houveram"],
-    ["havia","havias","havia","havíamos","haviam","haviam"],
-    ["haverei","haverás","haverá","haveremos","haverão","haverão"],
-    ["haveria","haverias","haveria","haveríamos","haveriam","haveriam"],
+  { inf:"haver", en:"to have/exist", defective: true, tenses:[
+    ["—","—","há","—","—","—"],
+    ["—","—","houve","—","—","—"],
+    ["—","—","havia","—","—","—"],
+    ["—","—","haverá","—","—","—"],
+    ["—"],
     ["havido"]]},
   { inf:"ir", en:"to go", tenses:[
     ["vou","vais","vai","vamos","vão","vão"],
@@ -1291,278 +1291,278 @@ const COGNATES = [
 const MEDIA_SECTIONS = [
   { id: "s13", pt: "Livros, Literatura e Audiolivros", en: "Books, Literature & Audiobooks", subgroups: [
     { label: "Televisão", links: [
-      { label: "Literatura Agora (RTP)", url: "https://www.rtp.pt/play/p1747/e197849/literatura-agora" },
-      { label: "Os Livros (RTP)", url: "https://www.rtp.pt/play/p2412/os-livros" },
-      { label: "A Vida Privada dos Livros (RTP)", url: "https://www.rtp.pt/play/p9466/e577708/a-vida-privada-dos-livros" },
+      { label: "Literatura Agora (RTP)", url: "https://www.rtp.pt/play/p1747/e197849/literatura-agora", desc: "RTP literary talk show discussing books, authors, and Portuguese literature" },
+      { label: "Os Livros (RTP)", url: "https://www.rtp.pt/play/p2412/os-livros", desc: "RTP programme dedicated to book reviews and literary conversation" },
+      { label: "A Vida Privada dos Livros (RTP)", url: "https://www.rtp.pt/play/p9466/e577708/a-vida-privada-dos-livros", desc: "RTP series going behind the scenes of books and their creation" },
     ]},
     { label: "Bibliotecas e Arquivos Digitais", links: [
-      { label: "Imprensa Nacional — Livros em PDF", url: "https://imprensanacional.pt/livros-em-pdf/" },
-      { label: "Project Gutenberg — Português", url: "https://www.gutenberg.org/browse/languages/pt" },
-      { label: "Fundação Gulbenkian — Publicações", url: "https://gulbenkian.pt/publicacoes/" },
+      { label: "Imprensa Nacional — Livros em PDF", url: "https://imprensanacional.pt/livros-em-pdf/", desc: "Free PDF downloads of Portuguese public-domain and government publications" },
+      { label: "Project Gutenberg — Português", url: "https://www.gutenberg.org/browse/languages/pt", desc: "Free public-domain Portuguese-language e-books from the Gutenberg archive" },
+      { label: "Fundação Gulbenkian — Publicações", url: "https://gulbenkian.pt/publicacoes/", desc: "Reports, essays, and cultural publications from Portugal's Gulbenkian Foundation" },
     ]},
     { label: "Livrarias", links: [
-      { label: "Wook", url: "https://www.wook.pt/" },
-      { label: "FNAC Portugal", url: "https://www.fnac.pt/" },
-      { label: "Bertrand Livreiros", url: "https://www.bertrand.pt/" },
+      { label: "Wook", url: "https://www.wook.pt/", desc: "Portugal's leading online bookshop — wide range of Portuguese-language titles" },
+      { label: "FNAC Portugal", url: "https://www.fnac.pt/", desc: "Large Portuguese retail chain selling books, music, electronics, and more" },
+      { label: "Bertrand Livreiros", url: "https://www.bertrand.pt/", desc: "One of the world's oldest bookshops, founded in Lisbon in 1732" },
     ]},
     { label: "Audiolivros", links: [
-      { label: "Imprensa Nacional — Audiolivros", url: "https://imprensanacional.pt/digitais/audiolivros/" },
-      { label: "Bertrand — Audiolivros em Português", url: "https://www.bertrand.pt/arvoretematica/audiolivros-em-portugues/25188x25189/P" },
-      { label: "Audiolivros — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLJrrzPTVK9DeTyGHEufvbmRpEPDsErlIp" },
-      { label: "Contos Portugueses — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLQ7SbCg65jTLZsvPsyBDg_KQYuMZBIymC" },
+      { label: "Imprensa Nacional — Audiolivros", url: "https://imprensanacional.pt/digitais/audiolivros/", desc: "Audiobooks produced and distributed by Portugal's national press" },
+      { label: "Bertrand — Audiolivros em Português", url: "https://www.bertrand.pt/arvoretematica/audiolivros-em-portugues/25188x25189/P", desc: "Portuguese-language audiobook catalogue from Bertrand bookshop" },
+      { label: "Audiolivros — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLJrrzPTVK9DeTyGHEufvbmRpEPDsErlIp", desc: "uncertain" },
+      { label: "Contos Portugueses — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLQ7SbCg65jTLZsvPsyBDg_KQYuMZBIymC", desc: "uncertain" },
     ]},
     { label: "Canais YouTube", links: [
-      { label: "Abrir o Livro (YouTube)", url: "https://www.youtube.com/c/AbriroLivro" },
-      { label: "Mundo dos Poemas (YouTube)", url: "https://www.youtube.com/@mundodospoemas/videos" },
-      { label: "Livraria Aqui Há Gato (YouTube)", url: "https://www.youtube.com/@livrariaaquihagato/videos" },
+      { label: "Abrir o Livro (YouTube)", url: "https://www.youtube.com/c/AbriroLivro", desc: "Portuguese YouTube channel featuring book reviews and literary discussion" },
+      { label: "Mundo dos Poemas (YouTube)", url: "https://www.youtube.com/@mundodospoemas/videos", desc: "YouTube channel dedicated to Portuguese poetry readings" },
+      { label: "Livraria Aqui Há Gato (YouTube)", url: "https://www.youtube.com/@livrariaaquihagato/videos", desc: "YouTube channel from a Lisbon bookshop covering books and Portuguese culture" },
     ]},
     { label: "Banda Desenhada", links: [
-      { label: "Astérix — Site Oficial PT", url: "https://asterix.com/" },
+      { label: "Astérix — Site Oficial PT", url: "https://asterix.com/", desc: "Official Astérix website with comics available in European Portuguese" },
     ]},
   ]},
   { id: "s15", pt: "Conteúdo Infantil", en: "Children's Content", links: [
-    { label: "RTP Zigzag — Directo", url: "https://www.rtp.pt/play/direto/zigzag" },
-    { label: "Zigzag — Podcasts Infantis", url: "https://www.rtp.pt/play/zigzag/podcasts" },
-    { label: "Portuguese Fairy Tales (YouTube)", url: "https://www.youtube.com/@PortugueseFairyTales" },
-    { label: "Mundo Animado PT (YouTube)", url: "https://www.youtube.com/c/MundoAnimadoPT/videos" },
-    { label: "Desenhos Animados PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV" },
-    { label: "Projecto Adamastor — Audiolivros Infantis", url: "https://projectoadamastor.org/audiolivros-para-criancas/" },
-    { label: "Histórias Infantis — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9" },
-    { label: "Fundação Jorge Álvares — Contos e Lendas", url: "https://www.fundacaojorgealvares-bibliotecadigital.com/index.php?s=colecao&coleccao=contos-e-lendas" },
+    { label: "RTP Zigzag — Directo", url: "https://www.rtp.pt/play/direto/zigzag", desc: "RTP's children's channel streaming live — cartoons, shows, and educational content" },
+    { label: "Zigzag — Podcasts Infantis", url: "https://www.rtp.pt/play/zigzag/podcasts", desc: "RTP Zigzag children's podcasts — stories and educational audio for kids" },
+    { label: "Portuguese Fairy Tales (YouTube)", url: "https://www.youtube.com/@PortugueseFairyTales", desc: "Traditional Portuguese fairy tales read aloud in European Portuguese" },
+    { label: "Mundo Animado PT (YouTube)", url: "https://www.youtube.com/c/MundoAnimadoPT/videos", desc: "uncertain" },
+    { label: "Desenhos Animados PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLMaH2e5YViRYSYd0TwRS43T8PNBqK_0lV", desc: "uncertain" },
+    { label: "Projecto Adamastor — Audiolivros Infantis", url: "https://projectoadamastor.org/audiolivros-para-criancas/", desc: "Free children's audiobooks in European Portuguese from Projecto Adamastor" },
+    { label: "Histórias Infantis — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLuA3C1Hw3DNXftFTFJ3vcdIvnaXm9_VI9", desc: "uncertain" },
+    { label: "Fundação Jorge Álvares — Contos e Lendas", url: "https://www.fundacaojorgealvares-bibliotecadigital.com/index.php?s=colecao&coleccao=contos-e-lendas", desc: "Digital library of Portuguese tales and legends for children from Fundação Jorge Álvares" },
   ]},
   { id: "s03", pt: "Comédia, Variedades e Talk Shows", en: "Comedy, Variety & Talk Shows", links: [
-    { label: "5 Para a Meia-Noite", url: "https://www.rtp.pt/play/p9868/5-para-a-meia-noite" },
-    { label: "Alta Definição (SIC)", url: "https://sic.pt/programas/altadefinicao-programas/" },
-    { label: "Isto é Gozar com Quem Trabalha (SIC)", url: "https://sic.pt/programas/istoegozarcomquemtrabalha/" },
-    { label: "Férias Cá Dentro", url: "https://www.rtp.pt/play/p10536/e633736/ferias-ca-dentro" },
-    { label: "Cuidado com a Língua", url: "https://www.rtp.pt/play/p3991/cuidado-com-a-lingua" },
-    { label: "Raminhos (YouTube)", url: "https://www.youtube.com/@raminhos/videos" },
-    { label: "Pierre Zago (YouTube)", url: "https://www.youtube.com/@PierreZago/videos" },
-    { label: "Beatriz Gosta (YouTube)", url: "https://www.youtube.com/c/BeatrizGosta" },
-    { label: "Fernando Rocha (YouTube)", url: "https://www.youtube.com/c/FernandoRochaComedy" },
-    { label: "Guilherme Geirinhas (YouTube)", url: "https://www.youtube.com/@GuilhermeGeirinhas" },
-    { label: "Mat3us (YouTube)", url: "https://www.youtube.com/@mat3us/videos" },
+    { label: "5 Para a Meia-Noite", url: "https://www.rtp.pt/play/p9868/5-para-a-meia-noite", desc: "RTP1 late-night talk and comedy show — a flagship of contemporary Portuguese TV" },
+    { label: "Alta Definição (SIC)", url: "https://sic.pt/programas/altadefinicao-programas/", desc: "SIC weekend talk show with celebrity interviews in a relaxed, conversational format" },
+    { label: "Isto é Gozar com Quem Trabalha (SIC)", url: "https://sic.pt/programas/istoegozarcomquemtrabalha/", desc: "SIC satirical comedy programme poking fun at Portuguese public life" },
+    { label: "Férias Cá Dentro", url: "https://www.rtp.pt/play/p10536/e633736/ferias-ca-dentro", desc: "RTP travel and lifestyle show exploring Portugal's regions" },
+    { label: "Cuidado com a Língua", url: "https://www.rtp.pt/play/p3991/cuidado-com-a-lingua", desc: "RTP entertainment show built around the quirks and challenges of the Portuguese language" },
+    { label: "Raminhos (YouTube)", url: "https://www.youtube.com/@raminhos/videos", desc: "Stand-up comedian and sketch creator — one of Portugal's most popular YouTube comics" },
+    { label: "Pierre Zago (YouTube)", url: "https://www.youtube.com/@PierreZago/videos", desc: "French-Portuguese comedian producing sketches and commentary on everyday life in Portugal" },
+    { label: "Beatriz Gosta (YouTube)", url: "https://www.youtube.com/c/BeatrizGosta", desc: "Portuguese comedian and actress known for character sketches and social commentary" },
+    { label: "Fernando Rocha (YouTube)", url: "https://www.youtube.com/c/FernandoRochaComedy", desc: "Portuguese comedian and TV presenter known for light, family-friendly humour" },
+    { label: "Guilherme Geirinhas (YouTube)", url: "https://www.youtube.com/@GuilhermeGeirinhas", desc: "Portuguese comedian producing short-form sketch comedy and observational humour" },
+    { label: "Mat3us (YouTube)", url: "https://www.youtube.com/@mat3us/videos", desc: "uncertain" },
   ]},
   { id: "s17", pt: "Artesanato, DIY e Casa", en: "Crafts, DIY & Home", links: [
-    { label: "Trabalhos Manuais da Di (YouTube)", url: "https://www.youtube.com/c/TrabalhosManuaisdaDi/videos" },
-    { label: "Fios Cruzados (YouTube)", url: "https://www.youtube.com/@fioscruzados/videos" },
-    { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos" },
-    { label: "Leroy Merlin Portugal (YouTube)", url: "https://www.youtube.com/c/leroymerlinportugal/videos" },
-    { label: "Querido, Mudei a Casa (YouTube)", url: "https://www.youtube.com/@queridomudeiacasaoficial/videos" },
-    { label: "GEM — Revistas de Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
-    { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos" },
+    { label: "Trabalhos Manuais da Di (YouTube)", url: "https://www.youtube.com/c/TrabalhosManuaisdaDi/videos", desc: "Portuguese craft channel focused on handmade projects, sewing, and DIY tutorials" },
+    { label: "Fios Cruzados (YouTube)", url: "https://www.youtube.com/@fioscruzados/videos", desc: "Portuguese YouTube channel dedicated to crochet and knitting tutorials" },
+    { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos", desc: "Portuguese DIY and home repair channel with practical hands-on tutorials" },
+    { label: "Leroy Merlin Portugal (YouTube)", url: "https://www.youtube.com/c/leroymerlinportugal/videos", desc: "Official YouTube channel of Leroy Merlin Portugal — home improvement guides and product tips" },
+    { label: "Querido, Mudei a Casa (YouTube)", url: "https://www.youtube.com/@queridomudeiacasaoficial/videos", desc: "uncertain" },
+    { label: "GEM — Revistas de Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/", desc: "Portuguese craft magazine publisher specialising in sewing, knitting, and needlework" },
+    { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos", desc: "uncertain" },
   ]},
   { id: "s04", pt: "Documentários e Actualidade", en: "Documentaries & Current Affairs", links: [
-    { label: "RTP Play — Documentários", url: "https://www.rtp.pt/play/colecao/documentarios" },
-    { label: "FFMS Play — Documentários", url: "https://www.ffms.pt/pt-pt/ffms-play/documentarios" },
-    { label: "Canal Documentários PT (YouTube)", url: "https://www.youtube.com/channel/UCAzXTUnXaYXsscGtzWae1dA" },
-    { label: "Fundação Francisco Manuel dos Santos (YouTube)", url: "https://www.youtube.com/@ffmspt/videos" },
+    { label: "RTP Play — Documentários", url: "https://www.rtp.pt/play/colecao/documentarios", desc: "Full documentary archive available on-demand from Portugal's public broadcaster RTP" },
+    { label: "FFMS Play — Documentários", url: "https://www.ffms.pt/pt-pt/ffms-play/documentarios", desc: "Documentary content from the Francisco Manuel dos Santos Foundation" },
+    { label: "Canal Documentários PT (YouTube)", url: "https://www.youtube.com/channel/UCAzXTUnXaYXsscGtzWae1dA", desc: "uncertain" },
+    { label: "Fundação Francisco Manuel dos Santos (YouTube)", url: "https://www.youtube.com/@ffmspt/videos", desc: "YouTube channel of Portugal's leading public policy foundation — talks, debates, and documentaries" },
   ]},
   { id: "s14", pt: "Gastronomia e Culinária", en: "Food & Cooking", links: [
-    { label: "Mesa Portuguesa com Estrelas, com Certeza", url: "https://www.rtp.pt/play/p6444/mesa-portuguesa-com-estrelas-com-certeza" },
-    { label: "Cozinha com Amor", url: "https://www.rtp.pt/play/p2496/e246134/cozinha-com-amor" },
-    { label: "Sabor Intenso (YouTube)", url: "https://www.youtube.com/@SaborIntenso/videos" },
-    { label: "Cozinha do Miguel (YouTube)", url: "https://www.youtube.com/@CozinhadoMiguel/videos" },
-    { label: "Tuga na Cozinha (YouTube)", url: "https://www.youtube.com/@TuganaCozinha" },
-    { label: "Frederica — Blog", url: "https://frederica.com/blogs/blog?page=1" },
+    { label: "Mesa Portuguesa com Estrelas, com Certeza", url: "https://www.rtp.pt/play/p6444/mesa-portuguesa-com-estrelas-com-certeza", desc: "RTP series visiting Michelin-starred Portuguese chefs and restaurants" },
+    { label: "Cozinha com Amor", url: "https://www.rtp.pt/play/p2496/e246134/cozinha-com-amor", desc: "RTP home cooking show with traditional Portuguese recipes" },
+    { label: "Sabor Intenso (YouTube)", url: "https://www.youtube.com/@SaborIntenso/videos", desc: "Portuguese cooking channel focused on traditional and regional recipes" },
+    { label: "Cozinha do Miguel (YouTube)", url: "https://www.youtube.com/@CozinhadoMiguel/videos", desc: "Portuguese chef Miguel Rocha Vieira sharing recipes and cooking techniques on YouTube" },
+    { label: "Tuga na Cozinha (YouTube)", url: "https://www.youtube.com/@TuganaCozinha", desc: "Portuguese cooking channel featuring home-style traditional dishes" },
+    { label: "Frederica — Blog", url: "https://frederica.com/blogs/blog?page=1", desc: "Popular Portuguese food and lifestyle blog with recipes and restaurant recommendations" },
   ]},
   { id: "s07", pt: "História e Cultura", en: "History & Culture", links: [
-    { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/" },
-    { label: "A Porta da História", url: "https://www.rtp.pt/play/p2097/a-porta-da-historia" },
-    { label: "Herdeiros de Saramago", url: "https://www.rtp.pt/play/p7972/herdeiros-de-saramago" },
-    { label: "História de Portugal JHS (YouTube)", url: "https://www.youtube.com/@historiadeportugaljhs3389" },
-    { label: "Sete Cidades — Da Lenda à Realidade", url: "https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade" },
-    { label: "Portugal Tradições (YouTube)", url: "https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es" },
-    { label: "Nionoi — História PT (YouTube)", url: "https://www.youtube.com/c/Nionoi/featured" },
-    { label: "Casa Comum — Universidade do Porto", url: "https://www.up.pt/casacomum/" },
-    { label: "Direcção-Geral do Património Cultural", url: "https://patrimoniocultural.gov.pt/" },
-    { label: "Agenda Cultural do Porto", url: "https://agendaculturalporto.org/" },
-    { label: "Agenda LX — Lisboa", url: "https://www.agendalx.pt/" },
+    { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/", desc: "RTP's full historical archive — decades of Portuguese news, culture, and television" },
+    { label: "A Porta da História", url: "https://www.rtp.pt/play/p2097/a-porta-da-historia", desc: "RTP documentary series exploring key moments and figures in Portuguese history" },
+    { label: "Herdeiros de Saramago", url: "https://www.rtp.pt/play/p7972/herdeiros-de-saramago", desc: "RTP series examining the legacy of Nobel Prize-winning Portuguese author José Saramago" },
+    { label: "História de Portugal JHS (YouTube)", url: "https://www.youtube.com/@historiadeportugaljhs3389", desc: "YouTube channel dedicated to Portuguese history — engaging narrative-style videos" },
+    { label: "Sete Cidades — Da Lenda à Realidade", url: "https://www.rtp.pt/play/p10718/e642720/sete-cidades-da-lenda-a-realidade", desc: "RTP documentary exploring the legend and geology of Sete Cidades in the Azores" },
+    { label: "Portugal Tradições (YouTube)", url: "https://www.youtube.com/@PortugalTradi%C3%A7%C3%B5es", desc: "uncertain" },
+    { label: "Nionoi — História PT (YouTube)", url: "https://www.youtube.com/c/Nionoi/featured", desc: "uncertain" },
+    { label: "Casa Comum — Universidade do Porto", url: "https://www.up.pt/casacomum/", desc: "University of Porto digital repository of historical documents and cultural heritage" },
+    { label: "Direcção-Geral do Património Cultural", url: "https://patrimoniocultural.gov.pt/", desc: "Official Portuguese government portal for national cultural heritage and monuments" },
+    { label: "Agenda Cultural do Porto", url: "https://agendaculturalporto.org/", desc: "Comprehensive listings of cultural events, exhibitions, and shows in Porto" },
+    { label: "Agenda LX — Lisboa", url: "https://www.agendalx.pt/", desc: "Comprehensive listings of cultural events, exhibitions, and shows in Lisbon" },
   ]},
   { id: "s01", pt: "Televisão em Directo & Plataformas de Streaming", en: "Live TV & Streaming Platforms", links: [
-    { label: "RTP Play — Directo", url: "https://www.rtp.pt/play/direto" },
-    { label: "RTP2 — Directo", url: "https://www.rtp.pt/play/direto/rtp2" },
-    { label: "RTP3 / RTP Notícias — Directo", url: "https://www.rtp.pt/play/direto/rtp3" },
-    { label: "RTP Play — Arquivo e On-Demand", url: "https://www.rtp.pt/play/" },
-    { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/" },
-    { label: "Porto Canal — Directo", url: "https://portocanal.sapo.pt/live" },
-    { label: "SIC — Directo", url: "https://www.sic.pt/direto" },
-    { label: "SIC Notícias — Directo", url: "https://sicnoticias.pt/direto" },
-    { label: "Opto SIC — On-Demand", url: "https://opto.sic.pt/" },
-    { label: "TVI — Directo", url: "https://tvi.iol.pt/" },
-    { label: "TVI Player — On-Demand", url: "https://tviplayer.iol.pt/" },
-    { label: "Euronews PT — Directo", url: "https://pt.euronews.com/live" },
-    { label: "CNN Portugal — Directo", url: "https://cnnportugal.iol.pt/direto" },
-    { label: "Canal 180 — Cultura e Artes", url: "https://canal180.pt/" },
-    { label: "Lista IPTV Gratuita e Legal (Reddit)", url: "https://www.reddit.com/r/portugal/comments/hadmt5/lista_de_iptv_gratuita_e_legal/" },
+    { label: "RTP Play — Directo", url: "https://www.rtp.pt/play/direto", desc: "Live stream of RTP1 — Portugal's main public broadcast channel" },
+    { label: "RTP2 — Directo", url: "https://www.rtp.pt/play/direto/rtp2", desc: "Live stream of RTP2 — Portugal's cultural and arts public TV channel" },
+    { label: "RTP3 / RTP Notícias — Directo", url: "https://www.rtp.pt/play/direto/rtp3", desc: "Live stream of RTP3 — Portugal's 24-hour rolling news channel" },
+    { label: "RTP Play — Arquivo e On-Demand", url: "https://www.rtp.pt/play/", desc: "Full on-demand catalogue from RTP — Portugal's national public broadcaster" },
+    { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/", desc: "RTP's full historical archive — decades of Portuguese news, culture, and television" },
+    { label: "Porto Canal — Directo", url: "https://portocanal.sapo.pt/live", desc: "Live stream of Porto Canal — regional channel covering the north of Portugal" },
+    { label: "SIC — Directo", url: "https://www.sic.pt/direto", desc: "Live stream of SIC — Portugal's first private television channel" },
+    { label: "SIC Notícias — Directo", url: "https://sicnoticias.pt/direto", desc: "Live stream of SIC Notícias — SIC's 24-hour news channel" },
+    { label: "Opto SIC — On-Demand", url: "https://opto.sic.pt/", desc: "SIC's subscription on-demand platform — Portuguese and international content" },
+    { label: "TVI — Directo", url: "https://tvi.iol.pt/", desc: "Live stream of TVI — one of Portugal's major private television channels" },
+    { label: "TVI Player — On-Demand", url: "https://tviplayer.iol.pt/", desc: "TVI's on-demand streaming platform with Portuguese series and films" },
+    { label: "Euronews PT — Directo", url: "https://pt.euronews.com/live", desc: "Live stream of Euronews in European Portuguese — international news coverage" },
+    { label: "CNN Portugal — Directo", url: "https://cnnportugal.iol.pt/direto", desc: "Live stream of CNN Portugal — Portuguese-language news and current affairs" },
+    { label: "Canal 180 — Cultura e Artes", url: "https://canal180.pt/", desc: "Portuguese arts and culture channel with music, film, and creative content" },
+    { label: "Lista IPTV Gratuita e Legal (Reddit)", url: "https://www.reddit.com/r/portugal/comments/hadmt5/lista_de_iptv_gratuita_e_legal/", desc: "Reddit thread listing free and legal Portuguese IPTV streams" },
   ]},
   { id: "s19", pt: "Revistas e Publicações", en: "Magazines & Publications", links: [
-    { label: "Expresso", url: "https://expresso.pt/" },
-    { label: "Visão", url: "https://www.visao.pt/" },
-    { label: "Sábado", url: "https://www.sabado.pt/" },
-    { label: "Time Out Portugal", url: "https://www.timeout.pt/" },
-    { label: "Revista Business Portugal (Issuu)", url: "https://issuu.com/revistabusinessportugal" },
-    { label: "Best Guide Portugal (Issuu)", url: "https://issuu.com/bestguideportugal" },
-    { label: "GEM — Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/" },
-    { label: "Echo Boomer", url: "https://echoboomer.pt/" },
+    { label: "Expresso", url: "https://expresso.pt/", desc: "Portugal's most respected weekly newspaper — politics, economics, and culture" },
+    { label: "Visão", url: "https://www.visao.pt/", desc: "Portuguese weekly news magazine covering current affairs, society, and culture" },
+    { label: "Sábado", url: "https://www.sabado.pt/", desc: "Portuguese weekly magazine with news, lifestyle, and investigative journalism" },
+    { label: "Time Out Portugal", url: "https://www.timeout.pt/", desc: "Portuguese edition of Time Out — restaurants, events, and city guides" },
+    { label: "Revista Business Portugal (Issuu)", url: "https://issuu.com/revistabusinessportugal", desc: "Portuguese business magazine available digitally on Issuu" },
+    { label: "Best Guide Portugal (Issuu)", url: "https://issuu.com/bestguideportugal", desc: "Portuguese travel and lifestyle guide available digitally on Issuu" },
+    { label: "GEM — Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/", desc: "Portuguese craft magazine publisher specialising in sewing, knitting, and needlework" },
+    { label: "Echo Boomer", url: "https://echoboomer.pt/", desc: "Portuguese digital media outlet targeting younger audiences with culture and lifestyle content" },
   ]},
   { id: "s18", pt: "Média Moçambicana e Africana em Português", en: "Mozambican & African Portuguese Media", subgroups: [
     { label: "Televisão e Rádio", links: [
-      { label: "RTP África", url: "https://www.rtp.pt/rtpafrica" },
+      { label: "RTP África", url: "https://www.rtp.pt/rtpafrica", desc: "RTP's channel for Portuguese-speaking Africa — news, culture, and entertainment" },
     ]},
     { label: "Podcasts", links: [
-      { label: "Ouro Negro — Podcast", url: "https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5ibHVicnJ5LmNvbS9mZWVkcy9vdXJvbmVncm8ueG1s" },
+      { label: "Ouro Negro — Podcast", url: "https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5ibHVicnJ5LmNvbS9mZWVkcy9vdXJvbmVncm8ueG1s", desc: "Mozambican Portuguese-language podcast — uncertain" },
     ]},
     { label: "YouTube", links: [
-      { label: "José Diversão (YouTube)", url: "https://www.youtube.com/@JoseDiversao/videos" },
-      { label: "Maningue Magic (YouTube)", url: "https://www.youtube.com/maninguemagic/playlists" },
-      { label: "Pátria Minha — Moz (YouTube)", url: "https://www.youtube.com/@patriaminhaMoz/videos" },
+      { label: "José Diversão (YouTube)", url: "https://www.youtube.com/@JoseDiversao/videos", desc: "uncertain" },
+      { label: "Maningue Magic (YouTube)", url: "https://www.youtube.com/maninguemagic/playlists", desc: "uncertain" },
+      { label: "Pátria Minha — Moz (YouTube)", url: "https://www.youtube.com/@patriaminhaMoz/videos", desc: "uncertain" },
     ]},
   ]},
   { id: "s11", pt: "Música", en: "Music", links: [
-    { label: "RTP Palco — Espectáculos de Música", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
-    { label: "Playlist — Top Portugal (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6ViL9RcFABv" },
-    { label: "Playlist — Fado (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6HJZtcjGrCn" },
-    { label: "Playlist — PT Clássicos (Spotify)", url: "https://open.spotify.com/playlist/19aeYRwKFy0DXZOyNs2Sjv" },
-    { label: "Playlist — Músicas PT (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DWYjjOmuB9ehg" },
-    { label: "Antena 3 (YouTube)", url: "https://www.youtube.com/@antena3rtp/videos" },
-    { label: "VMTV Portugal (YouTube)", url: "https://www.youtube.com/@VMTVpt/videos" },
+    { label: "RTP Palco — Espectáculos de Música", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos", desc: "RTP archive of live music concerts and performances from Portugal" },
+    { label: "Playlist — Top Portugal (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6ViL9RcFABv", desc: "Spotify's curated chart of the most-streamed songs currently popular in Portugal" },
+    { label: "Playlist — Fado (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DX6HJZtcjGrCn", desc: "Spotify's curated Fado playlist — Portugal's most distinctive musical tradition" },
+    { label: "Playlist — PT Clássicos (Spotify)", url: "https://open.spotify.com/playlist/19aeYRwKFy0DXZOyNs2Sjv", desc: "Spotify playlist of classic Portuguese popular songs" },
+    { label: "Playlist — Músicas PT (Spotify)", url: "https://open.spotify.com/playlist/37i9dQZF1DWYjjOmuB9ehg", desc: "Spotify playlist of popular Portuguese-language music" },
+    { label: "Antena 3 (YouTube)", url: "https://www.youtube.com/@antena3rtp/videos", desc: "YouTube channel of Antena 3 — RTP's alternative and indie music radio station" },
+    { label: "VMTV Portugal (YouTube)", url: "https://www.youtube.com/@VMTVpt/videos", desc: "Portuguese music video channel featuring Portuguese and international pop" },
   ]},
   { id: "s06", pt: "Natureza, Vida Selvagem e Ambiente", en: "Nature, Wildlife & Environment", links: [
-    { label: "Geosfera", url: "https://www.rtp.pt/play/p960/e94486/geosfera" },
-    { label: "Vida Animal", url: "https://www.rtp.pt/play/p553/e235162/vida-animal" },
-    { label: "Natureza e Vida Selvagem", url: "https://www.rtp.pt/play/p1776/e179598/natureza-e-vida-selvagem" },
-    { label: "Faça Chuva, Faça Sol", url: "https://www.rtp.pt/play/p14288/e820411/faca-chuva-faca-sol" },
-    { label: "Jardim Zoológico de Lisboa (YouTube)", url: "https://www.youtube.com/user/ZoologicoJardim/playlists" },
-    { label: "SPEA BirdLife Portugal (YouTube)", url: "https://www.youtube.com/@spea_birdlife/videos" },
-    { label: "A Cientista Agrícola", url: "https://acientistaagricola.pt/" },
-    { label: "Portugal Rural na Prática (YouTube)", url: "https://www.youtube.com/@portugalruralnapratica/videos" },
+    { label: "Geosfera", url: "https://www.rtp.pt/play/p960/e94486/geosfera", desc: "RTP environmental documentary series covering nature, ecology, and sustainability in Portugal" },
+    { label: "Vida Animal", url: "https://www.rtp.pt/play/p553/e235162/vida-animal", desc: "RTP wildlife documentary series about animals in Portugal and beyond" },
+    { label: "Natureza e Vida Selvagem", url: "https://www.rtp.pt/play/p1776/e179598/natureza-e-vida-selvagem", desc: "RTP nature and wildlife documentary series" },
+    { label: "Faça Chuva, Faça Sol", url: "https://www.rtp.pt/play/p14288/e820411/faca-chuva-faca-sol", desc: "RTP outdoor and nature programme exploring Portugal's landscapes and rural life" },
+    { label: "Jardim Zoológico de Lisboa (YouTube)", url: "https://www.youtube.com/user/ZoologicoJardim/playlists", desc: "Official YouTube channel of Lisbon Zoo — animal videos and conservation content" },
+    { label: "SPEA BirdLife Portugal (YouTube)", url: "https://www.youtube.com/@spea_birdlife/videos", desc: "Portuguese Society for the Study of Birds — birdwatching and conservation videos" },
+    { label: "A Cientista Agrícola", url: "https://acientistaagricola.pt/", desc: "Portuguese blog and resource on agriculture, rural life, and farming science" },
+    { label: "Portugal Rural na Prática (YouTube)", url: "https://www.youtube.com/@portugalruralnapratica/videos", desc: "uncertain" },
   ]},
   { id: "s09", pt: "Notícias", en: "News", links: [
-    { label: "RTP Notícias", url: "https://www.rtp.pt/noticias/" },
-    { label: "RTP Notícias — Vídeo", url: "https://www.rtp.pt/noticias/videos" },
-    { label: "Euronews PT — Últimas Notícias", url: "https://pt.euronews.com/ultimas-noticias" },
-    { label: "CNN Portugal", url: "https://cnnportugal.iol.pt/" },
-    { label: "SIC Notícias", url: "https://sicnoticias.pt/" },
-    { label: "Público", url: "https://www.publico.pt/" },
-    { label: "Diário de Notícias", url: "https://www.dn.pt/" },
-    { label: "Observador", url: "https://www.observador.pt/" },
-    { label: "TSF — Rádio Notícias", url: "https://www.tsf.pt/" },
-    { label: "Correio da Manhã", url: "https://www.cmjornal.pt/" },
-    { label: "Lusa — Agência de Notícias", url: "https://www.lusa.pt/" },
-    { label: "ECO — Economia Online", url: "https://eco.pt/" },
-    { label: "Jornal de Negócios", url: "https://www.jornaldenegocios.pt/" },
+    { label: "RTP Notícias", url: "https://www.rtp.pt/noticias/", desc: "RTP's online news portal — Portugal's public broadcaster news website" },
+    { label: "RTP Notícias — Vídeo", url: "https://www.rtp.pt/noticias/videos", desc: "Video news clips and reports from RTP Notícias" },
+    { label: "Euronews PT — Últimas Notícias", url: "https://pt.euronews.com/ultimas-noticias", desc: "Latest international news in European Portuguese from Euronews" },
+    { label: "CNN Portugal", url: "https://cnnportugal.iol.pt/", desc: "Portuguese-language news site from CNN Portugal — national and international coverage" },
+    { label: "SIC Notícias", url: "https://sicnoticias.pt/", desc: "Online news portal of SIC Notícias — one of Portugal's leading news channels" },
+    { label: "Público", url: "https://www.publico.pt/", desc: "Quality broadsheet newspaper — one of Portugal's most respected news sources" },
+    { label: "Diário de Notícias", url: "https://www.dn.pt/", desc: "One of Portugal's oldest daily newspapers — founded in 1864" },
+    { label: "Observador", url: "https://www.observador.pt/", desc: "Independent Portuguese online news outlet known for in-depth journalism" },
+    { label: "TSF — Rádio Notícias", url: "https://www.tsf.pt/", desc: "Portugal's leading all-news radio station" },
+    { label: "Correio da Manhã", url: "https://www.cmjornal.pt/", desc: "Portugal's highest-circulation daily newspaper — tabloid style" },
+    { label: "Lusa — Agência de Notícias", url: "https://www.lusa.pt/", desc: "Portugal's national news wire agency — primary source for Portuguese news" },
+    { label: "ECO — Economia Online", url: "https://eco.pt/", desc: "Portuguese business and economics news website" },
+    { label: "Jornal de Negócios", url: "https://www.jornaldenegocios.pt/", desc: "Portuguese financial and business daily newspaper" },
   ]},
   { id: "s10", pt: "Podcasts", en: "Podcasts", links: [
-    { label: "RTP Zigzag — Podcasts", url: "https://www.rtp.pt/play/zigzag/podcasts" },
-    { label: "Fumaça — Séries", url: "https://fumaca.pt/category/series/" },
-    { label: "Biblioteca Pública (RTP)", url: "https://www.rtp.pt/play/p9930/biblioteca-publica" },
-    { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
-    { label: "Portugal Manual — Artesanato (Spotify)", url: "https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid" },
-    { label: "Portugueses no Mundo — Antena 1 (Spotify)", url: "https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3" },
-    { label: "Avó Carmo (YouTube)", url: "https://www.youtube.com/@Av%C3%B3Carmo" },
-    { label: "Decifrar Pessoas (YouTube)", url: "https://www.youtube.com/@DecifrarPessoas/videos" },
-    { label: "Joana Perez (YouTube)", url: "https://www.youtube.com/@joana_perez" },
-    { label: "Não Mandas em Mim Podcast (YouTube)", url: "https://www.youtube.com/@NaoMandasemMim" },
-    { label: "O Martim (YouTube)", url: "https://www.youtube.com/@OMartim/videos" },
-    { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos" },
+    { label: "RTP Zigzag — Podcasts", url: "https://www.rtp.pt/play/zigzag/podcasts", desc: "RTP Zigzag children's podcasts — stories and educational audio for kids" },
+    { label: "Fumaça — Séries", url: "https://fumaca.pt/category/series/", desc: "Portuguese independent podcast network covering culture, society, and politics" },
+    { label: "Biblioteca Pública (RTP)", url: "https://www.rtp.pt/play/p9930/biblioteca-publica", desc: "RTP podcast series featuring literary readings and author conversations" },
+    { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX", desc: "European Portuguese podcast for learners — slow, clear speech with transcripts" },
+    { label: "Portugal Manual — Artesanato (Spotify)", url: "https://open.spotify.com/show/3i3WqMpLJJ7Fgdb9MaUtid", desc: "Portuguese podcast about traditional crafts and artisanal culture" },
+    { label: "Portugueses no Mundo — Antena 1 (Spotify)", url: "https://open.spotify.com/show/36OAbErwr710Rm6UGvH5R3", desc: "Antena 1 radio programme following Portuguese emigrants living around the world" },
+    { label: "Avó Carmo (YouTube)", url: "https://www.youtube.com/@Av%C3%B3Carmo", desc: "Warm conversational Portuguese podcast hosted by Carmo — natural everyday speech" },
+    { label: "Decifrar Pessoas (YouTube)", url: "https://www.youtube.com/@DecifrarPessoas/videos", desc: "uncertain" },
+    { label: "Joana Perez (YouTube)", url: "https://www.youtube.com/@joana_perez", desc: "Portuguese lifestyle and personal development content creator" },
+    { label: "Não Mandas em Mim Podcast (YouTube)", url: "https://www.youtube.com/@NaoMandasemMim", desc: "Portuguese podcast discussing relationships, self-development, and everyday life" },
+    { label: "O Martim (YouTube)", url: "https://www.youtube.com/@OMartim/videos", desc: "uncertain" },
+    { label: "Podcast Para Elas (YouTube)", url: "https://www.youtube.com/@podcastparaelas/videos", desc: "uncertain" },
   ]},
   { id: "s02", pt: "Séries de Ficção Portuguesa", en: "Portuguese Drama & Fiction Series", links: [
-    { label: "Os Nossos Dias", url: "https://www.rtp.pt/play/p1844/os-nossos-dias" },
-    { label: "Bem-Vindos a Beirais", url: "https://www.rtp.pt/play/p1222/bem-vindos-a-beirais" },
-    { label: "Pôr do Sol", url: "https://www.rtp.pt/play/p9165/por-do-sol" },
-    { label: "Crónica dos Bons Malandros", url: "https://www.rtp.pt/play/p8013/cronica-dos-bons-malandros" },
-    { label: "Conta-me Como Foi", url: "https://www.rtp.pt/play/p6487/conta-me-como-foi" },
-    { label: "Sara", url: "https://www.rtp.pt/play/p4996/e696433/sara" },
-    { label: "Esta Língua Que Nos Une", url: "https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une" },
-    { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias" },
-    { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames" },
-    { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC" },
-    { label: "O Sábio (YouTube)", url: "https://www.youtube.com/playlist?list=PLTuOFDgd5lcawQ9Keo09mu-aTqRL4PcTJ" },
+    { label: "Os Nossos Dias", url: "https://www.rtp.pt/play/p1844/os-nossos-dias", desc: "RTP long-running family drama series set in contemporary Portugal" },
+    { label: "Bem-Vindos a Beirais", url: "https://www.rtp.pt/play/p1222/bem-vindos-a-beirais", desc: "RTP comedy series about life in a fictional small Portuguese village" },
+    { label: "Pôr do Sol", url: "https://www.rtp.pt/play/p9165/por-do-sol", desc: "RTP prime-time drama series — a portuguese take on the soap opera format" },
+    { label: "Crónica dos Bons Malandros", url: "https://www.rtp.pt/play/p8013/cronica-dos-bons-malandros", desc: "RTP comedy-drama series set in Lisbon's Alfama neighbourhood" },
+    { label: "Conta-me Como Foi", url: "https://www.rtp.pt/play/p6487/conta-me-como-foi", desc: "RTP period drama series following a Lisbon family from the 1960s into the Revolution era" },
+    { label: "Sara", url: "https://www.rtp.pt/play/p4996/e696433/sara", desc: "RTP crime drama series following a female detective" },
+    { label: "Esta Língua Que Nos Une", url: "https://www.rtp.pt/play/p15723/esta-lingua-que-nos-une", desc: "RTP series exploring the Portuguese language across the Lusophone world" },
+    { label: "Espiãs", url: "https://www.rtp.pt/play/p15506/e873973/espias", desc: "RTP spy thriller series featuring female intelligence agents" },
+    { label: "King of Game (YouTube)", url: "https://www.youtube.com/@2kingofgames", desc: "uncertain" },
+    { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC", desc: "uncertain" },
+    { label: "O Sábio (YouTube)", url: "https://www.youtube.com/playlist?list=PLTuOFDgd5lcawQ9Keo09mu-aTqRL4PcTJ", desc: "uncertain" },
   ]},
   { id: "s08", pt: "Ferramentas de Língua Portuguesa", en: "Portuguese Language Tools", subgroups: [
     { label: "Dicionários e Tradução", links: [
-      { label: "Priberam — Dicionário", url: "https://dicionario.priberam.org/" },
-      { label: "Infopédia — Português–Inglês", url: "https://www.infopedia.pt/dicionarios/portugues-ingles" },
-      { label: "Infopédia — Inglês–Português", url: "https://www.infopedia.pt/dicionarios/ingles-portugues" },
-      { label: "Linguee", url: "https://www.linguee.pt/" },
-      { label: "DeepL Tradutor", url: "https://www.deepl.com/translator" },
-      { label: "WordReference PT-EN", url: "https://www.wordreference.com/pten/" },
-      { label: "Dicionário de Calão (PDF)", url: "https://natura.di.uminho.pt/~jj/pln/calao/dicionario.pdf" },
+      { label: "Priberam — Dicionário", url: "https://dicionario.priberam.org/", desc: "Authoritative online dictionary of European Portuguese — the standard reference" },
+      { label: "Infopédia — Português–Inglês", url: "https://www.infopedia.pt/dicionarios/portugues-ingles", desc: "Porto Editora's Portuguese-to-English dictionary with examples" },
+      { label: "Infopédia — Inglês–Português", url: "https://www.infopedia.pt/dicionarios/ingles-portugues", desc: "Porto Editora's English-to-Portuguese dictionary with examples" },
+      { label: "Linguee", url: "https://www.linguee.pt/", desc: "Bilingual dictionary showing real-world translation examples in context" },
+      { label: "DeepL Tradutor", url: "https://www.deepl.com/translator", desc: "High-quality AI translation tool — generally best-in-class for Portuguese" },
+      { label: "WordReference PT-EN", url: "https://www.wordreference.com/pten/", desc: "Community-backed dictionary with forums for tricky Portuguese-English translation questions" },
+      { label: "Dicionário de Calão (PDF)", url: "https://natura.di.uminho.pt/~jj/pln/calao/dicionario.pdf", desc: "Academic dictionary of Portuguese slang and informal vocabulary (PDF)" },
     ]},
     { label: "Ortografia e Gramática", links: [
-      { label: "Ciberdúvidas da Língua Portuguesa", url: "https://ciberduvidas.iscte-iul.pt/" },
-      { label: "Ciberdúvidas — Pronúncia PT-PT", url: "https://ciberduvidas.iscte-iul.pt/outros/diversidades/outra-pronuncia/1014" },
-      { label: "Correcao.pt — Corretor Ortográfico e Gramatical", url: "https://www.correcao.pt/" },
-      { label: "FLiP — Corrector Ortográfico e Sintáctico", url: "https://www.flip.pt/FLiP-On-line/Corrector-ortografico-e-sintactico" },
+      { label: "Ciberdúvidas da Língua Portuguesa", url: "https://ciberduvidas.iscte-iul.pt/", desc: "Authoritative Q&A site on European Portuguese grammar, spelling, and usage" },
+      { label: "Ciberdúvidas — Pronúncia PT-PT", url: "https://ciberduvidas.iscte-iul.pt/outros/diversidades/outra-pronuncia/1014", desc: "Ciberdúvidas resource specifically addressing European Portuguese pronunciation" },
+      { label: "Correcao.pt — Corretor Ortográfico e Gramatical", url: "https://www.correcao.pt/", desc: "Online European Portuguese spell-checker and grammar corrector" },
+      { label: "FLiP — Corrector Ortográfico e Sintáctico", url: "https://www.flip.pt/FLiP-On-line/Corrector-ortografico-e-sintactico", desc: "Online orthographic and syntactic corrector calibrated to European Portuguese norms" },
     ]},
     { label: "Verbos e Conjugação", links: [
-      { label: "Conjuga-me", url: "https://conjuga-me.net/" },
-      { label: "Infopédia — Verbos Portugueses", url: "https://www.infopedia.pt/dicionarios/verbos-portugueses" },
-      { label: "Reverso Conjugator — Português", url: "https://conjugator.reverso.net/conjugation-portuguese.html" },
-      { label: "Verbos Portugueses — Prática", url: "https://www.verbos-portugueses.info/en/practise.html" },
-      { label: "Verbugata", url: "https://verbugata.com/" },
+      { label: "Conjuga-me", url: "https://conjuga-me.net/", desc: "Clean, fast Portuguese verb conjugation tool — covers all tenses and moods" },
+      { label: "Infopédia — Verbos Portugueses", url: "https://www.infopedia.pt/dicionarios/verbos-portugueses", desc: "Porto Editora's verb conjugation tables for European Portuguese" },
+      { label: "Reverso Conjugator — Português", url: "https://conjugator.reverso.net/conjugation-portuguese.html", desc: "Full Portuguese verb conjugation with example sentences in context" },
+      { label: "Verbos Portugueses — Prática", url: "https://www.verbos-portugueses.info/en/practise.html", desc: "Interactive practice tool for drilling Portuguese verb conjugations" },
+      { label: "Verbugata", url: "https://verbugata.com/", desc: "Gamified Portuguese verb conjugation practice tool" },
     ]},
     { label: "Pronúncia e Escuta", links: [
-      { label: "Forvo — Pronúncia PT", url: "https://forvo.com/languages/pt/" },
-      { label: "LangPractice — Números PT-PT", url: "https://langpractice.com/portuguese-portugal/numbers/listening#1,0,1000" },
-      { label: "MicMonster — Texto para Voz", url: "https://micmonster.com/" },
-      { label: "Narakeet — Texto para Áudio", url: "https://www.narakeet.com/app/text-to-audio/?projectId=c4fa7619-eb7b-49d9-84bc-15572bc0e046" },
-      { label: "Vocaroo — Gravador de Voz Online", url: "https://vocaroo.com/" },
-      { label: "YouGlish — Português", url: "https://pt.youglish.com/portuguese" },
+      { label: "Forvo — Pronúncia PT", url: "https://forvo.com/languages/pt/", desc: "Crowdsourced pronunciation database — hear real native EP speakers say any word" },
+      { label: "LangPractice — Números PT-PT", url: "https://langpractice.com/portuguese-portugal/numbers/listening#1,0,1000", desc: "Listening practice tool for Portuguese numbers — hear and identify spoken numbers" },
+      { label: "MicMonster — Texto para Voz", url: "https://micmonster.com/", desc: "Text-to-speech tool with a good European Portuguese voice option" },
+      { label: "Narakeet — Texto para Áudio", url: "https://www.narakeet.com/app/text-to-audio/?projectId=c4fa7619-eb7b-49d9-84bc-15572bc0e046", desc: "Text-to-audio tool with natural-sounding European Portuguese voices" },
+      { label: "Vocaroo — Gravador de Voz Online", url: "https://vocaroo.com/", desc: "Simple online voice recorder — useful for recording and reviewing your own spoken Portuguese" },
+      { label: "YouGlish — Português", url: "https://pt.youglish.com/portuguese", desc: "Search engine that finds YouTube clips where a given Portuguese word is spoken in context" },
     ]},
     { label: "Plataformas de Aprendizagem PT-PT", links: [
-      { label: "Practice Portuguese", url: "https://www.practiceportuguese.com/" },
-      { label: "Portuguesepedia", url: "https://www.portuguesepedia.com/" },
-      { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX" },
-      { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg" },
-      { label: "Marco Neves — Língua Portuguesa (YouTube)", url: "https://www.youtube.com/@marconeves/videos" },
-      { label: "Portuguese With Carla (YouTube)", url: "https://www.youtube.com/@portuguesewithcarla" },
-      { label: "Portuguese With Leo (YouTube)", url: "https://www.youtube.com/@portuguesewithleo" },
-      { label: "Talk The Streets — Liz Sharma (YouTube)", url: "https://www.youtube.com/@TalkTheStreets" },
+      { label: "Practice Portuguese", url: "https://www.practiceportuguese.com/", desc: "Dedicated European Portuguese learning platform with podcasts, lessons, and a phrase book" },
+      { label: "Portuguesepedia", url: "https://www.portuguesepedia.com/", desc: "European Portuguese learning site with vocabulary, grammar, and cultural content" },
+      { label: "Slow Portuguese With Maria (Spotify)", url: "https://open.spotify.com/show/5PjzPWqcoGIaL29K3wIVzX", desc: "European Portuguese podcast for learners — slow, clear speech with transcripts" },
+      { label: "Portuguese Lab — European Portuguese (Spotify)", url: "https://open.spotify.com/show/6kW8Hemxwn8N5M9BssisNg", desc: "Podcast for learners of European Portuguese with grammar and vocabulary focus" },
+      { label: "Marco Neves — Língua Portuguesa (YouTube)", url: "https://www.youtube.com/@marconeves/videos", desc: "Portuguese linguist and author explaining language curiosities and EP grammar" },
+      { label: "Portuguese With Carla (YouTube)", url: "https://www.youtube.com/@portuguesewithcarla", desc: "European Portuguese lessons from a native teacher — clear, structured explanations" },
+      { label: "Portuguese With Leo (YouTube)", url: "https://www.youtube.com/@portuguesewithleo", desc: "European Portuguese lessons and cultural content from a native Portuguese speaker" },
+      { label: "Talk The Streets — Liz Sharma (YouTube)", url: "https://www.youtube.com/@TalkTheStreets", desc: "European Portuguese learning channel with street interviews and real-world language" },
     ]},
   ]},
   { id: "s20", pt: "Criadores Portugueses — YouTube", en: "Portuguese YouTube Creators (Various)", links: [
-    { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos" },
-    { label: "A Tua Filosofia", url: "https://www.youtube.com/@ATuaFilosofia/videos" },
-    { label: "Luís Pinto TekTest — Tecnologia", url: "https://www.youtube.com/@LuisPintoTekTest/videos" },
-    { label: "Olívia Ortiz", url: "https://www.youtube.com/@OliviaOrtiz/videos" },
-    { label: "Rádio Portuense Online", url: "https://www.youtube.com/c/R%C3%A1dioPortuenseOnline" },
-    { label: "Como os Pés na Terra", url: "https://www.youtube.com/c/Comosp%C3%A9snaterra" },
-    { label: "Jornalismo Porto Net", url: "https://www.youtube.com/c/JornalismoPortoNet" },
+    { label: "Marco Neves — Língua Portuguesa", url: "https://www.youtube.com/@marconeves/videos", desc: "Portuguese linguist and author explaining language curiosities and EP grammar" },
+    { label: "A Tua Filosofia", url: "https://www.youtube.com/@ATuaFilosofia/videos", desc: "Portuguese YouTube channel making philosophy accessible — ideas explained in plain language" },
+    { label: "Luís Pinto TekTest — Tecnologia", url: "https://www.youtube.com/@LuisPintoTekTest/videos", desc: "Portuguese technology review and analysis channel" },
+    { label: "Olívia Ortiz", url: "https://www.youtube.com/@OliviaOrtiz/videos", desc: "uncertain" },
+    { label: "Rádio Portuense Online", url: "https://www.youtube.com/c/R%C3%A1dioPortuenseOnline", desc: "Online radio channel from Porto broadcasting music and local content" },
+    { label: "Como os Pés na Terra", url: "https://www.youtube.com/c/Comosp%C3%A9snaterra", desc: "uncertain" },
+    { label: "Jornalismo Porto Net", url: "https://www.youtube.com/c/JornalismoPortoNet", desc: "Porto-based citizen journalism YouTube channel covering local news and events" },
   ]},
   { id: "s12", pt: "Rádio", en: "Radio", links: [
-    { label: "Radio Garden — Portugal", url: "https://radio.garden/visit/portugal/lVedGqUL" },
-    { label: "Radio.pt — Todas as Estações PT", url: "https://www.radio.pt/country/portugal" },
-    { label: "TSF — Directo", url: "https://www.tsf.pt/direto/" },
+    { label: "Radio Garden — Portugal", url: "https://radio.garden/visit/portugal/lVedGqUL", desc: "Interactive globe letting you tune into live Portuguese radio stations by location" },
+    { label: "Radio.pt — Todas as Estações PT", url: "https://www.radio.pt/country/portugal", desc: "Directory and streaming access to all Portuguese radio stations" },
+    { label: "TSF — Directo", url: "https://www.tsf.pt/direto/", desc: "Live stream of TSF — Portugal's leading all-news radio station" },
 
   ]},
   { id: "s16", pt: "Desporto", en: "Sport", links: [
-    { label: "Maisfutebol", url: "https://maisfutebol.iol.pt/" },
-    { label: "Jornal Record", url: "https://www.record.pt/" },
-    { label: "O Jogo", url: "https://www.ojogo.pt/" },
-    { label: "A Bola", url: "https://www.abola.pt/" },
-    { label: "Golo FM", url: "https://golo.fm/" },
-    { label: "O Ciclista Improvável (YouTube)", url: "https://www.youtube.com/c/OCiclistaImprov%C3%A1vel/videos" },
-    { label: "Podcast Futebol PT (Spotify)", url: "https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B" },
+    { label: "Maisfutebol", url: "https://maisfutebol.iol.pt/", desc: "Portugal's most popular football news website — live scores, transfers, and match reports" },
+    { label: "Jornal Record", url: "https://www.record.pt/", desc: "Portuguese daily sports newspaper with a focus on football" },
+    { label: "O Jogo", url: "https://www.ojogo.pt/", desc: "Porto-based Portuguese sports newspaper — strong coverage of FC Porto" },
+    { label: "A Bola", url: "https://www.abola.pt/", desc: "Portugal's oldest sports newspaper — daily football and sports coverage since 1945" },
+    { label: "Golo FM", url: "https://golo.fm/", desc: "Portuguese sports radio station dedicated to football commentary and analysis" },
+    { label: "O Ciclista Improvável (YouTube)", url: "https://www.youtube.com/c/OCiclistaImprov%C3%A1vel/videos", desc: "Portuguese cycling YouTube channel covering road cycling news and culture" },
+    { label: "Podcast Futebol PT (Spotify)", url: "https://open.spotify.com/show/7q8gYdjuNuElnSQR6z6j4B", desc: "Portuguese football podcast discussing the Primeira Liga and national team" },
   ]},
   { id: "s21", pt: "Teatro e Artes Performativas", en: "Theatre & Performing Arts", links: [
-    { label: "RTP Palco — Teatro", url: "https://www.rtp.pt/play/palco/espetaculos/teatro/todos" },
-    { label: "RTP Palco — Música ao Vivo", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos" },
-    { label: "Teatro Nacional São João — Porto", url: "https://www.tnsj.pt/" },
-    { label: "Direcção-Geral das Artes", url: "https://www.dgartes.gov.pt/" },
-    { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN" },
+    { label: "RTP Palco — Teatro", url: "https://www.rtp.pt/play/palco/espetaculos/teatro/todos", desc: "RTP archive of recorded theatre productions from Portugal" },
+    { label: "RTP Palco — Música ao Vivo", url: "https://www.rtp.pt/play/palco/espetaculos/musica/todos", desc: "RTP archive of live music concerts and performances from Portugal" },
+    { label: "Teatro Nacional São João — Porto", url: "https://www.tnsj.pt/", desc: "Porto's national theatre — programme, tickets, and archive of productions" },
+    { label: "Direcção-Geral das Artes", url: "https://www.dgartes.gov.pt/", desc: "Portuguese government body overseeing arts funding and cultural policy" },
+    { label: "Teatro PT — Playlist (YouTube)", url: "https://www.youtube.com/playlist?list=PLFgXXzMIIMIuMH93bQBEi3SBV4Tsl3xoN", desc: "uncertain" },
   ]},
   { id: "s05", pt: "Viagens e Geografia", en: "Travel & Geography", links: [
-    { label: "Portugal Mais Perto", url: "https://www.rtp.pt/play/p5665/portugal-mais-perto" },
-    { label: "Guia de Portugal", url: "https://www.rtp.pt/play/p3376/e282290/guia-de-portugal" },
-    { label: "Portugal a Pé", url: "https://www.rtp.pt/play/p2272/portugal-a-pe" },
-    { label: "Visita Guiada", url: "https://www.rtp.pt/play/p7378/visita-guiada" },
-    { label: "Lisboa, Cidade Triste e Alegre", url: "https://www.rtp.pt/play/p10399/e623375/lisboa-cidade-triste-e-alegre" },
-    { label: "Alma de Viajante", url: "https://www.almadeviajante.com/" },
-    { label: "Cidades de Portugal (YouTube)", url: "https://www.youtube.com/@CidadesdePortugal/videos" },
-    { label: "Meio Cheio (YouTube)", url: "https://www.youtube.com/@MeioCheio/videos" },
-    { label: "Remote Portugal (YouTube)", url: "https://www.youtube.com/@RemotePortugal/videos" },
+    { label: "Portugal Mais Perto", url: "https://www.rtp.pt/play/p5665/portugal-mais-perto", desc: "RTP travel series exploring towns and regions across Portugal" },
+    { label: "Guia de Portugal", url: "https://www.rtp.pt/play/p3376/e282290/guia-de-portugal", desc: "RTP classic series touring Portugal's cities, landscapes, and heritage sites" },
+    { label: "Portugal a Pé", url: "https://www.rtp.pt/play/p2272/portugal-a-pe", desc: "RTP series exploring Portugal on foot — trails, nature, and rural life" },
+    { label: "Visita Guiada", url: "https://www.rtp.pt/play/p7378/visita-guiada", desc: "RTP heritage series taking guided tours of Portugal's monuments and historic buildings" },
+    { label: "Lisboa, Cidade Triste e Alegre", url: "https://www.rtp.pt/play/p10399/e623375/lisboa-cidade-triste-e-alegre", desc: "RTP documentary portrait of Lisbon — history, culture, and city life" },
+    { label: "Alma de Viajante", url: "https://www.almadeviajante.com/", desc: "Portuguese travel blog and community for travellers exploring Portugal and beyond" },
+    { label: "Cidades de Portugal (YouTube)", url: "https://www.youtube.com/@CidadesdePortugal/videos", desc: "uncertain" },
+    { label: "Meio Cheio (YouTube)", url: "https://www.youtube.com/@MeioCheio/videos", desc: "uncertain" },
+    { label: "Remote Portugal (YouTube)", url: "https://www.youtube.com/@RemotePortugal/videos", desc: "uncertain" },
   ]},
 ];
 const MEDIA_SECTIONS_SORTED = [...MEDIA_SECTIONS].sort((a, b) => a.en.localeCompare(b.en, "en"));
@@ -5690,19 +5690,25 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
                   <div key={sgi}>
                     <p style={mediaSubLabelStyle(fontSize)}>{sg.label}</p>
                     {sg.links.map((lk, li) => (
-                      <a key={li} href={lk.url} target="_blank" rel="noopener noreferrer" style={linkStyle}
-                        onMouseEnter={e => e.target.style.textDecoration="underline"}
-                        onMouseLeave={e => e.target.style.textDecoration="none"}>
-                        {lk.label}
-                      </a>
+                      <div key={li} style={{ marginBottom: (lk.desc && lk.desc !== "uncertain") ? 4 : 0 }}>
+                        <a href={lk.url} target="_blank" rel="noopener noreferrer" style={{ ...linkStyle, display: "inline", lineHeight: 1.5 }}
+                          onMouseEnter={e => e.currentTarget.style.textDecoration="underline"}
+                          onMouseLeave={e => e.currentTarget.style.textDecoration="none"}>
+                          {lk.label}
+                        </a>
+                        {lk.desc && lk.desc !== "uncertain" && <span style={{ display: "block", fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", lineHeight: 1.4, marginTop: 1 }}>{lk.desc}</span>}
+                      </div>
                     ))}
                   </div>
                 )) : sortedLinks.map((lk, li) => (
-                  <a key={li} href={lk.url} target="_blank" rel="noopener noreferrer" style={linkStyle}
-                    onMouseEnter={e => e.target.style.textDecoration="underline"}
-                    onMouseLeave={e => e.target.style.textDecoration="none"}>
-                    {lk.label}
-                  </a>
+                  <div key={li} style={{ marginBottom: (lk.desc && lk.desc !== "uncertain") ? 4 : 0 }}>
+                    <a href={lk.url} target="_blank" rel="noopener noreferrer" style={{ ...linkStyle, display: "inline", lineHeight: 1.5 }}
+                      onMouseEnter={e => e.currentTarget.style.textDecoration="underline"}
+                      onMouseLeave={e => e.currentTarget.style.textDecoration="none"}>
+                      {lk.label}
+                    </a>
+                    {lk.desc && lk.desc !== "uncertain" && <span style={{ display: "block", fontSize: Math.max(11, fontSize - 3), color: "var(--color-text-tertiary)", lineHeight: 1.4, marginTop: 1 }}>{lk.desc}</span>}
+                  </div>
                 ))}
               </div>
             )}
@@ -10027,37 +10033,9 @@ function App() {
                     </p>
                   )}
                   {irreg ? (
-                    selectedVerb === "haver" ? (
-                      /* haver: show only Presente + Pret.Perfeito + Imperfeito, ele/ela row only */
-                      <div style={{ overflowX: "auto" }}>
-                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Modern EP note: only 'há' (3rd person singular present) is in common use. All other forms are archaic or literary.</p>
-                        <table style={{ borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 2) }}>
-                          <thead>
-                            <tr>
-                              <th style={{ padding: "4px 10px 4px 0", textAlign: "left", color: "var(--color-text-tertiary)", fontWeight: 600, fontSize: Math.max(10, fontSize - 4), whiteSpace: "nowrap", borderBottom: "1.5px solid var(--color-border-tertiary)" }}></th>
-                              {[0,1,2].map(ti => (
-                                <th key={ti} style={{ padding: "4px 12px 4px 4px", textAlign: "left", fontWeight: 700, fontSize: Math.max(10, fontSize - 4), textTransform: "uppercase", letterSpacing: "0.04em", whiteSpace: "nowrap", color: TENSE_COLORS[ti], borderBottom: "1.5px solid var(--color-border-tertiary)" }}>{TENSE_LABELS[ti]}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr style={{ borderBottom: "0.5px solid var(--color-border-tertiary)" }}>
-                              <td style={{ padding: "3px 10px 3px 0", color: "var(--color-text-secondary)", whiteSpace: "nowrap", fontSize: Math.max(10, fontSize - 3) }}>ele/ela</td>
-                              {[0,1,2].map(ti => {
-                                const form = irreg.tenses[ti][2];
-                                const hilit = isIrregularForm(selectedVerb, form, ti, 2);
-                                return (
-                                  <td key={ti} style={{ padding: "3px 12px 3px 4px", fontWeight: 500, color: TENSE_COLORS[ti], whiteSpace: "nowrap", background: hilit ? "var(--color-background-warning)" : "transparent", borderRadius: hilit ? 3 : 0 }}>{form}</td>
-                                );
-                              })}
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
                     <div style={{ overflowX: "auto" }}>
                       {irreg.defective && (
-                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>Defective verb — only 3rd person forms are used. Other slots are marked —.</p>
+                        <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", fontStyle: "italic", margin: "0 0 8px" }}>{selectedVerb === "haver" ? "Impersonal/existential verb — modern EP uses only the 3rd person singular (ele/ela). All other persons and the 3rd plural are archaic or unattested. Other slots are marked —." : "Defective verb — only 3rd person forms are used. Other slots are marked —."}</p>
                       )}
                       <table style={{ borderCollapse: "collapse", fontSize: Math.max(11, fontSize - 2), width: "100%" }}>
                         <thead>
@@ -10097,7 +10075,6 @@ function App() {
                         </tbody>
                       </table>
                     </div>
-                    )
                   ) : (
                     <div>
                       <p style={{ fontSize: Math.max(13, fontSize - 1), color: "var(--color-text-secondary)", fontStyle: "italic", marginBottom: 10 }}>
