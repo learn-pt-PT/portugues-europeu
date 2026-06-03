@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.2.7 -->
+  <!-- version: 3.3.0 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1349,7 +1349,7 @@ const MEDIA_SECTIONS = [
     { label: "EVERMEND — DIY (YouTube)", url: "https://www.youtube.com/@EVERMEND/videos", desc: "Portuguese DIY and home repair channel with practical hands-on tutorials" },
     { label: "Leroy Merlin Portugal (YouTube)", url: "https://www.youtube.com/c/leroymerlinportugal/videos", desc: "Official YouTube channel of Leroy Merlin Portugal — home improvement guides and product tips" },
     { label: "Querido, Mudei a Casa (YouTube)", url: "https://www.youtube.com/@queridomudeiacasaoficial/videos", desc: "Official channel of Portugal's long-running TVI home renovation and interior design reality show, on air since 2004." },
-    { label: "GEM — Revistas de Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/", desc: "Portuguese craft magazine publisher specialising in sewing, knitting, and needlework" },
+
     { label: "Tinta Para Todos (YouTube)", url: "https://www.youtube.com/@tintaparatodos1421/videos", desc: "Portuguese podcast where tattoo artists and creatives discuss tattoo culture, illustration, photography, music, and life in the creative industry." },
   ]},
   { id: "s04", pt: "Documentários e Actualidade", en: "Documentaries & Current Affairs", links: [
@@ -1364,7 +1364,7 @@ const MEDIA_SECTIONS = [
     { label: "Sabor Intenso (YouTube)", url: "https://www.youtube.com/@SaborIntenso/videos", desc: "Portuguese cooking channel focused on traditional and regional recipes" },
     { label: "Cozinha do Miguel (YouTube)", url: "https://www.youtube.com/@CozinhadoMiguel/videos", desc: "Portuguese chef Miguel Rocha Vieira sharing recipes and cooking techniques on YouTube" },
     { label: "Tuga na Cozinha (YouTube)", url: "https://www.youtube.com/@TuganaCozinha", desc: "Portuguese cooking channel featuring home-style traditional dishes" },
-    { label: "Frederica — Blog", url: "https://frederica.com/blogs/blog?page=1", desc: "Popular Portuguese food and lifestyle blog with recipes and restaurant recommendations" },
+
   ]},
   { id: "s07", pt: "História e Cultura", en: "History & Culture", links: [
     { label: "Arquivos RTP", url: "https://arquivos.rtp.pt/", desc: "RTP's full historical archive — decades of Portuguese news, culture, and television" },
@@ -1403,7 +1403,7 @@ const MEDIA_SECTIONS = [
     { label: "Time Out Portugal", url: "https://www.timeout.pt/", desc: "Portuguese edition of Time Out — restaurants, events, and city guides" },
     { label: "Revista Business Portugal (Issuu)", url: "https://issuu.com/revistabusinessportugal", desc: "Portuguese business magazine available digitally on Issuu" },
     { label: "Best Guide Portugal (Issuu)", url: "https://issuu.com/bestguideportugal", desc: "Portuguese travel and lifestyle guide available digitally on Issuu" },
-    { label: "GEM — Artesanato", url: "https://gem.pt/1/publicacoes/revistas-gem/", desc: "Portuguese craft magazine publisher specialising in sewing, knitting, and needlework" },
+    { label: "Grupo de Espeleologia e Montanhismo", url: "https://gem.pt/1/publicacoes/revistas-gem/", desc: "The Grupo de Espeleologia e Montanhismo (GEM) is a Portuguese organization dedicated to caving and mountaineering activities, with a strong focus on training, safety, and the development of technical and educational skills for its members and participants." },
     { label: "Echo Boomer", url: "https://echoboomer.pt/", desc: "Portuguese digital media outlet targeting younger audiences with culture and lifestyle content" },
   ]},
   { id: "s18", pt: "Média Moçambicana e Africana em Português", en: "Mozambican & African Portuguese Media", subgroups: [
@@ -1863,6 +1863,8 @@ const GRAMMAR_TOPICS = [
       { title: "Adjective placement", body: "Most descriptive adjectives follow the noun: 'um carro vermelho' (a red car). Adjectives that precede the noun carry a more subjective or emphatic meaning: 'um grande homem' (a great man) vs 'um homem grande' (a big/tall man)." },
       { title: "Question word order", body: "Yes/no questions use rising intonation with no word order change: 'Falas português?' Wh-questions move the question word to the front: 'Onde moras?' In formal EP, the subject may invert after the verb: 'Onde mora o Pedro?'" },
       { title: "Negation", body: "Place 'não' directly before the verb: 'Não falo inglês.' Double negation is standard in EP: 'Não vi nada.' (I didn't see anything — literally 'I didn't see nothing.') This is grammatically correct, not a mistake." },
+      { title: "Clitic pronoun placement", body: "EP defaults to enclisis: the clitic follows the verb, joined by a hyphen: 'Ele viu-me.' (He saw me.) Proclisis — clitic before the verb — is required after negation, subordinating conjunctions, question words, and certain adverbs: 'Não me viu.' / 'Quando me viste?' In the future and conditional tenses, the clitic inserts inside the verb form (mesoclisis): 'Ver-te-ei amanhã.' (I will see you tomorrow.) Placing a clitic before the verb in an affirmative main clause (as is standard in BP) is non-standard in EP." },
+      { title: "Progressive construction", body: "EP forms the progressive with 'estar a + infinitive': 'Estou a trabalhar.' (I am working.) The gerund form used in BP ('Estou trabalhando.') is not used in EP. This construction applies in all tenses: 'Estava a chover.' (It was raining.) / 'Vou estar a esperar.' (I will be waiting.)" },
     ],
   },
 ];
@@ -3219,6 +3221,12 @@ const CHIP_CARVING_VOCAB = [
 const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT, onConjugate, fontSize }) {
   const FOCUS_FILTERS = ["all", "clitic", "progressive", "question", "general"];
   const FOCUS_LABELS = { all: "All", clitic: "Clitic", progressive: "Progressive", question: "Questions", general: "General" };
+  const FOCUS_RULES = {
+    clitic:      "Rule: EP uses enclisis by default (verb-clitic: 'viu-me'). Proclisis is required after negation, conjunctions, and question words ('Não me viu.'). Mesoclisis applies in the future/conditional ('Ver-te-ei.').",
+    progressive: "Rule: EP progressive = estar a + infinitive ('Estou a trabalhar.'). Never use the gerund form ('Estou trabalhando') — that is Brazilian Portuguese.",
+    question:    "Rule: Yes/no questions use rising intonation with no word order change. Wh-questions front the question word ('Onde moras?'). Formal EP may invert subject after verb ('Onde mora o Pedro?').",
+    general:     "Rule: EP follows SVO order. Negation: place 'não' before the verb. Double negation is standard ('Não vi nada.'). Descriptive adjectives normally follow the noun ('carro vermelho').",
+  };
   const SESSION_SIZE = 10;
 
   const [focusFilter, setFocusFilter] = useState("all");
@@ -3439,6 +3447,11 @@ const WordOrderTab = React.memo(function WordOrderTab({ level, speakListPT, onCo
               {!correct && (
                 <p style={{ fontSize: Math.max(13, fontSize - 1), color: "var(--color-text-secondary)", margin: "0 0 4px" }}>
                   Correct: <strong style={{ color: "var(--color-text-primary)" }}>{currentItem.correct}</strong>
+                </p>
+              )}
+              {FOCUS_RULES[currentItem.focus] && (
+                <p style={{ fontSize: Math.max(12, fontSize - 2), color: "var(--color-text-secondary)", margin: "4px 0 4px", padding: "6px 10px", borderRadius: 6, background: "var(--color-background-secondary)", borderLeft: "3px solid var(--color-accent-blue)" }}>
+                  {FOCUS_RULES[currentItem.focus]}
                 </p>
               )}
               {checked && onConjugate && (() => {
