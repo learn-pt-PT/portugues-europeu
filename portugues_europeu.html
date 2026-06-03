@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.1.25 -->
+  <!-- version: 3.2.1 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.1.25", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.2.1", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -2941,7 +2941,7 @@ const LEVEL_ORDER = { "A1": 0, "A2": 1, "B1": 2, "B2+": 3 };
 // learner after a failed attempt). Do not "fix" this by lowercasing the correct strings —
 // the capitalised form is pedagogically correct for the learner to see.
 const WORD_ORDER_ITEMS = [
-  // ── CLITIC PLACEMENT (focus: "clitic") — 18 items ──────────────────────────
+  // ── CLITIC PLACEMENT (focus: "clitic") — 33 items ──────────────────────────
   { tokens:["deu","me","ela","o","livro"], correct:"Ela deu-me o livro.", en:"She gave me the book.", focus:"clitic", level:"A2" },
   { tokens:["disse","te","ele","isso"], correct:"Ele disse-te isso.", en:"He told you that.", focus:"clitic", level:"A2" },
   { tokens:["chama","se","João","ele"], correct:"Ele chama-se João.", en:"His name is João.", focus:"clitic", level:"A1" },
@@ -2954,14 +2954,32 @@ const WORD_ORDER_ITEMS = [
   { tokens:["lembras","te","disso","tu"], correct:"Tu lembras-te disso.", en:"You remember that.", focus:"clitic", level:"A2" },
   { tokens:["não","nos","viu","ele","ainda"], correct:"Ele não nos viu ainda.", en:"He hasn't seen us yet.", focus:"clitic", level:"A2" },
   { tokens:["disse","lhe","eu","a","verdade"], correct:"Eu disse-lhe a verdade.", en:"I told him the truth.", focus:"clitic", level:"A2" },
-  { tokens:["quando","chegar","ele","me","ligará"], correct:"Quando ele chegar, me ligará.", en:"When he arrives, he will call me.", focus:"clitic", level:"B1" }, // EP proclisis after subordinating conjunction 'quando' — verified
+  { tokens:["quando","ele","chegar","vai","ligar","me"], correct:"Quando ele chegar, vai ligar-me.", en:"When he arrives, he will call me.", focus:"clitic", level:"B1" }, // EP proclisis after subordinating conjunction 'quando' — verified
   { tokens:["não","te","preocupes","isso","com"], correct:"Não te preocupes com isso.", en:"Don't worry about that.", focus:"clitic", level:"A2" },
   { tokens:["ela","levantou","se","cedo"], correct:"Ela levantou-se cedo.", en:"She got up early.", focus:"clitic", level:"A2" },
   { tokens:["porque","te","estás","a","rir"], correct:"Porque te estás a rir?", en:"Why are you laughing?", focus:"clitic", level:"B1" },
   { tokens:["entregou","lhe","o","pacote","ela"], correct:"Ela entregou-lhe o pacote.", en:"She handed him the package.", focus:"clitic", level:"A2" },
   { tokens:["isso","não","me","parece","bem"], correct:"Isso não me parece bem.", en:"That doesn't seem right to me.", focus:"clitic", level:"B1" },
 
-  // ── PROGRESSIVE CONSTRUCTION (focus: "progressive") — 17 items ──────────────
+  // ── CLITIC — B1 additions ──
+  { tokens:["nos","vemos","amanhã","nós"], correct:"Nós vemo-nos amanhã.", en:"We'll see each other tomorrow.", focus:"clitic", level:"B1" },
+  { tokens:["me","parece","que","não","estás","bem"], correct:"Parece-me que não estás bem.", en:"It seems to me you're not well.", focus:"clitic", level:"B1" },
+  { tokens:["não","lhe","quero","dizer","nada"], correct:"Não lhe quero dizer nada.", en:"I don't want to tell him anything.", focus:"clitic", level:"B1" },
+  { tokens:["quando","a","vires","diz","lhe","isso"], correct:"Quando a vires, diz-lhe isso.", en:"When you see her, tell her that.", focus:"clitic", level:"B1" },
+  { tokens:["não","te","esqueças","disso"], correct:"Não te esqueças disso.", en:"Don't forget about that.", focus:"clitic", level:"B1" },
+  { tokens:["ainda","não","me","respondeu","ele"], correct:"Ele ainda não me respondeu.", en:"He still hasn't answered me.", focus:"clitic", level:"B1" },
+  { tokens:["ela","recusa","se","a","ajudar"], correct:"Ela recusa-se a ajudar.", en:"She refuses to help.", focus:"clitic", level:"B1" },
+  // ── CLITIC — B2+ additions ──
+  { tokens:["embora","me","custe","admiti","lo"], correct:"Embora me custe admiti-lo.", en:"Even though it pains me to admit it.", focus:"clitic", level:"B2+" },
+  { tokens:["oxalá","isso","se","resolva","depressa"], correct:"Oxalá isso se resolva depressa.", en:"Hopefully that will be resolved quickly.", focus:"clitic", level:"B2+" },
+  { tokens:["convém","que","te","prepares","bem"], correct:"Convém que te prepares bem.", en:"You would do well to prepare properly.", focus:"clitic", level:"B2+" },
+  { tokens:["tinha","se","esquecido","ele","completamente"], correct:"Ele tinha-se esquecido completamente.", en:"He had completely forgotten.", focus:"clitic", level:"B2+" },
+  { tokens:["assim","que","me","avisares","parto"], correct:"Assim que me avisares, parto.", en:"As soon as you warn me, I'll leave.", focus:"clitic", level:"B2+" },
+  { tokens:["arrependemo","nos","de","ter","dito","isso"], correct:"Arrependemo-nos de ter dito isso.", en:"We regret having said that.", focus:"clitic", level:"B2+" },
+  { tokens:["caso","se","torne","necessário"], correct:"Caso se torne necessário.", en:"Should it become necessary.", focus:"clitic", level:"B2+" },
+  { tokens:["por","mais","que","se","esforce","não","consegue"], correct:"Por mais que se esforce, não consegue.", en:"However much she tries, she can't manage it.", focus:"clitic", level:"B2+" },
+
+  // ── PROGRESSIVE CONSTRUCTION (focus: "progressive") — 32 items ──────────────
   { tokens:["a","estou","trabalhar"], correct:"Estou a trabalhar.", en:"I am working.", focus:"progressive", level:"A1" },
   { tokens:["a","estava","chover"], correct:"Estava a chover.", en:"It was raining.", focus:"progressive", level:"A2" },
   { tokens:["o","que","é","que","ele","está","a","fazer"], correct:"O que é que ele está a fazer?", en:"What is he doing?", focus:"progressive", level:"A2" },
@@ -2977,10 +2995,28 @@ const WORD_ORDER_ITEMS = [
   { tokens:["a","escrever","ela","estava","uma","carta"], correct:"Ela estava a escrever uma carta.", en:"She was writing a letter.", focus:"progressive", level:"A2" },
   { tokens:["a","está","a","chuva","cair"], correct:"A chuva está a cair.", en:"The rain is falling.", focus:"progressive", level:"A2" },
   { tokens:["a","o","preço","está","subir","sempre"], correct:"O preço está sempre a subir.", en:"The price keeps going up.", focus:"progressive", level:"B1" },
-  { tokens:["a","estávamos","treinar","a","correr"], correct:"Estávamos a treinar a correr.", en:"We were training by running.", focus:"progressive", level:"B1" },
+  { tokens:["a","estávamos","descansar","no","jardim"], correct:"Estávamos a descansar no jardim.", en:"We were resting in the garden.", focus:"progressive", level:"B1" },
   { tokens:["a","estava","pensar","em","ti"], correct:"Estava a pensar em ti.", en:"I was thinking about you.", focus:"progressive", level:"A2" },
 
-  // ── QUESTION FORMATION (focus: "question") — 17 items ───────────────────────
+  // ── PROGRESSIVE — B1 additions ──
+  { tokens:["a","estou","tentar","resolver","o","problema"], correct:"Estou a tentar resolver o problema.", en:"I am trying to solve the problem.", focus:"progressive", level:"B1" },
+  { tokens:["a","ela","continuava","falar","mesmo","assim"], correct:"Ela continuava a falar mesmo assim.", en:"She kept on talking even so.", focus:"progressive", level:"B1" },
+  { tokens:["a","passaram","a","noite","inteira","discutir"], correct:"Passaram a noite inteira a discutir.", en:"They spent the whole night arguing.", focus:"progressive", level:"B1" },
+  { tokens:["a","estás","a","brincar","comigo"], correct:"Estás a brincar comigo?", en:"Are you joking with me?", focus:"progressive", level:"B1" },
+  { tokens:["a","continua","chover","lá","fora"], correct:"Continua a chover lá fora.", en:"It keeps raining outside.", focus:"progressive", level:"B1" },
+  { tokens:["a","ontem","estive","trabalhar","até","tarde"], correct:"Ontem estive a trabalhar até tarde.", en:"Yesterday I was working until late.", focus:"progressive", level:"B1" },
+  { tokens:["a","quando","chegou","ela","estava","dormir"], correct:"Quando chegou, ela estava a dormir.", en:"When he arrived, she was sleeping.", focus:"progressive", level:"B1" },
+  // ── PROGRESSIVE — B2+ additions ──
+  { tokens:["a","eles","andam","discutir","muito","ultimamente"], correct:"Eles andam a discutir muito ultimamente.", en:"They have been arguing a lot lately.", focus:"progressive", level:"B2+" },
+  { tokens:["a","fico","pensar","nisso","constantemente"], correct:"Fico a pensar nisso constantemente.", en:"I keep thinking about it constantly.", focus:"progressive", level:"B2+" },
+  { tokens:["a","vive","se","queixar","ela"], correct:"Ela vive a queixar-se.", en:"She is forever complaining.", focus:"progressive", level:"B2+" },
+  { tokens:["a","ela","anda","sempre","reclamar","de","tudo"], correct:"Ela anda sempre a reclamar de tudo.", en:"She is forever complaining about everything.", focus:"progressive", level:"B2+" },
+  { tokens:["a","enquanto","estava","eu","esperar","começou","a","chover"], correct:"Enquanto eu estava a esperar, começou a chover.", en:"While I was waiting, it started to rain.", focus:"progressive", level:"B2+" },
+  { tokens:["a","andas","a","esconder","me","alguma","coisa"], correct:"Andas a esconder-me alguma coisa.", en:"You've been hiding something from me.", focus:"progressive", level:"B2+" },
+  { tokens:["a","ficou","horas","a","olhar","pela","janela"], correct:"Ficou horas a olhar pela janela.", en:"She spent hours looking out the window.", focus:"progressive", level:"B2+" },
+  { tokens:["a","apesar","de","estar","mal","ela","continuou","a","trabalhar"], correct:"Apesar de estar mal, ela continuou a trabalhar.", en:"Despite feeling unwell, she kept working.", focus:"progressive", level:"B2+" },
+
+  // ── QUESTION FORMATION (focus: "question") — 31 items ───────────────────────
   { tokens:["é","hoje","que","dia"], correct:"Que dia é hoje?", en:"What day is today?", focus:"question", level:"A1" },
   { tokens:["fica","onde","a","farmácia"], correct:"Onde fica a farmácia?", en:"Where is the pharmacy?", focus:"question", level:"A1" },
   { tokens:["são","horas","que"], correct:"Que horas são?", en:"What time is it?", focus:"question", level:"A1" },
@@ -2999,10 +3035,26 @@ const WORD_ORDER_ITEMS = [
   { tokens:["tens","quantos","anos","tu"], correct:"Tu tens quantos anos?", en:"How old are you?", focus:"question", level:"A1" },
   { tokens:["é","a","capital","Portugal","qual","de"], correct:"Qual é a capital de Portugal?", en:"What is the capital of Portugal?", focus:"question", level:"A1" },
 
-  // ── GENERAL (focus: "general") — 18 items ────────────────────────────────────
+  // ── QUESTION — B1 additions ──
+  { tokens:["a","que","horas","sais","do","trabalho"], correct:"A que horas sais do trabalho?", en:"What time do you leave work?", focus:"question", level:"B1" },
+  { tokens:["há","quanto","tempo","aqui","moras"], correct:"Há quanto tempo moras aqui?", en:"How long have you lived here?", focus:"question", level:"B1" },
+  { tokens:["estás","bem","ou","aconteceu","algo"], correct:"Estás bem ou aconteceu algo?", en:"Are you okay or did something happen?", focus:"question", level:"B1" },
+  { tokens:["que","é","que","está","a","acontecer"], correct:"Que é que está a acontecer?", en:"What is happening?", focus:"question", level:"B1" },
+  { tokens:["porque","é","que","ainda","não","chegou","ela"], correct:"Porque é que ela ainda não chegou?", en:"Why hasn't she arrived yet?", focus:"question", level:"B1" },
+  { tokens:["o","que","é","que","achas","desta","situação"], correct:"O que é que achas desta situação?", en:"What do you think about this situation?", focus:"question", level:"B1" },
+  { tokens:["onde","foste","ontem","à","noite"], correct:"Onde foste ontem à noite?", en:"Where did you go last night?", focus:"question", level:"B1" },
+  // ── QUESTION — B2+ additions ──
+  { tokens:["sabes","quem","ganhou","as","eleições"], correct:"Sabes quem ganhou as eleições?", en:"Do you know who won the elections?", focus:"question", level:"B2+" },
+  { tokens:["importas","te","de","me","explicar","melhor"], correct:"Importas-te de me explicar melhor?", en:"Would you mind explaining that better to me?", focus:"question", level:"B2+" },
+  { tokens:["até","quando","tencionas","ficar","cá"], correct:"Até quando tencionas ficar cá?", en:"Until when do you intend to stay here?", focus:"question", level:"B2+" },
+  { tokens:["será","que","ele","sabe","o","que","fez"], correct:"Será que ele sabe o que fez?", en:"Do you think he knows what he did?", focus:"question", level:"B2+" },
+  { tokens:["em","que","é","que","estás","a","pensar"], correct:"Em que é que estás a pensar?", en:"What are you thinking about?", focus:"question", level:"B2+" },
+  { tokens:["por","acaso","não","viste","as","chaves"], correct:"Por acaso não viste as chaves?", en:"Did you happen to see the keys?", focus:"question", level:"B2+" },
+  { tokens:["terá","ela","percebido","o","que","aconteceu"], correct:"Terá ela percebido o que aconteceu?", en:"I wonder if she understood what happened.", focus:"question", level:"B2+" },
+
+  // ── GENERAL (focus: "general") — 30 items ────────────────────────────────────
   // Sourced from PHRASES and IDIOMS arrays — 4–7 tokens, unambiguous word order
   { tokens:["favor","por","sentar","se","pode"], correct:"Pode sentar-se, por favor.", en:"Please sit down.", focus:"general", level:"A1" },
-  { tokens:["De","nada"], correct:"De nada.", en:"You're welcome.", focus:"general", level:"A1" },
   { tokens:["mesa","dois","para","uma","faz","favor"], correct:"Uma mesa para dois, faz favor.", en:"A table for two, please.", focus:"general", level:"A1" },
   { tokens:["caixa","fica","onde","a"], correct:"Onde fica a caixa?", en:"Where is the checkout?", focus:"general", level:"A1" },
   { tokens:["bem","não","sinto","me"], correct:"Não me sinto bem.", en:"I don't feel well.", focus:"general", level:"A2" },
@@ -3019,6 +3071,21 @@ const WORD_ORDER_ITEMS = [
   { tokens:["ambulância","chame","uma"], correct:"Chame uma ambulância.", en:"Call an ambulance.", focus:"general", level:"A2" },
   { tokens:["conta","favor","a","faz"], correct:"A conta, faz favor.", en:"The bill, please.", focus:"general", level:"A1" },
   { tokens:["devagar","repetir","mais","pode","por","favor"], correct:"Pode repetir mais devagar, por favor?", en:"Can you repeat more slowly, please?", focus:"general", level:"A2" },
+  // ── GENERAL — B1 additions ──
+  { tokens:["importa","se","de","falar","mais","devagar"], correct:"Importa-se de falar mais devagar?", en:"Do you mind speaking more slowly?", focus:"general", level:"B1" },
+  { tokens:["podia","me","dizer","onde","fica","o","banco"], correct:"Podia dizer-me onde fica o banco?", en:"Could you tell me where the bank is?", focus:"general", level:"B1" },
+  { tokens:["tenho","de","cancelar","a","marcação"], correct:"Tenho de cancelar a marcação.", en:"I need to cancel the appointment.", focus:"general", level:"B1" },
+  { tokens:["estou","à","espera","há","muito","tempo"], correct:"Estou à espera há muito tempo.", en:"I have been waiting for a long time.", focus:"general", level:"B1" },
+  { tokens:["qual","é","o","prazo","de","entrega"], correct:"Qual é o prazo de entrega?", en:"What is the delivery time?", focus:"general", level:"B1" },
+  { tokens:["há","algum","problema","com","o","meu","pedido"], correct:"Há algum problema com o meu pedido?", en:"Is there a problem with my order?", focus:"general", level:"B1" },
+  { tokens:["preferia","um","quarto","com","vista","para","o","mar"], correct:"Preferia um quarto com vista para o mar.", en:"I would prefer a room with a sea view.", focus:"general", level:"B1" },
+  { tokens:["não","me","lembro","onde","deixei","o","carro"], correct:"Não me lembro onde deixei o carro.", en:"I don't remember where I left the car.", focus:"general", level:"B1" },
+  { tokens:["fica","a","quanto","daqui"], correct:"Fica a quanto daqui?", en:"How far is it from here?", focus:"general", level:"B1" },
+  // ── GENERAL — B2+ additions ──
+  { tokens:["oxalá","que","não","haja","greve","amanhã"], correct:"Oxalá que não haja greve amanhã.", en:"Let's hope there's no strike tomorrow.", focus:"general", level:"B2+" },
+  { tokens:["se","soubesse","teria","trazido","mais","dinheiro"], correct:"Se soubesse, teria trazido mais dinheiro.", en:"Had I known, I would have brought more money.", focus:"general", level:"B2+" },
+  { tokens:["por","mais","que","tente","não","consigo"], correct:"Por mais que tente, não consigo.", en:"However much I try, I can't manage it.", focus:"general", level:"B2+" },
+  { tokens:["embora","seja","caro","vale","a","pena"], correct:"Embora seja caro, vale a pena.", en:"Although it's expensive, it's worth it.", focus:"general", level:"B2+" },
 ];
 
 // ── CHIP CARVING VOCABULARY DATA ─────────────────────────────────────────────
@@ -5450,8 +5517,18 @@ const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListP
     });
   };
 
+  const expandAllGrammar = () => {
+    setOpenTopics(new Set(GRAMMAR_TOPICS.map(t => t.id)));
+    setOpenNestedSecs(new Set(GRAMMAR_SECTIONS.map(s => s.title)));
+  };
+  const collapseAllGrammar = () => { setOpenTopics(new Set()); setOpenNestedSecs(new Set()); };
+
   return (
     <div style={listPanelStyle}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+        <button onClick={expandAllGrammar} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+        <button onClick={collapseAllGrammar} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+      </div>
       {GRAMMAR_TOPICS.map((topic) => {
         const isTopicOpen = openTopics.has(topic.id);
         // GRAMMAR_SECTIONS entries that belong to this topic
@@ -5561,7 +5638,7 @@ const GrammarListTab = React.memo(function GrammarListTab({ fontSize, speakListP
   );
 });
 
-const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs, listFilter }) {
+const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setMediaOpenSection, mediaSectionRefs, listFilter, onExpandAllMedia, onCollapseAllMedia }) {
   const { useMemo } = React;
   const linkStyle = useMemo(() => ({
     color: "var(--color-accent-blue-chat)", textDecoration: "none", fontSize: Math.max(13, fontSize - 1), lineHeight: 1.7, display: "block",
@@ -5583,14 +5660,18 @@ const MediaTab = React.memo(function MediaTab({ fontSize, mediaOpenSection, setM
 
   return (
     <div style={listPanelStyle}>
+      {!needle && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+          <button onClick={onExpandAllMedia} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+          <button onClick={onCollapseAllMedia} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+        </div>
+      )}
       {visibleSections.map(({ sec, sortedLinks, sortedSubgroups }) => {
-        const isOpen = needle ? true : mediaOpenSection === sec.id;
+        const isOpen = needle ? true : mediaOpenSection.has(sec.id);
         return (
           <div key={sec.id} ref={el => mediaSectionRefs.current[sec.id] = el} style={{ marginBottom: 10, border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", overflow: "hidden" }}>
             <button onClick={() => {
-                const newId = mediaOpenSection === sec.id ? null : sec.id;
-                setMediaOpenSection(newId);
-                if (newId) setTimeout(() => mediaSectionRefs.current[newId]?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 100);
+                setMediaOpenSection(prev => { const next = new Set(prev); next.has(sec.id) ? next.delete(sec.id) : next.add(sec.id); return next; });
               }}
               style={{ width: "100%", textAlign: "left", background: "var(--color-background-secondary)", border: "none", cursor: "pointer", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
               <span>
@@ -5645,6 +5726,8 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
   const togglePhrSec = (name) => setOpenPhrSections(prev => {
     const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
   });
+  const expandAllPhr = () => setOpenPhrSections(new Set(PHRASES_SORTED.map(s => s.section)));
+  const collapseAllPhr = () => setOpenPhrSections(new Set());
   const freqOrder = { high: 0, mid: 1, low: 2 };
   const sortByFreq = React.useCallback((items) => {
     if (!showCommonFirst) return items;
@@ -5657,6 +5740,12 @@ const PhrasesTab = React.memo(function PhrasesTab({ fontSize, speakListPT, listF
   const totalMatches = needle ? filteredSections.reduce((n, s) => n + s.items.length, 0) : null;
   return (
     <div style={listPanelStyle}>
+      {!needle && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+          <button onClick={expandAllPhr} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+          <button onClick={collapseAllPhr} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+        </div>
+      )}
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
       {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
       {filteredSections.map((sec, si) => {
@@ -5813,8 +5902,11 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
   const [quizMode, setQuizMode]           = useState(false);
 
   // ── Reference accordion state ─────────────────────────────────────────────
-  const [openSection, setOpenSection]     = useState(null);
+  const [openSection, setOpenSection]     = useState(new Set());
   const [revealedRows, setRevealedRows]   = useState({});
+  const toggleChipSection = (id) => setOpenSection(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+  const expandAllChip = () => setOpenSection(new Set(CHIP_CARVING_VOCAB.map(s => s.id)));
+  const collapseAllChip = () => setOpenSection(new Set());
 
   // ── Quiz state (minimal — spaced rep lives in refs) ───────────────────────
   const [quizPhase, setQuizPhase]   = useState("idle");  // "idle"|"active"|"done"
@@ -5991,9 +6083,6 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
   }
 
   // ── Reference accordion helpers ───────────────────────────────────────────
-  const toggleSection = (id) => {
-    setOpenSection(prev => prev === id ? null : id);
-  };
 
   const toggleReveal = (sectionId, itemIdx) => {
     const key = `${sectionId}-${itemIdx}`;
@@ -6007,7 +6096,7 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
     if (!showGenderColors) return {};
     if (/^(os?|as?)\s+/.test(ptText)) {
       const isM = /^(o|os)\s+/.test(ptText);
-      return { background: isM ? "var(--color-background-info)" : "var(--color-background-gender-f, #f5f3ff)", borderRadius: 3, padding: "0 3px" };
+      return { background: isM ? "var(--color-background-gender-m)" : "var(--color-background-gender-f)", borderLeft: `3px solid ${isM ? "var(--color-border-gender-m)" : "var(--color-border-gender-f)"}`, borderRadius: 3, padding: "0 3px 0 5px" };
     }
     return {};
   }, [showGenderColors]);
@@ -6042,8 +6131,8 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
           </button>
         ))}
       </div>
-      {/* Quiz toggle */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {/* Quiz toggle + expand/collapse */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <button
           onClick={handleToggleQuiz}
           disabled={!quizMode && insufficientPool}
@@ -6065,6 +6154,12 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
           <span style={{ fontSize: Math.max(10, fontSize - 2), color: "var(--color-text-secondary)" }}>
             Mastered: {masteredCount} / {poolSize}
           </span>
+        )}
+        {!quizMode && (
+          <>
+            <button onClick={expandAllChip} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+            <button onClick={collapseAllChip} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+          </>
         )}
       </div>
     </div>
@@ -6209,12 +6304,12 @@ const ChipCarvingTab = React.memo(function ChipCarvingTab({ fontSize, speakListP
       {headerRow}
 
       {visibleSections.map(sec => {
-        const isOpen = openSection === sec.id;
+        const isOpen = openSection.has(sec.id);
         return (
           <div key={sec.id} style={{ marginBottom: 6, border: "1px solid var(--color-border-tertiary)", borderRadius: 6, overflow: "hidden" }}>
             {/* Accordion header */}
             <button
-              onClick={() => toggleSection(sec.id)}
+              onClick={() => toggleChipSection(sec.id)}
               aria-expanded={isOpen}
               style={{
                 width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -6483,8 +6578,14 @@ function filterCardinalsByRange(pool, range) {
   });
 }
 
-const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopSpeaking, speechSupported, listFilter }) {
+const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopSpeaking, speechSupported, listFilter, showGenderColors }) {
   const { useState: S, useRef: R, useEffect: E, useMemo: M } = React;
+
+  const numGenderTint = React.useCallback((gender) => {
+    if (!showGenderColors || !gender) return {};
+    const isM = gender === "m";
+    return { background: isM ? "var(--color-background-gender-m)" : "var(--color-background-gender-f)", borderLeft: `3px solid ${isM ? "var(--color-border-gender-m)" : "var(--color-border-gender-f)"}`, borderRadius: 3, padding: "0 3px 0 5px", display: "inline-block" };
+  }, [showGenderColors]);
 
   // ── Mode ──
   const [quizMode, setQuizMode]         = S(false);
@@ -6749,12 +6850,16 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
   const toggleNumSec = (name) => setOpenNumSections(prev => {
     const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
   });
+  const expandAllNum = () => setOpenNumSections(new Set(NUMBERS.map(s => s.section)));
+  const collapseAllNum = () => setOpenNumSections(new Set());
 
   if (!quizMode) {
     return (
       <div style={listPanelStyle}>
-        <div style={{ marginBottom: 10 }}>
+        <div style={{ marginBottom: 10, display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
           <button onClick={toggleQuizMode} style={_vqBtnPrimary(fontSize)}>🎯 Take Quiz</button>
+          <button onClick={expandAllNum} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+          <button onClick={collapseAllNum} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
         </div>
         {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{numTotalMatches} match{numTotalMatches !== 1 ? "es" : ""}</p>}
         {filteredNumberSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
@@ -6770,7 +6875,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
                         <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
                           style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                       </td>
-                      <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} fontSize={fontSize} /></td>
+                      <td style={tdL}><span style={numGenderTint(it.gender)}>{it.pt}</span><GenderBadge gender={it.gender} fontSize={fontSize} /></td>
                       <td style={tdR}>{it.en}</td>
                     </tr>
                   ))}
@@ -6800,7 +6905,7 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
                           <button onClick={() => speakListPT(it.pt)} aria-label={`Hear: ${it.pt}`}
                             style={{ fontSize: Math.max(12, fontSize - 2), padding: "1px 5px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "var(--color-surface)", cursor: "pointer", lineHeight: 1 }}>▶</button>
                         </td>
-                        <td style={tdL}>{it.pt}<GenderBadge gender={it.gender} fontSize={fontSize} /></td>
+                        <td style={tdL}><span style={numGenderTint(it.gender)}>{it.pt}</span><GenderBadge gender={it.gender} fontSize={fontSize} /></td>
                         <td style={tdR}>{it.en}</td>
                       </tr>
                     ))}
@@ -7474,12 +7579,14 @@ const CognatesBrowse = React.memo(function CognatesBrowse({ fontSize, speakListP
     next.has(idx) ? next.delete(idx) : next.add(idx);
     return next;
   });
+  const expandAllCognates = () => setOpenSections(new Set(COGNATES.map((_, i) => i)));
+  const collapseAllCognates = () => setOpenSections(new Set());
   const [ffOpen, setFfOpen] = React.useState(false);
   const genderTint = React.useCallback((ptText) => {
     if (!showGenderColors) return {};
     if (/^(os?|as?)\s+/.test(ptText)) {
       const isM = /^(o|os)\s+/.test(ptText);
-      return { background: isM ? "var(--color-background-info)" : "var(--color-background-gender-f, #f5f3ff)", borderRadius: 3, padding: "0 3px" };
+      return { background: isM ? "var(--color-background-gender-m)" : "var(--color-background-gender-f)", borderLeft: `3px solid ${isM ? "var(--color-border-gender-m)" : "var(--color-border-gender-f)"}`, borderRadius: 3, padding: "0 3px 0 5px" };
     }
     return {};
   }, [showGenderColors]);
@@ -7503,10 +7610,14 @@ const CognatesBrowse = React.memo(function CognatesBrowse({ fontSize, speakListP
           <p style={{ fontSize: Math.max(11, fontSize - 1), color: "var(--color-text-secondary)", margin: "0 0 10px", fontStyle: "italic", lineHeight: 1.5 }}>
             Each heading shows one English→Portuguese ending pattern. Applying the rule mechanically gives a correct or near-correct Portuguese word in most cases. This list is illustrative, not exhaustive — the productive patterns shown here apply to hundreds or thousands of words beyond those listed.
           </p>
-          <button onClick={onDrill}
-            style={{ fontFamily: "var(--font-sans)", fontSize: Math.max(12, fontSize - 1), fontWeight: 700, padding: "6px 18px", borderRadius: 20, border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer" }}>
-            ▶ Drill
-          </button>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center", marginTop: 8 }}>
+            <button onClick={onDrill}
+              style={{ fontFamily: "var(--font-sans)", fontSize: Math.max(12, fontSize - 1), fontWeight: 700, padding: "6px 18px", borderRadius: 20, border: "none", background: "var(--color-accent-blue)", color: "#fff", cursor: "pointer" }}>
+              ▶ Drill
+            </button>
+            <button onClick={expandAllCognates} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+            <button onClick={collapseAllCognates} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+          </div>
         </div>
       )}
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
@@ -7662,6 +7773,8 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT, listFilte
   const toggleSlangSec = (name) => setOpenSlangSections(prev => {
     const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
   });
+  const expandAllSlang = () => setOpenSlangSections(new Set(SLANG_SORTED.map(s => s.section)));
+  const collapseAllSlang = () => setOpenSlangSections(new Set());
   const filteredSections = useMemo(() => {
     if (!needle) return SLANG_SORTED;
     return SLANG_SORTED.map(sec => ({ ...sec, items: sec.items.filter(it => it.pt.toLowerCase().includes(needle) || it.en.toLowerCase().includes(needle) || (it.example_pt && it.example_pt.toLowerCase().includes(needle)) || (it.example_en && it.example_en.toLowerCase().includes(needle))) })).filter(sec => sec.items.length > 0);
@@ -7675,6 +7788,12 @@ const SlangTab = React.memo(function SlangTab({ fontSize, speakListPT, listFilte
           Items marked <span style={{ background: "var(--color-background-warning)", color: "var(--color-text-warning)", fontWeight: 700, padding: "0 4px", borderRadius: 3, fontStyle: "normal" }}>context</span> can cause serious offence if used without care or carry meanings that shift with context.
         </p>
       </div>
+      {!needle && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+          <button onClick={expandAllSlang} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+          <button onClick={collapseAllSlang} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+        </div>
+      )}
       {needle && <p style={{ fontSize: Math.max(11, fontSize - 2), color: "var(--color-text-tertiary)", margin: "0 0 8px", fontStyle: "italic" }}>{totalMatches} match{totalMatches !== 1 ? "es" : ""}</p>}
       {filteredSections.length === 0 && needle && <p style={{ fontSize, color: "var(--color-text-tertiary)", fontStyle: "italic" }}>No matches.</p>}
       {filteredSections.map((sec, si) => {
@@ -7827,8 +7946,10 @@ const LIGHT_VARS = {
   "--color-border-book":          "#d9c99a",
   "--color-text-book-quote":      "#5a4320",
   "--color-text-book-cite":       "#7a5c20",
-  "--color-background-gender-f":  "#fff0fc",
-  "--color-border-gender-f":      "#f0c6f0",
+  "--color-background-gender-m":  "#dceeff",
+  "--color-border-gender-m":      "#60a5fa",
+  "--color-background-gender-f":  "#fce8fb",
+  "--color-border-gender-f":      "#c87fd0",
   "--color-text-success":         "#065f46",
   "--color-background-success":   "#d1fae5",
 };
@@ -7887,8 +8008,10 @@ const DARK_VARS = {
   "--color-border-book":          "#3a3010",
   "--color-text-book-quote":      "#e0c87c",
   "--color-text-book-cite":       "#c8a040",
-  "--color-background-gender-f":  "#1a0a2e",
-  "--color-border-gender-f":      "#3a1060",
+  "--color-background-gender-m":  "#0c1d35",
+  "--color-border-gender-m":      "#1e3f6e",
+  "--color-background-gender-f":  "#280a3a",
+  "--color-border-gender-f":      "#6b1a85",
   "--color-text-success":         "#4ade80",
   "--color-background-success":   "#041a0e",
 };
@@ -8005,13 +8128,18 @@ function App() {
   const [quizResult, setQuizResult] = useState(null);   // null | "correct" | "wrong"
   const [pairsScore, setPairsScore] = useState({ correct: 0, total: 0 });
 
-  const [mediaOpenSection, setMediaOpenSection] = useState(null);
+  const [mediaOpenSection, setMediaOpenSection] = useState(new Set());
   const mediaSectionRefs = useRef({});
   const [soundsTab, setSoundsTab] = useState("letters"); // "letters" | "ipa"
   const [openPronSections, setOpenPronSections] = useState(new Set());
   const togglePronSec = (name) => setOpenPronSections(prev => {
     const next = new Set(prev); next.has(name) ? next.delete(name) : next.add(name); return next;
   });
+  const expandAllPron = () => setOpenPronSections(new Set([
+    ...PRONUNCIATION_GUIDE_SORTED.map(s => s.section),
+    ...IPA_GUIDE_SORTED.map(s => s.section),
+  ]));
+  const collapseAllPron = () => setOpenPronSections(new Set());
 
   // Verb Quiz external launch state (set when user clicks "Quiz this verb" in Conjugator)
   const [verbQuizLaunch, setVerbQuizLaunch] = useState(null); // {verb, en} | null
@@ -9634,6 +9762,10 @@ function App() {
               {/* Letters sub-tab — existing PRONUNCIATION_GUIDE */}
               {soundsTab === "letters" && (
                 <div style={listPanelStyle}>
+                  <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                    <button onClick={expandAllPron} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+                    <button onClick={collapseAllPron} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
+                  </div>
                   {PRONUNCIATION_GUIDE_SORTED.map((sec, si) => {
                     const isOpen = openPronSections.has(sec.section);
                     return (
@@ -9734,6 +9866,10 @@ function App() {
                   </div>
                   <div style={{ marginBottom: 14, padding: "8px 12px", background: "var(--color-background-violet)", border: "1px solid var(--color-border-violet)", borderRadius: "var(--border-radius-md)", fontSize: Math.max(11, fontSize - 2), color: "var(--color-accent-violet-deep)", lineHeight: 1.6 }}>
                     <strong>Conventions:</strong> CAPS = stressed syllable · (n) = nasalized through the nose · ⚠ = approximation, no true English anchor
+                  </div>
+                  <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                    <button onClick={expandAllPron} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Expand all</button>
+                    <button onClick={collapseAllPron} style={{ fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", borderRadius: 4, border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)", cursor: "pointer" }}>Collapse all</button>
                   </div>
                   {IPA_GUIDE_SORTED.map((sec, si) => {
                     const isOpen = openPronSections.has(sec.section);
@@ -10031,7 +10167,7 @@ function App() {
               }} />
           )}
           {listTab === "numbers" && (
-            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} />
+            <NumbersTab fontSize={fontSize} speakListPT={speakListPT} stopSpeaking={stopSpeaking} speechSupported={speechSupported} listFilter={listFilter} showGenderColors={showGenderColors} />
           )}
           {listTab === "opposites" && (
             <OppositesPanel fontSize={fontSize} speakListPT={speakListPT} speechSupported={speechSupported} showCommonFirst={showCommonFirst} />
@@ -10066,6 +10202,8 @@ function App() {
               setMediaOpenSection={setMediaOpenSection}
               mediaSectionRefs={mediaSectionRefs}
               listFilter={listFilter}
+              onExpandAllMedia={() => setMediaOpenSection(new Set(MEDIA_SECTIONS.map(s => s.id)))}
+              onCollapseAllMedia={() => setMediaOpenSection(new Set())}
             />
           )}
           {listTab === "slang" && (
