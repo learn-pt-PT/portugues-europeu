@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.3.5 -->
+  <!-- version: 3.3.7 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -897,13 +897,16 @@ const IDIOMS = [
   { pt: "Andar com a cabeça nas nuvens", en: "To walk with your head in the clouds", when: "Someone is distracted or daydreaming", register: "neutral", freq: "common" },
   { pt: "Andar com os pés no chão", en: "To keep your feet on the ground", when: "Staying realistic and grounded", register: "neutral", freq: "common" },
   { pt: "Andar com rodeios", en: "To walk with detours", when: "Beating around the bush instead of being direct", register: "neutral", freq: "common" },
+  { pt: "Achas que és a última bolacha do pacote?", en: "You think you're the last biscuit in the packet?", when: "Said to someone being arrogant or acting more important than they are", register: "colloquial", freq: "common" },
   { pt: "Andar feito barata tonta", en: "To move like a dizzy cockroach", when: "Running around confused in chaos", register: "colloquial", freq: "common" },
   { pt: "Apanhar uma seca", en: "To catch a drought", when: "Being extremely bored", register: "colloquial", freq: "common" },
   { pt: "Aqui há gato", en: "There's a cat here", when: "Something seems suspicious or not right", register: "colloquial", freq: "common" },
   { pt: "Armar-se em carapau de corrida", en: "To act like a racing mackerel", when: "Acting arrogantly or showing off", register: "colloquial", freq: "occasional" },
   { pt: "Bater as botas", en: "To knock the boots", when: "To die (casual, humorous)", register: "informal", freq: "common" },
   { pt: "Bater na mesma tecla", en: "To hit the same key", when: "Insisting on the same point over and over", register: "neutral", freq: "common" },
+  { pt: "Baixa a bolinha", en: "Lower the ball", when: "Telling someone to calm down and stop acting important; humble yourself", register: "colloquial", freq: "common" },
   { pt: "Bola para a frente", en: "Ball to the front", when: "Encouraging forward movement after something negative", register: "colloquial", freq: "common" },
+  { pt: "Cagando e andando", en: "Shitting and walking", when: "I couldn't care less; carrying on without a second thought", register: "rude", freq: "common" },
   { pt: "Chorar sobre o leite derramado", en: "To cry over spilled milk", when: "Regretting something that can't be undone", register: "neutral", freq: "common" },
   { pt: "Chover a cântaros", en: "To rain in jugs", when: "It's raining very heavily", register: "neutral", freq: "common" },
   { pt: "Comer e calar", en: "To eat and shut up", when: "Accepting something without complaining", register: "informal", freq: "common" },
@@ -915,6 +918,9 @@ const IDIOMS = [
   { pt: "Dar com a língua nos dentes", en: "To hit the teeth with the tongue", when: "Spilling a secret", register: "colloquial", freq: "common" },
   { pt: "Dar uma mãozinha", en: "To give a little hand", when: "Offering to help out", register: "neutral", freq: "common" },
   { pt: "Deitar a toalha ao chão", en: "To throw the towel to the ground", when: "Giving up on something. Also: atirar a toalha (more common in EP)", register: "neutral", freq: "common" },
+  { pt: "És a razão pela qual há instruções no champô", en: "You're the reason there are instructions on shampoo", when: "Said to someone painfully slow-witted", register: "rude", freq: "occasional" },
+  { pt: "És chanfrado dos cornos", en: "You're dodgy/cracked in the horns", when: "Calling someone crazy or seriously unhinged", register: "rude", freq: "occasional" },
+  { pt: "És um desperdício de oxigénio", en: "You're a waste of oxygen", when: "Strong contemptuous dismissal of someone's worth", register: "rude", freq: "occasional" },
   { pt: "Engolir sapos", en: "To swallow frogs", when: "Accepting humiliation silently to keep the peace", register: "neutral", freq: "common" },
   { pt: "Entrar pelos olhos dentro", en: "To enter through the inside of the eyes", when: "Something immediately striking or obvious", register: "colloquial", freq: "common" },
   { pt: "Estar a bater mal", en: "To be beating badly", when: "Acting emotionally unstable or going off the deep end", register: "colloquial", freq: "common" },
@@ -935,6 +941,7 @@ const IDIOMS = [
   { pt: "Fazer uma tempestade num copo de água", en: "To make a storm in a glass of water", when: "Exaggerating a minor issue", register: "neutral", freq: "common" },
   { pt: "Fazer uma vaquinha", en: "To make a little cow", when: "Chipping in together to pool resources", register: "colloquial", freq: "common" },
   { pt: "Fazer vista grossa", en: "To make a thick view", when: "Pretending not to see something wrong", register: "neutral", freq: "common" },
+  { pt: "Ficar a chupar o dedo", en: "To be left sucking your finger", when: "Being left with nothing; coming away empty-handed", register: "colloquial", freq: "common" },
   { pt: "Ficar a ver navios", en: "To stay watching ships", when: "Being left empty-handed or disappointed", register: "neutral", freq: "common" },
   { pt: "Ficar de molho", en: "To stay soaking", when: "Resting or being inactive, often when sick", register: "colloquial", freq: "common" },
   { pt: "Ficar em águas de bacalhau", en: "To end up in codfish waters", when: "A plan comes to nothing and is abandoned", register: "colloquial", freq: "common" },
@@ -947,6 +954,7 @@ const IDIOMS = [
   { pt: "Muitos anos a virar frangos", en: "Many years turning chickens", when: "Having a lot of experience doing something", register: "colloquial", freq: "occasional" },
   { pt: "Não dar a bota com a perdigota", en: "Doesn't match the boot with the young quail", when: "Comparing two things that are not comparable", register: "colloquial", freq: "rare" },
   { pt: "Não há duas sem três", en: "There's no two without three", when: "When a third mishap follows two others", register: "neutral", freq: "common" },
+  { pt: "Não jogas com o baralho todo", en: "You're not playing with a full deck", when: "Said to someone acting stupidly or making no sense", register: "colloquial", freq: "common" },
   { pt: "Não perceber patavina", en: "Not to understand a patavina", when: "Not understanding anything at all", register: "colloquial", freq: "common" },
   { pt: "Não ter papas na língua", en: "Not to have porridge on the tongue", when: "Being direct and frank; speaking one's mind", register: "neutral", freq: "common" },
   { pt: "Pagar o pato", en: "To pay the duck", when: "Taking the blame for something you didn't do", register: "neutral", freq: "common" },
@@ -964,6 +972,7 @@ const IDIOMS = [
   { pt: "Sem pés nem cabeça", en: "Without feet or head", when: "Something makes no sense at all", register: "neutral", freq: "common" },
   { pt: "Ser uma pessoa de poucas palavras", en: "To be a person of few words", when: "Someone who doesn't talk much", register: "neutral", freq: "common" },
   { pt: "Só para Inglês ver", en: "Just for an English person to see", when: "Doing something purely for appearances or show", register: "neutral", freq: "common" },
+  { pt: "Tu pensas que és a última gota de água no deserto?", en: "You think you're the last drop of water in the desert?", when: "Said to someone being arrogant or overestimating their own importance", register: "colloquial", freq: "common" },
   { pt: "Ter a pulga atrás da orelha", en: "To have a flea behind the ear", when: "Being suspicious about something", register: "colloquial", freq: "common" },
   { pt: "Ter as costas quentes", en: "To have warm backs", when: "Having powerful protection or connections", register: "colloquial", freq: "common" },
   { pt: "Ter cabeça fria", en: "To have a cool head", when: "Staying calm under pressure", register: "neutral", freq: "common" },
@@ -976,6 +985,7 @@ const IDIOMS = [
   { pt: "Ter os pés bem assentes na terra", en: "To have your feet firmly planted on the ground", when: "Being realistic and sensible", register: "neutral", freq: "common" },
   { pt: "Tirar o cavalinho da chuva", en: "Take your little horse away from the rain", when: "Giving up on an idea that won't work", register: "colloquial", freq: "common" },
   { pt: "Uma pilha de nervos", en: "A battery of nerves", when: "Being so stressed others can visibly tell", register: "colloquial", freq: "common" },
+  { pt: "Vai mamar na quinta pata do cavalo", en: "Go suckle on the horse's fifth leg", when: "Crude dismissal — telling someone to get lost and stop bothering you", register: "rude", freq: "occasional" },
   { pt: "Viajar na maionese", en: "To travel in the mayonnaise", when: "Talking nonsense or drifting into irrelevant thoughts", register: "colloquial", freq: "common" },
 ];
 
@@ -1477,6 +1487,7 @@ const MEDIA_SECTIONS = [
     { label: "Conta-me Como Foi (YouTube)", url: "https://www.youtube.com/@2kingofgames", desc: "Portuguese historical drama following the Lopes family in Lisbon from the late 1960s through the Estado Novo, Carnation Revolution, and beyond." },
     { label: "Ficção Portuguesa — Playlist YouTube", url: "https://www.youtube.com/playlist?list=PLQa6lSX42iFvhpahGLRNYsT3gZJN-T6xC", desc: "Playlist of Portuguese fiction and drama series episodes." },
     { label: "O Sábio (YouTube)", url: "https://www.youtube.com/playlist?list=PLTuOFDgd5lcawQ9Keo09mu-aTqRL4PcTJ", desc: "Portuguese drama series: a man who can see the future returns to his hometown after 20 years, seeking his daughter and confronting long-buried secrets." },
+    { label: "Sabores de Amor (YouTube)", url: "https://www.youtube.com/@rtpplay/search?query=Sabores%20de%20amor.", desc: "RTP romantic drama series (20 episodes): when a gourmet food truck parks outside Júlia's bifanas stall, she discovers the owner is Manel, her former boyfriend — while their children Susana and Henrique fall for each other, and buried secrets from the past resurface." },
   ]},
   { id: "s08", pt: "Ferramentas de Língua Portuguesa", en: "Portuguese Language Tools", subgroups: [
     { label: "Dicionários e Tradução", links: [
