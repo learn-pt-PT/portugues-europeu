@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.3.8 -->
+  <!-- version: 3.3.10 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.3.8", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.3.10", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -865,6 +865,13 @@ const PHRASES = [
     { pt: "Boa noite", en: "Good evening / Good night", freq: "high" }, { pt: "Olá, tudo bem?", en: "Hello, all good?", freq: "high" },
     { pt: "Tudo bem, obrigado/a", en: "All good, thank you", freq: "high" }, { pt: "Até logo", en: "See you soon", freq: "high" }, { pt: "Até já", en: "See you in a bit", freq: "high" },
     { pt: "Adeus", en: "Goodbye (final)", freq: "mid" }, { pt: "Com licença", en: "Excuse me (to pass)", freq: "high" }, { pt: "Desculpe", en: "Sorry / Excuse me", freq: "high" },
+    { pt: "Vai com Deus!", en: "Go with God! (traditional send-off)", freq: "mid" },
+    { pt: "Até amanhã, se Deus quiser!", en: "Until tomorrow, God willing!", freq: "mid" },
+    { pt: "Vai pela sombra!", en: "Stay in the shade! (take it easy / take care)", freq: "mid" },
+    { pt: "Vai com cuidado!", en: "Take care! (go carefully)", freq: "high" },
+    { pt: "Leva um casaco, um guarda-chuva...", en: "Take a jacket, an umbrella... (a mother's parting words)", freq: "mid" },
+    { pt: "Vai e não voltes!", en: "Go and don't come back! (humorous / dismissive farewell)", freq: "low" },
+    { pt: "Até nunca!", en: "Until never! (ironic farewell)", freq: "low" },
   ]},
   { section: "Healthcare & pharmacy", items: [
     { pt: "Onde fica a farmácia de serviço?", en: "Where is the duty pharmacy?", freq: "high" },
@@ -7523,7 +7530,7 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
 
   function handleType(e) {
     if (result !== null) return;
-    setInputText(e.target.value);
+    setInputText(e.target.value.replace(/[\x00-\x1F\x7F]/g, ""));
   }
 
   function handleTypeSubmit(e) {
@@ -7722,6 +7729,7 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
             onChange={handleType}
             onKeyDown={handleTypeSubmit}
             disabled={result !== null}
+            maxLength={50}
             placeholder={currentItem.isFalseFriend ? "type the real meaning…" : "type the Portuguese word…"}
             style={{
               flex: 1, fontSize: Math.max(14, fontSize), padding: "8px 12px",
@@ -8763,7 +8771,7 @@ function App() {
     // Use DOM value as authoritative text source — bypasses React state render lag.
     const domText = (inputRef.current?.value || "").trim();
     const rawText = overrideText || domText;
-    const text = rawText.trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
+    const text = rawText.replace(/[\x00-\x1F\x7F]/g, "").trim().replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
     // If we exit early (no text, or already loading), ensure enviarStopRef
     // is cleared so future onend events are not silently suppressed.
     if (!rawText.trim() || loading) { enviarStopRef.current = false; return; }
@@ -9027,7 +9035,7 @@ function App() {
   };
 
   const lookupVerb = async () => {
-    const v = verbInput.trim();
+    const v = verbInput.replace(/[\x00-\x1F\x7F]/g, "").trim();
     if (!v) return;
     // Stage 1: structural check (free, instant)
     const structuralError = validateVerbInput(v);
@@ -10442,7 +10450,8 @@ function App() {
           <div style={{ display: "flex", gap: 6, padding: "12px 16px", flexShrink: 0 }}>
             <input style={{ fontSize: Math.max(14, fontSize + 1), flex: 1, padding: "5px 10px", border: "0.5px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", background: "var(--color-background-primary)", color: "var(--color-text-primary)", outline: "none" }}
               placeholder="Type any verb, e.g. falar, ser, ter…"
-              value={verbInput} onChange={e => setVerbInput(e.target.value)} onKeyDown={e => e.key === "Enter" && lookupVerb()} />
+              maxLength={50}
+              value={verbInput} onChange={e => setVerbInput(e.target.value.replace(/[\x00-\x1F\x7F]/g, ""))} onKeyDown={e => e.key === "Enter" && lookupVerb()} />
             <button style={{ ...toolBtn(true, fontSize), padding: "5px 14px", fontSize: Math.max(14, fontSize + 1), background: "var(--color-accent-blue)", color: "#fff" }} onClick={lookupVerb} disabled={conjLoading}>{conjLoading ? "…" : "⟳ Look up"}</button>
           </div>
           {conjError && <p role="alert" style={{ fontSize: Math.max(14, fontSize + 1), color: "var(--color-text-danger)", margin: "0 16px" }}>{conjError}</p>}
@@ -10823,24 +10832,33 @@ function App() {
           )}
         </div>
         {/* Input row */}
-        <div style={{ display: "flex", gap: 8 }}>
-          <textarea ref={inputRef}
-            aria-label="Mensagem"
-            style={{ flex: 1, fontSize, padding: "8px 14px", border: "1px solid var(--color-border-tertiary)", borderRadius: 10, resize: "none", background: "var(--color-background-primary)", color: "var(--color-text-primary)", lineHeight: 1.5, minHeight: 38, maxHeight: 120, fontFamily: "var(--font-sans)", outline: "none", overflowY: "auto", transition: "border-color 0.15s" }}
-            rows={1} placeholder="Type or use 🎤 to speak…"
-            value={input}
-            onChange={e => {
-              setInput(e.target.value);
-              finalTranscriptRef.current = e.target.value;
-              // Auto-grow: reset to auto so scrollHeight reflects the content, then clamp to maxHeight.
-              const el = e.target;
-              el.style.height = "auto";
-              el.style.height = Math.min(el.scrollHeight, 120) + "px";
-            }}
-            onKeyDown={handleKey} />
-          <button style={{ padding: "8px 18px", fontSize: Math.max(12, fontSize - 2), borderRadius: 10, border: "none", background: loading || (!input.trim() && !listening) ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || (!input.trim() && !listening) ? "var(--color-text-tertiary)" : "#fff", cursor: loading || (!input.trim() && !listening) ? "default" : "pointer", fontWeight: 600, letterSpacing: "0.04em", transition: "background 0.15s" }}
-            aria-label="Send message"
-            onClick={() => sendMessage()} disabled={loading || (!input.trim() && !listening)}>Enviar</button>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <textarea ref={inputRef}
+              aria-label="Mensagem"
+              style={{ flex: 1, fontSize, padding: "8px 14px", border: "1px solid var(--color-border-tertiary)", borderRadius: 10, resize: "none", background: "var(--color-background-primary)", color: "var(--color-text-primary)", lineHeight: 1.5, minHeight: 38, maxHeight: 120, fontFamily: "var(--font-sans)", outline: "none", overflowY: "auto", transition: "border-color 0.15s" }}
+              rows={1} placeholder="Type or use 🎤 to speak…"
+              maxLength={500}
+              value={input}
+              onChange={e => {
+                const clean = e.target.value.replace(/[\x00-\x1F\x7F]/g, "");
+                setInput(clean);
+                finalTranscriptRef.current = clean;
+                // Auto-grow: reset to auto so scrollHeight reflects the content, then clamp to maxHeight.
+                const el = e.target;
+                el.style.height = "auto";
+                el.style.height = Math.min(el.scrollHeight, 120) + "px";
+              }}
+              onKeyDown={handleKey} />
+            <button style={{ padding: "8px 18px", fontSize: Math.max(12, fontSize - 2), borderRadius: 10, border: "none", background: loading || (!input.trim() && !listening) ? "var(--color-background-secondary)" : "var(--color-accent-blue)", color: loading || (!input.trim() && !listening) ? "var(--color-text-tertiary)" : "#fff", cursor: loading || (!input.trim() && !listening) ? "default" : "pointer", fontWeight: 600, letterSpacing: "0.04em", transition: "background 0.15s" }}
+              aria-label="Send message"
+              onClick={() => sendMessage()} disabled={loading || (!input.trim() && !listening)}>Enviar</button>
+          </div>
+          {input.length > 0 && (
+            <div style={{ textAlign: "right", fontSize: Math.max(10, fontSize - 5), color: input.length >= 450 ? "var(--color-text-danger)" : "var(--color-text-tertiary)", paddingRight: 2 }}>
+              {input.length} / 500
+            </div>
+          )}
         </div>
       </div>
       )}
