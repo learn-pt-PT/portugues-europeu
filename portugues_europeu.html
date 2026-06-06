@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Português Europeu</title>
   <meta name="description" content="European Portuguese language learning app — vocabulary, conjugation, grammar, listening, and speaking practice." />
-  <!-- version: 3.3.10 -->
+  <!-- version: 3.3.11 -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com https://*.tts.speech.microsoft.com https://api.github.com; img-src data:; media-src blob:; worker-src blob:; frame-ancestors 'none';">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,7 +93,7 @@ const PANELS = [
 ];
 
 const APP_META = {
-  version: "3.3.10", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
+  version: "3.3.11", // ALWAYS update the <!-- version: X.Y.Z --> comment in <head> to match
   date: "",  // Left blank intentionally — do not populate at commit time.
            // Filled at runtime via GitHub API in the aboutOpen useEffect.
   developer: "Steve Frederick",
@@ -1142,34 +1142,36 @@ const NUMBERS = [
 
 
 // FALSE_FRIENDS: curated EN-EP false cognates with context.
-// Each entry: pt (EP word), en_false (what EN speakers wrongly assume), pt_real (what EN actually means in PT).
+// Each entry: pt (EP word), en_false (what EN speakers wrongly assume), en_true (actual English meaning of pt),
+//             pt_real (what en_false actually means in PT), note.
+// Drill directions: PT shown → user types en_true; EN (en_false) shown → user types pt_real.
 // All verified as genuine false friends in EP — regional variation noted where applicable.
 const FALSE_FRIENDS = [
-  { pt: "puxar",         en_false: "to push",       pt_real: "empurrar",     note: "puxar = to pull; the door signs Puxe/Empurre are a classic trap." },
-  { pt: "constipado",    en_false: "constipated",   pt_real: "obstipado",    note: "constipado = having a cold (nasal congestion). Obstipado = bowel constipation." },
-  { pt: "pasta",         en_false: "pasta (food)",  pt_real: "massa",        note: "pasta = briefcase/folder/toothpaste. The Italian dish is massa (massa alimentícia)." },
-  { pt: "esquisito",     en_false: "exquisite",     pt_real: "requintado",   note: "esquisito = strange, odd, fussy. Exquisite = requintado." },
-  { pt: "êxito",         en_false: "exit",          pt_real: "saída",        note: "êxito = success. Exit = saída. A false friend reinforced by identical spelling." },
-  { pt: "assistir",      en_false: "to assist",     pt_real: "ajudar",       note: "assistir (a) = to watch/attend. To assist = ajudar. Exception: assistir médico (to attend medically)." },
-  { pt: "borracha",      en_false: "drunk",         pt_real: "bêbado/a",     note: "borracha = rubber or eraser. Drunk = bêbado/a. Borracha is also slang for 'a drunk' in some registers — use with care." },
-  { pt: "costume",       en_false: "costume",       pt_real: "fantasia / fato", note: "costume = custom, habit. A theatrical costume = fantasia or fato (de carnaval)." },
-  { pt: "decepção",      en_false: "deception",     pt_real: "engano / fraude", note: "decepção = disappointment. Deception = engano or fraude." },
-  { pt: "discussão",     en_false: "discussion",    pt_real: "conversa",     note: "discussão = argument, heated debate. A calm discussion = conversa or debate." },
-  { pt: "embaraçado",    en_false: "embarrassed",   pt_real: "envergonhado", note: "embaraçado = tangled, confused. Embarrassed = envergonhado." },
-  { pt: "eventual",      en_false: "eventual",      pt_real: "final / último", note: "eventual = possible, hypothetical. Eventual (in time) = final or último." },
-  { pt: "fábrica",       en_false: "fabric",        pt_real: "tecido",       note: "fábrica = factory. Fabric = tecido." },
-  { pt: "jornal",        en_false: "journal",       pt_real: "diário / revista", note: "jornal = newspaper. A personal journal = diário. An academic journal = revista científica." },
-  { pt: "largo",         en_false: "large",         pt_real: "grande",       note: "largo = wide/broad, or a town square. Large = grande." },
-  { pt: "livraria",      en_false: "library",       pt_real: "biblioteca",   note: "livraria = bookshop. Library = biblioteca." },
-  { pt: "novela",        en_false: "novel",         pt_real: "romance",      note: "novela = TV soap opera. A novel (book) = romance." },
-  { pt: "parente",       en_false: "parent",        pt_real: "pai / mãe",    note: "parente = relative, family member. Parent = pai (father) or mãe (mother)." },
-  { pt: "polvo",         en_false: "powder",        pt_real: "pó",           note: "polvo = octopus. Powder = pó." },
-  { pt: "preservativo",  en_false: "preservative",  pt_real: "conservante",  note: "preservativo = condom. Food preservative = conservante." },
-  { pt: "pretender",     en_false: "to pretend",    pt_real: "fingir",       note: "pretender = to intend, to plan. To pretend = fingir." },
-  { pt: "realizar",      en_false: "to realise",    pt_real: "perceber / aperceber-se", note: "realizar = to carry out, achieve. To realise (mentally) = perceber or aperceber-se." },
-  { pt: "sopa",          en_false: "soap",          pt_real: "sabão / sabonete", note: "sopa = soup. Soap = sabão (bar) or sabonete (hand soap)." },
-  { pt: "tuna",          en_false: "tuna (fish)",   pt_real: "atum",         note: "tuna = a traditional student music group. The fish = atum." },
-  { pt: "agenda",        en_false: "agenda",        pt_real: "ordem do dia / programa", note: "agenda = diary, planner. Meeting agenda = ordem do dia or programa." },
+  { pt: "puxar",         en_false: "to push",       en_true: "to pull",                    pt_real: "empurrar",                  note: "puxar = to pull; the door signs Puxe/Empurre are a classic trap." },
+  { pt: "constipado",    en_false: "constipated",   en_true: "having a cold",              pt_real: "obstipado",                 note: "constipado = having a cold (nasal congestion). Obstipado = bowel constipation." },
+  { pt: "pasta",         en_false: "pasta (food)",  en_true: "briefcase / folder / toothpaste", pt_real: "massa",              note: "pasta = briefcase/folder/toothpaste. The Italian dish is massa (massa alimentícia)." },
+  { pt: "esquisito",     en_false: "exquisite",     en_true: "strange / odd",              pt_real: "requintado",                note: "esquisito = strange, odd, fussy. Exquisite = requintado." },
+  { pt: "êxito",         en_false: "exit",          en_true: "success",                    pt_real: "saída",                    note: "êxito = success. Exit = saída. A false friend reinforced by identical spelling." },
+  { pt: "assistir",      en_false: "to assist",     en_true: "to watch / to attend",       pt_real: "ajudar",                   note: "assistir (a) = to watch/attend. To assist = ajudar. Exception: assistir médico (to attend medically)." },
+  { pt: "borracha",      en_false: "drunk",         en_true: "rubber / eraser",            pt_real: "bêbado/a",                 note: "borracha = rubber or eraser. Drunk = bêbado/a. Borracha is also slang for 'a drunk' in some registers — use with care." },
+  { pt: "costume",       en_false: "costume",       en_true: "custom / habit",             pt_real: "fantasia / fato",          note: "costume = custom, habit. A theatrical costume = fantasia or fato (de carnaval)." },
+  { pt: "decepção",      en_false: "deception",     en_true: "disappointment",             pt_real: "engano / fraude",          note: "decepção = disappointment. Deception = engano or fraude." },
+  { pt: "discussão",     en_false: "discussion",    en_true: "argument",                   pt_real: "conversa",                 note: "discussão = argument, heated debate. A calm discussion = conversa or debate." },
+  { pt: "embaraçado",    en_false: "embarrassed",   en_true: "tangled / confused",         pt_real: "envergonhado",             note: "embaraçado = tangled, confused. Embarrassed = envergonhado." },
+  { pt: "eventual",      en_false: "eventual",      en_true: "possible / hypothetical",    pt_real: "final / último",           note: "eventual = possible, hypothetical. Eventual (in time) = final or último." },
+  { pt: "fábrica",       en_false: "fabric",        en_true: "factory",                    pt_real: "tecido",                   note: "fábrica = factory. Fabric = tecido." },
+  { pt: "jornal",        en_false: "journal",       en_true: "newspaper",                  pt_real: "diário / revista",         note: "jornal = newspaper. A personal journal = diário. An academic journal = revista científica." },
+  { pt: "largo",         en_false: "large",         en_true: "wide / broad",               pt_real: "grande",                   note: "largo = wide/broad, or a town square. Large = grande." },
+  { pt: "livraria",      en_false: "library",       en_true: "bookshop",                   pt_real: "biblioteca",               note: "livraria = bookshop. Library = biblioteca." },
+  { pt: "novela",        en_false: "novel",         en_true: "TV soap opera",              pt_real: "romance",                  note: "novela = TV soap opera. A novel (book) = romance." },
+  { pt: "parente",       en_false: "parent",        en_true: "relative / family member",   pt_real: "pai / mãe",                note: "parente = relative, family member. Parent = pai (father) or mãe (mother)." },
+  { pt: "polvo",         en_false: "powder",        en_true: "octopus",                    pt_real: "pó",                       note: "polvo = octopus. Powder = pó." },
+  { pt: "preservativo",  en_false: "preservative",  en_true: "condom",                     pt_real: "conservante",              note: "preservativo = condom. Food preservative = conservante." },
+  { pt: "pretender",     en_false: "to pretend",    en_true: "to intend / to plan",        pt_real: "fingir",                   note: "pretender = to intend, to plan. To pretend = fingir." },
+  { pt: "realizar",      en_false: "to realise",    en_true: "to carry out / to achieve",  pt_real: "perceber / aperceber-se",  note: "realizar = to carry out, achieve. To realise (mentally) = perceber or aperceber-se." },
+  { pt: "sopa",          en_false: "soap",          en_true: "soup",                       pt_real: "sabão / sabonete",         note: "sopa = soup. Soap = sabão (bar) or sabonete (hand soap)." },
+  { pt: "tuna",          en_false: "tuna (fish)",   en_true: "student music group",        pt_real: "atum",                     note: "tuna = a traditional student music group. The fish = atum." },
+  { pt: "agenda",        en_false: "agenda",        en_true: "diary / planner",            pt_real: "ordem do dia / programa",  note: "agenda = diary, planner. Meeting agenda = ordem do dia or programa." },
 ];
 
 const COGNATES = [
@@ -7372,41 +7374,96 @@ const NumbersTab = React.memo(function NumbersTab({ fontSize, speakListPT, stopS
 
 // ── COGNATE DRILL ─────────────────────────────────────────────────────────────
 // Builds a flat drill item list from COGNATES + FALSE_FRIENDS + cached API extras.
-// COGNATE items: prompt = EN word, answer = PT word (article included if present).
-// FALSE_FRIEND items: prompt = PT word (labelled as false friend), answer = pt_real.
+// Direction is resolved at render time via resolveCardDirection(); items are direction-agnostic.
+// Cognate items carry: prompt_pt, prompt_en, answer_pt, answer_en.
+// False friend items carry the same plus isFalseFriend=true, en_false, en_true, pt_real, note.
 
 const COGNATE_EXTRAS_KEY = "pe_cognate_extras";
 const COGNATE_EXTRAS_MAX = 100;
 const COGNATE_DRILL_SESSION = 20;
+const COGNATE_DIR_KEY = "pe_cognate_dir"; // localStorage key for direction preference
 
 // Normalise for comparison: lowercase, strip diacritics, strip leading article, strip punctuation.
 function normCognate(s) {
   if (!s) return "";
-  // For m/f adjective forms like "lógico/a" accept either — handled at call site.
   return stripDiacritics(s.toLowerCase().trim().replace(/^(o|a|os|as)\s+/, "").replace(/[.,?!;:]/g, "")).trim();
 }
 
-// Returns all accepted answer variants for a cognate drill item.
-function cognateAccepted(item) {
-  if (item.isFalseFriend) {
-    // Accept any of the pt_real values (may be "engano / fraude" — split on " / " or " or ").
-    return item.pt_real.split(/\s*\/\s*|\s+or\s+/i).map(normCognate).filter(Boolean);
-  }
-  const raw = item.answer;
-  // Handle m/f forms: "lógico/a" → accept lógico and lógica.
+// Given a raw answer string (may contain " / " alternatives or "word/a" gender forms),
+// return all accepted normalised variants.
+function normCognateAnswer(raw) {
+  if (!raw) return [];
+  // m/f adjective shorthand: "lógico/a" → accept lógico and lógica
   const mfMatch = raw.match(/^(.+?)\/([ao])$/);
   if (mfMatch) {
     const base = mfMatch[1];
     const femSuffix = mfMatch[2];
-    const masc = normCognate(base);
-    const fem = normCognate(base.slice(0, -1) + femSuffix);
-    return [masc, fem].filter(Boolean);
+    return [normCognate(base), normCognate(base.slice(0, -1) + femSuffix)].filter(Boolean);
   }
-  // Handle "o criador / a criadora" style pairs — accept either.
+  // Slash-separated alternatives: "engano / fraude", "pai / mãe", etc.
   if (raw.includes(" / ")) {
-    return raw.split(" / ").map(normCognate).filter(Boolean);
+    return raw.split(/\s*\/\s*/).map(normCognate).filter(Boolean);
   }
   return [normCognate(raw)].filter(Boolean);
+}
+
+// Resolve what to show and what to accept for a given item + direction.
+// dir: "pt-en" | "en-pt"  (caller resolves "random" before calling)
+// Returns { promptText, promptLang, questionLabel, placeholder, acceptedAnswers, answerDisplay, micLang }
+function resolveCardDirection(item, dir) {
+  if (item.isFalseFriend) {
+    if (dir === "pt-en") {
+      // Show PT word → user types English meaning of that PT word
+      return {
+        promptText: item.prompt_pt,
+        promptLang: "pt-PT",
+        questionLabel: "What does this PT word mean in English?",
+        placeholder: "type the English meaning…",
+        acceptedAnswers: normCognateAnswer(item.answer_en_true),
+        answerDisplay: item.answer_en_true,
+        micLang: "en-US",
+        showSpeakPrompt: true,
+      };
+    } else {
+      // Show EN false cognate → user types correct PT word
+      return {
+        promptText: item.prompt_en_false,
+        promptLang: "en",
+        questionLabel: "What is the Portuguese for…",
+        placeholder: "type the Portuguese word…",
+        acceptedAnswers: normCognateAnswer(item.answer_pt_real),
+        answerDisplay: item.answer_pt_real,
+        micLang: "pt-PT",
+        showSpeakPrompt: false,
+      };
+    }
+  } else {
+    if (dir === "pt-en") {
+      // Show PT word → user types English
+      return {
+        promptText: item.prompt_pt,
+        promptLang: "pt-PT",
+        questionLabel: "What does this PT word mean in English?",
+        placeholder: "type the English meaning…",
+        acceptedAnswers: normCognateAnswer(item.answer_en),
+        answerDisplay: item.answer_en,
+        micLang: "en-US",
+        showSpeakPrompt: true,
+      };
+    } else {
+      // Show EN word → user types PT (original behaviour)
+      return {
+        promptText: item.prompt_en,
+        promptLang: "en",
+        questionLabel: "What is the Portuguese for…",
+        placeholder: "type the Portuguese word…",
+        acceptedAnswers: normCognateAnswer(item.answer_pt),
+        answerDisplay: item.answer_pt,
+        micLang: "pt-PT",
+        showSpeakPrompt: false,
+      };
+    }
+  }
 }
 
 // Build the hardcoded prompt key set so API extras can exclude them.
@@ -7426,20 +7483,49 @@ function buildHardcodedEnSet() {
 
 function buildDrillItems(extras) {
   const items = [];
-  // Cognates: EN → PT
+  // Cognates: both directions available via prompt_pt/prompt_en/answer_pt/answer_en
   COGNATES.forEach(sec => {
     sec.items.forEach(it => {
-      items.push({ id: "c_" + normCognate(it.pt), type: "cognate", prompt: it.en, answer: it.pt, isFalseFriend: false, section: sec.section });
+      items.push({
+        id: "c_" + normCognate(it.pt),
+        type: "cognate",
+        isFalseFriend: false,
+        section: sec.section,
+        prompt_pt: it.pt,
+        prompt_en: it.en,
+        answer_pt: it.pt,
+        answer_en: it.en,
+      });
     });
   });
-  // False friends: show PT word, answer is pt_real
+  // False friends: PT shown → user types en_true; EN (en_false) shown → user types pt_real
   FALSE_FRIENDS.forEach(ff => {
-    items.push({ id: "ff_" + normCognate(ff.pt), type: "falsefriend", prompt: ff.pt, answer: ff.pt_real, pt_real: ff.pt_real, en_false: ff.en_false, isFalseFriend: true, note: ff.note });
+    items.push({
+      id: "ff_" + normCognate(ff.pt),
+      type: "falsefriend",
+      isFalseFriend: true,
+      prompt_pt: ff.pt,
+      prompt_en_false: ff.en_false,
+      answer_en_true: ff.en_true,
+      answer_pt_real: ff.pt_real,
+      // kept for note display
+      en_false: ff.en_false,
+      note: ff.note,
+    });
   });
-  // API extras: EN → PT
+  // API extras: cognate pairs, both directions
   if (extras && extras.length) {
     extras.forEach((ex, i) => {
-      items.push({ id: "ex_" + i + "_" + normCognate(ex.pt || ""), type: "cognate", prompt: ex.en, answer: ex.pt, isFalseFriend: false, section: "Extra" });
+      items.push({
+        id: "ex_" + i + "_" + normCognate(ex.pt || ""),
+        type: "cognate",
+        isFalseFriend: false,
+        section: "Extra",
+        prompt_pt: ex.pt,
+        prompt_en: ex.en,
+        answer_pt: ex.pt,
+        answer_en: ex.en,
+      });
     });
   }
   return items;
@@ -7472,10 +7558,14 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
   const [fetchingExtras, setFetchingExtras] = React.useState(false);
   const [extrasError, setExtrasError] = React.useState(null);
 
+  // Direction: "random" | "pt-en" | "en-pt" — persisted
+  const [direction, setDirection] = React.useState(() => ls(COGNATE_DIR_KEY, "random"));
+
   const allItems = React.useMemo(() => buildDrillItems(extras), [extras]);
 
-  // Session: random subset of COGNATE_DRILL_SESSION items
+  // Session: array of item indices; sessionDirs: parallel array of resolved directions per slot
   const [session, setSession] = React.useState(null);
+  const [sessionDirs, setSessionDirs] = React.useState(null);
   const [sessionIdx, setSessionIdx] = React.useState(0);
   const [score, setScore] = React.useState({ correct: 0, total: 0 });
 
@@ -7488,19 +7578,36 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
 
   const inputRef = React.useRef(null);
 
-  function buildSession(items) {
+  function pickDir(dir) {
+    return dir === "random" ? (Math.random() < 0.5 ? "pt-en" : "en-pt") : dir;
+  }
+
+  function buildSession(items, dir) {
     const shuffled = shuffleArray([...Array(items.length).keys()]);
-    return shuffled.slice(0, Math.min(COGNATE_DRILL_SESSION, shuffled.length));
+    const indices = shuffled.slice(0, Math.min(COGNATE_DRILL_SESSION, shuffled.length));
+    const dirs = indices.map(() => pickDir(dir));
+    return { indices, dirs };
   }
 
   React.useEffect(() => {
     if (allItems.length > 0) {
-      setSession(buildSession(allItems));
+      const { indices, dirs } = buildSession(allItems, direction);
+      setSession(indices);
+      setSessionDirs(dirs);
       setSessionIdx(0);
       setScore({ correct: 0, total: 0 });
       resetItem();
     }
   }, []); // only on mount
+
+  // When direction changes mid-session, re-randomise directions for remaining slots
+  // (preserve position and score; only future cards change direction)
+  React.useEffect(() => {
+    lsSet(COGNATE_DIR_KEY, direction);
+    if (!session || !sessionDirs) return;
+    setSessionDirs(prev => prev.map((d, i) => i <= sessionIdx ? d : pickDir(direction)));
+    resetItem();
+  }, [direction]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function resetItem() {
     setInputText("");
@@ -7516,16 +7623,26 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
   }
 
   const currentItem = session ? allItems[session[sessionIdx]] : null;
+  const currentDir = sessionDirs ? sessionDirs[sessionIdx] : "en-pt";
+  const card = currentItem ? resolveCardDirection(currentItem, currentDir) : null;
 
   function checkAnswer(raw) {
-    if (!currentItem || result !== null) return;
+    if (!currentItem || !card || result !== null) return;
     const heard = normCognate(raw);
     if (!heard) return;
-    const accepted = cognateAccepted(currentItem);
-    const isCorrect = accepted.some(a => heard === a || a.includes(heard) || heard.includes(a));
+    const isCorrect = card.acceptedAnswers.some(a => heard === a || a.includes(heard) || heard.includes(a));
     setResult(isCorrect ? "correct" : "wrong");
     setScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
-    if (isCorrect && speakListPT) speakListPT(currentItem.answer.replace(/\/[ao]$/, ""));
+    // Speak the PT answer when correct and answer is PT; speak PT prompt when answer is EN
+    if (isCorrect && speakListPT) {
+      if (card.micLang === "en-US") {
+        // Answer was English — speak the PT prompt word so user hears it
+        speakListPT(card.promptText.replace(/\/[ao]$/, ""));
+      } else {
+        // Answer was PT — speak the correct PT answer
+        speakListPT(card.answerDisplay.split(/\s*\/\s*/)[0].replace(/\/[ao]$/, ""));
+      }
+    }
   }
 
   function handleType(e) {
@@ -7541,10 +7658,10 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
   }
 
   function startMic() {
-    if (!SR || result !== null) return;
+    if (!SR || !card || result !== null) return;
     stopMic();
     const r = new SR();
-    r.lang = "pt-PT"; r.continuous = false; r.interimResults = true; r.maxAlternatives = 5;
+    r.lang = card.micLang; r.continuous = false; r.interimResults = true; r.maxAlternatives = 5;
     const allAlts = [];
     r.onresult = (e) => {
       for (let i = e.resultIndex; i < e.results.length; i++) {
@@ -7562,22 +7679,25 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
     r.onend = () => {
       setMicActive(false); micRef.current = null;
       if (!allAlts.length) return;
-      // Try all alternatives; accept if any matches
       let matched = false;
       let bestTranscript = allAlts[0];
       for (const t of allAlts) {
-        const accepted = cognateAccepted(currentItem);
         const heard = normCognate(t);
-        if (heard && accepted.some(a => heard === a || a.includes(heard) || heard.includes(a))) {
+        if (heard && card.acceptedAnswers.some(a => heard === a || a.includes(heard) || heard.includes(a))) {
           matched = true; bestTranscript = t; break;
         }
       }
       setInputText(bestTranscript);
       setHeardText(bestTranscript);
-      const isCorrect = matched;
-      setResult(isCorrect ? "correct" : "wrong");
-      setScore(s => ({ correct: s.correct + (isCorrect ? 1 : 0), total: s.total + 1 }));
-      if (isCorrect && speakListPT) speakListPT(currentItem.answer.replace(/\/[ao]$/, ""));
+      setResult(matched ? "correct" : "wrong");
+      setScore(s => ({ correct: s.correct + (matched ? 1 : 0), total: s.total + 1 }));
+      if (matched && speakListPT) {
+        if (card.micLang === "en-US") {
+          speakListPT(card.promptText.replace(/\/[ao]$/, ""));
+        } else {
+          speakListPT(card.answerDisplay.split(/\s*\/\s*/)[0].replace(/\/[ao]$/, ""));
+        }
+      }
     };
     micRef.current = r;
     r.start();
@@ -7588,8 +7708,9 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
   function handleNext() {
     const nextIdx = sessionIdx + 1;
     if (!session || nextIdx >= session.length) {
-      // Session done — rebuild
-      setSession(buildSession(allItems));
+      const { indices, dirs } = buildSession(allItems, direction);
+      setSession(indices);
+      setSessionDirs(dirs);
       setSessionIdx(0);
       setScore({ correct: 0, total: 0 });
     } else {
@@ -7627,13 +7748,11 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
       if (!resp.ok) throw new Error(`API error ${resp.status}`);
       const data = await resp.json();
       const raw = data.content?.find(b => b.type === "text")?.text || "";
-      // Parse JSON array from response
       const startArr = raw.indexOf("[");
       const endArr = raw.lastIndexOf("]");
       if (startArr === -1 || endArr === -1) throw new SyntaxError("No JSON array in response");
       const parsed = JSON.parse(raw.slice(startArr, endArr + 1));
       if (!Array.isArray(parsed)) throw new SyntaxError("Response is not an array");
-      // Filter out any that duplicate hardcoded items
       const filtered = parsed.filter(ex => {
         if (!ex.en || !ex.pt) return false;
         if (hardcodedPt.has(normCognate(ex.pt))) return false;
@@ -7642,9 +7761,10 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
       }).slice(0, COGNATE_EXTRAS_MAX);
       lsSet(COGNATE_EXTRAS_KEY, filtered);
       setExtras(filtered);
-      // Rebuild session to include new extras
       const newItems = buildDrillItems(filtered);
-      setSession(buildSession(newItems));
+      const { indices, dirs } = buildSession(newItems, direction);
+      setSession(indices);
+      setSessionDirs(dirs);
       setSessionIdx(0);
       setScore({ correct: 0, total: 0 });
       resetItem();
@@ -7657,10 +7777,17 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
 
   const pct = score.total > 0 ? Math.round(score.correct / score.total * 100) : null;
   const scoreColor = pct === null ? "var(--color-text-secondary)" : pct >= 70 ? "#065f46" : "#991b1b";
-
   const btnBase = { fontFamily: "var(--font-sans)", cursor: "pointer", borderRadius: 6, fontWeight: 600, border: "none" };
+  const dirBtnStyle = (active) => ({
+    fontSize: Math.max(11, fontSize - 3), fontWeight: active ? 600 : 400,
+    padding: "4px 10px",
+    background: active ? "var(--color-accent-blue)" : "transparent",
+    color: active ? "#fff" : "var(--color-text-secondary)",
+    border: "none", cursor: "pointer", fontFamily: "var(--font-sans)", outline: "none",
+    transition: "background 0.15s, color 0.15s",
+  });
 
-  if (!currentItem) return (
+  if (!currentItem || !card) return (
     <div style={{ padding: 16 }}>
       <button onClick={onBack} style={{ ...btnBase, fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", border: "1px solid var(--color-border-tertiary)", background: "transparent", color: "var(--color-text-secondary)" }}>← Browse</button>
       <p style={{ marginTop: 12, fontSize, color: "var(--color-text-secondary)" }}>No drill items available.</p>
@@ -7678,6 +7805,12 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
           style={{ ...btnBase, fontSize: Math.max(11, fontSize - 4), padding: "3px 8px", border: "1px solid var(--color-border-tertiary)", background: "transparent", color: fetchingExtras ? "var(--color-text-tertiary)" : "var(--color-text-secondary)", cursor: fetchingExtras ? "wait" : "pointer" }}>
           {fetchingExtras ? "Fetching…" : extras.length ? `↻ Extras (${extras.length})` : "+ Extras"}
         </button>
+        {/* Direction segmented control */}
+        <div style={{ display: "flex", borderRadius: 6, border: "1px solid var(--color-border-tertiary)", overflow: "hidden", marginLeft: 4 }}>
+          {[["random","Random"],["pt-en","PT→EN"],["en-pt","EN→PT"]].map(([val, label]) => (
+            <button key={val} onClick={() => setDirection(val)} style={dirBtnStyle(direction === val)}>{label}</button>
+          ))}
+        </div>
         <span style={{ marginLeft: "auto", fontSize: Math.max(12, fontSize - 2), color: scoreColor, fontWeight: 600 }}>
           {session ? `${sessionIdx + 1}/${session.length}` : ""}
           {score.total > 0 && <span style={{ marginLeft: 10 }}>{score.correct}/{score.total}{pct !== null ? ` (${pct}%)` : ""}</span>}
@@ -7701,23 +7834,21 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
         {/* Prompt card */}
         <div style={{ background: "var(--color-background-secondary)", border: "1px solid var(--color-border-tertiary)", borderRadius: "var(--border-radius-md)", padding: "18px 20px", textAlign: "center" }}>
           <div style={{ fontSize: Math.max(10, fontSize - 4), color: "var(--color-text-tertiary)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-            {currentItem.isFalseFriend ? "What does this PT word actually mean? (answer in Portuguese)" : "What is the Portuguese for…"}
+            {card.questionLabel}
           </div>
-          {currentItem.isFalseFriend && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 4 }}>
-              <button onClick={() => speakListPT && speakListPT(currentItem.prompt)} aria-label={"Ouvir: " + currentItem.prompt}
-                style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: fontSize + 2, color: "#c2410c" }}>🔊</button>
-              <span style={{ fontSize: fontSize + 8, fontFamily: "var(--font-mono)", fontWeight: 700, color: "#c2410c" }}>{currentItem.prompt}</span>
-            </div>
-          )}
-          {!currentItem.isFalseFriend && (
-            <span style={{ fontSize: fontSize + 8, fontWeight: 700, color: "var(--color-text-primary)" }}>{currentItem.prompt}</span>
-          )}
-          {currentItem.isFalseFriend && (
-            <div style={{ fontSize: Math.max(11, fontSize - 2), color: "#92400e", fontStyle: "italic", marginTop: 4 }}>
-              (not "{currentItem.en_false || currentItem.prompt}")
-            </div>
-          )}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            {card.showSpeakPrompt && (
+              <button onClick={() => speakListPT && speakListPT(card.promptText.replace(/\/[ao]$/, ""))}
+                aria-label={"Ouvir: " + card.promptText}
+                style={{ background: "transparent", border: "none", cursor: "pointer", fontSize: fontSize + 2, color: currentItem.isFalseFriend ? "#c2410c" : "var(--color-accent-blue)", flexShrink: 0 }}>🔊</button>
+            )}
+            <span style={{
+              fontSize: fontSize + 8,
+              fontFamily: card.promptLang === "pt-PT" ? "var(--font-mono)" : "var(--font-sans)",
+              fontWeight: 700,
+              color: currentItem.isFalseFriend ? "#c2410c" : "var(--color-text-primary)",
+            }}>{card.promptText}</span>
+          </div>
         </div>
 
         {/* Answer area: text input + mic */}
@@ -7730,7 +7861,7 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
             onKeyDown={handleTypeSubmit}
             disabled={result !== null}
             maxLength={50}
-            placeholder={currentItem.isFalseFriend ? "type the real meaning…" : "type the Portuguese word…"}
+            placeholder={card.placeholder}
             style={{
               flex: 1, fontSize: Math.max(14, fontSize), padding: "8px 12px",
               borderRadius: 6, border: "2px solid",
@@ -7744,7 +7875,7 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
             <button
               onClick={micActive ? stopMic : startMic}
               disabled={result !== null}
-              title={micActive ? "Stop listening" : "Speak answer (pt-PT)"}
+              title={micActive ? "Stop listening" : `Speak answer (${card.micLang})`}
               style={{ ...btnBase, padding: "0 14px", fontSize: fontSize + 2, border: "2px solid",
                 borderColor: micActive ? "#ef4444" : "var(--color-border-tertiary)",
                 background: micActive ? "#fee2e2" : "var(--color-background-secondary)",
@@ -7772,10 +7903,10 @@ const CognateDrillMode = React.memo(function CognateDrillMode({ fontSize, speakL
             </p>
             {(result === "wrong" || revealed) && (
               <p style={{ fontSize: Math.max(12, fontSize - 1), color: "var(--color-text-primary)", margin: "0 0 2px" }}>
-                Answer: <strong style={{ fontFamily: "var(--font-mono)" }}>{currentItem.answer}</strong>
-                {currentItem.isFalseFriend && (
-                  <button onClick={() => speakListPT && speakListPT(currentItem.pt_real.split(/\s*\/\s*/)[0])} aria-label="Hear answer"
-                    style={{ marginLeft: 8, background: "transparent", border: "none", cursor: "pointer", fontSize: fontSize, color: "#c2410c" }}>🔊</button>
+                Answer: <strong style={{ fontFamily: card.micLang === "pt-PT" ? "var(--font-mono)" : "var(--font-sans)" }}>{card.answerDisplay}</strong>
+                {card.micLang === "pt-PT" && (
+                  <button onClick={() => speakListPT && speakListPT(card.answerDisplay.split(/\s*\/\s*/)[0].replace(/\/[ao]$/, ""))} aria-label="Hear answer"
+                    style={{ marginLeft: 8, background: "transparent", border: "none", cursor: "pointer", fontSize: fontSize, color: "var(--color-accent-blue)" }}>🔊</button>
                 )}
               </p>
             )}
